@@ -1,0 +1,62 @@
+package uk.co.senab.footo.fragments;
+
+import uk.co.senab.footo.R;
+import uk.co.senab.footo.adapters.PhotosAdapter;
+import android.database.Cursor;
+import android.os.Bundle;
+import android.provider.MediaStore.Images;
+import android.provider.MediaStore.Images.ImageColumns;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.widget.CursorAdapter;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.GridView;
+
+public class UserPhotosFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+
+	static final int LOADER_USER_PHOTOS = 0x01;
+
+	private GridView mPhotoGrid;
+	private CursorAdapter mAdapter;
+
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		getLoaderManager().initLoader(LOADER_USER_PHOTOS, null, this);
+
+		mAdapter = new PhotosAdapter(getActivity(), R.layout.item_user_photo, null, true);
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		View view = inflater.inflate(R.layout.fragment_user_photos, null);
+
+		mPhotoGrid = (GridView) view.findViewById(R.id.gv_users_photos);
+		mPhotoGrid.setAdapter(mAdapter);
+
+		return view;
+	}
+
+	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
+		String[] projection = { ImageColumns._ID };
+
+		CursorLoader cursorLoader = new CursorLoader(getActivity(), Images.Media.EXTERNAL_CONTENT_URI, projection,
+				null, null, Images.Media.DATE_ADDED + " desc");
+
+		return cursorLoader;
+
+	}
+
+	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+		mAdapter.swapCursor(data);
+	}
+
+	public void onLoaderReset(Loader<Cursor> loader) {
+		mAdapter.swapCursor(null);
+	}
+
+}

@@ -1,9 +1,9 @@
 package uk.co.senab.footo;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 
-public class PhotoActivity extends Activity {
+public class PhotoActivity extends FragmentActivity {
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

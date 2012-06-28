@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="gridview_spacing">6dp</dimen>
+    <dimen name="gridview_item_dimension">100dp</dimen>
+    
+</resources>
