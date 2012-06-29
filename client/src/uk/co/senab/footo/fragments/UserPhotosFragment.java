@@ -2,6 +2,7 @@ package uk.co.senab.footo.fragments;
 
 import uk.co.senab.footo.adapters.PhotosAdapter;
 import uk.co.senab.footo.views.MultiChoiceGridView;
+import uk.co.senab.footo.views.MultiChoiceGridView.OnItemCheckedListener;
 import uk.co.senab.photup.R;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -10,13 +11,17 @@ import android.provider.MediaStore.Images.ImageColumns;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
-public class UserPhotosFragment extends SherlockFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class UserPhotosFragment extends SherlockFragment implements LoaderManager.LoaderCallbacks<Cursor>,
+		OnItemCheckedListener {
 
 	static final int LOADER_USER_PHOTOS = 0x01;
 
@@ -36,15 +41,15 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 
 		mPhotoGrid = (MultiChoiceGridView) view.findViewById(R.id.gv_users_photos);
 		mPhotoGrid.setAdapter(mAdapter);
+		mPhotoGrid.setOnItemCheckedListener(this);
 		mAdapter.setParentView(mPhotoGrid);
 
 		return view;
 	}
-	
+
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-		
 		mAdapter.cleanup();
 	}
 
@@ -66,4 +71,12 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 		mAdapter.swapCursor(null);
 	}
 
+	public void onItemCheckChanged(AdapterView<?> parent, View view, int position, long id, boolean checked) {
+		StringBuffer msg = new StringBuffer();
+		msg.append("onItemCheckChanged: ");
+		msg.append(checked ? "Added " : "Removed ");
+		msg.append(id);
+		
+		Log.d("UserPhotosFragment", msg.toString());
+	}
 }

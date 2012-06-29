@@ -45,7 +45,7 @@ public class PhotupImageView extends ImageView {
 		@Override
 		protected void onPostExecute(Bitmap result) {
 			super.onPostExecute(result);
-
+			
 			ImageView iv = mImageView.get();
 			if (null != iv && null != result) {
 				iv.setImageBitmap(result);
@@ -65,8 +65,12 @@ public class PhotupImageView extends ImageView {
 			mCurrentTask.cancel(false);
 		}
 		
-		mCurrentTask = new PhotoTask(getContext().getContentResolver(), this);
-		mCurrentTask.executeOnExecutor(PhotupApplication.getApplication(getContext()).getExecutorService(), id);
+		PhotupApplication app = PhotupApplication.getApplication(getContext());
+		
+		mCurrentTask = new PhotoTask(app.getContentResolver(), this);
+		
+		//FIXME Need to fix this for less than v11
+		mCurrentTask.executeOnExecutor(app.getExecutorService(), id);
 	}
 
 	@Override
