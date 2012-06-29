@@ -4,8 +4,8 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <fragment android:name="uk.co.senab.photup.fragments.UserPhotosFragment"
-        android:id="@+id/fragment_user_photos"
+    <FrameLayout
+        android:id="@+id/fl_photo_fragments"
         android:layout_height="fill_parent"
         android:layout_width="fill_parent" />
 

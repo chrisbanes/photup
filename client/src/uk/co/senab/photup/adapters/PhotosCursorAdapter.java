@@ -11,14 +11,14 @@ import android.support.v4.widget.ResourceCursorAdapter;
 import android.view.View;
 import android.widget.Checkable;
 
-public class PhotosAdapter extends ResourceCursorAdapter {
+public class PhotosCursorAdapter extends ResourceCursorAdapter {
 
 	private final BitmapLruCache mCache;
 	private MultiChoiceGridView mParent;
 
-	public PhotosAdapter(Context context, int layout, Cursor c, boolean autoRequery) {
+	public PhotosCursorAdapter(Context context, BitmapLruCache cache, int layout, Cursor c, boolean autoRequery) {
 		super(context, layout, c, autoRequery);
-		mCache = new BitmapLruCache(context);
+		mCache = cache;
 	}
 
 	public void setParentView(MultiChoiceGridView gridView) {
@@ -35,10 +35,6 @@ public class PhotosAdapter extends ResourceCursorAdapter {
 		if (null != mParent) {
 			((Checkable) view).setChecked(mParent.isItemIdChecked(id));
 		}
-	}
-
-	public void cleanup() {
-		mCache.evictAll();
 	}
 
 }

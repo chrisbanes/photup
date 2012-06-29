@@ -5,23 +5,27 @@ import android.graphics.Bitmap;
 public class CacheableBitmapWrapper {
 
 	private final Bitmap mBitmap;
-	private boolean mCurrentlyDisplayed;
-	
+	private int mCurrentlyDisplayed;
+
 	public CacheableBitmapWrapper(Bitmap bitmap) {
 		mBitmap = bitmap;
-		mCurrentlyDisplayed = false;
+		mCurrentlyDisplayed = 0;
 	}
-	
+
 	public void setDisplayed(boolean displayed) {
-		mCurrentlyDisplayed = displayed;
+		if (displayed) {
+			mCurrentlyDisplayed++;
+		} else {
+			mCurrentlyDisplayed--;
+		}
 	}
-	
+
 	public boolean getDisplayed() {
-		return mCurrentlyDisplayed;
+		return mCurrentlyDisplayed > 0;
 	}
-	
+
 	public Bitmap getBitmap() {
 		return mBitmap;
 	}
-	
+
 }
