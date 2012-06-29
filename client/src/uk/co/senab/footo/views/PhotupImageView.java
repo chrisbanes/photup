@@ -3,7 +3,6 @@ package uk.co.senab.footo.views;
 import java.lang.ref.WeakReference;
 
 import uk.co.senab.footo.PhotupApplication;
-
 import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;

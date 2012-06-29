@@ -4,7 +4,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import uk.co.senab.photup.R;
 
 import android.app.Application;
 import android.content.Context;
@@ -19,8 +18,6 @@ public class PhotupApplication extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		
-		mExecutor = createExecutor();
 	}
 	
 	public static PhotupApplication getApplication(Context context) {
@@ -28,6 +25,9 @@ public class PhotupApplication extends Application {
 	}
 	
 	public ExecutorService getExecutorService() {
+		if (null == mExecutor) {
+			mExecutor = createExecutor();
+		}
 		return mExecutor;
 	}
 
