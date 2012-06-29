@@ -2,5 +2,5 @@
 <uk.co.senab.photup.views.PhotoItemLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="@dimen/gridview_item_dimension"
-    android:background="@drawable/photo_gallery_backgroud"
+    android:background="@drawable/photo_gallery_background"
     android:padding="@dimen/gridview_item_margin" />
