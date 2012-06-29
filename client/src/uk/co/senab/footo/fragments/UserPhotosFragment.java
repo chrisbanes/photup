@@ -1,6 +1,6 @@
 package uk.co.senab.footo.fragments;
 
-import uk.co.senab.footo.R;
+import uk.co.senab.photup.R;
 import uk.co.senab.footo.adapters.PhotosAdapter;
 import uk.co.senab.footo.views.MultiChoiceGridView;
 import android.database.Cursor;

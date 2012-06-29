@@ -4,7 +4,7 @@ import java.lang.ref.WeakReference;
 import java.util.concurrent.ExecutorService;
 
 import uk.co.senab.footo.FootoApplication;
-import uk.co.senab.footo.R;
+import uk.co.senab.photup.R;
 import uk.co.senab.footo.views.MultiChoiceGridView;
 import uk.co.senab.footo.views.RecycleableImageView;
 import android.content.ContentResolver;
