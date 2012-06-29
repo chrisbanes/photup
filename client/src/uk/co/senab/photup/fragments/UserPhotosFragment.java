@@ -1,9 +1,11 @@
 package uk.co.senab.photup.fragments;
 
 import uk.co.senab.photup.R;
+import uk.co.senab.photup.Utils;
 import uk.co.senab.photup.adapters.PhotosAdapter;
 import uk.co.senab.photup.views.MultiChoiceGridView;
 import uk.co.senab.photup.views.MultiChoiceGridView.OnItemCheckedListener;
+import uk.co.senab.photup.views.PhotupImageView;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore.Images;
@@ -15,16 +17,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.widget.AbsoluteLayout;
 import android.widget.AdapterView;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
+@SuppressWarnings("deprecation")
 public class UserPhotosFragment extends SherlockFragment implements LoaderManager.LoaderCallbacks<Cursor>,
 		OnItemCheckedListener {
 
 	static final int LOADER_USER_PHOTOS = 0x01;
 
 	private MultiChoiceGridView mPhotoGrid;
+	private AbsoluteLayout mAnimationLayout;
 	private PhotosAdapter mAdapter;
 
 	public void onCreate(Bundle savedInstanceState) {
@@ -37,6 +44,8 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_user_photos, null);
+
+		mAnimationLayout = (AbsoluteLayout) view.findViewById(R.id.al_animation);
 
 		mPhotoGrid = (MultiChoiceGridView) view.findViewById(R.id.gv_users_photos);
 		mPhotoGrid.setAdapter(mAdapter);
@@ -75,7 +84,55 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 		msg.append("onItemCheckChanged: ");
 		msg.append(checked ? "Added " : "Removed ");
 		msg.append(id);
-		
+
 		Log.d("UserPhotosFragment", msg.toString());
+
+		if (checked) {
+			animateViewToButton(view);
+		}
+
+	}
+
+	private void animateViewToButton(View view) {
+		// New ImageView with Bitmap of View
+		PhotupImageView iv = new PhotupImageView(getActivity());
+		iv.setImageBitmap(Utils.drawViewOntoBitmap(view));
+
+		// Align it so that it's directly over the current View
+		AbsoluteLayout.LayoutParams lp = new AbsoluteLayout.LayoutParams(AbsoluteLayout.LayoutParams.WRAP_CONTENT,
+				AbsoluteLayout.LayoutParams.WRAP_CONTENT, view.getLeft(), view.getTop());
+		mAnimationLayout.addView(iv, lp);
+
+		// FIXME Needs fixing really
+		int abItem = getResources().getDimensionPixelSize(R.dimen.action_bar_height) / 2;
+
+		Animation animaton = Utils.createScaleAnimation(view, mPhotoGrid.getWidth(), mPhotoGrid.getHeight(),
+				mPhotoGrid.getRight() - abItem, mPhotoGrid.getTop() - abItem);
+		animaton.setAnimationListener(new ScaleAnimationListener(iv));
+		iv.startAnimation(animaton);
+	}
+
+	private static class ScaleAnimationListener implements AnimationListener {
+
+		private final PhotupImageView mAnimatedView;
+
+		public ScaleAnimationListener(PhotupImageView view) {
+			mAnimatedView = view;
+		}
+
+		public void onAnimationEnd(Animation animation) {
+			mAnimatedView.setVisibility(View.GONE);
+			ViewGroup parent = (ViewGroup) mAnimatedView.getParent();
+			parent.removeView(mAnimatedView);
+			mAnimatedView.recycleBitmap();
+		}
+
+		public void onAnimationRepeat(Animation animation) {
+			// NO-OP
+		}
+
+		public void onAnimationStart(Animation animation) {
+			// NO-OP
+		}
 	}
 }

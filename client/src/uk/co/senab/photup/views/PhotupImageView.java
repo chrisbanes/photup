@@ -68,6 +68,10 @@ public class PhotupImageView extends ImageView {
 	private PhotoTask mCurrentTask;
 	private CacheableBitmapWrapper mCurrentCacheableBitmapWrapper;
 
+	public PhotupImageView(Context context) {
+		super(context);
+	}
+
 	public PhotupImageView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
@@ -123,8 +127,6 @@ public class PhotupImageView extends ImageView {
 		if (null != currentBitmap) {
 			setImageDrawable(null);
 			currentBitmap.recycle();
-
-			getDrawable().setCallback(null);
 		}
 	}
 
