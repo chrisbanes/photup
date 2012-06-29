@@ -1,10 +1,11 @@
 package uk.co.senab.footo;
 
-import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import uk.co.senab.photup.R;
+import android.os.Bundle;
 
-public class PhotoActivity extends FragmentActivity {
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+
+public class PhotoActivity extends SherlockFragmentActivity {
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

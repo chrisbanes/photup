@@ -5,6 +5,7 @@
     android:orientation="vertical" >
 
     <fragment android:name="uk.co.senab.footo.fragments.UserPhotosFragment"
+        android:id="@+id/fragment_user_photos"
         android:layout_height="fill_parent"
         android:layout_width="fill_parent" />
 

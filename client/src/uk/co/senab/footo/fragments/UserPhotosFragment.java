@@ -1,13 +1,12 @@
 package uk.co.senab.footo.fragments;
 
-import uk.co.senab.photup.R;
 import uk.co.senab.footo.adapters.PhotosAdapter;
 import uk.co.senab.footo.views.MultiChoiceGridView;
+import uk.co.senab.photup.R;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore.Images;
 import android.provider.MediaStore.Images.ImageColumns;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -15,7 +14,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class UserPhotosFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+import com.actionbarsherlock.app.SherlockFragment;
+
+public class UserPhotosFragment extends SherlockFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
 	static final int LOADER_USER_PHOTOS = 0x01;
 
