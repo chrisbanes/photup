@@ -43,9 +43,14 @@ public class PhotupImageView extends ImageView {
 		protected CacheableBitmapWrapper doInBackground(Long... params) {
 			long id = params[0];
 
-			CacheableBitmapWrapper wrapper = new CacheableBitmapWrapper(Thumbnails.getThumbnail(mCr, id,
-					Thumbnails.MICRO_KIND, null));
-			mCache.put(id, wrapper);
+			CacheableBitmapWrapper wrapper = null;
+
+			Bitmap thumb = Thumbnails.getThumbnail(mCr, id, Thumbnails.MICRO_KIND, null);
+			if (null != thumb) {
+				wrapper = new CacheableBitmapWrapper(thumb);
+				mCache.put(id, wrapper);
+			}
+
 			return wrapper;
 		}
 
@@ -54,8 +59,8 @@ public class PhotupImageView extends ImageView {
 			super.onPostExecute(result);
 
 			PhotupImageView iv = mImageView.get();
-			if (null != iv && null != result) {
-				iv.setImageBitmap(result);
+			if (null != iv) {
+				iv.setImageCachedBitmap(result);
 			}
 		}
 	}
@@ -67,14 +72,14 @@ public class PhotupImageView extends ImageView {
 		super(context, attrs);
 	}
 
-	public void requestThumbnailId(long id, BitmapLruCache cache) {
+	public void requestThumbnailId(final long id, final BitmapLruCache cache) {
 		if (null != mCurrentTask) {
 			mCurrentTask.cancel(false);
 		}
 
 		CacheableBitmapWrapper cached = cache.get(id);
 		if (null != cached) {
-			setImageBitmap(cached);
+			setImageCachedBitmap(cached);
 		} else {
 			PhotupApplication app = PhotupApplication.getApplication(getContext());
 			mCurrentTask = new PhotoTask(app.getContentResolver(), this, cache);
@@ -84,23 +89,33 @@ public class PhotupImageView extends ImageView {
 		}
 	}
 
-	public void setImageBitmap(CacheableBitmapWrapper wrapper) {
-		setImageBitmap(wrapper.getBitmap());
+	public void setImageCachedBitmap(final CacheableBitmapWrapper wrapper) {
+		if (null != wrapper) {
+			wrapper.setDisplayed(true);
+			setImageBitmap(wrapper.getBitmap());
+
+		} else {
+			setImageDrawable(null);
+		}
 
 		mCurrentCacheableBitmapWrapper = wrapper;
-		wrapper.setDisplayed(true);
 	}
 
 	@Override
 	public void setImageBitmap(Bitmap bm) {
+		BitmapDrawable d = new BitmapDrawable(getResources(), bm);
+		d.setFilterBitmap(true);
+		setImageDrawable(d);
+	}
+
+	@Override
+	public void setImageDrawable(Drawable drawable) {
+		super.setImageDrawable(drawable);
+
 		if (null != mCurrentCacheableBitmapWrapper) {
 			mCurrentCacheableBitmapWrapper.setDisplayed(false);
 			mCurrentCacheableBitmapWrapper = null;
 		}
-
-		BitmapDrawable d = new BitmapDrawable(getResources(), bm);
-		d.setFilterBitmap(true);
-		setImageDrawable(d);
 	}
 
 	public void recycleBitmap() {
