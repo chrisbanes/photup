@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<uk.co.senab.footo.views.RecycleableImageView xmlns:android="http://schemas.android.com/apk/res/android"
+<uk.co.senab.footo.views.CheckableImageView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/iv_photo"
     android:layout_width="match_parent"
     android:layout_height="@dimen/gridview_item_dimension"
-    android:scaleType="centerCrop" />
+    android:scaleType="centerCrop"
+    android:padding="4dp"
+    android:background="@drawable/photo_gallery_backgroud" />

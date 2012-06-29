@@ -2,6 +2,7 @@ package uk.co.senab.footo.fragments;
 
 import uk.co.senab.footo.R;
 import uk.co.senab.footo.adapters.PhotosAdapter;
+import uk.co.senab.footo.views.MultiChoiceGridView;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore.Images;
@@ -10,24 +11,21 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridView;
 
 public class UserPhotosFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
 	static final int LOADER_USER_PHOTOS = 0x01;
 
-	private GridView mPhotoGrid;
-	private CursorAdapter mAdapter;
+	private MultiChoiceGridView mPhotoGrid;
+	private PhotosAdapter mAdapter;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		getLoaderManager().initLoader(LOADER_USER_PHOTOS, null, this);
-
 		mAdapter = new PhotosAdapter(getActivity(), R.layout.item_user_photo, null, true);
 	}
 
@@ -35,8 +33,9 @@ public class UserPhotosFragment extends Fragment implements LoaderManager.Loader
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_user_photos, null);
 
-		mPhotoGrid = (GridView) view.findViewById(R.id.gv_users_photos);
+		mPhotoGrid = (MultiChoiceGridView) view.findViewById(R.id.gv_users_photos);
 		mPhotoGrid.setAdapter(mAdapter);
+		mAdapter.setParentView(mPhotoGrid);
 
 		return view;
 	}
