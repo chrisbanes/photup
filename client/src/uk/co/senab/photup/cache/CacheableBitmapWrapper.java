@@ -1,4 +1,4 @@
-package uk.co.senab.footo.cache;
+package uk.co.senab.photup.cache;
 
 import android.graphics.Bitmap;
 

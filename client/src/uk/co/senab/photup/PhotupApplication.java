@@ -1,4 +1,4 @@
-package uk.co.senab.footo;
+package uk.co.senab.photup;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;

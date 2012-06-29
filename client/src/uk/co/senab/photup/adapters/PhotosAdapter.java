@@ -1,9 +1,9 @@
-package uk.co.senab.footo.adapters;
+package uk.co.senab.photup.adapters;
 
-import uk.co.senab.footo.cache.BitmapLruCache;
-import uk.co.senab.footo.views.MultiChoiceGridView;
-import uk.co.senab.footo.views.PhotupImageView;
 import uk.co.senab.photup.R;
+import uk.co.senab.photup.cache.BitmapLruCache;
+import uk.co.senab.photup.views.MultiChoiceGridView;
+import uk.co.senab.photup.views.PhotupImageView;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore.Images.ImageColumns;

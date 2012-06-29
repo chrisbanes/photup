@@ -1,10 +1,10 @@
-package uk.co.senab.footo.views;
+package uk.co.senab.photup.views;
 
 import java.lang.ref.WeakReference;
 
-import uk.co.senab.footo.PhotupApplication;
-import uk.co.senab.footo.cache.BitmapLruCache;
-import uk.co.senab.footo.cache.CacheableBitmapWrapper;
+import uk.co.senab.photup.PhotupApplication;
+import uk.co.senab.photup.cache.BitmapLruCache;
+import uk.co.senab.photup.cache.CacheableBitmapWrapper;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;

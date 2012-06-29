@@ -1,9 +1,9 @@
-package uk.co.senab.footo.fragments;
+package uk.co.senab.photup.fragments;
 
-import uk.co.senab.footo.adapters.PhotosAdapter;
-import uk.co.senab.footo.views.MultiChoiceGridView;
-import uk.co.senab.footo.views.MultiChoiceGridView.OnItemCheckedListener;
 import uk.co.senab.photup.R;
+import uk.co.senab.photup.adapters.PhotosAdapter;
+import uk.co.senab.photup.views.MultiChoiceGridView;
+import uk.co.senab.photup.views.MultiChoiceGridView.OnItemCheckedListener;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore.Images;

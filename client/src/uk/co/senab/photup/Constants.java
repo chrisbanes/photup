@@ -1,4 +1,4 @@
-package uk.co.senab.footo;
+package uk.co.senab.photup;
 
 public class Constants {
 

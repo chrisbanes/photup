@@ -1,6 +1,6 @@
-package uk.co.senab.footo.cache;
+package uk.co.senab.photup.cache;
 
-import uk.co.senab.footo.Constants;
+import uk.co.senab.photup.Constants;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Bitmap;

@@ -1,4 +1,4 @@
-package uk.co.senab.footo.views;
+package uk.co.senab.photup.views;
 
 import java.util.HashMap;
 

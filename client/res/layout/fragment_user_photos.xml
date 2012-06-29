@@ -3,7 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
-    <uk.co.senab.footo.views.MultiChoiceGridView
+    <uk.co.senab.photup.views.MultiChoiceGridView
         android:id="@+id/gv_users_photos"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
