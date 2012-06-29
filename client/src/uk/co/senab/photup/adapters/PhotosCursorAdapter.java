@@ -1,8 +1,8 @@
 package uk.co.senab.photup.adapters;
 
-import uk.co.senab.photup.R;
 import uk.co.senab.photup.cache.BitmapLruCache;
 import uk.co.senab.photup.views.MultiChoiceGridView;
+import uk.co.senab.photup.views.PhotoItemLayout;
 import uk.co.senab.photup.views.PhotupImageView;
 import android.content.Context;
 import android.database.Cursor;
@@ -27,7 +27,8 @@ public class PhotosCursorAdapter extends ResourceCursorAdapter {
 
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {
-		PhotupImageView iv = (PhotupImageView) view.findViewById(R.id.iv_photo);
+		PhotoItemLayout layout = (PhotoItemLayout) view;
+		PhotupImageView iv = layout.getImageView();
 
 		long id = cursor.getInt(cursor.getColumnIndexOrThrow(ImageColumns._ID));
 		iv.requestThumbnailId(id, mCache);

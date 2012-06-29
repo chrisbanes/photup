@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<uk.co.senab.photup.views.CheckableFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<uk.co.senab.photup.views.PhotoItemLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="@dimen/gridview_item_dimension"
-    android:background="@drawable/photo_gallery_backgroud" >
-
-    <uk.co.senab.photup.views.PhotupImageView
-        android:id="@+id/iv_photo"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_margin="@dimen/gridview_item_margin"
-        android:scaleType="centerCrop" />
-
-</uk.co.senab.photup.views.CheckableFrameLayout>
+    android:background="@drawable/photo_gallery_backgroud"
+    android:padding="@dimen/gridview_item_margin" />

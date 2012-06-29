@@ -7,6 +7,7 @@ import java.util.List;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.cache.BitmapLruCache;
 import uk.co.senab.photup.views.MultiChoiceGridView;
+import uk.co.senab.photup.views.PhotoItemLayout;
 import uk.co.senab.photup.views.PhotupImageView;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -57,8 +58,9 @@ public class PhotosBaseAdapter extends BaseAdapter {
 		if (null == view) {
 			view = mLayoutInflater.inflate(R.layout.item_user_photo, parent, false);
 		}
-
-		PhotupImageView iv = (PhotupImageView) view.findViewById(R.id.iv_photo);
+		
+		PhotoItemLayout layout = (PhotoItemLayout) view;
+		PhotupImageView iv = layout.getImageView();
 
 		long id = getItem(position);
 		iv.requestThumbnailId(id, mCache);
