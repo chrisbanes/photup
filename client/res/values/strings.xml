@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">photup</string>
+    <string name="tab_photos">Photos</string>
+    <string name="tab_selected_photos">Selected</string>
+
 </resources>

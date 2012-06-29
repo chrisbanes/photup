@@ -39,8 +39,8 @@ public class PhotoActivity extends SherlockFragmentActivity implements OnPhotoSe
 
 		ActionBar ab = getSupportActionBar();
 		ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-		ab.addTab(ab.newTab().setText("Photos").setTag(TAB_PHOTOS).setTabListener(this));
-		ab.addTab(ab.newTab().setText("Selected").setTag(TAB_SELECTED).setTabListener(this));
+		ab.addTab(ab.newTab().setText(R.string.tab_photos).setTag(TAB_PHOTOS).setTabListener(this));
+		ab.addTab(ab.newTab().setText(R.string.tab_selected_photos).setTag(TAB_SELECTED).setTabListener(this));
 	}
 
 	@Override
