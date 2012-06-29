@@ -14,7 +14,7 @@ import android.widget.GridView;
 public class MultiChoiceGridView extends GridView implements OnItemClickListener {
 
 	public static interface OnItemCheckedListener {
-		void onItemCheckChanged(AdapterView<?> parent, View view, int position, long id, boolean checked);
+		void onItemCheckChanged(View view, long id, boolean checked);
 	}
 
 	private final HashMap<Long, Boolean> mCheckedMap = new HashMap<Long, Boolean>();
@@ -27,18 +27,20 @@ public class MultiChoiceGridView extends GridView implements OnItemClickListener
 	}
 
 	public void onItemClick(AdapterView<?> gridView, View view, int position, long id) {
-		boolean newValue = !isItemIdChecked(id);
+		setItemChecked(view, id, !isItemIdChecked(id));
+	}
 
-		if (newValue) {
+	public void setItemChecked(View view, long id, boolean checked) {
+		if (checked) {
 			mCheckedMap.put(id, true);
 		} else {
 			mCheckedMap.remove(id);
 		}
-		
-		((Checkable) view).setChecked(newValue);
+
+		((Checkable) view).setChecked(checked);
 
 		if (null != mCheckedListener) {
-			mCheckedListener.onItemCheckChanged(gridView, view, position, id, newValue);
+			mCheckedListener.onItemCheckChanged(view, id, checked);
 		}
 	}
 
@@ -62,11 +64,6 @@ public class MultiChoiceGridView extends GridView implements OnItemClickListener
 
 	public void setOnItemCheckedListener(OnItemCheckedListener l) {
 		mCheckedListener = l;
-	}
-
-	@Override
-	public void setOnClickListener(OnClickListener l) {
-		// NO-OP for now
 	}
 
 }

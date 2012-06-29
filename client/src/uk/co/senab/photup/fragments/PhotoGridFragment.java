@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
@@ -55,7 +54,7 @@ public abstract class PhotoGridFragment extends SherlockFragment implements OnIt
 		// TODO Save Scroll position
 	}
 
-	public void onItemCheckChanged(AdapterView<?> parent, View view, int position, long id, boolean checked) {
+	public void onItemCheckChanged(View view, long id, boolean checked) {
 		// Callback to listener
 		if (null != mSelectionListener) {
 			mSelectionListener.onPhotoChosen(id, checked);

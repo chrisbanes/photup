@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.AbsoluteLayout;
-import android.widget.AdapterView;
 
 @SuppressWarnings("deprecation")
 public class UserPhotosFragment extends PhotoGridFragment implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -63,8 +62,8 @@ public class UserPhotosFragment extends PhotoGridFragment implements LoaderManag
 		mAdapter.swapCursor(null);
 	}
 
-	public void onItemCheckChanged(AdapterView<?> parent, View view, int position, long id, boolean checked) {
-		super.onItemCheckChanged(parent, view, position, id, checked);
+	public void onItemCheckChanged(View view, long id, boolean checked) {
+		super.onItemCheckChanged(view, id, checked);
 
 		if (checked) {
 			animateViewToButton(view);
