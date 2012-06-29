@@ -3,9 +3,11 @@ package uk.co.senab.photup.fragments;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.Utils;
 import uk.co.senab.photup.adapters.PhotosAdapter;
+import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
 import uk.co.senab.photup.views.MultiChoiceGridView;
 import uk.co.senab.photup.views.MultiChoiceGridView.OnItemCheckedListener;
 import uk.co.senab.photup.views.PhotupImageView;
+import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore.Images;
@@ -33,6 +35,13 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 	private MultiChoiceGridView mPhotoGrid;
 	private AbsoluteLayout mAnimationLayout;
 	private PhotosAdapter mAdapter;
+	private OnPhotoSelectionChangedListener mSelectionListener;
+
+	@Override
+	public void onAttach(Activity activity) {
+		mSelectionListener = (OnPhotoSelectionChangedListener) activity;
+		super.onAttach(activity);
+	}
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -91,6 +100,10 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 			animateViewToButton(view);
 		}
 
+		// Callback to listener
+		if (null != mSelectionListener) {
+			mSelectionListener.onPhotoChosen(id, checked);
+		}
 	}
 
 	private void animateViewToButton(View view) {
@@ -104,10 +117,11 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 		mAnimationLayout.addView(iv, lp);
 
 		// FIXME Needs fixing really
-		int abItem = getResources().getDimensionPixelSize(R.dimen.action_bar_height) / 2;
+		int abItemHeight = getResources().getDimensionPixelSize(R.dimen.abs__action_bar_default_height);
+		int abItemWidth = getResources().getDimensionPixelSize(R.dimen.abs__action_button_min_width);
 
 		Animation animaton = Utils.createScaleAnimation(view, mPhotoGrid.getWidth(), mPhotoGrid.getHeight(),
-				mPhotoGrid.getRight() - abItem, mPhotoGrid.getTop() - abItem);
+				mPhotoGrid.getRight() - Math.round(abItemWidth * 1.5f), mPhotoGrid.getTop() - abItemHeight);
 		animaton.setAnimationListener(new ScaleAnimationListener(iv));
 		iv.startAnimation(animaton);
 	}
@@ -135,4 +149,5 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 			// NO-OP
 		}
 	}
+
 }
