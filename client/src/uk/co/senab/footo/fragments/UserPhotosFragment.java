@@ -40,6 +40,13 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 
 		return view;
 	}
+	
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		
+		mAdapter.cleanup();
+	}
 
 	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
 		String[] projection = { ImageColumns._ID };

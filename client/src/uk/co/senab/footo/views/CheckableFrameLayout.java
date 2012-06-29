@@ -4,14 +4,15 @@ import android.R;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.Checkable;
+import android.widget.FrameLayout;
 
-public class CheckableImageView extends RecycleableImageView implements Checkable {
+public class CheckableFrameLayout extends FrameLayout implements Checkable {
 
 	private static final int[] CheckedStateSet = { R.attr.state_checked };
 
 	private boolean mChecked = false;
 
-	public CheckableImageView(Context context, AttributeSet attrs) {
+	public CheckableFrameLayout(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
 
