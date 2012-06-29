@@ -1,8 +1,6 @@
 package uk.co.senab.footo.adapters;
 
-import java.lang.ref.WeakReference;
-import java.util.HashSet;
-
+import uk.co.senab.footo.cache.BitmapLruCache;
 import uk.co.senab.footo.views.MultiChoiceGridView;
 import uk.co.senab.footo.views.PhotupImageView;
 import uk.co.senab.photup.R;
@@ -15,13 +13,12 @@ import android.widget.Checkable;
 
 public class PhotosAdapter extends ResourceCursorAdapter {
 
-	private final HashSet<WeakReference<PhotupImageView>> mImageViews;
-	
+	private final BitmapLruCache mCache;
 	private MultiChoiceGridView mParent;
 
 	public PhotosAdapter(Context context, int layout, Cursor c, boolean autoRequery) {
 		super(context, layout, c, autoRequery);
-		mImageViews = new HashSet<WeakReference<PhotupImageView>>();
+		mCache = new BitmapLruCache(context);
 	}
 
 	public void setParentView(MultiChoiceGridView gridView) {
@@ -33,24 +30,15 @@ public class PhotosAdapter extends ResourceCursorAdapter {
 		PhotupImageView iv = (PhotupImageView) view.findViewById(R.id.iv_photo);
 
 		long id = cursor.getInt(cursor.getColumnIndexOrThrow(ImageColumns._ID));
-		iv.requestThumbnailId(id);
+		iv.requestThumbnailId(id, mCache);
 
 		if (null != mParent) {
 			((Checkable) view).setChecked(mParent.isItemIdChecked(id));
 		}
-		
-		mImageViews.add(new WeakReference<PhotupImageView>(iv));
 	}
 
 	public void cleanup() {
-		for (WeakReference<PhotupImageView> ref : mImageViews) {
-			PhotupImageView iv = ref.get();
-			if (null != iv) {
-				iv.recycleBitmap();
-			}	 
-		}
-		
-		mImageViews.clear();
+		mCache.evictAll();
 	}
 
 }
