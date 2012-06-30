@@ -3,11 +3,11 @@ package uk.co.senab.photup;
 import java.util.HashSet;
 
 import uk.co.senab.photup.cache.BitmapLruCache;
-import uk.co.senab.photup.fragments.PhotoGridFragment;
 import uk.co.senab.photup.fragments.SelectedPhotosFragment;
 import uk.co.senab.photup.fragments.UserPhotosFragment;
 import uk.co.senab.photup.listeners.BitmapCacheProvider;
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
+import uk.co.senab.photup.listeners.PhotoListDisplayer;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -86,7 +86,7 @@ public class PhotoActivity extends SherlockFragmentActivity implements OnPhotoSe
 
 	public void onTabSelected(Tab tab, FragmentTransaction ft) {
 		final int id = (Integer) tab.getTag();
-		PhotoGridFragment newFragment;
+		PhotoListDisplayer newFragment;
 
 		switch (id) {
 			case TAB_SELECTED:
@@ -100,7 +100,7 @@ public class PhotoActivity extends SherlockFragmentActivity implements OnPhotoSe
 
 		newFragment.setSelectedPhotos(mSelectedIds);
 
-		ft.replace(R.id.fl_photo_fragments, newFragment);
+		ft.replace(R.id.fl_photo_fragments, (Fragment) newFragment);
 	}
 
 	public void onTabUnselected(Tab tab, FragmentTransaction ft) {

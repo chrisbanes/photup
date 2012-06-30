@@ -6,6 +6,7 @@ import uk.co.senab.photup.R;
 import uk.co.senab.photup.cache.BitmapLruCache;
 import uk.co.senab.photup.listeners.BitmapCacheProvider;
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
+import uk.co.senab.photup.listeners.PhotoListDisplayer;
 import uk.co.senab.photup.views.MultiChoiceGridView;
 import uk.co.senab.photup.views.MultiChoiceGridView.OnItemCheckedListener;
 import android.app.Activity;
@@ -16,7 +17,7 @@ import android.view.ViewGroup;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
-public abstract class PhotoGridFragment extends SherlockFragment implements OnItemCheckedListener {
+public abstract class PhotoGridFragment extends SherlockFragment implements OnItemCheckedListener, PhotoListDisplayer {
 
 	protected MultiChoiceGridView mPhotoGrid;
 	protected BitmapLruCache mCache;
@@ -70,3 +71,4 @@ public abstract class PhotoGridFragment extends SherlockFragment implements OnIt
 	}
 
 }
+

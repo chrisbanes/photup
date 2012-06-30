@@ -6,7 +6,6 @@ import java.util.List;
 
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.cache.BitmapLruCache;
-import uk.co.senab.photup.views.MultiChoiceGridView;
 import uk.co.senab.photup.views.PhotoItemLayout;
 import uk.co.senab.photup.views.PhotupImageView;
 import android.content.Context;
@@ -14,12 +13,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Checkable;
 
 public class PhotosBaseAdapter extends BaseAdapter {
 
 	private List<Long> mItems;
-	private MultiChoiceGridView mParent;
 
 	private final BitmapLruCache mCache;
 	private final Context mContext;
@@ -30,10 +27,6 @@ public class PhotosBaseAdapter extends BaseAdapter {
 		mCache = cache;
 		mItems = new ArrayList<Long>();
 		mLayoutInflater = LayoutInflater.from(mContext);
-	}
-
-	public void setParentView(MultiChoiceGridView gridView) {
-		mParent = gridView;
 	}
 
 	public int getCount() {
@@ -56,18 +49,14 @@ public class PhotosBaseAdapter extends BaseAdapter {
 
 	public View getView(int position, View view, ViewGroup parent) {
 		if (null == view) {
-			view = mLayoutInflater.inflate(R.layout.item_user_photo, parent, false);
+			view = mLayoutInflater.inflate(R.layout.item_selected_photo, parent, false);
 		}
 		
-		PhotoItemLayout layout = (PhotoItemLayout) view;
-		PhotupImageView iv = layout.getImageView();
+		
+		PhotupImageView iv = (PhotupImageView) view.findViewById(R.id.iv_photo);
 
 		long id = getItem(position);
 		iv.requestThumbnailId(id, mCache);
-
-		if (null != mParent) {
-			((Checkable) view).setChecked(mParent.isItemIdChecked(id));
-		}
 
 		return view;
 	}

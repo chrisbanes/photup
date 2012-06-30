@@ -4,5 +4,7 @@
     <string name="app_name">photup</string>
     <string name="tab_photos">Photos</string>
     <string name="tab_selected_photos">Selected</string>
+    
+    <string name="photo_caption_missing">No Caption</string>
 
 </resources>
