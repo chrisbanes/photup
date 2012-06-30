@@ -1,13 +1,14 @@
 package uk.co.senab.photup.fragments;
 
 import uk.co.senab.photup.PhotoSelectionController;
-import uk.co.senab.photup.PhotupApplication;
+import uk.co.senab.photup.PhotoViewerActivity;
 import uk.co.senab.photup.adapters.PhotosBaseAdapter;
 import uk.co.senab.photup.cache.BitmapLruCache;
 import uk.co.senab.photup.listeners.BitmapCacheProvider;
 import uk.co.senab.photup.listeners.OnUploadChangedListener;
 import uk.co.senab.photup.model.PhotoUpload;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,7 +37,7 @@ public class SelectedPhotosFragment extends SherlockListFragment implements
 
 	@Override
 	public void onAttach(Activity activity) {
-		mPhotoSelectionController = PhotupApplication.getApplication(activity).getPhotoSelectionController();
+		mPhotoSelectionController = PhotoSelectionController.getFromContext(activity);
 		mCache = ((BitmapCacheProvider) activity).getBitmapCache();
 		super.onAttach(activity);
 	}
@@ -68,7 +69,7 @@ public class SelectedPhotosFragment extends SherlockListFragment implements
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
-		// TODO Open Photo Viewer
+		startActivity(new Intent(getActivity(), PhotoViewerActivity.class));
 	}
 
 	@Override

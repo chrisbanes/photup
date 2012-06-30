@@ -72,8 +72,8 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 
 	@Override
 	public void onAttach(Activity activity) {
+		mPhotoSelectionController = PhotoSelectionController.getFromContext(activity);
 		mCache = ((BitmapCacheProvider) activity).getBitmapCache();
-		mPhotoSelectionController = PhotupApplication.getApplication(activity).getPhotoSelectionController();
 		super.onAttach(activity);
 	}
 
