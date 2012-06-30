@@ -6,6 +6,7 @@ import uk.co.senab.photup.adapters.PhotosBaseAdapter;
 import uk.co.senab.photup.cache.BitmapLruCache;
 import uk.co.senab.photup.listeners.BitmapCacheProvider;
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
+import uk.co.senab.photup.model.PhotoUpload;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -24,7 +25,7 @@ public class SelectedPhotosFragment extends SherlockListFragment implements
 	private PhotosBaseAdapter mAdapter;
 	private OnPhotoSelectionChangedListener mSelectionListener;
 
-	private Collection<Long> mSelectedIdsTemp;
+	private Collection<PhotoUpload> mTempPhotoUploads;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -40,9 +41,9 @@ public class SelectedPhotosFragment extends SherlockListFragment implements
 		mAdapter = new PhotosBaseAdapter(getActivity(), mCache);
 		setListAdapter(mAdapter);
 
-		if (null != mSelectedIdsTemp) {
-			setSelectedPhotos(mSelectedIdsTemp);
-			mSelectedIdsTemp = null;
+		if (null != mTempPhotoUploads) {
+			setSelectedUploads(mTempPhotoUploads);
+			mTempPhotoUploads = null;
 		}
 
 		return view;
@@ -71,11 +72,11 @@ public class SelectedPhotosFragment extends SherlockListFragment implements
 
 	}
 
-	public void setSelectedPhotos(Collection<Long> selectedIds) {
+	public void setSelectedUploads(Collection<PhotoUpload> selectedIds) {
 		if (null != mAdapter) {
 			mAdapter.setItems(selectedIds);
 		} else {
-			mSelectedIdsTemp = selectedIds;
+			mTempPhotoUploads = selectedIds;
 		}
 	}
 
@@ -83,7 +84,7 @@ public class SelectedPhotosFragment extends SherlockListFragment implements
 		for (int position : reverseSortedPositions) {
 			// Callback to listener
 			if (null != mSelectionListener) {
-				mSelectionListener.onPhotoChosen(listView.getItemIdAtPosition(position), false);
+				mSelectionListener.onPhotoChosen((PhotoUpload) listView.getItemAtPosition(position), false);
 			}
 		}
 	}

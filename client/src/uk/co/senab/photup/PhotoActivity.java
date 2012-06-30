@@ -7,7 +7,9 @@ import uk.co.senab.photup.fragments.SelectedPhotosFragment;
 import uk.co.senab.photup.fragments.UserPhotosFragment;
 import uk.co.senab.photup.listeners.BitmapCacheProvider;
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
+import uk.co.senab.photup.model.PhotoUpload;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -26,7 +28,7 @@ public class PhotoActivity extends SherlockFragmentActivity implements OnPhotoSe
 	static final int TAB_PHOTOS = 0;
 	static final int TAB_SELECTED = 1;
 
-	private HashSet<Long> mSelectedIds = new HashSet<Long>();
+	private HashSet<PhotoUpload> mPhotoUploads = new HashSet<PhotoUpload>();
 	private BitmapLruCache mCache;
 
 	private ViewAnimator mFlipper;
@@ -53,8 +55,9 @@ public class PhotoActivity extends SherlockFragmentActivity implements OnPhotoSe
 		mSlideInRightAnim = AnimationUtils.loadAnimation(this, R.anim.slide_in_right);
 		mSlideOutRightAnim = AnimationUtils.loadAnimation(this, R.anim.slide_out_right);
 
-		mUserPhotosFragment = (UserPhotosFragment) getSupportFragmentManager().findFragmentById(R.id.frag_photo_grid);
-		mSelectedPhotosFragment = (SelectedPhotosFragment) getSupportFragmentManager().findFragmentById(
+		FragmentManager fm = getSupportFragmentManager();
+		mUserPhotosFragment = (UserPhotosFragment) fm.findFragmentById(R.id.frag_photo_grid);
+		mSelectedPhotosFragment = (SelectedPhotosFragment) fm.findFragmentById(
 				R.id.frag_selected_photos);
 
 		ActionBar ab = getSupportActionBar();
@@ -77,21 +80,21 @@ public class PhotoActivity extends SherlockFragmentActivity implements OnPhotoSe
 		return super.onOptionsItemSelected(item);
 	}
 
-	public void onPhotoChosen(long id, boolean added) {
+	public void onPhotoChosen(PhotoUpload upload, boolean added) {
 		if (added) {
-			mSelectedIds.add(id);
+			mPhotoUploads.add(upload);
 		} else {
-			mSelectedIds.remove(id);
+			mPhotoUploads.remove(upload);
 		}
 
 		getSupportActionBar().getTabAt(1).setText(getSelectedTabTitle());
 
-		mUserPhotosFragment.setSelectedPhotos(mSelectedIds);
-		mSelectedPhotosFragment.setSelectedPhotos(mSelectedIds);
+		mUserPhotosFragment.setSelectedUploads(mPhotoUploads);
+		mSelectedPhotosFragment.setSelectedUploads(mPhotoUploads);
 	}
 
 	private CharSequence getSelectedTabTitle() {
-		return getString(R.string.tab_selected_photos, mSelectedIds.size());
+		return getString(R.string.tab_selected_photos, mPhotoUploads.size());
 	}
 
 	private void setCorrectAnimations(final int currentPosition) {

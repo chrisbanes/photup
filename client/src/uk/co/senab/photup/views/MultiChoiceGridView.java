@@ -1,8 +1,9 @@
 package uk.co.senab.photup.views;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.HashSet;
 
+import uk.co.senab.photup.model.PhotoUpload;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
@@ -14,10 +15,10 @@ import android.widget.GridView;
 public class MultiChoiceGridView extends GridView implements OnItemClickListener {
 
 	public static interface OnItemCheckedListener {
-		void onItemCheckChanged(View view, long id, boolean checked);
+		void onItemCheckChanged(View view, PhotoUpload upload, boolean checked);
 	}
 
-	private final HashMap<Long, Boolean> mCheckedMap = new HashMap<Long, Boolean>();
+	private final HashSet<PhotoUpload> mCheckedItems = new HashSet<PhotoUpload>();
 
 	private OnItemCheckedListener mCheckedListener;
 
@@ -27,40 +28,31 @@ public class MultiChoiceGridView extends GridView implements OnItemClickListener
 	}
 
 	public void onItemClick(AdapterView<?> gridView, View view, int position, long id) {
-		setItemChecked(view, id, !isItemIdChecked(id));
+		PhotoUpload object = (PhotoUpload) view.getTag();
+		setItemChecked(view, object, !isPhotoUploadChecked(object));
 	}
 
-	public void setItemChecked(View view, long id, boolean checked) {
+	public void setItemChecked(View view, final PhotoUpload item, final boolean checked) {
 		if (checked) {
-			mCheckedMap.put(id, true);
+			mCheckedItems.add(item);
 		} else {
-			mCheckedMap.remove(id);
+			mCheckedItems.remove(item);
 		}
 
 		((Checkable) view).setChecked(checked);
 
 		if (null != mCheckedListener) {
-			mCheckedListener.onItemCheckChanged(view, id, checked);
+			mCheckedListener.onItemCheckChanged(view, item, checked);
 		}
 	}
 
-	public void setCheckedItems(Collection<Long> selectedIds) {
-		mCheckedMap.clear();
-		for (Long id : selectedIds) {
-			mCheckedMap.put(id, true);
-		}
+	public void setCheckedItems(Collection<PhotoUpload> items) {
+		mCheckedItems.clear();
+		mCheckedItems.addAll(items);
 	}
 
-	public Collection<Long> getSelectedIds() {
-		return mCheckedMap.keySet();
-	}
-
-	public boolean isItemIdChecked(long id) {
-		Boolean value = mCheckedMap.get(id);
-		if (null != value) {
-			return value.booleanValue();
-		}
-		return false;
+	public boolean isPhotoUploadChecked(PhotoUpload item) {
+		return mCheckedItems.contains(item);
 	}
 
 	public void setOnItemCheckedListener(OnItemCheckedListener l) {

@@ -2,14 +2,13 @@ package uk.co.senab.photup.fragments;
 
 import java.util.Collection;
 
-import com.actionbarsherlock.app.SherlockFragment;
-
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.Utils;
 import uk.co.senab.photup.adapters.PhotosCursorAdapter;
 import uk.co.senab.photup.cache.BitmapLruCache;
 import uk.co.senab.photup.listeners.BitmapCacheProvider;
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
+import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.views.MultiChoiceGridView;
 import uk.co.senab.photup.views.MultiChoiceGridView.OnItemCheckedListener;
 import uk.co.senab.photup.views.PhotupImageView;
@@ -21,13 +20,14 @@ import android.provider.MediaStore.Images.ImageColumns;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.FloatMath;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.AbsoluteLayout;
+
+import com.actionbarsherlock.app.SherlockFragment;
 
 @SuppressWarnings("deprecation")
 public class UserPhotosFragment extends SherlockFragment implements LoaderManager.LoaderCallbacks<Cursor>,
@@ -63,7 +63,7 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 
 	private MultiChoiceGridView mPhotoGrid;
 	private PhotosCursorAdapter mAdapter;
-	private Collection<Long> mSelectedIdsTemp;
+	private Collection<PhotoUpload> mTempPhotoUploads;
 
 	private AbsoluteLayout mAnimationLayout;
 
@@ -101,19 +101,19 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 		mPhotoGrid.setOnItemCheckedListener(this);
 		mAdapter.setParentView(mPhotoGrid);
 
-		if (null != mSelectedIdsTemp) {
-			setSelectedPhotos(mSelectedIdsTemp);
-			mSelectedIdsTemp = null;
+		if (null != mTempPhotoUploads) {
+			setSelectedUploads(mTempPhotoUploads);
+			mTempPhotoUploads = null;
 		}
 
 		mAnimationLayout = (AbsoluteLayout) view.findViewById(R.id.al_animation);
 		return view;
 	}
 
-	public void onItemCheckChanged(View view, long id, boolean checked) {
+	public void onItemCheckChanged(View view, PhotoUpload upload, boolean checked) {
 		// Callback to listener
 		if (null != mSelectionListener) {
-			mSelectionListener.onPhotoChosen(id, checked);
+			mSelectionListener.onPhotoChosen(upload, checked);
 		}
 
 		if (checked) {
@@ -129,12 +129,12 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 		mAdapter.swapCursor(data);
 	}
 
-	public void setSelectedPhotos(Collection<Long> selectedIds) {
+	public void setSelectedUploads(Collection<PhotoUpload> selectedIds) {
 		if (null != mPhotoGrid) {
 			mPhotoGrid.setCheckedItems(selectedIds);
 			mAdapter.notifyDataSetChanged();
 		} else {
-			mSelectedIdsTemp = selectedIds;
+			mTempPhotoUploads = selectedIds;
 		}
 	}
 

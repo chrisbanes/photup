@@ -5,7 +5,7 @@ import java.lang.ref.WeakReference;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.cache.BitmapLruCache;
 import uk.co.senab.photup.cache.CacheableBitmapWrapper;
-import android.content.ContentResolver;
+import uk.co.senab.photup.model.PhotoUpload;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -13,21 +13,18 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
-import android.provider.MediaStore.Images.Thumbnails;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
 public class PhotupImageView extends ImageView {
 
-	private static class PhotoTask extends AsyncTask<Long, Void, CacheableBitmapWrapper> {
+	private static class PhotoTask extends AsyncTask<PhotoUpload, Void, CacheableBitmapWrapper> {
 
-		private final ContentResolver mCr;
 		private final WeakReference<PhotupImageView> mImageView;
 		private final BitmapLruCache mCache;
 
-		public PhotoTask(ContentResolver cr, PhotupImageView imageView, BitmapLruCache cache) {
+		public PhotoTask(PhotupImageView imageView, BitmapLruCache cache) {
 			mImageView = new WeakReference<PhotupImageView>(imageView);
-			mCr = cr;
 			mCache = cache;
 		}
 
@@ -42,15 +39,17 @@ public class PhotupImageView extends ImageView {
 		}
 
 		@Override
-		protected CacheableBitmapWrapper doInBackground(Long... params) {
-			long id = params[0];
-
+		protected CacheableBitmapWrapper doInBackground(PhotoUpload... params) {
+			final PhotoUpload upload = params[0];
 			CacheableBitmapWrapper wrapper = null;
 
-			Bitmap thumb = Thumbnails.getThumbnail(mCr, id, Thumbnails.MICRO_KIND, null);
-			if (null != thumb) {
-				wrapper = new CacheableBitmapWrapper(thumb);
-				mCache.put(id, wrapper);
+			PhotupImageView iv = mImageView.get();
+			if (null != iv) {
+				Bitmap thumb = upload.getThumbnail(iv.getContext());
+				if (null != thumb) {
+					wrapper = new CacheableBitmapWrapper(thumb);
+					mCache.put(upload, wrapper);
+				}
 			}
 
 			return wrapper;
@@ -78,28 +77,28 @@ public class PhotupImageView extends ImageView {
 		super(context, attrs);
 	}
 
-	public void requestThumbnailId(final long id, final BitmapLruCache cache) {
+	public void requestThumbnailId(final PhotoUpload upload, final BitmapLruCache cache) {
 		if (null != mCurrentTask) {
 			mCurrentTask.cancel(false);
 		}
 
-		final CacheableBitmapWrapper cached = cache.get(id);
+		final CacheableBitmapWrapper cached = cache.get(upload);
 		if (null != cached && cached.hasValidBitmap()) {
 			setImageCachedBitmap(cached);
 		} else {
 			// Means we have an object with an invalid bitmap so remove it
 			if (null != cached) {
-				cache.remove(id);
+				cache.remove(upload);
 			}
 
-			PhotupApplication app = PhotupApplication.getApplication(getContext());
-			mCurrentTask = new PhotoTask(app.getContentResolver(), this, cache);
+			mCurrentTask = new PhotoTask(this, cache);
 
 			// FIXME Need to fix this for less than v11
 			if (VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB) {
-				mCurrentTask.executeOnExecutor(app.getExecutorService(), id);
+				PhotupApplication app = PhotupApplication.getApplication(getContext());
+				mCurrentTask.executeOnExecutor(app.getExecutorService(), upload);
 			} else {
-				mCurrentTask.execute(id);
+				mCurrentTask.execute(upload);
 			}
 		}
 	}

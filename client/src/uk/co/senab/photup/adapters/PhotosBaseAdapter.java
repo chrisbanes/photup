@@ -6,7 +6,7 @@ import java.util.List;
 
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.cache.BitmapLruCache;
-import uk.co.senab.photup.views.PhotoItemLayout;
+import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.views.PhotupImageView;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -16,7 +16,7 @@ import android.widget.BaseAdapter;
 
 public class PhotosBaseAdapter extends BaseAdapter {
 
-	private List<Long> mItems;
+	private List<PhotoUpload> mItems;
 
 	private final BitmapLruCache mCache;
 	private final Context mContext;
@@ -25,7 +25,7 @@ public class PhotosBaseAdapter extends BaseAdapter {
 	public PhotosBaseAdapter(Context context, BitmapLruCache cache) {
 		mContext = context;
 		mCache = cache;
-		mItems = new ArrayList<Long>();
+		mItems = new ArrayList<PhotoUpload>();
 		mLayoutInflater = LayoutInflater.from(mContext);
 	}
 
@@ -34,14 +34,14 @@ public class PhotosBaseAdapter extends BaseAdapter {
 	}
 
 	public long getItemId(int position) {
-		return getItem(position);
+		return position;
 	}
 
-	public Long getItem(int position) {
+	public PhotoUpload getItem(int position) {
 		return mItems.get(position);
 	}
-	
-	public void setItems(Collection<Long> items) {
+
+	public void setItems(Collection<PhotoUpload> items) {
 		mItems.clear();
 		mItems.addAll(items);
 		notifyDataSetChanged();
@@ -51,16 +51,13 @@ public class PhotosBaseAdapter extends BaseAdapter {
 		if (null == view) {
 			view = mLayoutInflater.inflate(R.layout.item_selected_photo, parent, false);
 		}
-		
-		
-		PhotupImageView iv = (PhotupImageView) view.findViewById(R.id.iv_photo);
 
-		long id = getItem(position);
-		iv.requestThumbnailId(id, mCache);
+		PhotupImageView iv = (PhotupImageView) view.findViewById(R.id.iv_photo);
+		iv.requestThumbnailId(getItem(position), mCache);
 
 		return view;
 	}
-	
+
 	public void remove(int position) {
 		mItems.remove(position);
 	}

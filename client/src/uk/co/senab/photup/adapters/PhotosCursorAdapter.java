@@ -1,6 +1,8 @@
 package uk.co.senab.photup.adapters;
 
 import uk.co.senab.photup.cache.BitmapLruCache;
+import uk.co.senab.photup.model.MediaStorePhotoUpload;
+import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.views.MultiChoiceGridView;
 import uk.co.senab.photup.views.PhotoItemLayout;
 import uk.co.senab.photup.views.PhotupImageView;
@@ -31,10 +33,13 @@ public class PhotosCursorAdapter extends ResourceCursorAdapter {
 		PhotupImageView iv = layout.getImageView();
 
 		long id = cursor.getInt(cursor.getColumnIndexOrThrow(ImageColumns._ID));
-		iv.requestThumbnailId(id, mCache);
+		final PhotoUpload upload = new MediaStorePhotoUpload(id);
+		iv.requestThumbnailId(upload, mCache);
+		
+		view.setTag(upload);
 
 		if (null != mParent) {
-			((Checkable) view).setChecked(mParent.isItemIdChecked(id));
+			((Checkable) view).setChecked(mParent.isPhotoUploadChecked(upload));
 		}
 	}
 
