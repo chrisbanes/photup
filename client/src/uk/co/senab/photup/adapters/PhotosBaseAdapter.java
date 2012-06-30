@@ -60,5 +60,9 @@ public class PhotosBaseAdapter extends BaseAdapter {
 
 		return view;
 	}
+	
+	public void remove(int position) {
+		mItems.remove(position);
+	}
 
 }

@@ -15,8 +15,10 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
+import com.example.android.swipedismiss.SwipeDismissListViewTouchListener;
 
-public class SelectedPhotosFragment extends SherlockListFragment implements PhotoListDisplayer {
+public class SelectedPhotosFragment extends SherlockListFragment implements PhotoListDisplayer,
+		SwipeDismissListViewTouchListener.OnDismissCallback {
 
 	protected BitmapLruCache mCache;
 
@@ -48,6 +50,17 @@ public class SelectedPhotosFragment extends SherlockListFragment implements Phot
 	}
 
 	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+
+		ListView listView = getListView();
+
+		SwipeDismissListViewTouchListener touchListener = new SwipeDismissListViewTouchListener(listView, this);
+		listView.setOnTouchListener(touchListener);
+		listView.setOnScrollListener(touchListener.makeScrollListener());
+	}
+
+	@Override
 	public void onPause() {
 		super.onPause();
 
@@ -57,10 +70,6 @@ public class SelectedPhotosFragment extends SherlockListFragment implements Phot
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 
-		// Callback to listener
-		if (null != mSelectionListener) {
-			mSelectionListener.onPhotoChosen(id, false);
-		}
 	}
 
 	public void setSelectedPhotos(Collection<Long> selectedIds) {
@@ -69,6 +78,19 @@ public class SelectedPhotosFragment extends SherlockListFragment implements Phot
 		} else {
 			mSelectedIdsTemp = selectedIds;
 		}
+	}
+
+	public void onDismiss(ListView listView, int[] reverseSortedPositions) {
+		for (int position : reverseSortedPositions) {
+			// Callback to listener
+			if (null != mSelectionListener) {
+				mSelectionListener.onPhotoChosen(listView.getItemIdAtPosition(position), false);
+			}
+
+			mAdapter.remove(position);
+		}
+		mAdapter.notifyDataSetChanged();
+
 	}
 
 }

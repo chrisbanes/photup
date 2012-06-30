@@ -66,11 +66,6 @@ public class PhotoActivity extends SherlockFragmentActivity implements OnPhotoSe
 		}
 
 		supportInvalidateOptionsMenu();
-
-		Fragment currentFrag = getSupportFragmentManager().findFragmentById(R.id.fl_photo_fragments);
-		if (currentFrag instanceof SelectedPhotosFragment) {
-			((SelectedPhotosFragment) currentFrag).setSelectedPhotos(mSelectedIds);
-		}
 	}
 
 	@Override
