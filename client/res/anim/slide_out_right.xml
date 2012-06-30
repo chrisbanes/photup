@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<set xmlns:android="http://schemas.android.com/apk/res/android" >
-
-    <translate
-        android:duration="@android:integer/config_mediumAnimTime"
-        android:fromXDelta="0"
-        android:toXDelta="100%p" />
-
-    <alpha
-        android:duration="@android:integer/config_mediumAnimTime"
-        android:fromAlpha="1.0"
-        android:toAlpha="0.0" />
-
-</set>
+<translate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="@android:integer/config_mediumAnimTime"
+    android:fromXDelta="0"
+    android:interpolator="@android:anim/decelerate_interpolator"
+    android:toXDelta="100%p" />
