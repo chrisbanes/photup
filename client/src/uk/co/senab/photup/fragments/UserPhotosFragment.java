@@ -1,16 +1,14 @@
 package uk.co.senab.photup.fragments;
 
-import java.util.Collection;
-
+import uk.co.senab.photup.PhotoSelectionController;
+import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.Utils;
 import uk.co.senab.photup.adapters.PhotosCursorAdapter;
 import uk.co.senab.photup.cache.BitmapLruCache;
 import uk.co.senab.photup.listeners.BitmapCacheProvider;
-import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
+import uk.co.senab.photup.listeners.OnUploadChangedListener;
 import uk.co.senab.photup.model.PhotoUpload;
-import uk.co.senab.photup.views.MultiChoiceGridView;
-import uk.co.senab.photup.views.MultiChoiceGridView.OnItemCheckedListener;
 import uk.co.senab.photup.views.PhotupImageView;
 import android.app.Activity;
 import android.database.Cursor;
@@ -26,14 +24,18 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.AbsoluteLayout;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Checkable;
+import android.widget.GridView;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
 @SuppressWarnings("deprecation")
 public class UserPhotosFragment extends SherlockFragment implements LoaderManager.LoaderCallbacks<Cursor>,
-		OnItemCheckedListener {
+		OnItemClickListener, OnUploadChangedListener {
 
-	private static class ScaleAnimationListener implements AnimationListener {
+	static class ScaleAnimationListener implements AnimationListener {
 
 		private final PhotupImageView mAnimatedView;
 
@@ -59,20 +61,19 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 
 	static final int LOADER_USER_PHOTOS = 0x01;
 
-	private BitmapLruCache mCache;
-
-	private MultiChoiceGridView mPhotoGrid;
 	private PhotosCursorAdapter mAdapter;
-	private Collection<PhotoUpload> mTempPhotoUploads;
 
 	private AbsoluteLayout mAnimationLayout;
+	private BitmapLruCache mCache;
 
-	private OnPhotoSelectionChangedListener mSelectionListener;
+	private GridView mPhotoGrid;
+
+	private PhotoSelectionController mPhotoSelectionController;
 
 	@Override
 	public void onAttach(Activity activity) {
-		mSelectionListener = (OnPhotoSelectionChangedListener) activity;
 		mCache = ((BitmapCacheProvider) activity).getBitmapCache();
+		mPhotoSelectionController = PhotupApplication.getApplication(activity).getPhotoSelectionController();
 		super.onAttach(activity);
 	}
 
@@ -81,6 +82,8 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 
 		getLoaderManager().initLoader(LOADER_USER_PHOTOS, null, this);
 		mAdapter = new PhotosCursorAdapter(getActivity(), mCache, R.layout.item_user_photo, null, true);
+
+		mPhotoSelectionController.addPhotoSelectionListener(this);
 	}
 
 	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
@@ -96,29 +99,32 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_user_photos, null);
 
-		mPhotoGrid = (MultiChoiceGridView) view.findViewById(R.id.gv_users_photos);
+		mPhotoGrid = (GridView) view.findViewById(R.id.gv_users_photos);
 		mPhotoGrid.setAdapter(mAdapter);
-		mPhotoGrid.setOnItemCheckedListener(this);
-		mAdapter.setParentView(mPhotoGrid);
-
-		if (null != mTempPhotoUploads) {
-			setSelectedUploads(mTempPhotoUploads);
-			mTempPhotoUploads = null;
-		}
+		mPhotoGrid.setOnItemClickListener(this);
 
 		mAnimationLayout = (AbsoluteLayout) view.findViewById(R.id.al_animation);
 		return view;
 	}
 
-	public void onItemCheckChanged(View view, PhotoUpload upload, boolean checked) {
-		// Callback to listener
-		if (null != mSelectionListener) {
-			mSelectionListener.onPhotoChosen(upload, checked);
-		}
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		mPhotoSelectionController.removePhotoSelectionListener(this);
+	}
 
-		if (checked) {
+	public void onItemClick(AdapterView<?> gridView, View view, int position, long id) {
+		PhotoUpload object = (PhotoUpload) view.getTag();
+		Checkable checkableView = (Checkable) view;
+
+		if (checkableView.isChecked()) {
+			mPhotoSelectionController.removePhotoUpload(object);
+		} else {
+			mPhotoSelectionController.addPhotoUpload(object);
 			animateViewToButton(view);
 		}
+
+		checkableView.toggle();
 	}
 
 	public void onLoaderReset(Loader<Cursor> loader) {
@@ -129,13 +135,8 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 		mAdapter.swapCursor(data);
 	}
 
-	public void setSelectedUploads(Collection<PhotoUpload> selectedIds) {
-		if (null != mPhotoGrid) {
-			mPhotoGrid.setCheckedItems(selectedIds);
-			mAdapter.notifyDataSetChanged();
-		} else {
-			mTempPhotoUploads = selectedIds;
-		}
+	public void onUploadChanged(PhotoUpload id, boolean added) {
+		mAdapter.notifyDataSetChanged();
 	}
 
 	private void animateViewToButton(View view) {

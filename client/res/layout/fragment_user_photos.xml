@@ -4,7 +4,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
-    <uk.co.senab.photup.views.MultiChoiceGridView
+    <GridView
         android:id="@+id/gv_users_photos"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

@@ -1,9 +1,9 @@
 package uk.co.senab.photup.adapters;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
+import uk.co.senab.photup.PhotoSelectionController;
+import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.cache.BitmapLruCache;
 import uk.co.senab.photup.model.PhotoUpload;
@@ -21,16 +21,17 @@ public class PhotosBaseAdapter extends BaseAdapter {
 	private final BitmapLruCache mCache;
 	private final Context mContext;
 	private final LayoutInflater mLayoutInflater;
+	private final PhotoSelectionController mController;
 
 	public PhotosBaseAdapter(Context context, BitmapLruCache cache) {
 		mContext = context;
 		mCache = cache;
-		mItems = new ArrayList<PhotoUpload>();
 		mLayoutInflater = LayoutInflater.from(mContext);
+		mController = PhotupApplication.getApplication(context).getPhotoSelectionController();
 	}
 
 	public int getCount() {
-		return mItems.size();
+		return null != mItems ? mItems.size() : 0;
 	}
 
 	public long getItemId(int position) {
@@ -39,12 +40,6 @@ public class PhotosBaseAdapter extends BaseAdapter {
 
 	public PhotoUpload getItem(int position) {
 		return mItems.get(position);
-	}
-
-	public void setItems(Collection<PhotoUpload> items) {
-		mItems.clear();
-		mItems.addAll(items);
-		notifyDataSetChanged();
 	}
 
 	public View getView(int position, View view, ViewGroup parent) {
@@ -57,9 +52,11 @@ public class PhotosBaseAdapter extends BaseAdapter {
 
 		return view;
 	}
-
-	public void remove(int position) {
-		mItems.remove(position);
+	
+	@Override
+	public void notifyDataSetChanged() {
+		mItems = mController.getSelectedPhotoUploads();
+		super.notifyDataSetChanged();
 	}
 
 }

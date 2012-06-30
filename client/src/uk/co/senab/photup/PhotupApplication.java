@@ -15,15 +15,12 @@ public class PhotupApplication extends Application {
 
 	private ExecutorService mExecutor;
 
-	@Override
-	public void onCreate() {
-		super.onCreate();
-	}
-	
+	private final PhotoSelectionController mPhotoController = new PhotoSelectionController();
+
 	public static PhotupApplication getApplication(Context context) {
 		return (PhotupApplication) context.getApplicationContext();
 	}
-	
+
 	public ExecutorService getExecutorService() {
 		if (null == mExecutor) {
 			mExecutor = createExecutor();
@@ -31,8 +28,13 @@ public class PhotupApplication extends Application {
 		return mExecutor;
 	}
 
+	public PhotoSelectionController getPhotoSelectionController() {
+		return mPhotoController;
+	}
+
 	private static ExecutorService createExecutor() {
 		return new ThreadPoolExecutor(EXECUTOR_CORE_POOL_SIZE, EXECUTOR_MAX_POOL_SIZE, 1L, TimeUnit.SECONDS,
 				new LinkedBlockingQueue<Runnable>());
 	}
+
 }

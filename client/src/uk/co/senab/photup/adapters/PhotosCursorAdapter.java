@@ -1,9 +1,10 @@
 package uk.co.senab.photup.adapters;
 
+import uk.co.senab.photup.PhotoSelectionController;
+import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.cache.BitmapLruCache;
 import uk.co.senab.photup.model.MediaStorePhotoUpload;
 import uk.co.senab.photup.model.PhotoUpload;
-import uk.co.senab.photup.views.MultiChoiceGridView;
 import uk.co.senab.photup.views.PhotoItemLayout;
 import uk.co.senab.photup.views.PhotupImageView;
 import android.content.Context;
@@ -16,15 +17,12 @@ import android.widget.Checkable;
 public class PhotosCursorAdapter extends ResourceCursorAdapter {
 
 	private final BitmapLruCache mCache;
-	private MultiChoiceGridView mParent;
+	private final PhotoSelectionController mController;
 
 	public PhotosCursorAdapter(Context context, BitmapLruCache cache, int layout, Cursor c, boolean autoRequery) {
 		super(context, layout, c, autoRequery);
 		mCache = cache;
-	}
-
-	public void setParentView(MultiChoiceGridView gridView) {
-		mParent = gridView;
+		mController = PhotupApplication.getApplication(context).getPhotoSelectionController();
 	}
 
 	@Override
@@ -35,11 +33,11 @@ public class PhotosCursorAdapter extends ResourceCursorAdapter {
 		long id = cursor.getInt(cursor.getColumnIndexOrThrow(ImageColumns._ID));
 		final PhotoUpload upload = new MediaStorePhotoUpload(id);
 		iv.requestThumbnailId(upload, mCache);
-		
+
 		view.setTag(upload);
 
-		if (null != mParent) {
-			((Checkable) view).setChecked(mParent.isPhotoUploadChecked(upload));
+		if (null != mController) {
+			((Checkable) view).setChecked(mController.isPhotoUploadSelected(upload));
 		}
 	}
 

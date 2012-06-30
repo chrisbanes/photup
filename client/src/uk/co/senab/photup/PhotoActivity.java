@@ -1,15 +1,10 @@
 package uk.co.senab.photup;
 
-import java.util.HashSet;
-
 import uk.co.senab.photup.cache.BitmapLruCache;
-import uk.co.senab.photup.fragments.SelectedPhotosFragment;
-import uk.co.senab.photup.fragments.UserPhotosFragment;
 import uk.co.senab.photup.listeners.BitmapCacheProvider;
-import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
+import uk.co.senab.photup.listeners.OnUploadChangedListener;
 import uk.co.senab.photup.model.PhotoUpload;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -22,19 +17,16 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-public class PhotoActivity extends SherlockFragmentActivity implements OnPhotoSelectionChangedListener,
-		BitmapCacheProvider, TabListener {
+public class PhotoActivity extends SherlockFragmentActivity implements OnUploadChangedListener, BitmapCacheProvider,
+		TabListener {
 
 	static final int TAB_PHOTOS = 0;
 	static final int TAB_SELECTED = 1;
 
-	private HashSet<PhotoUpload> mPhotoUploads = new HashSet<PhotoUpload>();
 	private BitmapLruCache mCache;
-
 	private ViewAnimator mFlipper;
 
-	private UserPhotosFragment mUserPhotosFragment;
-	private SelectedPhotosFragment mSelectedPhotosFragment;
+	private PhotoSelectionController mPhotoController;
 
 	private Animation mSlideInLeftAnim, mSlideOutLeftAnim;
 	private Animation mSlideInRightAnim, mSlideOutRightAnim;
@@ -46,7 +38,10 @@ public class PhotoActivity extends SherlockFragmentActivity implements OnPhotoSe
 		mCache = new BitmapLruCache(this);
 
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
+		setContentView(R.layout.activity_choose_photos);
+
+		mPhotoController = PhotoSelectionController.getFromContext(this);
+		mPhotoController.addPhotoSelectionListener(this);
 
 		mFlipper = (ViewAnimator) findViewById(R.id.vs_frag_flipper);
 
@@ -54,11 +49,6 @@ public class PhotoActivity extends SherlockFragmentActivity implements OnPhotoSe
 		mSlideOutLeftAnim = AnimationUtils.loadAnimation(this, R.anim.slide_out_left);
 		mSlideInRightAnim = AnimationUtils.loadAnimation(this, R.anim.slide_in_right);
 		mSlideOutRightAnim = AnimationUtils.loadAnimation(this, R.anim.slide_out_right);
-
-		FragmentManager fm = getSupportFragmentManager();
-		mUserPhotosFragment = (UserPhotosFragment) fm.findFragmentById(R.id.frag_photo_grid);
-		mSelectedPhotosFragment = (SelectedPhotosFragment) fm.findFragmentById(
-				R.id.frag_selected_photos);
 
 		ActionBar ab = getSupportActionBar();
 		ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -80,21 +70,12 @@ public class PhotoActivity extends SherlockFragmentActivity implements OnPhotoSe
 		return super.onOptionsItemSelected(item);
 	}
 
-	public void onPhotoChosen(PhotoUpload upload, boolean added) {
-		if (added) {
-			mPhotoUploads.add(upload);
-		} else {
-			mPhotoUploads.remove(upload);
-		}
-
+	public void onUploadChanged(PhotoUpload upload, boolean added) {
 		getSupportActionBar().getTabAt(1).setText(getSelectedTabTitle());
-
-		mUserPhotosFragment.setSelectedUploads(mPhotoUploads);
-		mSelectedPhotosFragment.setSelectedUploads(mPhotoUploads);
 	}
 
 	private CharSequence getSelectedTabTitle() {
-		return getString(R.string.tab_selected_photos, mPhotoUploads.size());
+		return getString(R.string.tab_selected_photos, mPhotoController.getSelectedPhotoUploadsSize());
 	}
 
 	private void setCorrectAnimations(final int currentPosition) {
@@ -110,7 +91,7 @@ public class PhotoActivity extends SherlockFragmentActivity implements OnPhotoSe
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-
+		mPhotoController.removePhotoSelectionListener(this);
 		mCache.evictAll();
 	}
 
