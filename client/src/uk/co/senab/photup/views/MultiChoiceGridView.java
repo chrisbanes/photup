@@ -45,6 +45,7 @@ public class MultiChoiceGridView extends GridView implements OnItemClickListener
 	}
 
 	public void setCheckedItems(Collection<Long> selectedIds) {
+		mCheckedMap.clear();
 		for (Long id : selectedIds) {
 			mCheckedMap.put(id, true);
 		}

@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/vs_frag_flipper"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:layout_height="fill_parent">
 
-    <FrameLayout
-        android:id="@+id/fl_photo_fragments"
-        android:layout_height="fill_parent"
-        android:layout_width="fill_parent" />
+    <fragment
+        android:id="@+id/frag_photo_grid"
+        android:name="uk.co.senab.photup.fragments.UserPhotosFragment"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
 
-</LinearLayout>
+    <fragment
+        android:id="@+id/frag_selected_photos"
+        android:name="uk.co.senab.photup.fragments.SelectedPhotosFragment"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+
+</ViewFlipper>

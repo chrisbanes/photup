@@ -11,6 +11,8 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.provider.MediaStore.Images.Thumbnails;
 import android.util.AttributeSet;
 import android.widget.ImageView;
@@ -89,7 +91,12 @@ public class PhotupImageView extends ImageView {
 			mCurrentTask = new PhotoTask(app.getContentResolver(), this, cache);
 
 			// FIXME Need to fix this for less than v11
-			mCurrentTask.executeOnExecutor(app.getExecutorService(), id);
+			if (VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB) {
+				mCurrentTask.executeOnExecutor(app.getExecutorService(), id);
+			} else {
+				mCurrentTask.execute(id);
+			}
+
 		}
 	}
 

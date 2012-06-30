@@ -6,7 +6,6 @@ import uk.co.senab.photup.adapters.PhotosBaseAdapter;
 import uk.co.senab.photup.cache.BitmapLruCache;
 import uk.co.senab.photup.listeners.BitmapCacheProvider;
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
-import uk.co.senab.photup.listeners.PhotoListDisplayer;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,7 +16,7 @@ import android.widget.ListView;
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.example.android.swipedismiss.SwipeDismissListViewTouchListener;
 
-public class SelectedPhotosFragment extends SherlockListFragment implements PhotoListDisplayer,
+public class SelectedPhotosFragment extends SherlockListFragment implements
 		SwipeDismissListViewTouchListener.OnDismissCallback {
 
 	protected BitmapLruCache mCache;
@@ -86,11 +85,7 @@ public class SelectedPhotosFragment extends SherlockListFragment implements Phot
 			if (null != mSelectionListener) {
 				mSelectionListener.onPhotoChosen(listView.getItemIdAtPosition(position), false);
 			}
-
-			mAdapter.remove(position);
 		}
-		mAdapter.notifyDataSetChanged();
-
 	}
 
 }
