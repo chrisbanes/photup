@@ -3,8 +3,6 @@ package uk.co.senab.photup.fragments;
 import uk.co.senab.photup.PhotoSelectionController;
 import uk.co.senab.photup.PhotoViewerActivity;
 import uk.co.senab.photup.adapters.PhotosBaseAdapter;
-import uk.co.senab.photup.cache.BitmapLruCache;
-import uk.co.senab.photup.listeners.BitmapCacheProvider;
 import uk.co.senab.photup.listeners.OnUploadChangedListener;
 import uk.co.senab.photup.model.PhotoUpload;
 import android.app.Activity;
@@ -21,7 +19,6 @@ import com.example.android.swipedismiss.SwipeDismissListViewTouchListener;
 public class SelectedPhotosFragment extends SherlockListFragment implements
 		SwipeDismissListViewTouchListener.OnDismissCallback, OnUploadChangedListener {
 
-	private BitmapLruCache mCache;
 	private PhotosBaseAdapter mAdapter;
 	private PhotoSelectionController mPhotoSelectionController;
 
@@ -38,7 +35,6 @@ public class SelectedPhotosFragment extends SherlockListFragment implements
 	@Override
 	public void onAttach(Activity activity) {
 		mPhotoSelectionController = PhotoSelectionController.getFromContext(activity);
-		mCache = ((BitmapCacheProvider) activity).getBitmapCache();
 		super.onAttach(activity);
 	}
 
@@ -50,7 +46,7 @@ public class SelectedPhotosFragment extends SherlockListFragment implements
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = super.onCreateView(inflater, container, savedInstanceState);
-		mAdapter = new PhotosBaseAdapter(getActivity(), mCache);
+		mAdapter = new PhotosBaseAdapter(getActivity());
 		setListAdapter(mAdapter);
 		return view;
 	}
@@ -69,7 +65,9 @@ public class SelectedPhotosFragment extends SherlockListFragment implements
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
-		startActivity(new Intent(getActivity(), PhotoViewerActivity.class));
+		Intent intent = new Intent(getActivity(), PhotoViewerActivity.class);
+		intent.putExtra(PhotoViewerActivity.EXTRA_POSITION, position);
+		startActivity(intent);
 	}
 
 	@Override

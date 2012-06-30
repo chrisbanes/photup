@@ -1,12 +1,9 @@
 package uk.co.senab.photup.fragments;
 
 import uk.co.senab.photup.PhotoSelectionController;
-import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.Utils;
 import uk.co.senab.photup.adapters.PhotosCursorAdapter;
-import uk.co.senab.photup.cache.BitmapLruCache;
-import uk.co.senab.photup.listeners.BitmapCacheProvider;
 import uk.co.senab.photup.listeners.OnUploadChangedListener;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.views.PhotupImageView;
@@ -64,8 +61,6 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 	private PhotosCursorAdapter mAdapter;
 
 	private AbsoluteLayout mAnimationLayout;
-	private BitmapLruCache mCache;
-
 	private GridView mPhotoGrid;
 
 	private PhotoSelectionController mPhotoSelectionController;
@@ -73,7 +68,6 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 	@Override
 	public void onAttach(Activity activity) {
 		mPhotoSelectionController = PhotoSelectionController.getFromContext(activity);
-		mCache = ((BitmapCacheProvider) activity).getBitmapCache();
 		super.onAttach(activity);
 	}
 
@@ -81,7 +75,7 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 		super.onCreate(savedInstanceState);
 
 		getLoaderManager().initLoader(LOADER_USER_PHOTOS, null, this);
-		mAdapter = new PhotosCursorAdapter(getActivity(), mCache, R.layout.item_user_photo, null, true);
+		mAdapter = new PhotosCursorAdapter(getActivity(), R.layout.item_user_photo, null, true);
 
 		mPhotoSelectionController.addPhotoSelectionListener(this);
 	}

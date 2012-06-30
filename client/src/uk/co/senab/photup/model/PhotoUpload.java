@@ -9,6 +9,16 @@ public abstract class PhotoUpload {
 	public abstract Uri getOriginalPhotoUri();
 
 	public abstract Bitmap getThumbnail(Context context);
+	
+	public abstract Bitmap getOriginal(Context context);
+	
+	public String getThumbnailKey() {
+		return "thumb_" + getOriginalPhotoUri();
+	}
+	
+	public String getOriginalKey() {
+		return "full_" + getOriginalPhotoUri();
+	}
 
 	@Override
 	public int hashCode() {

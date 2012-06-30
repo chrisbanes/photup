@@ -1,7 +1,5 @@
 package uk.co.senab.photup;
 
-import uk.co.senab.photup.cache.BitmapLruCache;
-import uk.co.senab.photup.listeners.BitmapCacheProvider;
 import uk.co.senab.photup.listeners.OnUploadChangedListener;
 import uk.co.senab.photup.model.PhotoUpload;
 import android.os.Bundle;
@@ -17,13 +15,11 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-public class PhotoActivity extends SherlockFragmentActivity implements OnUploadChangedListener, BitmapCacheProvider,
-		TabListener {
+public class PhotoActivity extends SherlockFragmentActivity implements OnUploadChangedListener, TabListener {
 
 	static final int TAB_PHOTOS = 0;
 	static final int TAB_SELECTED = 1;
 
-	private BitmapLruCache mCache;
 	private ViewAnimator mFlipper;
 
 	private PhotoSelectionController mPhotoController;
@@ -34,9 +30,6 @@ public class PhotoActivity extends SherlockFragmentActivity implements OnUploadC
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		// Needs to be done before super.onCreate
-		mCache = new BitmapLruCache(this);
-
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_choose_photos);
 
@@ -92,11 +85,6 @@ public class PhotoActivity extends SherlockFragmentActivity implements OnUploadC
 	protected void onDestroy() {
 		super.onDestroy();
 		mPhotoController.removePhotoSelectionListener(this);
-		mCache.evictAll();
-	}
-
-	public BitmapLruCache getBitmapCache() {
-		return mCache;
 	}
 
 	public void onTabSelected(Tab tab, FragmentTransaction ft) {

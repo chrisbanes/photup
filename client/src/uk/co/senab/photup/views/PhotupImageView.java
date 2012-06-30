@@ -2,6 +2,7 @@ package uk.co.senab.photup.views;
 
 import java.lang.ref.WeakReference;
 
+import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.cache.BitmapLruCache;
 import uk.co.senab.photup.cache.CacheableBitmapWrapper;
@@ -14,6 +15,7 @@ import android.os.AsyncTask;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.ImageView;
 
 public class PhotupImageView extends ImageView {
@@ -22,10 +24,12 @@ public class PhotupImageView extends ImageView {
 
 		private final WeakReference<PhotupImageView> mImageView;
 		private final BitmapLruCache mCache;
+		private final boolean mFetchFullSize;
 
-		public PhotoTask(PhotupImageView imageView, BitmapLruCache cache) {
+		public PhotoTask(PhotupImageView imageView, BitmapLruCache cache, boolean fullSize) {
 			mImageView = new WeakReference<PhotupImageView>(imageView);
 			mCache = cache;
+			mFetchFullSize = fullSize;
 		}
 
 		@Override
@@ -45,10 +49,13 @@ public class PhotupImageView extends ImageView {
 
 			PhotupImageView iv = mImageView.get();
 			if (null != iv) {
-				Bitmap thumb = upload.getThumbnail(iv.getContext());
-				if (null != thumb) {
-					wrapper = new CacheableBitmapWrapper(thumb);
-					mCache.put(upload, wrapper);
+				Bitmap bitmap = mFetchFullSize ? upload.getOriginal(iv.getContext()) : upload.getThumbnail(iv
+						.getContext());
+
+				if (null != bitmap) {
+					wrapper = new CacheableBitmapWrapper(bitmap);
+					final String key = mFetchFullSize ? upload.getOriginalKey() : upload.getThumbnailKey();
+					mCache.put(key, wrapper);
 				}
 			}
 
@@ -77,21 +84,31 @@ public class PhotupImageView extends ImageView {
 		super(context, attrs);
 	}
 
-	public void requestThumbnailId(final PhotoUpload upload, final BitmapLruCache cache) {
+	public void requestThumbnail(final PhotoUpload upload, final BitmapLruCache cache) {
+		requestImage(upload, cache, false);
+	}
+
+	public void requestFullSize(final PhotoUpload upload, final BitmapLruCache cache) {
+		requestImage(upload, cache, true);
+	}
+
+	private void requestImage(final PhotoUpload upload, final BitmapLruCache cache, final boolean fullSize) {
 		if (null != mCurrentTask) {
 			mCurrentTask.cancel(false);
 		}
 
-		final CacheableBitmapWrapper cached = cache.get(upload);
+		final String key = fullSize ? upload.getOriginalKey() : upload.getThumbnailKey();
+		final CacheableBitmapWrapper cached = cache.get(key);
+
 		if (null != cached && cached.hasValidBitmap()) {
 			setImageCachedBitmap(cached);
 		} else {
 			// Means we have an object with an invalid bitmap so remove it
 			if (null != cached) {
-				cache.remove(upload);
+				cache.remove(key);
 			}
 
-			mCurrentTask = new PhotoTask(this, cache);
+			mCurrentTask = new PhotoTask(this, cache, fullSize);
 
 			// FIXME Need to fix this for less than v11
 			if (VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB) {
@@ -107,7 +124,6 @@ public class PhotupImageView extends ImageView {
 		if (null != wrapper) {
 			wrapper.setDisplayed(true);
 			setImageBitmap(wrapper.getBitmap());
-
 		} else {
 			setImageDrawable(null);
 		}
@@ -130,6 +146,18 @@ public class PhotupImageView extends ImageView {
 			mCurrentCacheableBitmapWrapper.setDisplayed(false);
 			mCurrentCacheableBitmapWrapper = null;
 		}
+	}
+
+	@Override
+	protected void onDetachedFromWindow() {
+		super.onDetachedFromWindow();
+		
+		if (Constants.DEBUG) {
+			Log.d(getClass().getSimpleName(), "Detached from Window");
+		}
+
+		// Will cause current cached drawable to be 'free-able'
+		setImageDrawable(null);
 	}
 
 	public void recycleBitmap() {

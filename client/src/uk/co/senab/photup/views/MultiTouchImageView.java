@@ -7,9 +7,8 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.widget.ImageView;
 
-public class MultiTouchImageView extends ImageView implements VersionedGestureDetector.OnGestureListener,
+public class MultiTouchImageView extends PhotupImageView implements VersionedGestureDetector.OnGestureListener,
 		GestureDetector.OnDoubleTapListener {
 
 	static final long ANIMATION_DURATION = 200;

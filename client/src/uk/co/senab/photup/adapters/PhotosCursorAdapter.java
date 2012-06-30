@@ -19,10 +19,12 @@ public class PhotosCursorAdapter extends ResourceCursorAdapter {
 	private final BitmapLruCache mCache;
 	private final PhotoSelectionController mController;
 
-	public PhotosCursorAdapter(Context context, BitmapLruCache cache, int layout, Cursor c, boolean autoRequery) {
+	public PhotosCursorAdapter(Context context, int layout, Cursor c, boolean autoRequery) {
 		super(context, layout, c, autoRequery);
-		mCache = cache;
-		mController = PhotupApplication.getApplication(context).getPhotoSelectionController();
+
+		PhotupApplication app = PhotupApplication.getApplication(context);
+		mCache = app.getImageCache();
+		mController = app.getPhotoSelectionController();
 	}
 
 	@Override
@@ -32,7 +34,7 @@ public class PhotosCursorAdapter extends ResourceCursorAdapter {
 
 		long id = cursor.getInt(cursor.getColumnIndexOrThrow(ImageColumns._ID));
 		final PhotoUpload upload = new MediaStorePhotoUpload(id);
-		iv.requestThumbnailId(upload, mCache);
+		iv.requestThumbnail(upload, mCache);
 
 		view.setTag(upload);
 

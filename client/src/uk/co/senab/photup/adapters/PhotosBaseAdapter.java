@@ -23,11 +23,13 @@ public class PhotosBaseAdapter extends BaseAdapter {
 	private final LayoutInflater mLayoutInflater;
 	private final PhotoSelectionController mController;
 
-	public PhotosBaseAdapter(Context context, BitmapLruCache cache) {
+	public PhotosBaseAdapter(Context context) {
 		mContext = context;
-		mCache = cache;
 		mLayoutInflater = LayoutInflater.from(mContext);
-		mController = PhotupApplication.getApplication(context).getPhotoSelectionController();
+		
+		PhotupApplication app = PhotupApplication.getApplication(context);
+		mCache = app.getImageCache();
+		mController = app.getPhotoSelectionController();
 	}
 
 	public int getCount() {
@@ -48,7 +50,7 @@ public class PhotosBaseAdapter extends BaseAdapter {
 		}
 
 		PhotupImageView iv = (PhotupImageView) view.findViewById(R.id.iv_photo);
-		iv.requestThumbnailId(getItem(position), mCache);
+		iv.requestThumbnail(getItem(position), mCache);
 
 		return view;
 	}

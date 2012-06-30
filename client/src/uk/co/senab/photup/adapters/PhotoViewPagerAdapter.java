@@ -17,18 +17,20 @@ import android.view.ViewGroup;
 
 public class PhotoViewPagerAdapter extends PagerAdapter {
 
-	private final BitmapLruCache mCache;
-
 	private final Context mContext;
+	private final BitmapLruCache mCache;
 	private final PhotoSelectionController mController;
-	private List<PhotoUpload> mItems;
 	private final LayoutInflater mLayoutInflater;
 
-	public PhotoViewPagerAdapter(Context context, BitmapLruCache cache) {
+	private List<PhotoUpload> mItems;
+
+	public PhotoViewPagerAdapter(Context context) {
 		mContext = context;
-		mCache = cache;
 		mLayoutInflater = LayoutInflater.from(mContext);
-		mController = PhotupApplication.getApplication(context).getPhotoSelectionController();
+
+		PhotupApplication app = PhotupApplication.getApplication(context);
+		mCache = app.getImageCache();
+		mController = app.getPhotoSelectionController();
 	}
 
 	@Override
@@ -48,10 +50,11 @@ public class PhotoViewPagerAdapter extends PagerAdapter {
 	@Override
 	public Object instantiateItem(View container, int position) {
 		View view = mLayoutInflater.inflate(R.layout.item_photo_viewer, (ViewGroup) container, false);
-		
+
 		MultiTouchImageView imageView = (MultiTouchImageView) view.findViewById(R.id.iv_photo);
-		imageView.setImageResource(R.drawable.ic_launcher);
-		
+		imageView.requestFullSize(mItems.get(position), mCache);
+		imageView.setZoomable(true);
+
 		((ViewPager) container).addView(view);
 		return imageView;
 	}
