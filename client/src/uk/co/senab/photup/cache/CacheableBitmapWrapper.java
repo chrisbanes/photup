@@ -20,12 +20,16 @@ public class CacheableBitmapWrapper {
 		}
 	}
 
-	public boolean getDisplayed() {
+	public boolean isBeingDisplayed() {
 		return mCurrentlyDisplayed > 0;
 	}
 
 	public Bitmap getBitmap() {
 		return mBitmap;
+	}
+	
+	public boolean hasValidBitmap() {
+		return null != mBitmap && !mBitmap.isRecycled();
 	}
 
 }

@@ -31,7 +31,7 @@ public class BitmapLruCache extends LruCache<Long, CacheableBitmapWrapper> {
 	protected void entryRemoved(boolean evicted, Long key, CacheableBitmapWrapper oldValue,
 			CacheableBitmapWrapper newValue) {
 
-		if (!oldValue.getDisplayed()) {
+		if (!oldValue.isBeingDisplayed()) {
 			if (Constants.DEBUG) {
 				Log.d(LOG_TAG, "entryRemoved and recycled: " + key);
 			}

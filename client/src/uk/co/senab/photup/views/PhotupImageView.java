@@ -83,10 +83,15 @@ public class PhotupImageView extends ImageView {
 			mCurrentTask.cancel(false);
 		}
 
-		CacheableBitmapWrapper cached = cache.get(id);
-		if (null != cached) {
+		final CacheableBitmapWrapper cached = cache.get(id);
+		if (null != cached && cached.hasValidBitmap()) {
 			setImageCachedBitmap(cached);
 		} else {
+			// Means we have an object with an invalid bitmap so remove it
+			if (null != cached) {
+				cache.remove(id);
+			}
+
 			PhotupApplication app = PhotupApplication.getApplication(getContext());
 			mCurrentTask = new PhotoTask(app.getContentResolver(), this, cache);
 
@@ -96,7 +101,6 @@ public class PhotupImageView extends ImageView {
 			} else {
 				mCurrentTask.execute(id);
 			}
-
 		}
 	}
 
