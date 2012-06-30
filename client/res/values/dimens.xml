@@ -4,7 +4,6 @@
     <dimen name="gridview_spacing">1dp</dimen>
     <dimen name="gridview_item_margin">3dp</dimen>
     <dimen name="gridview_item_dimension">100dp</dimen>
-    <dimen name="action_bar_width">56dp</dimen>
     <dimen name="spacing">6dp</dimen>
 
 </resources>

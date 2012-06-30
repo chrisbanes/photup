@@ -21,6 +21,7 @@ import android.provider.MediaStore.Images.ImageColumns;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.FloatMath;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -147,12 +148,11 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 				AbsoluteLayout.LayoutParams.WRAP_CONTENT, view.getLeft(), view.getTop());
 		mAnimationLayout.addView(iv, lp);
 
-		// FIXME Needs fixing really
-		int abItemHeight = getResources().getDimensionPixelSize(R.dimen.abs__action_bar_default_height);
-		int abItemWidth = getResources().getDimensionPixelSize(R.dimen.abs__action_button_min_width);
+		int halfTabHeight = getResources().getDimensionPixelSize(R.dimen.abs__action_bar_default_height) / 2;
+		int midSecondTabX = Math.round(mPhotoGrid.getWidth() * 0.75f);
 
 		Animation animaton = Utils.createScaleAnimation(view, mPhotoGrid.getWidth(), mPhotoGrid.getHeight(),
-				mPhotoGrid.getRight() - Math.round(abItemWidth * 1.5f), mPhotoGrid.getTop() - abItemHeight);
+				midSecondTabX, mPhotoGrid.getTop() - halfTabHeight);
 		animaton.setAnimationListener(new ScaleAnimationListener(iv));
 		iv.startAnimation(animaton);
 	}
