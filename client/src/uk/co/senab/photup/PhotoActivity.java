@@ -40,16 +40,13 @@ public class PhotoActivity extends SherlockFragmentActivity implements OnPhotoSe
 		ActionBar ab = getSupportActionBar();
 		ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		ab.addTab(ab.newTab().setText(R.string.tab_photos).setTag(TAB_PHOTOS).setTabListener(this));
-		ab.addTab(ab.newTab().setText(R.string.tab_selected_photos).setTag(TAB_SELECTED).setTabListener(this));
+		ab.addTab(ab.newTab().setText(getSelectedTabTitle()).setTag(TAB_SELECTED).setTabListener(this));
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getSupportMenuInflater().inflate(R.menu.menu_photo_grid, menu);
-
-		MenuItem item = menu.findItem(R.id.menu_num_items);
-		item.setTitle(String.valueOf(mSelectedIds.size()));
-
+		
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -65,7 +62,11 @@ public class PhotoActivity extends SherlockFragmentActivity implements OnPhotoSe
 			mSelectedIds.remove(id);
 		}
 
-		supportInvalidateOptionsMenu();
+		getSupportActionBar().getTabAt(1).setText(getSelectedTabTitle());
+	}
+
+	private CharSequence getSelectedTabTitle() {
+		return getString(R.string.tab_selected_photos, mSelectedIds.size());
 	}
 
 	@Override
