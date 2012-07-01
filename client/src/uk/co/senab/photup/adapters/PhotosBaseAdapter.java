@@ -2,10 +2,10 @@ package uk.co.senab.photup.adapters;
 
 import java.util.List;
 
+import uk.co.senab.bitmapcache.cache.BitmapLruCache;
 import uk.co.senab.photup.PhotoSelectionController;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
-import uk.co.senab.photup.cache.BitmapLruCache;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.views.PhotupImageView;
 import android.content.Context;

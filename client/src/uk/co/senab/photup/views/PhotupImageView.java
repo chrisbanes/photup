@@ -2,10 +2,10 @@ package uk.co.senab.photup.views;
 
 import java.lang.ref.WeakReference;
 
-import uk.co.senab.photup.Constants;
+import uk.co.senab.bitmapcache.CacheableImageView;
+import uk.co.senab.bitmapcache.cache.BitmapLruCache;
+import uk.co.senab.bitmapcache.cache.CacheableBitmapWrapper;
 import uk.co.senab.photup.PhotupApplication;
-import uk.co.senab.photup.cache.BitmapLruCache;
-import uk.co.senab.photup.cache.CacheableBitmapWrapper;
 import uk.co.senab.photup.model.PhotoUpload;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -15,10 +15,8 @@ import android.os.AsyncTask;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.widget.ImageView;
 
-public class PhotupImageView extends ImageView {
+public class PhotupImageView extends CacheableImageView {
 
 	private static class PhotoTask extends AsyncTask<PhotoUpload, Void, CacheableBitmapWrapper> {
 
@@ -53,9 +51,8 @@ public class PhotupImageView extends ImageView {
 						.getContext());
 
 				if (null != bitmap) {
-					wrapper = new CacheableBitmapWrapper(bitmap);
 					final String key = mFetchFullSize ? upload.getOriginalKey() : upload.getThumbnailKey();
-					mCache.put(key, wrapper);
+					wrapper = new CacheableBitmapWrapper(key, bitmap);
 				}
 			}
 
@@ -70,11 +67,12 @@ public class PhotupImageView extends ImageView {
 			if (null != iv) {
 				iv.setImageCachedBitmap(result);
 			}
+
+			mCache.put(result);
 		}
 	}
 
 	private PhotoTask mCurrentTask;
-	private CacheableBitmapWrapper mCurrentCacheableBitmapWrapper;
 
 	public PhotupImageView(Context context) {
 		super(context);
@@ -118,46 +116,6 @@ public class PhotupImageView extends ImageView {
 				mCurrentTask.execute(upload);
 			}
 		}
-	}
-
-	public void setImageCachedBitmap(final CacheableBitmapWrapper wrapper) {
-		if (null != wrapper) {
-			wrapper.setDisplayed(true);
-			setImageBitmap(wrapper.getBitmap());
-		} else {
-			setImageDrawable(null);
-		}
-
-		mCurrentCacheableBitmapWrapper = wrapper;
-	}
-
-	@Override
-	public void setImageBitmap(Bitmap bm) {
-		BitmapDrawable d = new BitmapDrawable(getResources(), bm);
-		d.setFilterBitmap(true);
-		setImageDrawable(d);
-	}
-
-	@Override
-	public void setImageDrawable(Drawable drawable) {
-		super.setImageDrawable(drawable);
-
-		if (null != mCurrentCacheableBitmapWrapper) {
-			mCurrentCacheableBitmapWrapper.setDisplayed(false);
-			mCurrentCacheableBitmapWrapper = null;
-		}
-	}
-
-	@Override
-	protected void onDetachedFromWindow() {
-		super.onDetachedFromWindow();
-		
-		if (Constants.DEBUG) {
-			Log.d(getClass().getSimpleName(), "Detached from Window");
-		}
-
-		// Will cause current cached drawable to be 'free-able'
-		setImageDrawable(null);
 	}
 
 	public void recycleBitmap() {
