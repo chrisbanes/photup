@@ -26,10 +26,11 @@ public class PhotosBaseAdapter extends BaseAdapter {
 	public PhotosBaseAdapter(Context context) {
 		mContext = context;
 		mLayoutInflater = LayoutInflater.from(mContext);
-		
+
 		PhotupApplication app = PhotupApplication.getApplication(context);
 		mCache = app.getImageCache();
 		mController = app.getPhotoSelectionController();
+		mItems = mController.getSelectedPhotoUploads();
 	}
 
 	public int getCount() {
@@ -54,7 +55,7 @@ public class PhotosBaseAdapter extends BaseAdapter {
 
 		return view;
 	}
-	
+
 	@Override
 	public void notifyDataSetChanged() {
 		mItems = mController.getSelectedPhotoUploads();

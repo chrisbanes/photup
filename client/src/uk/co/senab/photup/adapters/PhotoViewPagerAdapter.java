@@ -31,6 +31,7 @@ public class PhotoViewPagerAdapter extends PagerAdapter {
 		PhotupApplication app = PhotupApplication.getApplication(context);
 		mCache = app.getImageCache();
 		mController = app.getPhotoSelectionController();
+		mItems = mController.getSelectedPhotoUploads();
 	}
 
 	@Override
