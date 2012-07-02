@@ -14,6 +14,7 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnTouchListener;
 
 public class PhotoViewPagerAdapter extends PagerAdapter {
 
@@ -21,17 +22,20 @@ public class PhotoViewPagerAdapter extends PagerAdapter {
 	private final BitmapLruCache mCache;
 	private final PhotoSelectionController mController;
 	private final LayoutInflater mLayoutInflater;
+	private final OnTouchListener mOnTouchListener;
 
 	private List<PhotoUpload> mItems;
 
-	public PhotoViewPagerAdapter(Context context) {
+	public PhotoViewPagerAdapter(Context context, OnTouchListener touchListener) {
 		mContext = context;
 		mLayoutInflater = LayoutInflater.from(mContext);
+		mOnTouchListener = touchListener;
 
 		PhotupApplication app = PhotupApplication.getApplication(context);
 		mCache = app.getImageCache();
 		mController = app.getPhotoSelectionController();
 		mItems = mController.getSelectedPhotoUploads();
+
 	}
 
 	@Override
@@ -55,7 +59,8 @@ public class PhotoViewPagerAdapter extends PagerAdapter {
 		MultiTouchImageView imageView = (MultiTouchImageView) view.findViewById(R.id.iv_photo);
 		imageView.requestFullSize(mItems.get(position), mCache);
 		imageView.setZoomable(true);
-
+		
+		view.setOnTouchListener(mOnTouchListener);
 		((ViewPager) container).addView(view);
 		return imageView;
 	}

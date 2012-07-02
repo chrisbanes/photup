@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="Theme.Styled" parent="Theme.Sherlock">
+    <style name="Theme.Photup" parent="Theme.Sherlock">
     </style>
+    
+    <style name="Theme.Photup.FullscreenOverlay" parent="Theme.Photup">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="windowActionBarOverlay">true</item>
+    </style>
+    
+    
 
 </resources>
