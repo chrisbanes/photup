@@ -6,7 +6,7 @@ import android.net.Uri;
 
 public abstract class PhotoUpload {
 
-	private Uri mEditedPhotoUri;
+	private Filter mFilter;
 
 	public abstract Uri getOriginalPhotoUri();
 
@@ -22,12 +22,12 @@ public abstract class PhotoUpload {
 		return "full_" + getOriginalPhotoUri();
 	}
 
-	public void setEditedPhotoUri(Uri uri) {
-		mEditedPhotoUri = uri;
+	public void setFilterUsed(Filter filter) {
+		mFilter = filter;
 	}
 
-	public Uri getEditedPhotoUri() {
-		return mEditedPhotoUri;
+	public Filter getFilterUsed() {
+		return mFilter;
 	}
 
 	@Override

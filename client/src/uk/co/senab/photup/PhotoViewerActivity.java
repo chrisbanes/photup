@@ -55,6 +55,7 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 
 			mIv.post(new Runnable() {
 				public void run() {
+					mUpload.setFilterUsed(mFilter);
 					mIv.setImageBitmap(filteredBitmap);
 				}
 			});
