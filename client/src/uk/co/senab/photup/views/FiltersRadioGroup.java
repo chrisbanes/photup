@@ -42,6 +42,12 @@ public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 		public void run() {
 			Bitmap bitmap = mUpload.getThumbnail(mContext);
 			final Bitmap filteredBitmap = PhotoProcessing.filterPhoto(bitmap, mFilter.getId());
+			bitmap.recycle();
+			
+			if (Thread.currentThread().isInterrupted()) {
+				filteredBitmap.recycle();
+				return;
+			}
 
 			mButton.post(new Runnable() {
 				public void run() {
@@ -129,6 +135,20 @@ public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 		}
 
 		super.setVisibility(visibility);
+	}
+	
+	public void onDestroy() {
+		mExecutor.shutdownNow();
+		
+		for (final Filter filter : Filter.FILTERS) {
+			final RadioButton button = (RadioButton) findViewById(filter.getId());
+			Drawable oldBg = button.getBackground();
+			button.setBackgroundDrawable(null);
+
+			if (oldBg instanceof BitmapDrawable) {
+				((BitmapDrawable) oldBg).getBitmap().recycle();
+			}
+		}
 	}
 
 }
