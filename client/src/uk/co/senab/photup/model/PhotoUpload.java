@@ -6,18 +6,28 @@ import android.net.Uri;
 
 public abstract class PhotoUpload {
 
+	private Uri mEditedPhotoUri;
+
 	public abstract Uri getOriginalPhotoUri();
 
 	public abstract Bitmap getThumbnail(Context context);
-	
+
 	public abstract Bitmap getOriginal(Context context);
-	
+
 	public String getThumbnailKey() {
 		return "thumb_" + getOriginalPhotoUri();
 	}
-	
+
 	public String getOriginalKey() {
 		return "full_" + getOriginalPhotoUri();
+	}
+
+	public void setEditedPhotoUri(Uri uri) {
+		mEditedPhotoUri = uri;
+	}
+
+	public Uri getEditedPhotoUri() {
+		return mEditedPhotoUri;
 	}
 
 	@Override

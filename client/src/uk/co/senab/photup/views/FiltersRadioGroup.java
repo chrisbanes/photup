@@ -1,6 +1,14 @@
 package uk.co.senab.photup.views;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import uk.co.senab.photup.model.Filter;
+import uk.co.senab.photup.model.PhotoUpload;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,10 +23,42 @@ import com.lightbox.android.photoprocessing.R;
 
 public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 
+	static final class FilterRunnable implements Runnable {
+
+		// TODO Should make these WeakReferences
+		private final Context mContext;
+		private final RadioButton mButton;
+		
+		private final PhotoUpload mUpload;
+		private final Filter mFilter;
+
+		public FilterRunnable(Context context, PhotoUpload upload, Filter filter, RadioButton button) {
+			mContext = context;
+			mUpload = upload;
+			mFilter = filter;
+			mButton = button;
+		}
+
+		public void run() {
+			Bitmap bitmap = mUpload.getThumbnail(mContext);
+			final Bitmap filteredBitmap = PhotoProcessing.filterPhoto(bitmap, mFilter.getId());
+
+			mButton.post(new Runnable() {
+				public void run() {
+					mButton.setBackgroundDrawable(new BitmapDrawable(mContext.getResources(), filteredBitmap));
+				}
+			});
+		}
+	};
+
 	private final Animation mSlideInBottomAnim, mSlideOutBottomAnim;
+	private final Filter[] mFilters;
+	private final ExecutorService mExecutor;
 
 	public FiltersRadioGroup(Context context, AttributeSet attrs) {
 		super(context, attrs);
+
+		mExecutor = Executors.newSingleThreadExecutor();
 
 		mSlideInBottomAnim = AnimationUtils.loadAnimation(context, R.anim.slide_in_bottom);
 		mSlideInBottomAnim.setAnimationListener(this);
@@ -26,17 +66,34 @@ public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 		mSlideOutBottomAnim = AnimationUtils.loadAnimation(context, R.anim.slide_out_bottom);
 		mSlideOutBottomAnim.setAnimationListener(this);
 
+		mFilters = Filter.getFilters();
+
 		addButtons(context);
 	}
 
 	private void addButtons(Context context) {
 		LayoutInflater layoutInflater = LayoutInflater.from(context);
 		RadioButton button;
-		for (int filterResId : PhotoProcessing.FILTERS) {
+		for (Filter filter : Filter.getFilters()) {
 			button = (RadioButton) layoutInflater.inflate(R.layout.layout_filters_item, this, false);
-			button.setText(filterResId);
-
+			button.setText(filter.getLabelId());
+			button.setId(filter.getId());
 			addView(button);
+		}
+	}
+
+	public void setPhotoUpload(PhotoUpload upload) {
+		for (final Filter filter : mFilters) {
+			final RadioButton button = (RadioButton) findViewById(filter.getId());
+
+			Drawable oldBg = button.getBackground();
+			button.setBackgroundDrawable(null);
+
+			if (oldBg instanceof BitmapDrawable) {
+				((BitmapDrawable) oldBg).getBitmap().recycle();
+			}
+
+			mExecutor.submit(new FilterRunnable(getContext(), upload, filter, button));
 		}
 	}
 

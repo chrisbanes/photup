@@ -6,14 +6,16 @@ import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.views.FiltersRadioGroup;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
@@ -21,12 +23,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.lightbox.android.photoprocessing.R;
 
-public class PhotoViewerActivity extends SherlockActivity implements OnUploadChangedListener, OnTouchListener {
-
-	public static final int[] FILTERS = { R.string.filter_original, R.string.filter_instafix, R.string.filter_ansel,
-			R.string.filter_testino, R.string.filter_xpro, R.string.filter_retro, R.string.filter_bw,
-			R.string.filter_sepia, R.string.filter_cyano, R.string.filter_georgia, R.string.filter_sahara,
-			R.string.filter_hdr };
+public class PhotoViewerActivity extends SherlockActivity implements OnUploadChangedListener, OnTouchListener, OnCheckedChangeListener, OnPageChangeListener {
 
 	public static final String EXTRA_POSITION = "extra_position";
 
@@ -41,7 +38,7 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 
 	private ViewGroup mContentView;
 	private ViewPager mViewPager;
-	private PagerAdapter mAdapter;
+	private PhotoViewPagerAdapter mAdapter;
 	private GestureDetector mGestureDectector;
 
 	private FiltersRadioGroup mFilterGroup;
@@ -61,6 +58,7 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 		mAdapter = new PhotoViewPagerAdapter(this, this);
 		mViewPager.setAdapter(mAdapter);
 		mAdapter.notifyDataSetChanged();
+		mViewPager.setOnPageChangeListener(this);
 
 		mController = PhotoSelectionController.getFromContext(this);
 		mController.addPhotoSelectionListener(this);
@@ -125,14 +123,35 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 		if (null == mFilterGroup) {
 			View view = getLayoutInflater().inflate(R.layout.layout_filters, mContentView);
 			mFilterGroup = (FiltersRadioGroup) view.findViewById(R.id.rg_filters);
+			mFilterGroup.setOnCheckedChangeListener(this);
 		}
 
 		mFilterGroup.show();
+		
+		mFilterGroup.setPhotoUpload(mAdapter.getItem(mViewPager.getCurrentItem()));
 	}
 
 	private void hideFiltersView() {
 		if (null != mFilterGroup) {
 			mFilterGroup.hide();
 		}
+	}
+
+	public void onCheckedChanged(RadioGroup group, int checkedId) {
+		
+	}
+	
+	public void onPageSelected(int position) {
+		if (null != mFilterGroup && mFilterGroup.getVisibility() == View.VISIBLE) {
+			mFilterGroup.setPhotoUpload(mAdapter.getItem(position));
+		}
+	}
+
+	public void onPageScrollStateChanged(int state) {
+		// NO-OP
+	}
+
+	public void onPageScrolled(int position, float arg1, int arg2) {
+		// NO-OP
 	}
 }

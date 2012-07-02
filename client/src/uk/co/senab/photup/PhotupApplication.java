@@ -13,8 +13,8 @@ import android.view.WindowManager;
 
 public class PhotupApplication extends Application {
 
-	static final int EXECUTOR_CORE_POOL_SIZE = 4;
-	static final int EXECUTOR_MAX_POOL_SIZE = 10;
+	static final int EXECUTOR_CORE_POOL_SIZE = 2;
+	static final int EXECUTOR_MAX_POOL_SIZE = 4;
 
 	private ExecutorService mExecutor;
 	private BitmapLruCache mImageCache;

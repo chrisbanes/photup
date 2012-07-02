@@ -51,6 +51,10 @@ public class PhotoViewPagerAdapter extends PagerAdapter {
 	public int getItemPosition(Object object) {
 		return POSITION_NONE;
 	}
+	
+	public PhotoUpload getItem(int position) {
+		return mItems.get(position);
+	}
 
 	@Override
 	public Object instantiateItem(View container, int position) {
