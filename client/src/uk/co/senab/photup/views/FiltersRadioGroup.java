@@ -98,6 +98,12 @@ public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 
 			mExecutor.submit(new FilterRunnable(getContext(), upload, filter, button));
 		}
+		
+		if (upload.hasFilter()) {
+			check(upload.getFilterUsed().getId());
+		} else {
+			clearCheck();
+		}
 	}
 
 	public void show() {

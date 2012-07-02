@@ -48,15 +48,19 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 
 	private PhotoSelectionController mController;
 
+	private boolean mIgnoreCheckCallback = false;
+
 	public void onCheckedChanged(RadioGroup group, int checkedId) {
-		View currentView = getCurrentView();
-		MultiTouchImageView imageView = (MultiTouchImageView) currentView.findViewById(R.id.iv_photo);
+		if (!mIgnoreCheckCallback) {
+			View currentView = getCurrentView();
+			MultiTouchImageView imageView = (MultiTouchImageView) currentView.findViewById(R.id.iv_photo);
 
-		Filter filter = Filter.FILTERS[checkedId];
-		PhotoUpload upload = getCurrentUpload();
-		upload.setFilterUsed(filter);
+			Filter filter = checkedId != -1 ? Filter.FILTERS[checkedId] : null;
+			PhotoUpload upload = getCurrentUpload();
+			upload.setFilterUsed(filter);
 
-		imageView.requestFullSize(upload);
+			imageView.requestFullSize(upload);
+		}
 	}
 
 	@Override
@@ -91,7 +95,7 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 
 	public void onPageSelected(int position) {
 		if (null != mFilterGroup && mFilterGroup.getVisibility() == View.VISIBLE) {
-			mFilterGroup.setPhotoUpload(mAdapter.getItem(position));
+			updateFiltersView();
 		}
 	}
 
@@ -178,8 +182,13 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 		}
 
 		mFilterGroup.show();
-
+		updateFiltersView();
+	}
+	
+	private void updateFiltersView() {
+		mIgnoreCheckCallback = true;
 		mFilterGroup.setPhotoUpload(mAdapter.getItem(mViewPager.getCurrentItem()));
+		mIgnoreCheckCallback = false;
 	}
 
 	private void toggleActionBarVisibility() {
