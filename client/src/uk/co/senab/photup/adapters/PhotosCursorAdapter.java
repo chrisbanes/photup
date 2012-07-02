@@ -1,6 +1,5 @@
 package uk.co.senab.photup.adapters;
 
-import uk.co.senab.bitmapcache.BitmapLruCache;
 import uk.co.senab.photup.PhotoSelectionController;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.model.MediaStorePhotoUpload;
@@ -16,14 +15,12 @@ import android.widget.Checkable;
 
 public class PhotosCursorAdapter extends ResourceCursorAdapter {
 
-	private final BitmapLruCache mCache;
 	private final PhotoSelectionController mController;
 
 	public PhotosCursorAdapter(Context context, int layout, Cursor c, boolean autoRequery) {
 		super(context, layout, c, autoRequery);
 
 		PhotupApplication app = PhotupApplication.getApplication(context);
-		mCache = app.getImageCache();
 		mController = app.getPhotoSelectionController();
 	}
 
@@ -34,7 +31,7 @@ public class PhotosCursorAdapter extends ResourceCursorAdapter {
 
 		long id = cursor.getInt(cursor.getColumnIndexOrThrow(ImageColumns._ID));
 		final PhotoUpload upload = new MediaStorePhotoUpload(id);
-		iv.requestThumbnail(upload, mCache);
+		iv.requestThumbnail(upload);
 
 		view.setTag(upload);
 

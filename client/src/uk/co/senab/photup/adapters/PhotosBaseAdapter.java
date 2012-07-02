@@ -2,7 +2,6 @@ package uk.co.senab.photup.adapters;
 
 import java.util.List;
 
-import uk.co.senab.bitmapcache.BitmapLruCache;
 import uk.co.senab.photup.PhotoSelectionController;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
@@ -18,7 +17,6 @@ public class PhotosBaseAdapter extends BaseAdapter {
 
 	private List<PhotoUpload> mItems;
 
-	private final BitmapLruCache mCache;
 	private final Context mContext;
 	private final LayoutInflater mLayoutInflater;
 	private final PhotoSelectionController mController;
@@ -28,7 +26,6 @@ public class PhotosBaseAdapter extends BaseAdapter {
 		mLayoutInflater = LayoutInflater.from(mContext);
 
 		PhotupApplication app = PhotupApplication.getApplication(context);
-		mCache = app.getImageCache();
 		mController = app.getPhotoSelectionController();
 		mItems = mController.getSelectedPhotoUploads();
 	}
@@ -51,7 +48,7 @@ public class PhotosBaseAdapter extends BaseAdapter {
 		}
 
 		PhotupImageView iv = (PhotupImageView) view.findViewById(R.id.iv_photo);
-		iv.requestThumbnail(getItem(position), mCache);
+		iv.requestThumbnail(getItem(position));
 
 		return view;
 	}

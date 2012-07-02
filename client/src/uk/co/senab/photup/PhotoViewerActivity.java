@@ -1,17 +1,12 @@
 package uk.co.senab.photup;
 
-import java.util.concurrent.ExecutorService;
-
 import uk.co.senab.photup.adapters.PhotoViewPagerAdapter;
 import uk.co.senab.photup.listeners.OnUploadChangedListener;
 import uk.co.senab.photup.model.Filter;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.views.FiltersRadioGroup;
 import uk.co.senab.photup.views.MultiTouchImageView;
-import uk.co.senab.photup.views.PhotupImageView;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
@@ -28,39 +23,10 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.lightbox.android.photoprocessing.PhotoProcessing;
 import com.lightbox.android.photoprocessing.R;
 
 public class PhotoViewerActivity extends SherlockActivity implements OnUploadChangedListener, OnTouchListener,
 		OnCheckedChangeListener, OnPageChangeListener {
-
-	static final class FilterRunnable implements Runnable {
-
-		private final Context mContext;
-		private final Filter mFilter;
-		private final PhotupImageView mIv;
-		private final PhotoUpload mUpload;
-
-		public FilterRunnable(PhotoUpload upload, Filter filter, PhotupImageView imageView) {
-			mIv = imageView;
-			mContext = imageView.getContext();
-			mUpload = upload;
-			mFilter = filter;
-		}
-
-		public void run() {
-			Bitmap bitmap = mUpload.getOriginal(mContext);
-			final Bitmap filteredBitmap = PhotoProcessing.filterPhoto(bitmap, mFilter.getId());
-			bitmap.recycle();
-
-			mIv.post(new Runnable() {
-				public void run() {
-					mUpload.setFilterUsed(mFilter);
-					mIv.setImageBitmap(filteredBitmap);
-				}
-			});
-		}
-	};
 
 	class TapListener extends SimpleOnGestureListener {
 
@@ -81,14 +47,16 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 	private GestureDetector mGestureDectector;
 
 	private PhotoSelectionController mController;
-	private ExecutorService mExecutor;
 
 	public void onCheckedChanged(RadioGroup group, int checkedId) {
-		Filter filter = Filter.FILTERS[checkedId];
 		View currentView = getCurrentView();
 		MultiTouchImageView imageView = (MultiTouchImageView) currentView.findViewById(R.id.iv_photo);
 
-		mExecutor.submit(new FilterRunnable(getCurrentUpload(), filter, imageView));
+		Filter filter = Filter.FILTERS[checkedId];
+		PhotoUpload upload = getCurrentUpload();
+		upload.setFilterUsed(filter);
+
+		imageView.requestFullSize(upload);
 	}
 
 	@Override
@@ -163,7 +131,6 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 		final Intent intent = getIntent();
 		mViewPager.setCurrentItem(intent.getIntExtra(EXTRA_POSITION, 0));
 
-		mExecutor = PhotupApplication.getApplication(this).getExecutorService();
 	}
 
 	@Override

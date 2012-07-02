@@ -2,7 +2,6 @@ package uk.co.senab.photup.adapters;
 
 import java.util.List;
 
-import uk.co.senab.bitmapcache.BitmapLruCache;
 import uk.co.senab.photup.PhotoSelectionController;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
@@ -13,13 +12,12 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
 
 public class PhotoViewPagerAdapter extends PagerAdapter {
 
 	private final Context mContext;
-	private final BitmapLruCache mCache;
 	private final PhotoSelectionController mController;
 	private final LayoutInflater mLayoutInflater;
 	private final OnTouchListener mOnTouchListener;
@@ -32,7 +30,6 @@ public class PhotoViewPagerAdapter extends PagerAdapter {
 		mOnTouchListener = touchListener;
 
 		PhotupApplication app = PhotupApplication.getApplication(context);
-		mCache = app.getImageCache();
 		mController = app.getPhotoSelectionController();
 		mItems = mController.getSelectedPhotoUploads();
 	}
@@ -62,7 +59,7 @@ public class PhotoViewPagerAdapter extends PagerAdapter {
 		PhotoUpload upload = mItems.get(position);
 
 		MultiTouchImageView imageView = (MultiTouchImageView) view.findViewById(R.id.iv_photo);
-		imageView.requestFullSize(upload, mCache);
+		imageView.requestFullSize(upload);
 		imageView.setZoomable(true);
 		
 		view.setTag(upload);

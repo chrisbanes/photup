@@ -2,10 +2,13 @@ package uk.co.senab.photup.views;
 
 import java.lang.ref.WeakReference;
 
+import com.lightbox.android.photoprocessing.PhotoProcessing;
+
 import uk.co.senab.bitmapcache.BitmapLruCache;
 import uk.co.senab.bitmapcache.CacheableBitmapWrapper;
 import uk.co.senab.bitmapcache.CacheableImageView;
 import uk.co.senab.photup.PhotupApplication;
+import uk.co.senab.photup.model.Filter;
 import uk.co.senab.photup.model.PhotoUpload;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -72,6 +75,31 @@ public class PhotupImageView extends CacheableImageView {
 		}
 	}
 
+	static final class FilterRunnable implements Runnable {
+
+		private final Filter mFilter;
+		private final PhotupImageView mImageView;
+		private final PhotoUpload mUpload;
+
+		public FilterRunnable(PhotupImageView imageView, PhotoUpload upload) {
+			mImageView = imageView;
+			mUpload = upload;
+			mFilter = upload.getFilterUsed();
+		}
+
+		public void run() {
+			Bitmap bitmap = mUpload.getOriginal(mImageView.getContext());
+			final Bitmap filteredBitmap = PhotoProcessing.filterPhoto(bitmap, mFilter.getId());
+			bitmap.recycle();
+
+			mImageView.post(new Runnable() {
+				public void run() {
+					mImageView.setImageBitmap(filteredBitmap);
+				}
+			});
+		}
+	};
+
 	private PhotoTask mCurrentTask;
 
 	public PhotupImageView(Context context) {
@@ -82,20 +110,30 @@ public class PhotupImageView extends CacheableImageView {
 		super(context, attrs);
 	}
 
-	public void requestThumbnail(final PhotoUpload upload, final BitmapLruCache cache) {
-		requestImage(upload, cache, false);
+	public void requestThumbnail(final PhotoUpload upload) {
+		requestImage(upload, false);
 	}
 
-	public void requestFullSize(final PhotoUpload upload, final BitmapLruCache cache) {
-		requestImage(upload, cache, true);
+	public void requestFullSize(final PhotoUpload upload) {
+		if (upload.hasFilter()) {
+			requestFilter(upload);
+		} else {
+			requestImage(upload, true);
+		}
 	}
 
-	private void requestImage(final PhotoUpload upload, final BitmapLruCache cache, final boolean fullSize) {
+	private void requestFilter(final PhotoUpload upload) {
+		PhotupApplication app = PhotupApplication.getApplication(getContext());
+		app.getExecutorService().submit(new FilterRunnable(this, upload));
+	}
+
+	private void requestImage(final PhotoUpload upload, final boolean fullSize) {
 		if (null != mCurrentTask) {
 			mCurrentTask.cancel(false);
 		}
 
 		final String key = fullSize ? upload.getOriginalKey() : upload.getThumbnailKey();
+		BitmapLruCache cache = PhotupApplication.getApplication(getContext()).getImageCache();
 		final CacheableBitmapWrapper cached = cache.get(key);
 
 		if (null != cached && cached.hasValidBitmap()) {

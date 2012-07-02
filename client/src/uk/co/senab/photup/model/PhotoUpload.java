@@ -30,6 +30,10 @@ public abstract class PhotoUpload {
 		return mFilter;
 	}
 
+	public boolean hasFilter() {
+		return null != mFilter;
+	}
+
 	@Override
 	public int hashCode() {
 		return getOriginalPhotoUri().hashCode();
