@@ -35,7 +35,6 @@ public class PhotoViewPagerAdapter extends PagerAdapter {
 		mCache = app.getImageCache();
 		mController = app.getPhotoSelectionController();
 		mItems = mController.getSelectedPhotoUploads();
-
 	}
 
 	@Override
@@ -59,11 +58,14 @@ public class PhotoViewPagerAdapter extends PagerAdapter {
 	@Override
 	public Object instantiateItem(View container, int position) {
 		View view = mLayoutInflater.inflate(R.layout.item_photo_viewer, (ViewGroup) container, false);
+		
+		PhotoUpload upload = mItems.get(position);
 
 		MultiTouchImageView imageView = (MultiTouchImageView) view.findViewById(R.id.iv_photo);
-		imageView.requestFullSize(mItems.get(position), mCache);
+		imageView.requestFullSize(upload, mCache);
 		imageView.setZoomable(true);
 		
+		view.setTag(upload);
 		view.setOnTouchListener(mOnTouchListener);
 		((ViewPager) container).addView(view);
 		return imageView;

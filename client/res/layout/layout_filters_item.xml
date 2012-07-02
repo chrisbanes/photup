@@ -2,6 +2,12 @@
 <RadioButton xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="@dimen/filters_radiogroup_height"
     android:layout_height="@dimen/filters_radiogroup_height"
+    android:background="@drawable/ic_launcher"
     android:button="@null"
     android:gravity="bottom|center_horizontal"
-    android:background="@drawable/ic_launcher" />
+    android:paddingBottom="2dp"
+    android:shadowColor="@android:color/black"
+    android:shadowDy="1.2"
+    android:shadowRadius="1.2"
+    android:singleLine="true"
+    android:textSize="@dimen/filters_textSize" />

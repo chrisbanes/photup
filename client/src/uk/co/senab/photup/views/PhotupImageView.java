@@ -126,7 +126,7 @@ public class PhotupImageView extends CacheableImageView {
 		}
 	}
 
-	private Bitmap getCurrentBitmap() {
+	public Bitmap getCurrentBitmap() {
 		Drawable d = getDrawable();
 		if (d instanceof BitmapDrawable) {
 			return ((BitmapDrawable) d).getBitmap();

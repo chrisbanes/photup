@@ -52,7 +52,6 @@ public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 	};
 
 	private final Animation mSlideInBottomAnim, mSlideOutBottomAnim;
-	private final Filter[] mFilters;
 	private final ExecutorService mExecutor;
 
 	public FiltersRadioGroup(Context context, AttributeSet attrs) {
@@ -66,15 +65,13 @@ public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 		mSlideOutBottomAnim = AnimationUtils.loadAnimation(context, R.anim.slide_out_bottom);
 		mSlideOutBottomAnim.setAnimationListener(this);
 
-		mFilters = Filter.getFilters();
-
 		addButtons(context);
 	}
 
 	private void addButtons(Context context) {
 		LayoutInflater layoutInflater = LayoutInflater.from(context);
 		RadioButton button;
-		for (Filter filter : Filter.getFilters()) {
+		for (Filter filter : Filter.FILTERS) {
 			button = (RadioButton) layoutInflater.inflate(R.layout.layout_filters_item, this, false);
 			button.setText(filter.getLabelId());
 			button.setId(filter.getId());
@@ -83,7 +80,7 @@ public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 	}
 
 	public void setPhotoUpload(PhotoUpload upload) {
-		for (final Filter filter : mFilters) {
+		for (final Filter filter : Filter.FILTERS) {
 			final RadioButton button = (RadioButton) findViewById(filter.getId());
 
 			Drawable oldBg = button.getBackground();
