@@ -135,7 +135,7 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 
 	public void onUploadChanged(PhotoUpload upload, boolean added) {
 		mAdapter.notifyDataSetChanged();
-		
+
 		if (mController.getSelectedPhotoUploadsSize() == 0) {
 			finish();
 		}
@@ -168,7 +168,9 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		mFilterGroup.onDestroy();
+		if (null != mFilterGroup) {
+			mFilterGroup.onDestroy();
+		}
 		mController.removePhotoSelectionListener(this);
 	}
 
