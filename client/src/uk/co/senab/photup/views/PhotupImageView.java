@@ -2,9 +2,9 @@ package uk.co.senab.photup.views;
 
 import java.lang.ref.WeakReference;
 
+import uk.co.senab.bitmapcache.BitmapLruCache;
+import uk.co.senab.bitmapcache.CacheableBitmapWrapper;
 import uk.co.senab.bitmapcache.CacheableImageView;
-import uk.co.senab.bitmapcache.cache.BitmapLruCache;
-import uk.co.senab.bitmapcache.cache.CacheableBitmapWrapper;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.model.PhotoUpload;
 import android.content.Context;

@@ -5,7 +5,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import uk.co.senab.bitmapcache.cache.BitmapLruCache;
+import uk.co.senab.bitmapcache.BitmapLruCache;
 import android.app.Application;
 import android.content.Context;
 import android.view.Display;
