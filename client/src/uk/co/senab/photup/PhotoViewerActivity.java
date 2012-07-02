@@ -104,6 +104,9 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 			case R.id.menu_filters:
 				showFiltersView();
 				return true;
+			case R.id.menu_remove:
+				mController.removePhotoUpload(getCurrentUpload());
+				return true;
 		}
 
 		return super.onOptionsItemSelected(item);
@@ -132,6 +135,10 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 
 	public void onUploadChanged(PhotoUpload upload, boolean added) {
 		mAdapter.notifyDataSetChanged();
+		
+		if (mController.getSelectedPhotoUploadsSize() == 0) {
+			finish();
+		}
 	}
 
 	@Override

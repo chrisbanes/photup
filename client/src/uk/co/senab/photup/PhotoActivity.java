@@ -62,6 +62,15 @@ public class PhotoActivity extends SherlockFragmentActivity implements OnUploadC
 	public boolean onOptionsItemSelected(MenuItem item) {
 		return super.onOptionsItemSelected(item);
 	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
+		if (mPhotoController.getSelectedPhotoUploadsSize() == 0) {
+			getSupportActionBar().setSelectedNavigationItem(0);
+		}
+	}
 
 	public void onUploadChanged(PhotoUpload upload, boolean added) {
 		getSupportActionBar().getTabAt(1).setText(getSelectedTabTitle());
