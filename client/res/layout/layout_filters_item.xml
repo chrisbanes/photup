@@ -10,4 +10,5 @@
     android:shadowDy="1.2"
     android:shadowRadius="1.2"
     android:singleLine="true"
-    android:textSize="@dimen/filters_textSize" />
+    android:textSize="@dimen/filters_textSize"
+    android:layout_margin="1dp" />
