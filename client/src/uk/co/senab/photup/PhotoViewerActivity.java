@@ -52,7 +52,7 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 	
 	@Override
 	public void onBackPressed() {
-		if (mFilterGroup.getVisibility() == View.VISIBLE) {
+		if (null != mFilterGroup && mFilterGroup.getVisibility() == View.VISIBLE) {
 			toggleActionBarVisibility();
 		} else {
 			super.onBackPressed();
