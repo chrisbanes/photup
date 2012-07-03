@@ -40,6 +40,7 @@ public class UploadActivity extends Activity implements ServiceConnection {
 		unbindService(this);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void onServiceConnected(ComponentName name, IBinder service) {
 		mBinder = (ServiceBinder<PhotoUploadService>) service;
 	}

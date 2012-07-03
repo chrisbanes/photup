@@ -130,6 +130,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	private PhotoSelectionController mController;
 
 	private final Handler mHandler = new Handler(this);
+	private int mNumberUploaded = 0;
 	private String mAlbumId;
 
 	private NotificationManager mNotificationMgr;
@@ -185,13 +186,14 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 	private void onFinishedUpload(PhotoUpload completedUpload) {
 		mController.removePhotoUpload(completedUpload);
+		mNumberUploaded++;
 
 		PhotoUpload nextUpload = getNextUpload();
 		if (null != nextUpload) {
 			startUpload(nextUpload);
 		} else {
 			stopForeground(false);
-			updateNotification();
+			finishedNotification();
 		}
 	}
 
@@ -213,6 +215,14 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 	void updateNotification() {
 		mNotificationBuilder.setWhen(System.currentTimeMillis());
+
+		mNotificationMgr.notify(NOTIFICATION_ID, mNotificationBuilder.getNotification());
+	}
+
+	void finishedNotification() {
+		mNotificationBuilder.setOngoing(false);
+		mNotificationBuilder.setWhen(System.currentTimeMillis());
+		mNotificationBuilder.setContentText("Uploaded " + mNumberUploaded + " photos");
 
 		mNotificationMgr.notify(NOTIFICATION_ID, mNotificationBuilder.getNotification());
 	}
