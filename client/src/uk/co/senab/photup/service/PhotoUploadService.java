@@ -1,0 +1,176 @@
+package uk.co.senab.photup.service;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.net.MalformedURLException;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import uk.co.senab.photup.PhotoSelectionActivity;
+import uk.co.senab.photup.PhotoSelectionController;
+import uk.co.senab.photup.PhotupApplication;
+import uk.co.senab.photup.R;
+import uk.co.senab.photup.facebook.Session;
+import uk.co.senab.photup.model.PhotoUpload;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
+import android.os.Binder;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
+import android.text.TextUtils;
+import android.util.Log;
+
+import com.facebook.android.Facebook;
+
+public class PhotoUploadService extends Service {
+
+	static final int NOTIFICATION_ID = 1000;
+
+	public static class ServiceBinder<S> extends Binder {
+		private WeakReference<S> mService;
+
+		public ServiceBinder(final S service) {
+			mService = new WeakReference<S>(service);
+		}
+
+		public void close() {
+			mService.clear();
+			mService = null;
+		}
+
+		public S getService() {
+			return mService.get();
+		}
+	}
+
+	private static class UploadPhotoRunnable implements Runnable {
+
+		static final String LOG_TAG = "UploadPhotoRunnable";
+
+		private WeakReference<Context> mContextRef;
+		private final Session mSession;
+		private final PhotoUpload mUpload;
+		private final String mAlbumId;
+
+		public UploadPhotoRunnable(Context context, PhotoUpload upload, Session session, String albumId) {
+			mContextRef = new WeakReference<Context>(context);
+			mUpload = upload;
+			mSession = session;
+			mAlbumId = albumId;
+		}
+
+		public void run() {
+			Context context = mContextRef.get();
+			if (null == context) {
+				return;
+			}
+
+			Facebook facebook = mSession.getFb();
+			Bundle bundle = new Bundle();
+
+			String caption = mUpload.getCaption();
+			if (!TextUtils.isEmpty(caption)) {
+				bundle.putString("message", caption);
+			}
+
+			// TODO ADD PLACE param
+
+			/**
+			 * Photo
+			 */
+			Bitmap bitmap = mUpload.getOriginal(context);
+			if (mUpload.requiresProcessing()) {
+				Bitmap process = mUpload.getProcessedOriginal(bitmap);
+				bitmap.recycle();
+				bitmap = process;
+			}
+
+			// TODO Resizing
+
+			ByteArrayOutputStream bos = new ByteArrayOutputStream(1024 * 128);
+			bitmap.compress(CompressFormat.JPEG, 80, bos);
+			bitmap.recycle();
+			bundle.putByteArray("source", bos.toByteArray());
+			bos = null;
+
+			/**
+			 * Actual Request
+			 */
+			try {
+				String response = facebook.request(mAlbumId + "/photos", bundle, "POST");
+				Log.d(LOG_TAG, response);
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			// REMOVE UPLOAD FROM CONTROLLER
+		}
+	}
+
+	private ServiceBinder<PhotoUploadService> mBinder;
+
+	private ExecutorService mExecutor;
+	private Session mSession;
+	private PhotoSelectionController mController;
+
+	private NotificationManager mNotificationMgr;
+	private NotificationCompat.Builder mNotificationBuilder;
+
+	@Override
+	public void onCreate() {
+		super.onCreate();
+		mBinder = new ServiceBinder<PhotoUploadService>(this);
+		mController = PhotupApplication.getApplication(this).getPhotoSelectionController();
+		mExecutor = Executors.newSingleThreadExecutor();
+		mSession = Session.restore(this);
+
+		mNotificationMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+	}
+
+	@Override
+	public IBinder onBind(Intent intent) {
+		return mBinder;
+	}
+
+	public void uploadAll(String albumId) {
+		List<PhotoUpload> uploads = mController.getSelectedPhotoUploads();
+		if (!uploads.isEmpty()) {
+			startForeground();
+			for (PhotoUpload upload : uploads) {
+				mExecutor.submit(new UploadPhotoRunnable(getApplicationContext(), upload, mSession, albumId));
+			}
+		}
+	}
+
+	private void startForeground() {
+		if (null == mNotificationBuilder) {
+			mNotificationBuilder = new NotificationCompat.Builder(this);
+			mNotificationBuilder.setSmallIcon(R.drawable.ic_launcher);
+			mNotificationBuilder.setContentTitle(getString(R.string.app_name));
+			mNotificationBuilder.setOngoing(true);
+			mNotificationBuilder.setWhen(System.currentTimeMillis());
+
+			PendingIntent intent = PendingIntent
+					.getActivity(this, 0, new Intent(this, PhotoSelectionActivity.class), 0);
+			mNotificationBuilder.setContentIntent(intent);
+		}
+
+		startForeground(NOTIFICATION_ID, mNotificationBuilder.getNotification());
+	}
+
+	void updateNotification() {
+		mNotificationBuilder.setWhen(System.currentTimeMillis());
+
+		mNotificationMgr.notify(NOTIFICATION_ID, mNotificationBuilder.getNotification());
+	}
+}

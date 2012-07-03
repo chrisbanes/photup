@@ -17,8 +17,8 @@
         android:theme="@style/Theme.Photup" >
         <activity
             android:name=".MainActivity"
-            android:theme="@android:style/Theme.NoDisplay"
-            android:noHistory="false">
+            android:noHistory="false"
+            android:theme="@android:style/Theme.NoDisplay" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -29,11 +29,18 @@
             android:name=".PhotoSelectionActivity"
             android:uiOptions="splitActionBarWhenNarrow" >
         </activity>
+        
+        <activity
+            android:name=".UploadActivity"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
         <activity
             android:name="PhotoViewerActivity"
             android:theme="@style/Theme.Photup.FullscreenOverlay"
             android:uiOptions="splitActionBarWhenNarrow" >
         </activity>
+
+        <service android:name=".service.PhotoUploadService" />
     </application>
 
 </manifest>

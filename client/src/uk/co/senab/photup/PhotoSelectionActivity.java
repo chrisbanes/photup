@@ -2,6 +2,7 @@ package uk.co.senab.photup;
 
 import uk.co.senab.photup.listeners.OnUploadChangedListener;
 import uk.co.senab.photup.model.PhotoUpload;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.animation.Animation;
@@ -60,6 +61,13 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		
+		switch (item.getItemId()) {
+			case R.id.menu_upload:
+				startActivity(new Intent(this, UploadActivity.class));
+				return true;
+		}
+		
 		return super.onOptionsItemSelected(item);
 	}
 	

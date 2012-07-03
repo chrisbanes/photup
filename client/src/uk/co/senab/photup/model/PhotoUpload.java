@@ -1,14 +1,17 @@
 package uk.co.senab.photup.model;
 
-import com.lightbox.android.photoprocessing.PhotoProcessing;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 
+import com.lightbox.android.photoprocessing.PhotoProcessing;
+
 public abstract class PhotoUpload {
 
 	private Filter mFilter;
+	private String mCaption;
+
+	
 
 	public abstract Uri getOriginalPhotoUri();
 
@@ -42,6 +45,14 @@ public abstract class PhotoUpload {
 
 	public boolean requiresProcessing() {
 		return null != mFilter;
+	}
+	
+	public String getCaption() {
+		return mCaption;
+	}
+
+	public void setCaption(String caption) {
+		mCaption = caption;
 	}
 
 	@Override
