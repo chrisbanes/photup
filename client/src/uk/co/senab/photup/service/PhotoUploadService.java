@@ -23,16 +23,19 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.os.Binder;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.facebook.android.Facebook;
 
-public class PhotoUploadService extends Service {
+public class PhotoUploadService extends Service implements Handler.Callback {
 
 	static final int NOTIFICATION_ID = 1000;
+	static final int MSG_UPLOAD_COMPLETE = 0;
 
 	public static class ServiceBinder<S> extends Binder {
 		private WeakReference<S> mService;
@@ -55,13 +58,15 @@ public class PhotoUploadService extends Service {
 
 		static final String LOG_TAG = "UploadPhotoRunnable";
 
-		private WeakReference<Context> mContextRef;
+		private final WeakReference<Context> mContextRef;
+		private final Handler mHandler;
 		private final Session mSession;
 		private final PhotoUpload mUpload;
 		private final String mAlbumId;
 
-		public UploadPhotoRunnable(Context context, PhotoUpload upload, Session session, String albumId) {
+		public UploadPhotoRunnable(Context context, Handler handler, PhotoUpload upload, Session session, String albumId) {
 			mContextRef = new WeakReference<Context>(context);
+			mHandler = handler;
 			mUpload = upload;
 			mSession = session;
 			mAlbumId = albumId;
@@ -113,7 +118,8 @@ public class PhotoUploadService extends Service {
 				e.printStackTrace();
 			}
 
-			// REMOVE UPLOAD FROM CONTROLLER
+			// Send complete message
+			mHandler.sendMessage(mHandler.obtainMessage(MSG_UPLOAD_COMPLETE, mUpload));
 		}
 	}
 
@@ -122,6 +128,9 @@ public class PhotoUploadService extends Service {
 	private ExecutorService mExecutor;
 	private Session mSession;
 	private PhotoSelectionController mController;
+
+	private final Handler mHandler = new Handler(this);
+	private String mAlbumId;
 
 	private NotificationManager mNotificationMgr;
 	private NotificationCompat.Builder mNotificationBuilder;
@@ -142,13 +151,47 @@ public class PhotoUploadService extends Service {
 		return mBinder;
 	}
 
+	public boolean handleMessage(Message msg) {
+		switch (msg.what) {
+			case MSG_UPLOAD_COMPLETE:
+				onFinishedUpload((PhotoUpload) msg.obj);
+				return true;
+		}
+
+		return false;
+	}
+
 	public void uploadAll(String albumId) {
+		mAlbumId = albumId;
+
+		PhotoUpload nextUpload = getNextUpload();
+		if (null != nextUpload) {
+			startForeground();
+			startUpload(nextUpload);
+		}
+	}
+
+	private PhotoUpload getNextUpload() {
 		List<PhotoUpload> uploads = mController.getSelectedPhotoUploads();
 		if (!uploads.isEmpty()) {
-			startForeground();
-			for (PhotoUpload upload : uploads) {
-				mExecutor.submit(new UploadPhotoRunnable(getApplicationContext(), upload, mSession, albumId));
-			}
+			return uploads.get(0);
+		}
+		return null;
+	}
+
+	private void startUpload(PhotoUpload upload) {
+		mExecutor.submit(new UploadPhotoRunnable(this, mHandler, upload, mSession, mAlbumId));
+	}
+
+	private void onFinishedUpload(PhotoUpload completedUpload) {
+		mController.removePhotoUpload(completedUpload);
+
+		PhotoUpload nextUpload = getNextUpload();
+		if (null != nextUpload) {
+			startUpload(nextUpload);
+		} else {
+			stopForeground(false);
+			updateNotification();
 		}
 	}
 
@@ -173,4 +216,5 @@ public class PhotoUploadService extends Service {
 
 		mNotificationMgr.notify(NOTIFICATION_ID, mNotificationBuilder.getNotification());
 	}
+
 }
