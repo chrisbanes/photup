@@ -49,7 +49,6 @@ public class PhotosBaseAdapter extends BaseAdapter {
 
 		PhotoItemLayout layout = (PhotoItemLayout) view;
 		layout.getImageView().requestThumbnail(getItem(position), true);
-		layout.setChecked(true);
 
 		return view;
 	}
