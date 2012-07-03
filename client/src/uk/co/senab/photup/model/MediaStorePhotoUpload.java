@@ -37,7 +37,7 @@ public class MediaStorePhotoUpload extends PhotoUpload {
 		try {
 			final int size = Math.min(PhotupApplication.getApplication(context).getLargestScreenDimension(),
 					Constants.DISPLAY_PHOTO_SIZE);
-			return Utils.resizeBitmap(context.getContentResolver(), getOriginalPhotoUri(), size);
+			return Utils.resizeBitmap(context.getContentResolver(), getOriginalPhotoUri(), size, false);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			return null;
@@ -47,7 +47,7 @@ public class MediaStorePhotoUpload extends PhotoUpload {
 	@Override
 	public Bitmap getUploadImage(Context context, int biggestDimension) {
 		try {
-			return Utils.resizeBitmap(context.getContentResolver(), getOriginalPhotoUri(), biggestDimension);
+			return Utils.resizeBitmap(context.getContentResolver(), getOriginalPhotoUri(), biggestDimension, true);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			return null;

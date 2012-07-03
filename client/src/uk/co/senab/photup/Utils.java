@@ -2,6 +2,9 @@ package uk.co.senab.photup;
 
 import java.io.FileNotFoundException;
 
+import com.lightbox.android.photoprocessing.PhotoProcessing;
+import com.lightbox.android.photoprocessing.utils.MediaUtils;
+
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -47,6 +50,9 @@ public class Utils {
 	// And to convert the image URI to the direct file system path of the image
 	// file
 	public static String getPathFromContentUri(ContentResolver cr, Uri contentUri) {
+		if (Constants.DEBUG) {
+			Log.d("Utils", "Getting file path for Uri: " + contentUri);
+		}
 
 		String returnValue = null;
 
@@ -70,8 +76,8 @@ public class Utils {
 		return returnValue;
 	}
 
-	public static Bitmap resizeBitmap(final ContentResolver resolver, final Uri uri, final int MAX_DIM)
-			throws FileNotFoundException {
+	public static Bitmap resizeBitmap(final ContentResolver resolver, final Uri uri, final int maxDimension,
+			final boolean fineResize) throws FileNotFoundException {
 
 		// Get original dimensions
 		BitmapFactory.Options o = new BitmapFactory.Options();
@@ -95,10 +101,10 @@ public class Utils {
 		o.inPurgeable = true;
 		o.inInputShareable = true;
 
-		if (origWidth > MAX_DIM || origHeight > MAX_DIM) {
+		if (origWidth > maxDimension || origHeight > maxDimension) {
 			int k = 1;
 			int tmpHeight = origHeight, tmpWidth = origWidth;
-			while ((tmpWidth / 2) >= MAX_DIM || (tmpHeight / 2) >= MAX_DIM) {
+			while ((tmpWidth / 2) >= maxDimension || (tmpHeight / 2) >= maxDimension) {
 				tmpWidth /= 2;
 				tmpHeight /= 2;
 				k *= 2;
@@ -109,12 +115,48 @@ public class Utils {
 		} else {
 			bitmap = BitmapFactory.decodeStream(resolver.openInputStream(uri), null, o);
 		}
-		
-		if (Constants.DEBUG) {
-			Log.d("Utils", "Resized bitmap to: " + bitmap.getWidth() + "x" + bitmap.getHeight());
+
+		if (null != bitmap) {
+			// Do fine resize if needed
+			if (fineResize) {
+				bitmap = fineResizePhoto(bitmap, maxDimension);
+			}
+
+			if (Constants.DEBUG) {
+				Log.d("Utils", "Resized bitmap to: " + bitmap.getWidth() + "x" + bitmap.getHeight());
+			}
+
+			final String filePath = getPathFromContentUri(resolver, uri);
+			if (null != filePath) {
+				final int angle = MediaUtils.getExifOrientation(filePath);
+				if (angle != 0) {
+					if (Constants.DEBUG) {
+						Log.d("Utils", "Rotating bitmap by: " + angle);
+					}
+					bitmap = PhotoProcessing.rotate(bitmap, angle);
+				}
+			}
 		}
 
 		return bitmap;
+	}
+
+	public static Bitmap fineResizePhoto(final Bitmap bitmap, final int maxDimension) {
+		final int width = bitmap.getWidth();
+		final int height = bitmap.getHeight();
+		final int biggestDimension = Math.max(width, height);
+
+		if (biggestDimension <= maxDimension) {
+			return bitmap;
+		}
+
+		final float ratio = maxDimension / (float) biggestDimension;
+		Bitmap resized = PhotoProcessing.resize(bitmap, Math.round(width * ratio), Math.round(height * ratio));
+		if (Constants.DEBUG) {
+			Log.d("PhotoUpload", "Finely resized to: " + resized.getWidth() + "x" + resized.getHeight());
+		}
+
+		return resized;
 	}
 
 }

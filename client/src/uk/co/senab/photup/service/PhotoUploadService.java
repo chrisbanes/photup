@@ -96,8 +96,6 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 			 * Photo
 			 */
 			Bitmap bitmap = mUpload.getUploadImage(context, largestDimension);
-			bitmap = PhotoUpload.resizePhoto(bitmap, largestDimension);
-
 			if (mUpload.requiresProcessing()) {
 				bitmap = mUpload.processBitmap(bitmap, true);
 			}
