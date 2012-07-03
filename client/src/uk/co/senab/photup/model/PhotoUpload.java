@@ -23,11 +23,7 @@ public abstract class PhotoUpload {
 	}
 
 	public void setFilterUsed(Filter filter) {
-		if (null != filter && filter.getId() == Filter.FILTER_ORIGINAL) {
-			mFilter = null;
-		} else {
-			mFilter = filter;
-		}
+		mFilter = filter;
 	}
 
 	public Filter getFilterUsed() {

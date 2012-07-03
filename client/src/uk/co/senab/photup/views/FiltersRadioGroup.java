@@ -89,12 +89,12 @@ public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 		for (final Filter filter : Filter.FILTERS) {
 			final RadioButton button = (RadioButton) findViewById(filter.getId());
 
-			Drawable oldBg = button.getBackground();
-			button.setBackgroundDrawable(null);
-
-			if (oldBg instanceof BitmapDrawable) {
-				((BitmapDrawable) oldBg).getBitmap().recycle();
-			}
+//			Drawable oldBg = button.getBackground();
+//			button.setBackgroundDrawable(null);
+//
+//			if (oldBg instanceof BitmapDrawable) {
+//				((BitmapDrawable) oldBg).getBitmap().recycle();
+//			}
 
 			mExecutor.submit(new FilterRunnable(getContext(), upload, filter, button));
 		}
