@@ -24,13 +24,19 @@ public class MediaStorePhotoUpload extends PhotoUpload {
 	}
 
 	public Bitmap getThumbnail(Context context) {
-		return Thumbnails.getThumbnail(context.getContentResolver(), mId, Thumbnails.MICRO_KIND, null);
+		try {
+			return Thumbnails.getThumbnail(context.getContentResolver(), mId, Thumbnails.MICRO_KIND, null);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	@Override
 	public Bitmap getOriginal(Context context) {
 		try {
-			final int size = Math.min(PhotupApplication.getApplication(context).getLargestScreenDimension(), Constants.MAX_PHOTO_SIZE);
+			final int size = Math.min(PhotupApplication.getApplication(context).getLargestScreenDimension(),
+					Constants.MAX_PHOTO_SIZE);
 			return Utils.resizeBitmap(context.getContentResolver(), getOriginalPhotoUri(), size);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

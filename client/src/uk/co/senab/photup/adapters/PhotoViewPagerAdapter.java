@@ -59,7 +59,7 @@ public class PhotoViewPagerAdapter extends PagerAdapter {
 		PhotoUpload upload = mItems.get(position);
 
 		MultiTouchImageView imageView = (MultiTouchImageView) view.findViewById(R.id.iv_photo);
-		imageView.requestFullSize(upload);
+		imageView.requestFullSize(upload, true);
 		imageView.setZoomable(true);
 		
 		view.setTag(upload);

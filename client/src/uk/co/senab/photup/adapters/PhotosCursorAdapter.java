@@ -31,7 +31,7 @@ public class PhotosCursorAdapter extends ResourceCursorAdapter {
 
 		long id = cursor.getInt(cursor.getColumnIndexOrThrow(ImageColumns._ID));
 		final PhotoUpload upload = new MediaStorePhotoUpload(id);
-		iv.requestThumbnail(upload);
+		iv.requestThumbnail(upload,false);
 
 		view.setTag(upload);
 

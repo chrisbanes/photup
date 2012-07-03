@@ -49,6 +49,15 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 	private PhotoSelectionController mController;
 
 	private boolean mIgnoreCheckCallback = false;
+	
+	@Override
+	public void onBackPressed() {
+		if (mFilterGroup.getVisibility() == View.VISIBLE) {
+			toggleActionBarVisibility();
+		} else {
+			super.onBackPressed();
+		}
+	}
 
 	public void onCheckedChanged(RadioGroup group, int checkedId) {
 		if (!mIgnoreCheckCallback) {
@@ -59,7 +68,7 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 			PhotoUpload upload = getCurrentUpload();
 			upload.setFilterUsed(filter);
 
-			imageView.requestFullSize(upload);
+			imageView.requestFullSize(upload, true);
 		}
 	}
 
@@ -124,6 +133,7 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 		mGestureDectector = new GestureDetector(this, new TapListener());
 
 		mViewPager = (ViewPager) findViewById(R.id.vp_photos);
+		mViewPager.setOffscreenPageLimit(1);
 		mAdapter = new PhotoViewPagerAdapter(this, this);
 		mViewPager.setAdapter(mAdapter);
 		mAdapter.notifyDataSetChanged();

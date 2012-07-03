@@ -48,7 +48,7 @@ public class PhotosBaseAdapter extends BaseAdapter {
 		}
 
 		PhotupImageView iv = (PhotupImageView) view.findViewById(R.id.iv_photo);
-		iv.requestThumbnail(getItem(position));
+		iv.requestThumbnail(getItem(position), true);
 
 		return view;
 	}

@@ -50,6 +50,13 @@ public class SelectedPhotosFragment extends SherlockListFragment implements
 		setListAdapter(mAdapter);
 		return view;
 	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		
+		mAdapter.notifyDataSetChanged();
+	}
 
 	@Override
 	public void onDestroy() {
