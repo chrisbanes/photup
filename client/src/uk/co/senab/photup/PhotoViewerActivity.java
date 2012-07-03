@@ -134,6 +134,7 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 
 		mViewPager = (ViewPager) findViewById(R.id.vp_photos);
 		mViewPager.setOffscreenPageLimit(1);
+		mViewPager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.viewpager_margin));
 		mAdapter = new PhotoViewPagerAdapter(this, this);
 		mViewPager.setAdapter(mAdapter);
 		mAdapter.notifyDataSetChanged();
