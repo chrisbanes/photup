@@ -75,7 +75,7 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 		super.onCreate(savedInstanceState);
 
 		getLoaderManager().initLoader(LOADER_USER_PHOTOS, null, this);
-		mAdapter = new PhotosCursorAdapter(getActivity(), R.layout.item_user_photo, null, true);
+		mAdapter = new PhotosCursorAdapter(getActivity(), R.layout.item_grid_photo, null, true);
 
 		mPhotoSelectionController.addPhotoSelectionListener(this);
 	}

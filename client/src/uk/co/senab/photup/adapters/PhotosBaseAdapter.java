@@ -6,7 +6,7 @@ import uk.co.senab.photup.PhotoSelectionController;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.model.PhotoUpload;
-import uk.co.senab.photup.views.PhotupImageView;
+import uk.co.senab.photup.views.PhotoItemLayout;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,11 +44,12 @@ public class PhotosBaseAdapter extends BaseAdapter {
 
 	public View getView(int position, View view, ViewGroup parent) {
 		if (null == view) {
-			view = mLayoutInflater.inflate(R.layout.item_selected_photo, parent, false);
+			view = mLayoutInflater.inflate(R.layout.item_grid_photo, parent, false);
 		}
 
-		PhotupImageView iv = (PhotupImageView) view.findViewById(R.id.iv_photo);
-		iv.requestThumbnail(getItem(position), true);
+		PhotoItemLayout layout = (PhotoItemLayout) view;
+		layout.getImageView().requestThumbnail(getItem(position), true);
+		layout.setChecked(true);
 
 		return view;
 	}

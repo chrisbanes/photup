@@ -1,5 +1,6 @@
 package uk.co.senab.photup.fragments;
 
+import uk.co.senab.bitmapcache.R;
 import uk.co.senab.photup.PhotoSelectionController;
 import uk.co.senab.photup.PhotoViewerActivity;
 import uk.co.senab.photup.adapters.PhotosBaseAdapter;
@@ -11,26 +12,20 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.GridView;
 import android.widget.ListView;
 
-import com.actionbarsherlock.app.SherlockListFragment;
+import com.actionbarsherlock.app.SherlockFragment;
 import com.example.android.swipedismiss.SwipeDismissListViewTouchListener;
 
-public class SelectedPhotosFragment extends SherlockListFragment implements
-		SwipeDismissListViewTouchListener.OnDismissCallback, OnUploadChangedListener {
+public class SelectedPhotosFragment extends SherlockFragment implements
+		SwipeDismissListViewTouchListener.OnDismissCallback, OnUploadChangedListener, OnItemClickListener {
 
+	private GridView mGridView;
 	private PhotosBaseAdapter mAdapter;
 	private PhotoSelectionController mPhotoSelectionController;
-
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-
-		ListView listView = getListView();
-		SwipeDismissListViewTouchListener touchListener = new SwipeDismissListViewTouchListener(listView, this);
-		listView.setOnTouchListener(touchListener);
-		listView.setOnScrollListener(touchListener.makeScrollListener());
-	}
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -45,16 +40,19 @@ public class SelectedPhotosFragment extends SherlockListFragment implements
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = super.onCreateView(inflater, container, savedInstanceState);
+		View view = inflater.inflate(R.layout.fragment_selected_photos, container, false);
 		mAdapter = new PhotosBaseAdapter(getActivity());
-		setListAdapter(mAdapter);
+		
+		mGridView = (GridView) view.findViewById(R.id.gv_selected_photos);
+		mGridView.setOnItemClickListener(this);
+		mGridView.setAdapter(mAdapter);
+		
 		return view;
 	}
-	
+
 	@Override
 	public void onResume() {
 		super.onResume();
-		
 		mAdapter.notifyDataSetChanged();
 	}
 
@@ -71,13 +69,6 @@ public class SelectedPhotosFragment extends SherlockListFragment implements
 	}
 
 	@Override
-	public void onListItemClick(ListView l, View v, int position, long id) {
-		Intent intent = new Intent(getActivity(), PhotoViewerActivity.class);
-		intent.putExtra(PhotoViewerActivity.EXTRA_POSITION, position);
-		startActivity(intent);
-	}
-
-	@Override
 	public void onPause() {
 		super.onPause();
 
@@ -86,6 +77,12 @@ public class SelectedPhotosFragment extends SherlockListFragment implements
 
 	public void onUploadChanged(PhotoUpload id, boolean added) {
 		mAdapter.notifyDataSetChanged();
+	}
+
+	public void onItemClick(AdapterView<?> parent, View view, int position, long arg3) {
+		Intent intent = new Intent(getActivity(), PhotoViewerActivity.class);
+		intent.putExtra(PhotoViewerActivity.EXTRA_POSITION, position);
+		startActivity(intent);
 	}
 
 }
