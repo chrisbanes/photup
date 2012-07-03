@@ -1,8 +1,8 @@
 package uk.co.senab.photup.views;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
+import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.model.Filter;
 import uk.co.senab.photup.model.PhotoUpload;
 import android.content.Context;
@@ -63,7 +63,7 @@ public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 	public FiltersRadioGroup(Context context, AttributeSet attrs) {
 		super(context, attrs);
 
-		mExecutor = Executors.newSingleThreadExecutor();
+		mExecutor = PhotupApplication.getApplication(context).getSingleThreadExecutorService();
 
 		mSlideInBottomAnim = AnimationUtils.loadAnimation(context, R.anim.slide_in_bottom);
 		mSlideInBottomAnim.setAnimationListener(this);
