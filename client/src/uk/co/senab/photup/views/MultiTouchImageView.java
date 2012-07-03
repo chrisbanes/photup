@@ -11,7 +11,7 @@ import android.view.MotionEvent;
 public class MultiTouchImageView extends PhotupImageView implements VersionedGestureDetector.OnGestureListener,
 		GestureDetector.OnDoubleTapListener {
 
-	static final long ANIMATION_DURATION = 200;
+	static final long ANIMATION_DURATION = 180;
 
 	private class AnimatedZoomRunnable implements Runnable {
 
@@ -36,7 +36,7 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 			centerMatrix();
 
 			if (currentMs < ANIMATION_DURATION) {
-				postDelayed(this, 20);
+				postDelayed(this, 17);
 			}
 		}
 	}
@@ -87,33 +87,23 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 	public void onScale(float scaleFactor, float focusX, float focusY) {
 		mSuppMatrix.postScale(scaleFactor, scaleFactor, focusX, focusY);
 
-		// We can't go above MAX ZOOM
-		if (getScale() > MAX_ZOOM) {
-			mSuppMatrix.setScale(MAX_ZOOM, MAX_ZOOM);
-		}
-
 		setImageMatrix(getDisplayMatrix());
 		centerMatrix();
 	}
 
 	public boolean onDoubleTap(MotionEvent e) {
-
 		try {
 			float scale = getScale();
 			float x = e.getX();
 			float y = e.getY();
 
-			if (scale == MAX_ZOOM) {
-				resetScalePan();
-				return true;
-			} else if (scale < MID_ZOOM) {
+			if (scale < MID_ZOOM) {
 				post(new AnimatedZoomRunnable(MID_ZOOM, x, y));
 			} else if (scale >= MID_ZOOM && scale < MAX_ZOOM) {
 				post(new AnimatedZoomRunnable(MAX_ZOOM, x, y));
+			} else {
+				post(new AnimatedZoomRunnable(MIN_ZOOM, x, y));
 			}
-			setImageMatrix(getDisplayMatrix());
-			centerMatrix();
-
 		} catch (java.lang.ArrayIndexOutOfBoundsException ae) {
 		}
 
@@ -148,7 +138,7 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 					case MotionEvent.ACTION_CANCEL:
 					case MotionEvent.ACTION_UP:
 						if (getScale() < MIN_ZOOM) {
-							resetScalePan();
+							post(new AnimatedZoomRunnable(MIN_ZOOM, 0f, 0f));
 						}
 						break;
 				}

@@ -31,7 +31,7 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 	class TapListener extends SimpleOnGestureListener {
 
 		@Override
-		public boolean onSingleTapUp(MotionEvent e) {
+		public boolean onSingleTapConfirmed(MotionEvent e) {
 			toggleActionBarVisibility();
 			return true;
 		}
@@ -49,7 +49,7 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 	private PhotoSelectionController mController;
 
 	private boolean mIgnoreCheckCallback = false;
-	
+
 	@Override
 	public void onBackPressed() {
 		if (null != mFilterGroup && mFilterGroup.getVisibility() == View.VISIBLE) {
@@ -191,7 +191,7 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 		mFilterGroup.show();
 		updateFiltersView();
 	}
-	
+
 	private void updateFiltersView() {
 		mIgnoreCheckCallback = true;
 		mFilterGroup.setPhotoUpload(mAdapter.getItem(mViewPager.getCurrentItem()));

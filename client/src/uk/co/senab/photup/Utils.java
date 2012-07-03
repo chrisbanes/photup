@@ -76,7 +76,7 @@ public class Utils {
 		return returnValue;
 	}
 
-	public static Bitmap resizeBitmap(final ContentResolver resolver, final Uri uri, final int maxDimension,
+	public static Bitmap resizeBitmap(final ContentResolver resolver, final Uri uri, final int MAX_DIM,
 			final boolean fineResize) throws FileNotFoundException {
 
 		// Get original dimensions
@@ -101,10 +101,10 @@ public class Utils {
 		o.inPurgeable = true;
 		o.inInputShareable = true;
 
-		if (origWidth > maxDimension || origHeight > maxDimension) {
+		if (origWidth > MAX_DIM || origHeight > MAX_DIM) {
 			int k = 1;
 			int tmpHeight = origHeight, tmpWidth = origWidth;
-			while ((tmpWidth / 2) >= maxDimension || (tmpHeight / 2) >= maxDimension) {
+			while ((tmpWidth / 2) >= MAX_DIM || (tmpHeight / 2) >= MAX_DIM) {
 				tmpWidth /= 2;
 				tmpHeight /= 2;
 				k *= 2;
@@ -119,7 +119,7 @@ public class Utils {
 		if (null != bitmap) {
 			// Do fine resize if needed
 			if (fineResize) {
-				bitmap = fineResizePhoto(bitmap, maxDimension);
+				bitmap = fineResizePhoto(bitmap, MAX_DIM);
 			}
 
 			if (Constants.DEBUG) {
