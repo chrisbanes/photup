@@ -2,9 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
-        android:id="@+id/menu_crop"
+        android:id="@+id/menu_caption"
         android:showAsAction="always"
-        android:title="@string/photo_crop"/>
+        android:title="@string/photo_caption"/>
     <item
         android:id="@+id/menu_filters"
         android:showAsAction="always"

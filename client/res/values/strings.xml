@@ -4,10 +4,9 @@
     <string name="app_name">photup</string>
     <string name="tab_photos">Photos</string>
     <string name="tab_selected_photos">Selected (%1$s)</string>
-    <string name="photo_caption_missing">No Caption</string>
     
     <string name="photo_effects">Effects</string>
     <string name="photo_remove">Remove</string>
-    <string name="photo_crop">Crop</string>
+    <string name="photo_caption">Caption</string>
 
 </resources>
