@@ -150,9 +150,6 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		if (null != mFilterGroup) {
-			mFilterGroup.onDestroy();
-		}
 		mController.removePhotoSelectionListener(this);
 	}
 

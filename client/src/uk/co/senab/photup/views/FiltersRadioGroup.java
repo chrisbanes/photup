@@ -8,7 +8,6 @@ import uk.co.senab.photup.model.PhotoUpload;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -142,19 +141,4 @@ public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 
 		super.setVisibility(visibility);
 	}
-	
-	public void onDestroy() {
-		mExecutor.shutdownNow();
-		
-		for (final Filter filter : Filter.FILTERS) {
-			final RadioButton button = (RadioButton) findViewById(filter.getId());
-			Drawable oldBg = button.getBackground();
-			button.setBackgroundDrawable(null);
-
-			if (oldBg instanceof BitmapDrawable) {
-				((BitmapDrawable) oldBg).getBitmap().recycle();
-			}
-		}
-	}
-
 }
