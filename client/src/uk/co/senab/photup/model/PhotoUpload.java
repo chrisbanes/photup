@@ -1,5 +1,7 @@
 package uk.co.senab.photup.model;
 
+import com.lightbox.android.photoprocessing.PhotoProcessing;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -13,6 +15,14 @@ public abstract class PhotoUpload {
 	public abstract Bitmap getThumbnail(Context context);
 
 	public abstract Bitmap getOriginal(Context context);
+
+	public Bitmap getProcessedOriginal(Bitmap bitmap) {
+		if (null != mFilter) {
+			return PhotoProcessing.filterPhoto(bitmap, mFilter.getId());
+		} else {
+			return bitmap;
+		}
+	}
 
 	public String getThumbnailKey() {
 		return "thumb_" + getOriginalPhotoUri();
@@ -30,7 +40,7 @@ public abstract class PhotoUpload {
 		return mFilter;
 	}
 
-	public boolean hasFilter() {
+	public boolean requiresProcessing() {
 		return null != mFilter;
 	}
 

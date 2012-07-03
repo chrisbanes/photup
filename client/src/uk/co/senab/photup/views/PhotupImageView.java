@@ -2,13 +2,10 @@ package uk.co.senab.photup.views;
 
 import java.lang.ref.WeakReference;
 
-import com.lightbox.android.photoprocessing.PhotoProcessing;
-
 import uk.co.senab.bitmapcache.BitmapLruCache;
 import uk.co.senab.bitmapcache.CacheableBitmapWrapper;
 import uk.co.senab.bitmapcache.CacheableImageView;
 import uk.co.senab.photup.PhotupApplication;
-import uk.co.senab.photup.model.Filter;
 import uk.co.senab.photup.model.PhotoUpload;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -77,7 +74,6 @@ public class PhotupImageView extends CacheableImageView {
 
 	static final class FilterRunnable implements Runnable {
 
-		private final Filter mFilter;
 		private final PhotupImageView mImageView;
 		private final PhotoUpload mUpload;
 		private final boolean mFullSize;
@@ -85,14 +81,13 @@ public class PhotupImageView extends CacheableImageView {
 		public FilterRunnable(PhotupImageView imageView, PhotoUpload upload, final boolean fullSize) {
 			mImageView = imageView;
 			mUpload = upload;
-			mFilter = upload.getFilterUsed();
 			mFullSize = fullSize;
 		}
 
 		public void run() {
 			Bitmap bitmap = mFullSize ? mUpload.getOriginal(mImageView.getContext()) : mUpload.getThumbnail(mImageView
 					.getContext());
-			final Bitmap filteredBitmap = PhotoProcessing.filterPhoto(bitmap, mFilter.getId());
+			final Bitmap filteredBitmap = mUpload.getProcessedOriginal(bitmap);
 			bitmap.recycle();
 
 			mImageView.post(new Runnable() {
@@ -114,7 +109,7 @@ public class PhotupImageView extends CacheableImageView {
 	}
 
 	public void requestThumbnail(final PhotoUpload upload, final boolean honourFilter) {
-		if (upload.hasFilter() && honourFilter) {
+		if (upload.requiresProcessing() && honourFilter) {
 			requestFiltered(upload, false);
 		} else {
 			requestImage(upload, false);
@@ -122,7 +117,7 @@ public class PhotupImageView extends CacheableImageView {
 	}
 
 	public void requestFullSize(final PhotoUpload upload, final boolean honourFilter) {
-		if (upload.hasFilter() && honourFilter) {
+		if (upload.requiresProcessing() && honourFilter) {
 			requestFiltered(upload, true);
 		} else {
 			requestImage(upload, true);
