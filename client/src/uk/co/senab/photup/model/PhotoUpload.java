@@ -1,8 +1,10 @@
 package uk.co.senab.photup.model;
 
+import uk.co.senab.photup.Constants;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.util.Log;
 
 import com.lightbox.android.photoprocessing.PhotoProcessing;
 
@@ -11,28 +13,46 @@ public abstract class PhotoUpload {
 	private Filter mFilter;
 	private String mCaption;
 
-	
-
 	public abstract Uri getOriginalPhotoUri();
 
-	public abstract Bitmap getThumbnail(Context context);
+	public abstract Bitmap getThumbnailImage(Context context);
 
-	public abstract Bitmap getOriginal(Context context);
+	public abstract Bitmap getDisplayImage(Context context);
 
-	public Bitmap getProcessedOriginal(Bitmap bitmap) {
+	public abstract Bitmap getUploadImage(Context context, int biggestDimension);
+
+	public Bitmap processBitmap(Bitmap bitmap, final boolean modifyOriginal) {
 		if (null != mFilter) {
-			return PhotoProcessing.filterPhoto(bitmap, mFilter.getId());
+			return PhotoProcessing.filterPhoto(bitmap, mFilter.getId(), modifyOriginal);
 		} else {
 			return bitmap;
 		}
 	}
 
-	public String getThumbnailKey() {
+	public static Bitmap resizePhoto(final Bitmap bitmap, final int maxDimension) {
+		final int width = bitmap.getWidth();
+		final int height = bitmap.getHeight();
+		final int biggestDimension = Math.max(width, height);
+
+		if (biggestDimension <= maxDimension) {
+			return bitmap;
+		}
+
+		final float ratio = maxDimension / (float) biggestDimension;
+		Bitmap resized = PhotoProcessing.resize(bitmap, Math.round(width * ratio), Math.round(height * ratio));
+		if (Constants.DEBUG) {
+			Log.d("PhotoUpload", "Finely resized to: " + resized.getWidth() + "x" + resized.getHeight());
+		}
+		
+		return resized;
+	}
+
+	public String getThumbnailImageKey() {
 		return "thumb_" + getOriginalPhotoUri();
 	}
 
-	public String getOriginalKey() {
-		return "full_" + getOriginalPhotoUri();
+	public String getDisplayImageKey() {
+		return "dsply_" + getOriginalPhotoUri();
 	}
 
 	public void setFilterUsed(Filter filter) {
@@ -46,7 +66,7 @@ public abstract class PhotoUpload {
 	public boolean requiresProcessing() {
 		return null != mFilter;
 	}
-	
+
 	public String getCaption() {
 		return mCaption;
 	}

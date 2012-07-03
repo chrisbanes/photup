@@ -47,11 +47,11 @@ public class PhotupImageView extends CacheableImageView {
 
 			PhotupImageView iv = mImageView.get();
 			if (null != iv) {
-				Bitmap bitmap = mFetchFullSize ? upload.getOriginal(iv.getContext()) : upload.getThumbnail(iv
+				Bitmap bitmap = mFetchFullSize ? upload.getDisplayImage(iv.getContext()) : upload.getThumbnailImage(iv
 						.getContext());
 
 				if (null != bitmap) {
-					final String key = mFetchFullSize ? upload.getOriginalKey() : upload.getThumbnailKey();
+					final String key = mFetchFullSize ? upload.getDisplayImageKey() : upload.getThumbnailImageKey();
 					wrapper = new CacheableBitmapWrapper(key, bitmap);
 				}
 			}
@@ -74,21 +74,37 @@ public class PhotupImageView extends CacheableImageView {
 
 	static final class FilterRunnable implements Runnable {
 
+		private final Context mContext;
 		private final PhotupImageView mImageView;
 		private final PhotoUpload mUpload;
 		private final boolean mFullSize;
+		private final BitmapLruCache mCache;
 
 		public FilterRunnable(PhotupImageView imageView, PhotoUpload upload, final boolean fullSize) {
+			mContext = imageView.getContext();
 			mImageView = imageView;
 			mUpload = upload;
 			mFullSize = fullSize;
+			mCache = PhotupApplication.getApplication(mContext).getImageCache();
 		}
 
 		public void run() {
-			Bitmap bitmap = mFullSize ? mUpload.getOriginal(mImageView.getContext()) : mUpload.getThumbnail(mImageView
-					.getContext());
-			final Bitmap filteredBitmap = mUpload.getProcessedOriginal(bitmap);
-			bitmap.recycle();
+			final Bitmap filteredBitmap;
+
+			final String key = mFullSize ? mUpload.getDisplayImageKey() : mUpload.getThumbnailImageKey();
+			CacheableBitmapWrapper wrapper = mCache.get(key);
+
+			if (null == wrapper || !wrapper.hasValidBitmap()) {
+				Bitmap bitmap = mFullSize ? mUpload.getDisplayImage(mContext) : mUpload.getThumbnailImage(mContext);
+				wrapper = new CacheableBitmapWrapper(key, bitmap);
+				wrapper.setBeingUsed(true);
+				mCache.put(wrapper);
+			} else {
+				wrapper.setBeingUsed(true);
+			}
+
+			filteredBitmap = mUpload.processBitmap(wrapper.getBitmap(), false);
+			wrapper.setBeingUsed(false);
 
 			mImageView.post(new Runnable() {
 				public void run() {
@@ -134,7 +150,7 @@ public class PhotupImageView extends CacheableImageView {
 			mCurrentTask.cancel(false);
 		}
 
-		final String key = fullSize ? upload.getOriginalKey() : upload.getThumbnailKey();
+		final String key = fullSize ? upload.getDisplayImageKey() : upload.getThumbnailImageKey();
 		BitmapLruCache cache = PhotupApplication.getApplication(getContext()).getImageCache();
 		final CacheableBitmapWrapper cached = cache.get(key);
 

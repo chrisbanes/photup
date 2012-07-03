@@ -39,7 +39,7 @@ public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 		}
 
 		public void run() {
-			Bitmap bitmap = mUpload.getThumbnail(mContext);
+			Bitmap bitmap = mUpload.getThumbnailImage(mContext);
 			final Bitmap filteredBitmap = PhotoProcessing.filterPhoto(bitmap, mFilter.getId());
 			bitmap.recycle();
 			

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.PhotoSelectionActivity;
 import uk.co.senab.photup.PhotoSelectionController;
 import uk.co.senab.photup.PhotupApplication;
@@ -88,17 +89,22 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 			// TODO ADD PLACE param
 
+			// TODO Make this a choice
+			final int largestDimension = Constants.FACEBOOK_MAX_PHOTO_SIZE;
+			
 			/**
 			 * Photo
 			 */
-			Bitmap bitmap = mUpload.getOriginal(context);
-			if (mUpload.requiresProcessing()) {
-				Bitmap process = mUpload.getProcessedOriginal(bitmap);
-				bitmap.recycle();
-				bitmap = process;
-			}
+			Bitmap bitmap = mUpload.getUploadImage(context, largestDimension);
+			bitmap = PhotoUpload.resizePhoto(bitmap, largestDimension);
 
-			// TODO Resizing
+			if (mUpload.requiresProcessing()) {
+				bitmap = mUpload.processBitmap(bitmap, true);
+			}
+			
+			if (Constants.DEBUG) {
+				Log.d(LOG_TAG, "Finished processing bitmap");
+			}
 
 			ByteArrayOutputStream bos = new ByteArrayOutputStream(1024 * 128);
 			bitmap.compress(CompressFormat.JPEG, 80, bos);
@@ -109,6 +115,9 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 			/**
 			 * Actual Request
 			 */
+			if (Constants.DEBUG) {
+				Log.d(LOG_TAG, "Starting Facebook Request");
+			}
 			try {
 				String response = facebook.request(mAlbumId + "/photos", bundle, "POST");
 				Log.d(LOG_TAG, response);

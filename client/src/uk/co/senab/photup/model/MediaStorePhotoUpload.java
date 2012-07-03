@@ -23,7 +23,7 @@ public class MediaStorePhotoUpload extends PhotoUpload {
 		return Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, String.valueOf(mId));
 	}
 
-	public Bitmap getThumbnail(Context context) {
+	public Bitmap getThumbnailImage(Context context) {
 		try {
 			return Thumbnails.getThumbnail(context.getContentResolver(), mId, Thumbnails.MICRO_KIND, null);
 		} catch (Exception e) {
@@ -33,11 +33,21 @@ public class MediaStorePhotoUpload extends PhotoUpload {
 	}
 
 	@Override
-	public Bitmap getOriginal(Context context) {
+	public Bitmap getDisplayImage(Context context) {
 		try {
 			final int size = Math.min(PhotupApplication.getApplication(context).getLargestScreenDimension(),
-					Constants.MAX_PHOTO_SIZE);
+					Constants.DISPLAY_PHOTO_SIZE);
 			return Utils.resizeBitmap(context.getContentResolver(), getOriginalPhotoUri(), size);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public Bitmap getUploadImage(Context context, int biggestDimension) {
+		try {
+			return Utils.resizeBitmap(context.getContentResolver(), getOriginalPhotoUri(), biggestDimension);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			return null;
