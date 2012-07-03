@@ -8,4 +8,8 @@ public class Constants {
 	
 	public static final int MAX_PHOTO_SIZE = 600;
 	
+	public static final String FACEBOOK_APP_ID = "134669876670695";
+	
+	public static final String[] FACEBOOK_PERMISSIONS = { "publish_stream", "user_photos" };
+	
 }

@@ -15,7 +15,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-public class PhotoActivity extends SherlockFragmentActivity implements OnUploadChangedListener, TabListener {
+public class PhotoSelectionActivity extends SherlockFragmentActivity implements OnUploadChangedListener, TabListener {
 
 	static final int TAB_PHOTOS = 0;
 	static final int TAB_SELECTED = 1;
