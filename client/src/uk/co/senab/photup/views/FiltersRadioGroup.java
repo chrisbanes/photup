@@ -6,8 +6,14 @@ import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.model.Filter;
 import uk.co.senab.photup.model.PhotoUpload;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,7 +33,7 @@ public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 		// TODO Should make these WeakReferences
 		private final Context mContext;
 		private final RadioButton mButton;
-		
+
 		private final PhotoUpload mUpload;
 		private final Filter mFilter;
 
@@ -42,17 +48,37 @@ public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 			Bitmap bitmap = mUpload.getThumbnailImage(mContext);
 			final Bitmap filteredBitmap = PhotoProcessing.filterPhoto(bitmap, mFilter.getId());
 			bitmap.recycle();
-			
+
 			if (Thread.currentThread().isInterrupted()) {
 				filteredBitmap.recycle();
 				return;
 			}
 
+			final Drawable background = createDrawable(mContext.getResources(), filteredBitmap);
+
 			mButton.post(new Runnable() {
 				public void run() {
-					mButton.setBackgroundDrawable(new BitmapDrawable(mContext.getResources(), filteredBitmap));
+					mButton.setBackgroundDrawable(background);
 				}
 			});
+		}
+
+		private Drawable createDrawable(final Resources resources, final Bitmap bitmap) {
+			final StateListDrawable stateListD = new StateListDrawable();
+			final Drawable bitmapDrawable = new BitmapDrawable(mContext.getResources(), bitmap);
+			final int inset = resources.getDimensionPixelSize(R.dimen.gridview_item_margin);
+
+			Drawable bgDrawable = new ColorDrawable(Color.TRANSPARENT);
+			LayerDrawable layer = new LayerDrawable(new Drawable[] { bgDrawable, bitmapDrawable });
+			layer.setLayerInset(1, inset, inset, inset, inset);
+			stateListD.addState(new int[] { -android.R.attr.state_checked }, layer);
+
+			bgDrawable = resources.getDrawable(R.drawable.photo_gallery_background);
+			layer = new LayerDrawable(new Drawable[] { bgDrawable, bitmapDrawable });
+			layer.setLayerInset(1, inset, inset, inset, inset);
+			stateListD.addState(new int[] { android.R.attr.state_checked }, layer);
+
+			return stateListD;
 		}
 	};
 
@@ -87,17 +113,9 @@ public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 	public void setPhotoUpload(PhotoUpload upload) {
 		for (final Filter filter : Filter.FILTERS) {
 			final RadioButton button = (RadioButton) findViewById(filter.getId());
-
-//			Drawable oldBg = button.getBackground();
-//			button.setBackgroundDrawable(null);
-//
-//			if (oldBg instanceof BitmapDrawable) {
-//				((BitmapDrawable) oldBg).getBitmap().recycle();
-//			}
-
 			mExecutor.submit(new FilterRunnable(getContext(), upload, filter, button));
 		}
-		
+
 		if (upload.requiresProcessing()) {
 			check(upload.getFilterUsed().getId());
 		} else {

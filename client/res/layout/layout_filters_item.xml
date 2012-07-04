@@ -4,11 +4,10 @@
     android:layout_height="@dimen/filters_radiogroup_height"
     android:background="@drawable/ic_launcher"
     android:button="@null"
-    android:gravity="bottom|center_horizontal"
-    android:paddingBottom="2dp"
+    android:gravity="center_horizontal|bottom"
     android:shadowColor="@android:color/black"
-    android:shadowDy="1.2"
-    android:shadowRadius="1.2"
+    android:shadowDx="1.3"
+    android:shadowDy="1.3"
+    android:shadowRadius="1.4"
     android:singleLine="true"
-    android:textSize="@dimen/filters_textSize"
-    android:layout_margin="1dp" />
+    android:textSize="@dimen/filters_textSize" />
