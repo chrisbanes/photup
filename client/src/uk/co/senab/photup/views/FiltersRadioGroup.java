@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
+import android.widget.HorizontalScrollView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -116,11 +117,17 @@ public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 			mExecutor.submit(new FilterRunnable(getContext(), upload, filter, button));
 		}
 
-		if (upload.requiresProcessing()) {
-			check(upload.getFilterUsed().getId());
-		} else {
-			clearCheck();
-		}
+		Filter filter = upload.getFilterUsed();
+		final int filterId = null != filter ? filter.getId() : Filter.FILTER_ORIGINAL;
+
+		check(filterId);
+
+		View child = findViewById(filterId);
+		final int width = child.getWidth();
+
+		final HorizontalScrollView scrollView = (HorizontalScrollView) getParent();
+		final int dx = (filterId * width) - ((scrollView.getWidth() - width) / 2);
+		scrollView.smoothScrollTo(dx, 0);
 	}
 
 	public void show() {
