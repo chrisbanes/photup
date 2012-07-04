@@ -15,13 +15,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
-import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockFragment;
-import com.example.android.swipedismiss.SwipeDismissListViewTouchListener;
 
-public class SelectedPhotosFragment extends SherlockFragment implements
-		SwipeDismissListViewTouchListener.OnDismissCallback, OnUploadChangedListener, OnItemClickListener {
+public class SelectedPhotosFragment extends SherlockFragment implements OnUploadChangedListener, OnItemClickListener {
 
 	private GridView mGridView;
 	private PhotosBaseAdapter mAdapter;
@@ -42,11 +39,11 @@ public class SelectedPhotosFragment extends SherlockFragment implements
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_selected_photos, container, false);
 		mAdapter = new PhotosBaseAdapter(getActivity());
-		
+
 		mGridView = (GridView) view.findViewById(R.id.gv_selected_photos);
 		mGridView.setOnItemClickListener(this);
 		mGridView.setAdapter(mAdapter);
-		
+
 		return view;
 	}
 
@@ -60,12 +57,6 @@ public class SelectedPhotosFragment extends SherlockFragment implements
 	public void onDestroy() {
 		super.onDestroy();
 		mPhotoSelectionController.removePhotoSelectionListener(this);
-	}
-
-	public void onDismiss(ListView listView, int[] reverseSortedPositions) {
-		for (int position : reverseSortedPositions) {
-			mPhotoSelectionController.removePhotoUpload((PhotoUpload) listView.getItemAtPosition(position));
-		}
 	}
 
 	@Override
