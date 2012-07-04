@@ -3,6 +3,7 @@ package uk.co.senab.photup.model;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.text.TextUtils;
 
 import com.lightbox.android.photoprocessing.PhotoProcessing;
 
@@ -52,7 +53,11 @@ public abstract class PhotoUpload {
 	}
 
 	public void setCaption(String caption) {
-		mCaption = caption;
+		if (TextUtils.isEmpty(caption)) {
+			mCaption = null;
+		} else {
+			mCaption = caption;
+		}
 	}
 
 	@Override

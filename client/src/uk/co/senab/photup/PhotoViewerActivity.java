@@ -6,6 +6,8 @@ import uk.co.senab.photup.model.Filter;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.views.FiltersRadioGroup;
 import uk.co.senab.photup.views.MultiTouchImageView;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -16,6 +18,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
@@ -89,6 +93,9 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 			case R.id.menu_remove:
 				mController.removePhotoUpload(getCurrentUpload());
 				return true;
+			case R.id.menu_caption:
+				showCaptionDialog();
+				return true;
 		}
 
 		return super.onOptionsItemSelected(item);
@@ -106,6 +113,9 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 		if (null != mFilterGroup && mFilterGroup.getVisibility() == View.VISIBLE) {
 			updateFiltersView();
 		}
+		
+		PhotoUpload upload = mAdapter.getItem(position);
+		getSupportActionBar().setTitle(upload.getCaption());
 	}
 
 	public boolean onTouch(View v, MotionEvent event) {
@@ -169,6 +179,46 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 		}
 
 		return null;
+	}
+
+	private void showCaptionDialog() {
+		final PhotoUpload currentUpload = getCurrentUpload();
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(R.string.photo_caption);
+
+		// Set an EditText view to get user input
+		final FrameLayout layout = new FrameLayout(this);
+		final int margin = getResources().getDimensionPixelSize(R.dimen.spacing);
+		layout.setPadding(margin, margin, margin, margin);
+		
+		final EditText input = new EditText(this);
+		input.setMinLines(2);
+		input.setText(currentUpload.getCaption());
+		layout.addView(input);
+		
+		builder.setView(layout);
+		
+		final DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+				
+				switch (whichButton) {
+					case AlertDialog.BUTTON_POSITIVE:
+						currentUpload.setCaption(input.getText().toString());
+						getSupportActionBar().setTitle(currentUpload.getCaption());
+						break;
+						
+					case AlertDialog.BUTTON_NEGATIVE:
+					default:
+						dialog.dismiss();
+						break;
+				}
+			}
+		};
+
+		builder.setPositiveButton(android.R.string.ok, listener);
+		builder.setNegativeButton(android.R.string.cancel, listener);
+		builder.show();
 	}
 
 	private void hideFiltersView() {
