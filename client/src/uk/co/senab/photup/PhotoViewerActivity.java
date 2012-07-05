@@ -10,6 +10,7 @@ import uk.co.senab.photup.model.Friend;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.views.FiltersRadioGroup;
 import uk.co.senab.photup.views.MultiTouchImageView;
+import uk.co.senab.photup.views.PhotoTagItemLayout;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -72,8 +73,8 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 
 	public void onCheckedChanged(RadioGroup group, int checkedId) {
 		if (!mIgnoreCheckCallback) {
-			View currentView = getCurrentView();
-			MultiTouchImageView imageView = (MultiTouchImageView) currentView.findViewById(R.id.iv_photo);
+			PhotoTagItemLayout currentView = (PhotoTagItemLayout) getCurrentView();
+			MultiTouchImageView imageView = currentView.getImageView();
 
 			Filter filter = checkedId != -1 ? Filter.FILTERS[checkedId] : null;
 			PhotoUpload upload = getCurrentUpload();
