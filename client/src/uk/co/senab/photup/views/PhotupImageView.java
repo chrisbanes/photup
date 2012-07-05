@@ -51,7 +51,7 @@ public class PhotupImageView extends CacheableImageView {
 						.getContext());
 
 				if (null != bitmap) {
-					if (mFetchFullSize && upload.needsFaceDetection()) {
+					if (mFetchFullSize) {
 						upload.detectPhotoTags(bitmap);
 					}
 
@@ -110,7 +110,7 @@ public class PhotupImageView extends CacheableImageView {
 			filteredBitmap = mUpload.processBitmap(wrapper.getBitmap(), false);
 			wrapper.setBeingUsed(false);
 
-			if (mFullSize && mUpload.needsFaceDetection()) {
+			if (mFullSize) {
 				mUpload.detectPhotoTags(filteredBitmap);
 			}
 
