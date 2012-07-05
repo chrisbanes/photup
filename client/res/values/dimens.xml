@@ -8,5 +8,6 @@
     <dimen name="filters_radiogroup_height">80dp</dimen>
     <dimen name="filters_textSize">11dp</dimen>
     <dimen name="viewpager_margin">4dp</dimen>
+    
 
 </resources>

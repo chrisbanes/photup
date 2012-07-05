@@ -13,12 +13,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AbsoluteLayout;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 
 @SuppressLint("ViewConstructor")
 @SuppressWarnings("deprecation")
 public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageView.OnMatrixChangedListener,
-		OnPhotoTagsChangedListener {
+		OnPhotoTagsChangedListener, View.OnClickListener {
 
 	static final String LOG_TAG = "PhotoTagItemLayout";
 
@@ -50,9 +49,14 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 		if (null != tags && !tags.isEmpty()) {
 			LayoutInflater layoutInflater = LayoutInflater.from(getContext());
 
-			TextView tagLayout;
+			View tagLayout;
 			for (PhotoTag tag : tags) {
-				tagLayout = (TextView) layoutInflater.inflate(R.layout.layout_photo_tag, mTagLayout, false);
+				tagLayout = layoutInflater.inflate(R.layout.layout_photo_tag, mTagLayout, false);
+				
+				View removeBtn = tagLayout.findViewById(R.id.btn_remove_tag);
+				removeBtn.setOnClickListener(this);
+				removeBtn.setTag(tag);
+				
 				tagLayout.setTag(tag);
 				tagLayout.setVisibility(View.GONE);
 				mTagLayout.addView(tagLayout);
@@ -95,5 +99,10 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 				addPhotoTags();
 			}
 		});
+	}
+
+	public void onClick(View v) {
+		PhotoTag tag = (PhotoTag) v.getTag();
+		mUpload.removePhotoTag(tag);
 	}
 }

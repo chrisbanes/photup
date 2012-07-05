@@ -8,5 +8,7 @@
     <string name="photo_effects">Effects</string>
     <string name="photo_remove">Remove</string>
     <string name="photo_caption">Caption</string>
+    
+    <string name="tag_no_name">Who\'s this?</string>
 
 </resources>
