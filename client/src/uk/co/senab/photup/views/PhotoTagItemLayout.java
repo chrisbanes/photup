@@ -53,7 +53,6 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 			TextView tagLayout;
 			for (PhotoTag tag : tags) {
 				tagLayout = (TextView) layoutInflater.inflate(R.layout.layout_photo_tag, mTagLayout, false);
-				tagLayout.setVisibility(View.GONE);
 				tagLayout.setTag(tag);
 
 				mTagLayout.addView(tagLayout);
@@ -80,7 +79,7 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 			PhotoTag tag = (PhotoTag) tagLayout.getTag();
 
 			lp = (AbsoluteLayout.LayoutParams) tagLayout.getLayoutParams();
-			lp.x = Math.round((rect.width() * tag.getX() / 100f) + rect.left);
+			lp.x = Math.round((rect.width() * tag.getX() / 100f) + rect.left) - (tagLayout.getWidth() / 2);
 			lp.y = Math.round((rect.height() * tag.getY() / 100f) + rect.top);
 			tagLayout.setLayoutParams(lp);
 

@@ -246,6 +246,7 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 		setImageMatrix(matrix);
 
 		if (null != mMatrixChangeListener) {
+			rect = new RectF(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
 			matrix.mapRect(rect);
 			mMatrixChangeListener.onMatrixChanged(rect);
 		}
