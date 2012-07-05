@@ -3,19 +3,19 @@ package uk.co.senab.photup.views;
 import java.util.List;
 
 import uk.co.senab.bitmapcache.R;
-import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.listeners.OnPhotoTagsChangedListener;
 import uk.co.senab.photup.model.PhotoTag;
 import uk.co.senab.photup.model.PhotoUpload;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.RectF;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AbsoluteLayout;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+@SuppressLint("ViewConstructor")
 @SuppressWarnings("deprecation")
 public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageView.OnMatrixChangedListener,
 		OnPhotoTagsChangedListener {
@@ -54,9 +54,11 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 			for (PhotoTag tag : tags) {
 				tagLayout = (TextView) layoutInflater.inflate(R.layout.layout_photo_tag, mTagLayout, false);
 				tagLayout.setTag(tag);
-
+				tagLayout.setVisibility(View.GONE);
 				mTagLayout.addView(tagLayout);
 			}
+
+			layoutTags(mImageView.getDisplayRect());
 		}
 	}
 
@@ -65,7 +67,13 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 	}
 
 	public void onMatrixChanged(RectF rect) {
-		Log.d(LOG_TAG, rect.toString());
+		layoutTags(rect);
+	}
+
+	private void layoutTags(final RectF rect) {
+		if (null == rect) {
+			return;
+		}
 
 		AbsoluteLayout.LayoutParams lp;
 		for (int i = 0, z = mTagLayout.getChildCount(); i < z; i++) {
@@ -77,19 +85,15 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 			lp.y = Math.round((rect.height() * tag.getY() / 100f) + rect.top);
 			tagLayout.setLayoutParams(lp);
 
-			if (Constants.DEBUG) {
-				Log.d(LOG_TAG, "Tag Location: x: " + lp.x + " y: " + lp.y);
-			}
-
 			tagLayout.setVisibility(View.VISIBLE);
 		}
 	}
 
 	public void onPhotoTagsChanged() {
-		// post(new Runnable() {
-		// public void run() {
-		// addPhotoTags();
-		// }
-		// });
+		post(new Runnable() {
+			public void run() {
+				addPhotoTags();
+			}
+		});
 	}
 }

@@ -165,8 +165,8 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 
 	@Override
 	public void setImageDrawable(Drawable drawable) {
-		updateBaseMatrix(drawable);
 		super.setImageDrawable(drawable);
+		updateBaseMatrix(drawable);
 	}
 
 	public void setZoomable(boolean zoomable) {
@@ -196,9 +196,11 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 
 	@Override
 	protected boolean setFrame(int l, int t, int r, int b) {
-		boolean result = super.setFrame(l, t, r, b);
-		updateBaseMatrix(getDrawable());
-		return result;
+		if (super.setFrame(l, t, r, b)) {
+			updateBaseMatrix(getDrawable());
+			return true;
+		}
+		return false;
 	}
 
 	private void centerMatrix() {
@@ -235,7 +237,7 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 
 		mSuppMatrix.postTranslate(deltaX, deltaY);
 	}
-	
+
 	private void centerAndDisplayMatrix() {
 		centerMatrix();
 		setImageMatrix(getDisplayMatrix());
@@ -246,13 +248,25 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 		super.setImageMatrix(matrix);
 
 		if (null != mMatrixChangeListener) {
-			Drawable d = getDrawable();
-			if (null != d) {
-				RectF rect = new RectF(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
-				matrix.mapRect(rect);
-				mMatrixChangeListener.onMatrixChanged(rect);
+			RectF displayRect = getDisplayRect(matrix);
+			if (null != displayRect) {
+				mMatrixChangeListener.onMatrixChanged(displayRect);
 			}
 		}
+	}
+
+	public RectF getDisplayRect() {
+		return getDisplayRect(getDisplayMatrix());
+	}
+
+	private RectF getDisplayRect(Matrix matrix) {
+		Drawable d = getDrawable();
+		if (null != d) {
+			RectF rect = new RectF(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
+			matrix.mapRect(rect);
+			return rect;
+		}
+		return null;
 	}
 
 	private float getScale() {
