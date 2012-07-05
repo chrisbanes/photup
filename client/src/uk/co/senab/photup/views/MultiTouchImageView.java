@@ -39,7 +39,7 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 			float target = mStartScale + (mIncrementPerMs * currentMs);
 
 			mSuppMatrix.setScale(target, target, mFocalX, mFocalY);
-			centerMatrix();
+			centerDisplayMatrix();
 
 			if (currentMs < ANIMATION_DURATION) {
 				postDelayed(this, 17);
@@ -88,16 +88,12 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 
 	public void onDrag(float dx, float dy) {
 		mSuppMatrix.postTranslate(dx, dy);
-		setImageMatrix(getDisplayMatrix());
-		// FIXME Fix centerMatrix
-		centerMatrix();
+		centerDisplayMatrix();
 	}
 
 	public void onScale(float scaleFactor, float focusX, float focusY) {
 		mSuppMatrix.postScale(scaleFactor, scaleFactor, focusX, focusY);
-		setImageMatrix(getDisplayMatrix());
-		// FIXME Fix centerMatrix
-		centerMatrix();
+		centerDisplayMatrix();
 	}
 
 	public boolean onDoubleTap(MotionEvent e) {
@@ -163,8 +159,7 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 
 	public void resetScalePan() {
 		mSuppMatrix.reset();
-		setImageMatrix(getDisplayMatrix());
-		centerMatrix();
+		centerDisplayMatrix();
 		mOnLeftRightEdge = true;
 	}
 
@@ -206,7 +201,7 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 		return result;
 	}
 
-	private void centerMatrix() {
+	private void centerDisplayMatrix() {
 		Drawable d = getDrawable();
 		if (null == d) {
 			return;
@@ -242,13 +237,20 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 
 		mSuppMatrix.postTranslate(deltaX, deltaY);
 
-		Matrix matrix = getDisplayMatrix();
-		setImageMatrix(matrix);
+		setImageMatrix(getDisplayMatrix());
+	}
+
+	@Override
+	public void setImageMatrix(Matrix matrix) {
+		super.setImageMatrix(matrix);
 
 		if (null != mMatrixChangeListener) {
-			rect = new RectF(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
-			matrix.mapRect(rect);
-			mMatrixChangeListener.onMatrixChanged(rect);
+			Drawable d = getDrawable();
+			if (null != d) {
+				RectF rect = new RectF(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
+				matrix.mapRect(rect);
+				mMatrixChangeListener.onMatrixChanged(rect);
+			}
 		}
 	}
 
