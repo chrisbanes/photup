@@ -21,7 +21,7 @@ public abstract class PhotoUpload {
 	public abstract Bitmap getUploadImage(Context context, int biggestDimension);
 
 	public Bitmap processBitmap(Bitmap bitmap, final boolean modifyOriginal) {
-		if (null != mFilter) {
+		if (requiresProcessing()) {
 			return PhotoProcessing.filterPhoto(bitmap, mFilter.getId(), modifyOriginal);
 		} else {
 			return bitmap;
@@ -45,7 +45,7 @@ public abstract class PhotoUpload {
 	}
 
 	public boolean requiresProcessing() {
-		return null != mFilter;
+		return null != mFilter && mFilter.getId() != Filter.FILTER_ORIGINAL;
 	}
 
 	public String getCaption() {
