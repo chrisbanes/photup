@@ -47,6 +47,11 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 		}
 	}
 
+	static final int EDGE_NONE = -1;
+	static final int EDGE_LEFT = 0;
+	static final int EDGE_RIGHT = 1;
+	static final int EDGE_BOTH = 2;
+
 	private static final float MAX_ZOOM = 3.0f;
 	private static final float MID_ZOOM = 1.75f;
 	private static final float MIN_ZOOM = 1.0f;
@@ -60,7 +65,7 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 
 	private final float[] mMatrixValues = new float[9];
 
-	private boolean mOnLeftRightEdge = true;
+	private int mScrollEdge = EDGE_BOTH;
 
 	private OnMatrixChangedListener mMatrixChangeListener;
 
@@ -127,9 +132,7 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 	public boolean onTouchEvent(MotionEvent ev) {
 		if (mZoomEnabled) {
 
-			if (!mOnLeftRightEdge && getScale() > MIN_ZOOM) {
-				getParent().requestDisallowInterceptTouchEvent(true);
-			}
+			getParent().requestDisallowInterceptTouchEvent(true);
 
 			if (null != gestureScanner && gestureScanner.onTouchEvent(ev)) {
 				return true;
@@ -137,6 +140,10 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 
 			// Let the ScaleGestureDetector inspect all events.
 			if (null != mScaleDetector && mScaleDetector.onTouchEvent(ev)) {
+
+				if (mScrollEdge != EDGE_NONE) {
+					getParent().requestDisallowInterceptTouchEvent(false);
+				}
 
 				// Reset Scale back to 1.0f if we're below 0.9f;
 				switch (ev.getAction()) {
@@ -160,7 +167,7 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 	public void resetScalePan() {
 		mSuppMatrix.reset();
 		setImageMatrix(getDisplayMatrix());
-		mOnLeftRightEdge = true;
+		mScrollEdge = EDGE_BOTH;
 	}
 
 	@Override
@@ -227,13 +234,16 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 		final int viewWidth = getWidth();
 		if (width < viewWidth) {
 			deltaX = (viewWidth - width) / 2 - rect.left;
+			mScrollEdge = EDGE_BOTH;
 		} else if (rect.left > 0) {
+			mScrollEdge = EDGE_LEFT;
 			deltaX = -rect.left;
 		} else if (rect.right < viewWidth) {
 			deltaX = viewWidth - rect.right;
+			mScrollEdge = EDGE_RIGHT;
+		} else {
+			mScrollEdge = EDGE_NONE;
 		}
-
-		mOnLeftRightEdge = Math.abs(deltaX) >= 0.01f;
 
 		mSuppMatrix.postTranslate(deltaX, deltaY);
 	}
