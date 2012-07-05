@@ -39,7 +39,7 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 			float target = mStartScale + (mIncrementPerMs * currentMs);
 
 			mSuppMatrix.setScale(target, target, mFocalX, mFocalY);
-			centerDisplayMatrix();
+			centerAndDisplayMatrix();
 
 			if (currentMs < ANIMATION_DURATION) {
 				postDelayed(this, 17);
@@ -60,7 +60,7 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 
 	private final float[] mMatrixValues = new float[9];
 
-	private boolean mOnLeftRightEdge = false;
+	private boolean mOnLeftRightEdge = true;
 
 	private OnMatrixChangedListener mMatrixChangeListener;
 
@@ -88,12 +88,12 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 
 	public void onDrag(float dx, float dy) {
 		mSuppMatrix.postTranslate(dx, dy);
-		centerDisplayMatrix();
+		centerAndDisplayMatrix();
 	}
 
 	public void onScale(float scaleFactor, float focusX, float focusY) {
 		mSuppMatrix.postScale(scaleFactor, scaleFactor, focusX, focusY);
-		centerDisplayMatrix();
+		centerAndDisplayMatrix();
 	}
 
 	public boolean onDoubleTap(MotionEvent e) {
@@ -159,7 +159,7 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 
 	public void resetScalePan() {
 		mSuppMatrix.reset();
-		centerDisplayMatrix();
+		setImageMatrix(getDisplayMatrix());
 		mOnLeftRightEdge = true;
 	}
 
@@ -201,7 +201,7 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 		return result;
 	}
 
-	private void centerDisplayMatrix() {
+	private void centerMatrix() {
 		Drawable d = getDrawable();
 		if (null == d) {
 			return;
@@ -210,21 +210,19 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 		RectF rect = new RectF(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
 		getDisplayMatrix().mapRect(rect);
 
-		float height = rect.height();
-		float width = rect.width();
-
+		final float height = rect.height(), width = rect.width();
 		float deltaX = 0, deltaY = 0;
 
-		int viewHeight = getHeight();
+		final int viewHeight = getHeight();
 		if (height < viewHeight) {
 			deltaY = (viewHeight - height) / 2 - rect.top;
 		} else if (rect.top > 0) {
 			deltaY = -rect.top;
 		} else if (rect.bottom < viewHeight) {
-			deltaY = getHeight() - rect.bottom;
+			deltaY = viewHeight - rect.bottom;
 		}
 
-		int viewWidth = getWidth();
+		final int viewWidth = getWidth();
 		if (width < viewWidth) {
 			deltaX = (viewWidth - width) / 2 - rect.left;
 		} else if (rect.left > 0) {
@@ -236,7 +234,10 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 		mOnLeftRightEdge = Math.abs(deltaX) >= 0.01f;
 
 		mSuppMatrix.postTranslate(deltaX, deltaY);
-
+	}
+	
+	private void centerAndDisplayMatrix() {
+		centerMatrix();
 		setImageMatrix(getDisplayMatrix());
 	}
 

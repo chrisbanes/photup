@@ -64,12 +64,6 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 		return mImageView;
 	}
 
-	@Override
-	public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-		getParent().requestDisallowInterceptTouchEvent(disallowIntercept);
-		super.requestDisallowInterceptTouchEvent(disallowIntercept);
-	}
-
 	public void onMatrixChanged(RectF rect) {
 		Log.d(LOG_TAG, rect.toString());
 
@@ -92,10 +86,10 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 	}
 
 	public void onPhotoTagsChanged() {
-		post(new Runnable() {
-			public void run() {
-				addPhotoTags();
-			}
-		});
+		// post(new Runnable() {
+		// public void run() {
+		// addPhotoTags();
+		// }
+		// });
 	}
 }
