@@ -121,6 +121,9 @@ public abstract class PhotoUpload {
 		for (int i = 0, z = faces.length; i < z; i++) {
 			face = faces[i];
 			if (null != face) {
+				if (Constants.DEBUG) {
+					Log.d(LOG_TAG, "Detected Face with confidence: " + face.confidence());
+				}
 				face.getMidPoint(point);
 				addPhotoTag(new PhotoTag(point.x, point.y, bitmapWidth, bitmapWidth));
 			}

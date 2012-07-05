@@ -256,6 +256,7 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 	}
 
 	public RectF getDisplayRect() {
+		centerMatrix();
 		return getDisplayRect(getDisplayMatrix());
 	}
 
