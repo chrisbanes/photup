@@ -6,7 +6,7 @@ public class Constants {
 	
 	public static final long SCALE_ANIMATION_DURATION_FULL_DISTANCE = 800;
 	
-	public static final int DISPLAY_PHOTO_SIZE = 640;
+	public static final int DISPLAY_PHOTO_SIZE = 800;
 	
 	public static final String FACEBOOK_APP_ID = "134669876670695";
 	

@@ -50,17 +50,16 @@ public class PhotoViewPagerAdapter extends PagerAdapter {
 
 	@Override
 	public Object instantiateItem(View container, int position) {
-		PhotoTagItemLayout view = new PhotoTagItemLayout(mContext);
-
 		PhotoUpload upload = mItems.get(position);
+
+		PhotoTagItemLayout view = new PhotoTagItemLayout(mContext, upload);
 
 		MultiTouchImageView imageView = view.getImageView();
 		imageView.requestFullSize(upload, true);
+		imageView.setOnTouchListener(mOnTouchListener);
 
 		view.setTag(upload);
-		view.setOnTouchListener(mOnTouchListener);
 		((ViewPager) container).addView(view);
-		
 		return view;
 	}
 

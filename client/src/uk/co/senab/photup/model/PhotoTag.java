@@ -10,27 +10,27 @@ public class PhotoTag {
 		mX = x;
 		mY = y;
 	}
-	
-	public PhotoTag(float x, float y) {
-		this(null, x, y);
+
+	public PhotoTag(float x, float y, int bitmapWidth, int bitmapHeight) {
+		this(null, x / bitmapWidth, y / bitmapHeight);
 	}
-	
+
 	public float getX() {
 		return mX;
 	}
-	
+
 	public float getY() {
 		return mY;
 	}
-	
+
 	public Friend getFriend() {
 		return mFriend;
 	}
-	
+
 	public boolean hasFriend() {
 		return null != mFriend;
 	}
-	
+
 	public void setFriend(Friend friend) {
 		mFriend = friend;
 	}

@@ -1,26 +1,34 @@
 package uk.co.senab.photup.model;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 
 import uk.co.senab.photup.Constants;
+import uk.co.senab.photup.listeners.OnPhotoTagsChangedListener;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
 import android.media.FaceDetector;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.lightbox.android.photoprocessing.PhotoProcessing;
 
 public abstract class PhotoUpload {
+
+	static final String LOG_TAG = "PhotoUpload";
 
 	private Filter mFilter;
 	private String mCaption;
 
 	private final HashSet<PhotoTag> mTags;
 	private boolean mCompletedDetection;
+
+	private WeakReference<OnPhotoTagsChangedListener> mTagChangedListener;
 
 	public PhotoUpload() {
 		mTags = new HashSet<PhotoTag>();
@@ -81,11 +89,16 @@ public abstract class PhotoUpload {
 			return;
 		}
 
-		final FaceDetector detector = new FaceDetector(bitmap.getWidth(), bitmap.getHeight(),
-				Constants.FACE_DETECTOR_MAX_FACES);
-		final FaceDetector.Face[] faces = new FaceDetector.Face[Constants.FACE_DETECTOR_MAX_FACES];
+		final int bitmapWidth = bitmap.getWidth();
+		final int bitmapHeight = bitmap.getHeight();
 
-		detector.findFaces(bitmap, faces);
+		final FaceDetector detector = new FaceDetector(bitmapWidth, bitmapHeight, Constants.FACE_DETECTOR_MAX_FACES);
+		final FaceDetector.Face[] faces = new FaceDetector.Face[Constants.FACE_DETECTOR_MAX_FACES];
+		final int detectedFaces = detector.findFaces(bitmap, faces);
+
+		if (Constants.DEBUG) {
+			Log.d(LOG_TAG, "Detected Faces: " + detectedFaces);
+		}
 
 		FaceDetector.Face face;
 		final PointF point = new PointF();
@@ -93,19 +106,40 @@ public abstract class PhotoUpload {
 			face = faces[i];
 			if (null != face) {
 				face.getMidPoint(point);
-				addPhotoTag(new PhotoTag(point.x, point.y));
+				addPhotoTag(new PhotoTag(point.x, point.y, bitmapWidth, bitmapWidth));
 			}
 		}
+
+		/**
+		 * TODO REMOVE BELOW
+		 */
+		Random rnd = new Random();
+		addPhotoTag(new PhotoTag(null, rnd.nextFloat() * 100, rnd.nextFloat() * 100));
 
 		mCompletedDetection = true;
 	}
 
 	public void addPhotoTag(PhotoTag tag) {
 		mTags.add(tag);
+		notifyTagListener();
 	}
 
 	public void removePhotoTag(PhotoTag tag) {
 		mTags.remove(tag);
+		notifyTagListener();
+	}
+
+	private void notifyTagListener() {
+		if (null != mTagChangedListener) {
+			OnPhotoTagsChangedListener listener = mTagChangedListener.get();
+			if (null != listener) {
+				listener.onPhotoTagsChanged();
+			}
+		}
+	}
+
+	public void setTagChangedListener(OnPhotoTagsChangedListener tagChangedListener) {
+		mTagChangedListener = new WeakReference<OnPhotoTagsChangedListener>(tagChangedListener);
 	}
 
 	public List<PhotoTag> getPhotoTags() {

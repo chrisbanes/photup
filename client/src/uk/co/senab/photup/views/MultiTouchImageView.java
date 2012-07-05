@@ -11,6 +11,12 @@ import android.view.MotionEvent;
 public class MultiTouchImageView extends PhotupImageView implements VersionedGestureDetector.OnGestureListener,
 		GestureDetector.OnDoubleTapListener {
 
+	static final String LOG_TAG = "MultiTouchImageView";
+
+	static interface OnMatrixChangedListener {
+		void onMatrixChanged(RectF rect);
+	}
+
 	static final long ANIMATION_DURATION = 180;
 
 	private class AnimatedZoomRunnable implements Runnable {
@@ -56,16 +62,18 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 
 	private boolean mOnLeftRightEdge = false;
 
-	private boolean zoomable = false;
+	private OnMatrixChangedListener mMatrixChangeListener;
+
+	private boolean mZoomEnabled = false;
 
 	public MultiTouchImageView(Context context, AttributeSet attr) {
 		super(context, attr);
-		this.zoomable = false;
+		setZoomable(false);
 	}
 
 	public MultiTouchImageView(Context context, boolean zoomable) {
 		super(context);
-		this.zoomable = zoomable;
+		setZoomable(zoomable);
 	}
 
 	public Matrix getDisplayMatrix() {
@@ -75,19 +83,20 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 	}
 
 	public boolean isZoomable() {
-		return zoomable;
+		return mZoomEnabled;
 	}
 
 	public void onDrag(float dx, float dy) {
 		mSuppMatrix.postTranslate(dx, dy);
 		setImageMatrix(getDisplayMatrix());
+		// FIXME Fix centerMatrix
 		centerMatrix();
 	}
 
 	public void onScale(float scaleFactor, float focusX, float focusY) {
 		mSuppMatrix.postScale(scaleFactor, scaleFactor, focusX, focusY);
-
 		setImageMatrix(getDisplayMatrix());
+		// FIXME Fix centerMatrix
 		centerMatrix();
 	}
 
@@ -120,7 +129,7 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
-		if (this.zoomable) {
+		if (mZoomEnabled) {
 
 			if (!mOnLeftRightEdge && getScale() > MIN_ZOOM) {
 				getParent().requestDisallowInterceptTouchEvent(true);
@@ -166,8 +175,8 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 	}
 
 	public void setZoomable(boolean zoomable) {
-		this.zoomable = zoomable;
-		if (this.zoomable) {
+		mZoomEnabled = zoomable;
+		if (mZoomEnabled) {
 
 			setScaleType(ScaleType.MATRIX);
 
@@ -184,6 +193,10 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 				resetScalePan();
 			}
 		}
+	}
+
+	public void setMatrixChangeListener(OnMatrixChangedListener listener) {
+		mMatrixChangeListener = listener;
 	}
 
 	@Override
@@ -229,7 +242,13 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 
 		mSuppMatrix.postTranslate(deltaX, deltaY);
 
-		setImageMatrix(getDisplayMatrix());
+		Matrix matrix = getDisplayMatrix();
+		setImageMatrix(matrix);
+
+		if (null != mMatrixChangeListener) {
+			matrix.mapRect(rect);
+			mMatrixChangeListener.onMatrixChanged(rect);
+		}
 	}
 
 	private float getScale() {
