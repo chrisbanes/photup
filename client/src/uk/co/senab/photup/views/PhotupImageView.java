@@ -18,16 +18,18 @@ import android.util.AttributeSet;
 
 public class PhotupImageView extends CacheableImageView {
 
-	private static class PhotoTask extends AsyncTask<PhotoUpload, Void, CacheableBitmapWrapper> {
+	private static class PhotoTask extends AsyncTask<Void, Void, CacheableBitmapWrapper> {
 
 		private final WeakReference<PhotupImageView> mImageView;
 		private final BitmapLruCache mCache;
 		private final boolean mFetchFullSize;
+		private final PhotoUpload mUpload;
 
-		public PhotoTask(PhotupImageView imageView, BitmapLruCache cache, boolean fullSize) {
+		public PhotoTask(PhotupImageView imageView, PhotoUpload upload, BitmapLruCache cache, boolean fullSize) {
 			mImageView = new WeakReference<PhotupImageView>(imageView);
 			mCache = cache;
 			mFetchFullSize = fullSize;
+			mUpload = upload;
 		}
 
 		@Override
@@ -41,21 +43,16 @@ public class PhotupImageView extends CacheableImageView {
 		}
 
 		@Override
-		protected CacheableBitmapWrapper doInBackground(PhotoUpload... params) {
-			final PhotoUpload upload = params[0];
+		protected CacheableBitmapWrapper doInBackground(Void... params) {
 			CacheableBitmapWrapper wrapper = null;
 
 			PhotupImageView iv = mImageView.get();
 			if (null != iv) {
-				Bitmap bitmap = mFetchFullSize ? upload.getDisplayImage(iv.getContext()) : upload.getThumbnailImage(iv
-						.getContext());
+				Bitmap bitmap = mFetchFullSize ? mUpload.getDisplayImage(iv.getContext()) : mUpload
+						.getThumbnailImage(iv.getContext());
 
 				if (null != bitmap) {
-					if (mFetchFullSize) {
-						upload.detectPhotoTags(bitmap);
-					}
-
-					final String key = mFetchFullSize ? upload.getDisplayImageKey() : upload.getThumbnailImageKey();
+					final String key = mFetchFullSize ? mUpload.getDisplayImageKey() : mUpload.getThumbnailImageKey();
 					wrapper = new CacheableBitmapWrapper(key, bitmap);
 				}
 			}
@@ -69,6 +66,9 @@ public class PhotupImageView extends CacheableImageView {
 
 			PhotupImageView iv = mImageView.get();
 			if (null != iv) {
+				if (mFetchFullSize && mUpload.requiresFaceDetectPass()) {
+					iv.requestFaceDetection(mUpload, result.getBitmap());
+				}
 				iv.setImageCachedBitmap(result);
 			}
 
@@ -110,15 +110,32 @@ public class PhotupImageView extends CacheableImageView {
 			filteredBitmap = mUpload.processBitmap(wrapper.getBitmap(), false);
 			wrapper.setBeingUsed(false);
 
-			if (mFullSize) {
-				mUpload.detectPhotoTags(filteredBitmap);
-			}
-
 			mImageView.post(new Runnable() {
 				public void run() {
 					mImageView.setImageBitmap(filteredBitmap);
+
+					if (mFullSize && mUpload.requiresFaceDetectPass()) {
+						mImageView.requestFaceDetection(mUpload, filteredBitmap);
+					}
 				}
 			});
+		}
+	};
+
+	static final class FaceDetectionRunnable implements Runnable {
+
+		private final PhotoUpload mUpload;
+		private final Bitmap mBitmap;
+
+		public FaceDetectionRunnable(PhotoUpload upload, Bitmap bitmap) {
+			mUpload = upload;
+			mBitmap = bitmap;
+		}
+
+		public void run() {
+			if (!mBitmap.isRecycled()) {
+				mUpload.detectPhotoTags(mBitmap);
+			}
 		}
 	};
 
@@ -148,12 +165,17 @@ public class PhotupImageView extends CacheableImageView {
 		}
 	}
 
-	private void requestFiltered(final PhotoUpload upload, boolean fullSize) {
+	void requestFiltered(final PhotoUpload upload, boolean fullSize) {
 		PhotupApplication app = PhotupApplication.getApplication(getContext());
 		app.getSingleThreadExecutorService().submit(new FilterRunnable(this, upload, fullSize));
 	}
 
-	private void requestImage(final PhotoUpload upload, final boolean fullSize) {
+	void requestFaceDetection(final PhotoUpload upload, final Bitmap bitmap) {
+		PhotupApplication app = PhotupApplication.getApplication(getContext());
+		app.getMultiThreadExecutorService().submit(new FaceDetectionRunnable(upload, bitmap));
+	}
+
+	void requestImage(final PhotoUpload upload, final boolean fullSize) {
 		if (null != mCurrentTask) {
 			mCurrentTask.cancel(false);
 		}
@@ -170,14 +192,14 @@ public class PhotupImageView extends CacheableImageView {
 				cache.remove(key);
 			}
 
-			mCurrentTask = new PhotoTask(this, cache, fullSize);
+			mCurrentTask = new PhotoTask(this, upload, cache, fullSize);
 
 			// FIXME Need to fix this for less than v11
 			if (VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB) {
 				PhotupApplication app = PhotupApplication.getApplication(getContext());
-				mCurrentTask.executeOnExecutor(app.getMultiThreadExecutorService(), upload);
+				mCurrentTask.executeOnExecutor(app.getMultiThreadExecutorService());
 			} else {
-				mCurrentTask.execute(upload);
+				mCurrentTask.execute();
 			}
 		}
 	}

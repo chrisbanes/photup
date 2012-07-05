@@ -57,9 +57,9 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 				tagLayout.setVisibility(View.GONE);
 				mTagLayout.addView(tagLayout);
 			}
-
-			layoutTags(mImageView.getDisplayRect());
 		}
+		
+		layoutTags(mImageView.getDisplayRect());
 	}
 
 	public MultiTouchImageView getImageView() {

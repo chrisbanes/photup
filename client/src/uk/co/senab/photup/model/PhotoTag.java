@@ -1,5 +1,8 @@
 package uk.co.senab.photup.model;
 
+import uk.co.senab.photup.Constants;
+import android.util.Log;
+
 public class PhotoTag {
 
 	private final float mX, mY;
@@ -9,10 +12,14 @@ public class PhotoTag {
 		mFriend = friend;
 		mX = x;
 		mY = y;
+
+		if (Constants.DEBUG) {
+			Log.d("PhotoTag", "X: " + x + " Y: " + y);
+		}
 	}
 
 	public PhotoTag(float x, float y, int bitmapWidth, int bitmapHeight) {
-		this(null, x / bitmapWidth, y / bitmapHeight);
+		this(null, 100 * x / bitmapWidth, 100 * y / bitmapHeight);
 	}
 
 	public float getX() {

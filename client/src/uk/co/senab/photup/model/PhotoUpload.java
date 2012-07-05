@@ -4,7 +4,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 
 import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.listeners.OnPhotoTagsChangedListener;
@@ -83,18 +82,35 @@ public abstract class PhotoUpload {
 		}
 	}
 
-	public void detectPhotoTags(Bitmap bitmap) {
+	public boolean requiresFaceDetectPass() {
+		return !mCompletedDetection;
+	}
+
+	public void detectPhotoTags(final Bitmap originalBitmap) {
 		// If we've already done Face detection, don't do it again...
 		if (mCompletedDetection) {
 			return;
 		}
 
-		final int bitmapWidth = bitmap.getWidth();
-		final int bitmapHeight = bitmap.getHeight();
+		final int bitmapWidth = originalBitmap.getWidth();
+		final int bitmapHeight = originalBitmap.getHeight();
+
+		Bitmap bitmap = originalBitmap;
+
+		// The Face detector only accepts 565 bitmaps, so create one if needed
+		if (Bitmap.Config.RGB_565 != bitmap.getConfig()) {
+			bitmap = originalBitmap.copy(Bitmap.Config.RGB_565, false);
+		}
 
 		final FaceDetector detector = new FaceDetector(bitmapWidth, bitmapHeight, Constants.FACE_DETECTOR_MAX_FACES);
 		final FaceDetector.Face[] faces = new FaceDetector.Face[Constants.FACE_DETECTOR_MAX_FACES];
 		final int detectedFaces = detector.findFaces(bitmap, faces);
+
+		// We must have created a converted 565 bitmap
+		if (bitmap != originalBitmap) {
+			bitmap.recycle();
+			bitmap = null;
+		}
 
 		if (Constants.DEBUG) {
 			Log.d(LOG_TAG, "Detected Faces: " + detectedFaces);
@@ -109,12 +125,6 @@ public abstract class PhotoUpload {
 				addPhotoTag(new PhotoTag(point.x, point.y, bitmapWidth, bitmapWidth));
 			}
 		}
-
-		/**
-		 * TODO REMOVE BELOW
-		 */
-		Random rnd = new Random();
-		addPhotoTag(new PhotoTag(null, rnd.nextFloat() * 100, rnd.nextFloat() * 100));
 
 		mCompletedDetection = true;
 	}
