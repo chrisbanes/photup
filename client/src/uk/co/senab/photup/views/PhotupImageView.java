@@ -51,6 +51,10 @@ public class PhotupImageView extends CacheableImageView {
 						.getContext());
 
 				if (null != bitmap) {
+					if (mFetchFullSize && upload.needsFaceDetection()) {
+						upload.detectPhotoTags(bitmap);
+					}
+
 					final String key = mFetchFullSize ? upload.getDisplayImageKey() : upload.getThumbnailImageKey();
 					wrapper = new CacheableBitmapWrapper(key, bitmap);
 				}
@@ -105,6 +109,10 @@ public class PhotupImageView extends CacheableImageView {
 
 			filteredBitmap = mUpload.processBitmap(wrapper.getBitmap(), false);
 			wrapper.setBeingUsed(false);
+
+			if (mFullSize && mUpload.needsFaceDetection()) {
+				mUpload.detectPhotoTags(filteredBitmap);
+			}
 
 			mImageView.post(new Runnable() {
 				public void run() {
