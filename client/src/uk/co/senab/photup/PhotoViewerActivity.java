@@ -1,8 +1,12 @@
 package uk.co.senab.photup;
 
+import java.util.List;
+
+import uk.co.senab.photup.FriendsAsyncTask.FriendsResultListener;
 import uk.co.senab.photup.adapters.PhotoViewPagerAdapter;
 import uk.co.senab.photup.listeners.OnUploadChangedListener;
 import uk.co.senab.photup.model.Filter;
+import uk.co.senab.photup.model.Friend;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.views.FiltersRadioGroup;
 import uk.co.senab.photup.views.MultiTouchImageView;
@@ -12,6 +16,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
@@ -30,7 +35,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.lightbox.android.photoprocessing.R;
 
 public class PhotoViewerActivity extends SherlockActivity implements OnUploadChangedListener, OnTouchListener,
-		OnCheckedChangeListener, OnPageChangeListener {
+		OnCheckedChangeListener, OnPageChangeListener, FriendsResultListener {
 
 	class TapListener extends SimpleOnGestureListener {
 
@@ -53,6 +58,8 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 	private PhotoSelectionController mController;
 
 	private boolean mIgnoreCheckCallback = false;
+	
+	private List<Friend> mFriends;
 
 	@Override
 	public void onBackPressed() {
@@ -155,7 +162,10 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 
 		final Intent intent = getIntent();
 		mViewPager.setCurrentItem(intent.getIntExtra(EXTRA_POSITION, 0));
-
+		
+		if (null == mFriends) {
+			new FriendsAsyncTask(this, this).execute();
+		}
 	}
 
 	@Override
@@ -257,5 +267,14 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 			ab.show();
 			hideFiltersView();
 		}
+	}
+
+	public void onFriendsLoaded(List<Friend> friends) {
+		mFriends = friends;
+		
+		if (Constants.DEBUG) {
+			Log.d("PhotoViewerActivity", "Got Friends Result: " + friends.size());
+		}
+		
 	}
 }
