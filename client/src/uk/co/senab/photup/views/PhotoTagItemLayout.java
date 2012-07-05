@@ -4,6 +4,7 @@ import java.util.List;
 
 import uk.co.senab.bitmapcache.R;
 import uk.co.senab.photup.listeners.OnPhotoTagsChangedListener;
+import uk.co.senab.photup.model.Friend;
 import uk.co.senab.photup.model.PhotoTag;
 import uk.co.senab.photup.model.PhotoUpload;
 import android.annotation.SuppressLint;
@@ -13,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AbsoluteLayout;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 @SuppressLint("ViewConstructor")
 @SuppressWarnings("deprecation")
@@ -51,18 +53,11 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 
 			View tagLayout;
 			for (PhotoTag tag : tags) {
-				tagLayout = layoutInflater.inflate(R.layout.layout_photo_tag, mTagLayout, false);
-				
-				View removeBtn = tagLayout.findViewById(R.id.btn_remove_tag);
-				removeBtn.setOnClickListener(this);
-				removeBtn.setTag(tag);
-				
-				tagLayout.setTag(tag);
-				tagLayout.setVisibility(View.GONE);
+				tagLayout = createPhotoTagLayout(layoutInflater, tag);
 				mTagLayout.addView(tagLayout);
 			}
 		}
-		
+
 		layoutTags(mImageView.getDisplayRect());
 	}
 
@@ -104,5 +99,24 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 	public void onClick(View v) {
 		PhotoTag tag = (PhotoTag) v.getTag();
 		mUpload.removePhotoTag(tag);
+	}
+
+	private View createPhotoTagLayout(LayoutInflater layoutInflater, PhotoTag tag) {
+		View tagLayout = layoutInflater.inflate(R.layout.layout_photo_tag, mTagLayout, false);
+
+		View removeBtn = tagLayout.findViewById(R.id.btn_remove_tag);
+		removeBtn.setOnClickListener(this);
+		removeBtn.setTag(tag);
+
+		TextView labelTv = (TextView) tagLayout.findViewById(R.id.tv_tag_label);
+		Friend friend = tag.getFriend();
+		if (null != friend) {
+			labelTv.setText(friend.getName());
+		}
+
+		tagLayout.setTag(tag);
+		tagLayout.setVisibility(View.GONE);
+
+		return tagLayout;
 	}
 }
