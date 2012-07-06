@@ -40,7 +40,7 @@ public abstract class PhotoUpload {
 
 	public abstract Bitmap getDisplayImage(Context context);
 
-	public abstract Bitmap getUploadImage(Context context, int biggestDimension);
+	public abstract Bitmap getUploadImage(Context context, UploadQuality quality);
 
 	public Bitmap processBitmap(Bitmap bitmap, final boolean modifyOriginal) {
 		if (requiresProcessing()) {

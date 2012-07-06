@@ -17,11 +17,6 @@ public class Friend extends AbstractFacebookObject {
 		super(object);
 	}
 
-	@Override
-	public String toString() {
-		return getName();
-	}
-
 	public static Comparator<Friend> getComparator() {
 		return new Comparator<Friend>() {
 			public int compare(Friend lhs, Friend rhs) {

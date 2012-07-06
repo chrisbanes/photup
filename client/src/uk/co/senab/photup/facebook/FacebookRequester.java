@@ -25,7 +25,7 @@ public class FacebookRequester {
 
 	public FacebookRequester(Context context) {
 		mContext = context;
-		
+
 		Session session = Session.restore(context);
 		mFacebook = session.getFb();
 	}
@@ -33,6 +33,7 @@ public class FacebookRequester {
 	public List<Friend> getFriends() {
 		Bundle b = new Bundle();
 		b.putString("date_format", "U");
+		b.putString("limit", "3000");
 
 		String response = null;
 		try {
@@ -60,20 +61,61 @@ public class FacebookRequester {
 					e.printStackTrace();
 				}
 			}
-			
+
 			Collections.sort(friends, Friend.getComparator());
-			
+
 			return friends;
 		} catch (FacebookError e) {
 			e.printStackTrace();
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
 
-	public List<Album> getAlbums() {
+	public List<Album> getUploadableAlbums() {
+		Bundle b = new Bundle();
+		b.putString("date_format", "U");
+		b.putString("limit", "3000");
+
+		String response = null;
+		try {
+			response = mFacebook.request("me/albums", b);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		if (null == response) {
+			return null;
+		}
+
+		try {
+			JSONObject document = Util.parseJson(response);
+
+			JSONArray data = document.getJSONArray("data");
+			ArrayList<Album> albums = new ArrayList<Album>(data.length());
+
+			JSONObject object;
+			for (int i = 0, z = data.length(); i < z; i++) {
+				try {
+					object = data.getJSONObject(i);
+					Album album = new Album(object);
+					if (album.canUpload()) {
+						albums.add(album);
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+
+			return albums;
+		} catch (FacebookError e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
 		return null;
 	}
 

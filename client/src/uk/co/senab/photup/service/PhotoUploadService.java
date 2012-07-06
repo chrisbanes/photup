@@ -15,6 +15,7 @@ import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.facebook.Session;
 import uk.co.senab.photup.model.PhotoUpload;
+import uk.co.senab.photup.model.UploadQuality;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -64,13 +65,16 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		private final Session mSession;
 		private final PhotoUpload mUpload;
 		private final String mAlbumId;
+		private final UploadQuality mQuality;
 
-		public UploadPhotoRunnable(Context context, Handler handler, PhotoUpload upload, Session session, String albumId) {
+		public UploadPhotoRunnable(Context context, Handler handler, PhotoUpload upload, Session session,
+				String albumId, UploadQuality quality) {
 			mContextRef = new WeakReference<Context>(context);
 			mHandler = handler;
 			mUpload = upload;
 			mSession = session;
 			mAlbumId = albumId;
+			mQuality = quality;
 		}
 
 		public void run() {
@@ -89,13 +93,10 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 			// TODO ADD PLACE param
 
-			// TODO Make this a choice
-			final int largestDimension = Constants.FACEBOOK_MAX_PHOTO_SIZE;
-
 			/**
 			 * Photo
 			 */
-			Bitmap bitmap = mUpload.getUploadImage(context, largestDimension);
+			Bitmap bitmap = mUpload.getUploadImage(context, mQuality);
 			if (mUpload.requiresProcessing()) {
 				bitmap = mUpload.processBitmap(bitmap, true);
 			}
@@ -139,6 +140,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	private final Handler mHandler = new Handler(this);
 	private int mNumberUploaded = 0;
 	private String mAlbumId;
+	private UploadQuality mUploadQuality;
 
 	private NotificationManager mNotificationMgr;
 	private NotificationCompat.Builder mNotificationBuilder;
@@ -159,7 +161,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		startService(new Intent(this, PhotoUploadService.class));
 		return mBinder;
 	}
-	
+
 	public boolean handleMessage(Message msg) {
 		switch (msg.what) {
 			case MSG_UPLOAD_COMPLETE:
@@ -170,8 +172,9 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		return false;
 	}
 
-	public void uploadAll(String albumId) {
+	public void uploadAll(String albumId, UploadQuality quality) {
 		mAlbumId = albumId;
+		mUploadQuality = quality;
 
 		PhotoUpload nextUpload = getNextUpload();
 		if (null != nextUpload) {
@@ -189,7 +192,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	}
 
 	private void startUpload(PhotoUpload upload) {
-		mExecutor.submit(new UploadPhotoRunnable(this, mHandler, upload, mSession, mAlbumId));
+		mExecutor.submit(new UploadPhotoRunnable(this, mHandler, upload, mSession, mAlbumId, mUploadQuality));
 	}
 
 	private void onFinishedUpload(PhotoUpload completedUpload) {

@@ -45,9 +45,10 @@ public class MediaStorePhotoUpload extends PhotoUpload {
 	}
 
 	@Override
-	public Bitmap getUploadImage(Context context, int biggestDimension) {
+	public Bitmap getUploadImage(Context context, UploadQuality quality) {
 		try {
-			return Utils.resizeBitmap(context.getContentResolver(), getOriginalPhotoUri(), biggestDimension, true);
+			return Utils.resizeBitmap(context.getContentResolver(), getOriginalPhotoUri(), quality.getMaxDimension(),
+					true);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			return null;

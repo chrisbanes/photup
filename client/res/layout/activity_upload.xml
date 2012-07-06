@@ -20,13 +20,6 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/form_item_height" />
 
-        <EditText
-            android:id="@+id/et_album_name"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/form_item_height"
-            android:hint="@string/upload_new_album_hint"
-            android:visibility="gone" />
-
         <TextView
             style="?android:attr/listSeparatorTextViewStyle"
             android:layout_width="fill_parent"
@@ -52,12 +45,19 @@
                 android:text="@string/upload_quality_medium" />
 
             <RadioButton
-                android:id="@+id/rb_quality_highs"
+                android:id="@+id/rb_quality_high"
                 android:layout_width="fill_parent"
                 android:layout_height="@dimen/form_item_height"
                 android:checked="true"
                 android:text="@string/upload_quality_high" />
         </RadioGroup>
+
+        <EditText
+            android:id="@+id/et_album_name"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/form_item_height"
+            android:hint="@string/upload_new_album_hint"
+            android:visibility="gone" />
 
         <TextView
             style="?android:attr/listSeparatorTextViewStyle"

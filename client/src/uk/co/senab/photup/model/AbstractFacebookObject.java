@@ -7,21 +7,26 @@ abstract class AbstractFacebookObject {
 
 	private final String mId;
 	private final String mName;
-	
+
 	public AbstractFacebookObject(String id, String name) {
 		mId = id;
 		mName = name;
 	}
-	
+
 	public AbstractFacebookObject(JSONObject object) throws JSONException {
 		mId = object.getString("id");
 		mName = object.getString("name");
 	}
-	
+
 	public String getId() {
 		return mId;
 	}
-	
+
+	@Override
+	public String toString() {
+		return mName;
+	}
+
 	public String getName() {
 		return mName;
 	}
