@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_height="48dp"
     android:background="#88000000"
     android:orientation="horizontal" >
 
     <TextView
         android:id="@+id/tv_tag_label"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:background="?android:attr/selectableItemBackground"
+        android:gravity="center_vertical"
         android:padding="@dimen/spacing"
         android:text="@string/tag_no_name"
         android:textColor="@android:color/white"
@@ -21,10 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:background="?android:attr/selectableItemBackground"
-        android:paddingBottom="@dimen/spacing"
-        android:paddingLeft="@dimen/half_spacing"
-        android:paddingRight="@dimen/half_spacing"
-        android:paddingTop="@dimen/spacing"
+        android:padding="@dimen/spacing"
         android:src="@android:drawable/ic_menu_delete" />
 
 </LinearLayout>
