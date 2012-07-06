@@ -1,6 +1,7 @@
 package uk.co.senab.photup.views;
 
 import uk.co.senab.photup.listeners.OnPhotoTapListener;
+import uk.co.senab.photup.listeners.OnSingleTapListener;
 import uk.co.senab.photup.model.PhotoTag;
 import android.content.Context;
 import android.graphics.Matrix;
@@ -71,6 +72,7 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 
 	private OnMatrixChangedListener mMatrixChangeListener;
 	private OnPhotoTapListener mPhotoTapListener;
+	private OnSingleTapListener mSingleTapListener;
 
 	private boolean mZoomEnabled = false;
 
@@ -128,6 +130,10 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 	}
 
 	public boolean onSingleTapConfirmed(MotionEvent e) {
+		if (null != mSingleTapListener && mSingleTapListener.onSingleTap(e)) {
+			return true;
+		}
+		
 		if (null != mPhotoTapListener) {
 
 			final RectF displayRect = getDisplayRect();
@@ -217,6 +223,10 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 
 	public void setPhotoTapListener(OnPhotoTapListener listener) {
 		mPhotoTapListener = listener;
+	}
+	
+	public void setSingleTapListener(OnSingleTapListener listener) {
+		mSingleTapListener = listener;
 	}
 
 	@Override

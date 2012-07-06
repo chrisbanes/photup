@@ -4,6 +4,7 @@ import java.util.List;
 
 import uk.co.senab.photup.FriendsAsyncTask.FriendsResultListener;
 import uk.co.senab.photup.adapters.PhotoViewPagerAdapter;
+import uk.co.senab.photup.listeners.OnSingleTapListener;
 import uk.co.senab.photup.listeners.OnUploadChangedListener;
 import uk.co.senab.photup.model.Filter;
 import uk.co.senab.photup.model.Friend;
@@ -18,11 +19,8 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -35,19 +33,8 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.lightbox.android.photoprocessing.R;
 
-public class PhotoViewerActivity extends SherlockActivity implements OnUploadChangedListener, OnTouchListener,
+public class PhotoViewerActivity extends SherlockActivity implements OnUploadChangedListener, OnSingleTapListener,
 		OnCheckedChangeListener, OnPageChangeListener, FriendsResultListener {
-
-	class TapListener extends SimpleOnGestureListener {
-
-		@Override
-		public boolean onSingleTapConfirmed(MotionEvent e) {
-			if (hideFiltersView()) {
-				return true;
-			}
-			return false;
-		}
-	}
 
 	public static final String EXTRA_POSITION = "extra_position";
 
@@ -55,8 +42,6 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 	private PhotoViewPagerAdapter mAdapter;
 	private ViewGroup mContentView;
 	private FiltersRadioGroup mFilterGroup;
-
-	private GestureDetector mGestureDectector;
 
 	private PhotoSelectionController mController;
 
@@ -128,11 +113,8 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 		getSupportActionBar().setTitle(upload.getCaption());
 	}
 
-	public boolean onTouch(View v, MotionEvent event) {
-		if (mGestureDectector.onTouchEvent(event)) {
-			return true;
-		}
-		return false;
+	public boolean onSingleTap(MotionEvent event) {
+		return hideFiltersView();
 	}
 
 	public void onUploadChanged(PhotoUpload upload, boolean added) {
@@ -149,8 +131,6 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 
 		setContentView(R.layout.activity_photo_viewer);
 		mContentView = (ViewGroup) findViewById(R.id.fl_root);
-
-		mGestureDectector = new GestureDetector(this, new TapListener());
 
 		mViewPager = (ViewPager) findViewById(R.id.vp_photos);
 		mViewPager.setOffscreenPageLimit(1);
@@ -235,7 +215,7 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 	}
 
 	private boolean hideFiltersView() {
-		if (null != mFilterGroup) {
+		if (null != mFilterGroup && mFilterGroup.getVisibility() == View.VISIBLE) {
 			mFilterGroup.hide();
 			getSupportActionBar().show();
 			return true;
