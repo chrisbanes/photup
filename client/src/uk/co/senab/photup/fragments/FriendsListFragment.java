@@ -22,8 +22,9 @@ import com.actionbarsherlock.app.SherlockDialogFragment;
 
 public class FriendsListFragment extends SherlockDialogFragment implements FriendsResultListener, OnItemClickListener {
 
+	private final ArrayList<Friend> mFriends = new ArrayList<Friend>();
+
 	private ListView mListView;
-	private List<Friend> mFriends;
 	private BaseAdapter mAdapter;
 
 	private OnFriendPickedListener mPickedFriendListener;
@@ -32,10 +33,13 @@ public class FriendsListFragment extends SherlockDialogFragment implements Frien
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		mFriends = new ArrayList<Friend>();
+		setStyle(STYLE_NO_TITLE, 0);
+
 		mAdapter = new ArrayAdapter<Friend>(getActivity(), android.R.layout.simple_list_item_1, mFriends);
 
-		new FriendsAsyncTask(getActivity(), this).execute();
+		if (mFriends.isEmpty()) {
+			new FriendsAsyncTask(getActivity(), this).execute();
+		}
 	}
 
 	@Override
