@@ -1,6 +1,7 @@
 package uk.co.senab.photup.views;
 
 import uk.co.senab.photup.listeners.OnPhotoTapListener;
+import uk.co.senab.photup.model.PhotoTag;
 import android.content.Context;
 import android.graphics.Matrix;
 import android.graphics.RectF;
@@ -128,10 +129,15 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 
 	public boolean onSingleTapConfirmed(MotionEvent e) {
 		if (null != mPhotoTapListener) {
-			// Check whether e is in photo region
 
-			mPhotoTapListener.onPhotoTap();
-			return true;
+			final RectF displayRect = getDisplayRect();
+			final float x = e.getX(), y = e.getY();
+
+			if (displayRect.contains(x, y)) {
+				mPhotoTapListener.onNewPhotoTagTap(new PhotoTag(x - displayRect.left, y - displayRect.top, displayRect
+						.width(), displayRect.height()));
+				return true;
+			}
 		}
 		return false;
 	}

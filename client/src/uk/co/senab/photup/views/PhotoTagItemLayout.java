@@ -1,6 +1,7 @@
 package uk.co.senab.photup.views;
 
 import uk.co.senab.bitmapcache.R;
+import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.listeners.OnPhotoTagsChangedListener;
 import uk.co.senab.photup.listeners.OnPhotoTapListener;
 import uk.co.senab.photup.model.Friend;
@@ -78,8 +79,11 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 		});
 	}
 
-	public void onPhotoTap() {
-		Log.d(LOG_TAG, "onPhotoTap");
+	public void onNewPhotoTagTap(PhotoTag newTag) {
+		if (Constants.DEBUG) {
+			Log.d(LOG_TAG, "onPhotoTap");
+		}
+		onPhotoTagsChangedImp(newTag, true);
 	}
 
 	void onPhotoTagsChangedImp(final PhotoTag tag, final boolean added) {

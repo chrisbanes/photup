@@ -18,8 +18,12 @@ public class PhotoTag {
 		}
 	}
 
-	public PhotoTag(float x, float y, int bitmapWidth, int bitmapHeight) {
+	public PhotoTag(float x, float y, float bitmapWidth, float bitmapHeight) {
 		this(null, 100 * x / bitmapWidth, 100 * y / bitmapHeight);
+	}
+
+	public PhotoTag(float x, float y, int bitmapWidth, int bitmapHeight) {
+		this(x, y, (float) bitmapHeight, (float) bitmapWidth);
 	}
 
 	public float getX() {
