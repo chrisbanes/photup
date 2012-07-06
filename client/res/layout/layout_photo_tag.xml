@@ -23,6 +23,6 @@
         android:layout_height="fill_parent"
         android:background="?android:attr/selectableItemBackground"
         android:padding="@dimen/spacing"
-        android:src="@android:drawable/ic_menu_delete" />
+        android:src="@drawable/ic_menu_delete" />
 
 </LinearLayout>
