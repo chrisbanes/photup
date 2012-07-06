@@ -91,7 +91,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 			// TODO Make this a choice
 			final int largestDimension = Constants.FACEBOOK_MAX_PHOTO_SIZE;
-			
+
 			/**
 			 * Photo
 			 */
@@ -99,7 +99,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 			if (mUpload.requiresProcessing()) {
 				bitmap = mUpload.processBitmap(bitmap, true);
 			}
-			
+
 			if (Constants.DEBUG) {
 				Log.d(LOG_TAG, "Finished processing bitmap");
 			}
@@ -156,9 +156,10 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 	@Override
 	public IBinder onBind(Intent intent) {
+		startService(new Intent(this, PhotoUploadService.class));
 		return mBinder;
 	}
-
+	
 	public boolean handleMessage(Message msg) {
 		switch (msg.what) {
 			case MSG_UPLOAD_COMPLETE:
@@ -201,6 +202,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		} else {
 			stopForeground(false);
 			finishedNotification();
+			stopSelf();
 		}
 	}
 
