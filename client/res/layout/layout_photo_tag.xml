@@ -13,7 +13,7 @@
         android:padding="@dimen/spacing"
         android:text="@string/tag_no_name"
         android:textColor="@android:color/white"
-        android:textSize="13dp"
+        android:textSize="@dimen/photo_tag_textSize"
         android:textStyle="bold" />
 
     <ImageView
@@ -21,7 +21,10 @@
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:background="?android:attr/selectableItemBackground"
-        android:padding="@dimen/spacing"
+        android:paddingBottom="@dimen/spacing"
+        android:paddingLeft="@dimen/half_spacing"
+        android:paddingRight="@dimen/half_spacing"
+        android:paddingTop="@dimen/spacing"
         android:src="@android:drawable/ic_menu_delete" />
 
 </LinearLayout>

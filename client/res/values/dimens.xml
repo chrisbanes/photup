@@ -4,10 +4,13 @@
     <dimen name="gridview_spacing">1dp</dimen>
     <dimen name="gridview_item_margin">3dp</dimen>
     <dimen name="gridview_item_dimension">100dp</dimen>
+    <dimen name="half_spacing">3dp</dimen>
     <dimen name="spacing">6dp</dimen>
     <dimen name="filters_radiogroup_height">80dp</dimen>
     <dimen name="filters_textSize">11dp</dimen>
     <dimen name="viewpager_margin">4dp</dimen>
+    
+    <dimen name="photo_tag_textSize">14sp</dimen>
     
 
 </resources>
