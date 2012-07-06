@@ -134,19 +134,19 @@ public abstract class PhotoUpload {
 
 	public void addPhotoTag(PhotoTag tag) {
 		mTags.add(tag);
-		notifyTagListener();
+		notifyTagListener(tag, true);
 	}
 
 	public void removePhotoTag(PhotoTag tag) {
 		mTags.remove(tag);
-		notifyTagListener();
+		notifyTagListener(tag, false);
 	}
 
-	private void notifyTagListener() {
+	private void notifyTagListener(PhotoTag tag, boolean added) {
 		if (null != mTagChangedListener) {
 			OnPhotoTagsChangedListener listener = mTagChangedListener.get();
 			if (null != listener) {
-				listener.onPhotoTagsChanged();
+				listener.onPhotoTagsChanged(tag, added);
 			}
 		}
 	}

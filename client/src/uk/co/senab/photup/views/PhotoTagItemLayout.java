@@ -1,7 +1,5 @@
 package uk.co.senab.photup.views;
 
-import java.util.List;
-
 import uk.co.senab.bitmapcache.R;
 import uk.co.senab.photup.listeners.OnPhotoTagsChangedListener;
 import uk.co.senab.photup.model.Friend;
@@ -12,6 +10,8 @@ import android.content.Context;
 import android.graphics.RectF;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AbsoluteLayout;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -24,12 +24,18 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 	static final String LOG_TAG = "PhotoTagItemLayout";
 
 	private final MultiTouchImageView mImageView;
+	private final LayoutInflater mLayoutInflater;
+
+	private final Animation mPhotoTagInAnimation, mPhotoTagOutAnimation;
+
 	private final AbsoluteLayout mTagLayout;
 
 	private final PhotoUpload mUpload;
 
 	public PhotoTagItemLayout(Context context, PhotoUpload upload) {
 		super(context);
+
+		mLayoutInflater = LayoutInflater.from(context);
 
 		mImageView = new MultiTouchImageView(context, true);
 		mImageView.setMatrixChangeListener(this);
@@ -41,32 +47,76 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 		mUpload = upload;
 		mUpload.setTagChangedListener(this);
 
+		mPhotoTagInAnimation = AnimationUtils.loadAnimation(context, R.anim.tag_fade_in);
+		mPhotoTagOutAnimation = AnimationUtils.loadAnimation(context, R.anim.tag_fade_out);
+
 		addPhotoTags();
-	}
 
-	private void addPhotoTags() {
-		mTagLayout.removeAllViews();
-
-		final List<PhotoTag> tags = mUpload.getPhotoTags();
-		if (null != tags && !tags.isEmpty()) {
-			LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-
-			View tagLayout;
-			for (PhotoTag tag : tags) {
-				tagLayout = createPhotoTagLayout(layoutInflater, tag);
-				mTagLayout.addView(tagLayout);
-			}
-		}
-
-		layoutTags(mImageView.getDisplayRect());
 	}
 
 	public MultiTouchImageView getImageView() {
 		return mImageView;
 	}
 
+	public void onClick(View v) {
+		PhotoTag tag = (PhotoTag) v.getTag();
+		mUpload.removePhotoTag(tag);
+	}
+
 	public void onMatrixChanged(RectF rect) {
 		layoutTags(rect);
+	}
+
+	public void onPhotoTagsChanged(final PhotoTag tag, final boolean added) {
+		post(new Runnable() {
+			public void run() {
+				onPhotoTagsChangedImp(tag, added);
+			}
+		});
+	}
+
+	void onPhotoTagsChangedImp(final PhotoTag tag, final boolean added) {
+		if (added) {
+			View view = createPhotoTagLayout(tag);
+			mTagLayout.addView(view);
+			view.startAnimation(mPhotoTagInAnimation);
+			layoutTags(mImageView.getDisplayRect());
+
+		} else {
+			for (int i = 0, z = mTagLayout.getChildCount(); i < z; i++) {
+				View tagLayout = mTagLayout.getChildAt(i);
+				if (tag == tagLayout.getTag()) {
+					tagLayout.startAnimation(mPhotoTagOutAnimation);
+					mTagLayout.removeView(tagLayout);
+					break;
+				}
+			}
+		}
+	}
+
+	private void addPhotoTags() {
+		for (PhotoTag tag : mUpload.getPhotoTags()) {
+			onPhotoTagsChangedImp(tag, true);
+		}
+		layoutTags(mImageView.getDisplayRect());
+	}
+
+	private View createPhotoTagLayout(PhotoTag tag) {
+		View tagLayout = mLayoutInflater.inflate(R.layout.layout_photo_tag, mTagLayout, false);
+
+		View removeBtn = tagLayout.findViewById(R.id.btn_remove_tag);
+		removeBtn.setOnClickListener(this);
+		removeBtn.setTag(tag);
+
+		TextView labelTv = (TextView) tagLayout.findViewById(R.id.tv_tag_label);
+		Friend friend = tag.getFriend();
+		if (null != friend) {
+			labelTv.setText(friend.getName());
+		}
+
+		tagLayout.setTag(tag);
+
+		return tagLayout;
 	}
 
 	private void layoutTags(final RectF rect) {
@@ -82,41 +132,8 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 			lp = (AbsoluteLayout.LayoutParams) tagLayout.getLayoutParams();
 			lp.x = Math.round((rect.width() * tag.getX() / 100f) + rect.left) - (tagLayout.getWidth() / 2);
 			lp.y = Math.round((rect.height() * tag.getY() / 100f) + rect.top);
+
 			tagLayout.setLayoutParams(lp);
-
-			tagLayout.setVisibility(View.VISIBLE);
 		}
-	}
-
-	public void onPhotoTagsChanged() {
-		post(new Runnable() {
-			public void run() {
-				addPhotoTags();
-			}
-		});
-	}
-
-	public void onClick(View v) {
-		PhotoTag tag = (PhotoTag) v.getTag();
-		mUpload.removePhotoTag(tag);
-	}
-
-	private View createPhotoTagLayout(LayoutInflater layoutInflater, PhotoTag tag) {
-		View tagLayout = layoutInflater.inflate(R.layout.layout_photo_tag, mTagLayout, false);
-
-		View removeBtn = tagLayout.findViewById(R.id.btn_remove_tag);
-		removeBtn.setOnClickListener(this);
-		removeBtn.setTag(tag);
-
-		TextView labelTv = (TextView) tagLayout.findViewById(R.id.tv_tag_label);
-		Friend friend = tag.getFriend();
-		if (null != friend) {
-			labelTv.setText(friend.getName());
-		}
-
-		tagLayout.setTag(tag);
-		tagLayout.setVisibility(View.GONE);
-
-		return tagLayout;
 	}
 }
