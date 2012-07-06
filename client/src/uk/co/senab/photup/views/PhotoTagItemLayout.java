@@ -2,12 +2,14 @@ package uk.co.senab.photup.views;
 
 import uk.co.senab.bitmapcache.R;
 import uk.co.senab.photup.listeners.OnPhotoTagsChangedListener;
+import uk.co.senab.photup.listeners.OnPhotoTapListener;
 import uk.co.senab.photup.model.Friend;
 import uk.co.senab.photup.model.PhotoTag;
 import uk.co.senab.photup.model.PhotoUpload;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.RectF;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
@@ -19,7 +21,7 @@ import android.widget.TextView;
 @SuppressLint("ViewConstructor")
 @SuppressWarnings("deprecation")
 public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageView.OnMatrixChangedListener,
-		OnPhotoTagsChangedListener, View.OnClickListener {
+		OnPhotoTagsChangedListener, View.OnClickListener, OnPhotoTapListener {
 
 	static final String LOG_TAG = "PhotoTagItemLayout";
 
@@ -39,6 +41,7 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 
 		mImageView = new MultiTouchImageView(context, true);
 		mImageView.setMatrixChangeListener(this);
+		mImageView.setPhotoTapListener(this);
 		addView(mImageView, FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
 
 		mTagLayout = new AbsoluteLayout(context);
@@ -73,6 +76,10 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 				onPhotoTagsChangedImp(tag, added);
 			}
 		});
+	}
+
+	public void onPhotoTap() {
+		Log.d(LOG_TAG, "onPhotoTap");
 	}
 
 	void onPhotoTagsChangedImp(final PhotoTag tag, final boolean added) {

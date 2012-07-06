@@ -1,5 +1,6 @@
 package uk.co.senab.photup.views;
 
+import uk.co.senab.photup.listeners.OnPhotoTapListener;
 import android.content.Context;
 import android.graphics.Matrix;
 import android.graphics.RectF;
@@ -68,6 +69,7 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 	private int mScrollEdge = EDGE_BOTH;
 
 	private OnMatrixChangedListener mMatrixChangeListener;
+	private OnPhotoTapListener mPhotoTapListener;
 
 	private boolean mZoomEnabled = false;
 
@@ -125,6 +127,12 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 	}
 
 	public boolean onSingleTapConfirmed(MotionEvent e) {
+		if (null != mPhotoTapListener) {
+			// Check whether e is in photo region
+
+			mPhotoTapListener.onPhotoTap();
+			return true;
+		}
 		return false;
 	}
 
@@ -199,6 +207,10 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 
 	public void setMatrixChangeListener(OnMatrixChangedListener listener) {
 		mMatrixChangeListener = listener;
+	}
+
+	public void setPhotoTapListener(OnPhotoTapListener listener) {
+		mPhotoTapListener = listener;
 	}
 
 	@Override
