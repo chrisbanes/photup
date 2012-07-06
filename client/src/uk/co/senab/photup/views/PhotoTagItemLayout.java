@@ -55,7 +55,6 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 		mPhotoTagOutAnimation = AnimationUtils.loadAnimation(context, R.anim.tag_fade_out);
 
 		addPhotoTags();
-
 	}
 
 	public MultiTouchImageView getImageView() {
@@ -88,9 +87,7 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 
 	void onPhotoTagsChangedImp(final PhotoTag tag, final boolean added) {
 		if (added) {
-			View view = createPhotoTagLayout(tag);
-			mTagLayout.addView(view);
-			view.startAnimation(mPhotoTagInAnimation);
+			mTagLayout.addView(createPhotoTagLayout(tag));
 			layoutTags(mImageView.getDisplayRect());
 
 		} else {
@@ -107,7 +104,7 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 
 	private void addPhotoTags() {
 		for (PhotoTag tag : mUpload.getPhotoTags()) {
-			onPhotoTagsChangedImp(tag, true);
+			mTagLayout.addView(createPhotoTagLayout(tag));
 		}
 		layoutTags(mImageView.getDisplayRect());
 	}
@@ -126,6 +123,7 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 		}
 
 		tagLayout.setTag(tag);
+		tagLayout.setVisibility(View.GONE);
 
 		return tagLayout;
 	}
@@ -145,6 +143,11 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 			lp.y = Math.round((rect.height() * tag.getY() / 100f) + rect.top);
 
 			tagLayout.setLayoutParams(lp);
+
+			if (tagLayout.getVisibility() != View.VISIBLE) {
+				tagLayout.startAnimation(mPhotoTagInAnimation);
+				tagLayout.setVisibility(View.VISIBLE);
+			}
 		}
 	}
 }
