@@ -2,6 +2,7 @@ package uk.co.senab.photup.facebook;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -59,6 +60,8 @@ public class FacebookRequester {
 					e.printStackTrace();
 				}
 			}
+			
+			Collections.sort(friends, Friend.getComparator());
 			
 			return friends;
 		} catch (FacebookError e) {

@@ -1,5 +1,7 @@
 package uk.co.senab.photup;
 
+import java.util.Set;
+
 import uk.co.senab.photup.adapters.PhotoViewPagerAdapter;
 import uk.co.senab.photup.fragments.FriendsListFragment;
 import uk.co.senab.photup.listeners.OnFriendPickedListener;
@@ -7,6 +9,7 @@ import uk.co.senab.photup.listeners.OnPickFriendRequestListener;
 import uk.co.senab.photup.listeners.OnSingleTapListener;
 import uk.co.senab.photup.listeners.OnUploadChangedListener;
 import uk.co.senab.photup.model.Filter;
+import uk.co.senab.photup.model.Friend;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.views.FiltersRadioGroup;
 import uk.co.senab.photup.views.MultiTouchImageView;
@@ -241,8 +244,9 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnU
 		mIgnoreCheckCallback = false;
 	}
 
-	public void onPickFriendRequested(OnFriendPickedListener listener) {
+	public void onPickFriendRequested(OnFriendPickedListener listener, Set<Friend> excludeSet) {
 		mFriendsFragment.setOnFriendPickedListener(listener);
+		mFriendsFragment.setExcludedFriends(excludeSet);
 		mFriendsFragment.show(getSupportFragmentManager(), "friends");
 	}
 }

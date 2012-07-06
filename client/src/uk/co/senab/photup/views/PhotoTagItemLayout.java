@@ -29,7 +29,7 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 
 	static final String LOG_TAG = "PhotoTagItemLayout";
 
-	private TextView mFriendRequestUpdateView;
+	private PhotoTag mFriendRequestTag;
 	private final MultiTouchImageView mImageView;
 
 	private final LayoutInflater mLayoutInflater;
@@ -76,15 +76,20 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 				mUpload.removePhotoTag(tag);
 				break;
 			case R.id.tv_tag_label:
-				mFriendRequestUpdateView = (TextView) v;
-				mPickFriendListener.onPickFriendRequested(this);
+				mFriendRequestTag = tag;
+				mPickFriendListener.onPickFriendRequested(this, mUpload.getTaggedFriends());
 				break;
 		}
 	}
 
 	public void onFriendPicked(Friend friend) {
-		mFriendRequestUpdateView.setText(friend.getName());
-		mFriendRequestUpdateView = null;
+		mFriendRequestTag.setFriend(friend);
+
+		View tagLayout = getTagLayout(mFriendRequestTag);
+		TextView labelTv = (TextView) tagLayout.findViewById(R.id.tv_tag_label);
+		labelTv.setText(friend.getName());
+
+		mFriendRequestTag = null;
 
 		layoutTags(mImageView.getDisplayRect());
 	}
@@ -97,7 +102,7 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 		if (Constants.DEBUG) {
 			Log.d(LOG_TAG, "onPhotoTap");
 		}
-		onPhotoTagsChangedImp(newTag, true);
+		mUpload.addPhotoTag(newTag);
 	}
 
 	public void onPhotoTagsChanged(final PhotoTag tag, final boolean added) {
@@ -112,20 +117,15 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 		if (added) {
 			mTagLayout.addView(createPhotoTagLayout(tag));
 			layoutTags(mImageView.getDisplayRect());
-
 		} else {
-			for (int i = 0, z = mTagLayout.getChildCount(); i < z; i++) {
-				View tagLayout = mTagLayout.getChildAt(i);
-				if (tag == tagLayout.getTag()) {
-					tagLayout.startAnimation(mPhotoTagOutAnimation);
-					mTagLayout.removeView(tagLayout);
-					break;
-				}
-			}
+			View view = getTagLayout(tag);
+			view.startAnimation(mPhotoTagOutAnimation);
+			mTagLayout.removeView(view);
 		}
 	}
 
 	private void addPhotoTags() {
+		mTagLayout.removeAllViews();
 		for (PhotoTag tag : mUpload.getPhotoTags()) {
 			mTagLayout.addView(createPhotoTagLayout(tag));
 		}
@@ -145,11 +145,22 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 			labelTv.setText(friend.getName());
 		}
 		labelTv.setOnClickListener(this);
+		labelTv.setTag(tag);
 
 		tagLayout.setTag(tag);
 		tagLayout.setVisibility(View.GONE);
 
 		return tagLayout;
+	}
+
+	private View getTagLayout(PhotoTag tag) {
+		for (int i = 0, z = mTagLayout.getChildCount(); i < z; i++) {
+			View tagLayout = mTagLayout.getChildAt(i);
+			if (tag == tagLayout.getTag()) {
+				return tagLayout;
+			}
+		}
+		return null;
 	}
 
 	private void layoutTags(final RectF rect) {

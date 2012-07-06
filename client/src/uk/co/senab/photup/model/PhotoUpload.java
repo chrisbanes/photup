@@ -65,6 +65,20 @@ public abstract class PhotoUpload {
 	public Filter getFilterUsed() {
 		return mFilter;
 	}
+	
+	public HashSet<Friend> getTaggedFriends() {
+		HashSet<Friend> friends = new HashSet<Friend>();
+		
+		Friend friend;
+		for (PhotoTag tag : mTags) {
+			friend = tag.getFriend();
+			if (null != friend) {
+				friends.add(friend);
+			}
+		}
+		
+		return friends;
+	}
 
 	public boolean requiresProcessing() {
 		return null != mFilter && mFilter.getId() != Filter.FILTER_ORIGINAL;
