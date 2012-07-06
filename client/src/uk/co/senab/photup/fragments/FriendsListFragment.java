@@ -10,18 +10,21 @@ import uk.co.senab.photup.R;
 import uk.co.senab.photup.listeners.OnFriendPickedListener;
 import uk.co.senab.photup.model.Friend;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockDialogFragment;
 
-public class FriendsListFragment extends SherlockDialogFragment implements FriendsResultListener, OnItemClickListener {
+public class FriendsListFragment extends SherlockDialogFragment implements FriendsResultListener, OnItemClickListener,
+		TextWatcher {
 
 	private final ArrayList<Friend> mFriends = new ArrayList<Friend>();
 	private final ArrayList<Friend> mDisplayedFriends = new ArrayList<Friend>();
@@ -29,7 +32,9 @@ public class FriendsListFragment extends SherlockDialogFragment implements Frien
 	private Set<Friend> mExcludedFriends;
 
 	private ListView mListView;
-	private BaseAdapter mAdapter;
+	private EditText mFilterEditText;
+
+	private ArrayAdapter<Friend> mAdapter;
 
 	private OnFriendPickedListener mPickedFriendListener;
 
@@ -54,6 +59,9 @@ public class FriendsListFragment extends SherlockDialogFragment implements Frien
 		mListView.setOnItemClickListener(this);
 		mListView.setAdapter(mAdapter);
 
+		mFilterEditText = (EditText) view.findViewById(R.id.et_friends_filter);
+		mFilterEditText.addTextChangedListener(this);
+
 		return view;
 	}
 
@@ -74,7 +82,7 @@ public class FriendsListFragment extends SherlockDialogFragment implements Frien
 
 	private void updateFriends() {
 		mDisplayedFriends.clear();
-		
+
 		if (null != mExcludedFriends && !mExcludedFriends.isEmpty()) {
 			for (Friend friend : mFriends) {
 				if (!mExcludedFriends.contains(friend)) {
@@ -98,6 +106,18 @@ public class FriendsListFragment extends SherlockDialogFragment implements Frien
 		}
 
 		dismiss();
+	}
+
+	public void afterTextChanged(Editable s) {
+		// NO-OP
+	}
+
+	public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+		// NO-OP
+	}
+
+	public void onTextChanged(CharSequence s, int start, int before, int count) {
+		mAdapter.getFilter().filter(s);
 	}
 
 }
