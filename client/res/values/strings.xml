@@ -4,11 +4,17 @@
     <string name="app_name">photup</string>
     <string name="tab_photos">Photos</string>
     <string name="tab_selected_photos">Selected (%1$s)</string>
-    
     <string name="photo_effects">Effects</string>
     <string name="photo_remove">Remove</string>
     <string name="photo_caption">Caption</string>
-    
     <string name="tag_no_name">Who\'s this?</string>
+    <string name="upload_quality_title">Quality</string>
+    <string name="upload_quality_low">Low</string>
+    <string name="upload_quality_medium">Medium</string>
+    <string name="upload_quality_high">High</string>
+    <string name="upload_album_title">Album</string>
+    <string name="upload_new_album_hint">New album name</string>
+    <string name="upload_new_album">New Album</string>
+    <string name="upload_privacy_title">Privacy</string>
 
 </resources>

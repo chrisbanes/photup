@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/double_spacing" >
+
+        <TextView
+            style="?android:attr/listSeparatorTextViewStyle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/upload_album_title" />
+
+        <Spinner
+            android:id="@+id/sp_upload_album"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/form_item_height" />
+
+        <EditText
+            android:id="@+id/et_album_name"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/form_item_height"
+            android:hint="@string/upload_new_album_hint"
+            android:visibility="gone" />
+
+        <TextView
+            style="?android:attr/listSeparatorTextViewStyle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/double_spacing"
+            android:text="@string/upload_quality_title" />
+
+        <RadioGroup
+            android:id="@+id/rg_upload_quality"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <RadioButton
+                android:id="@+id/rb_quality_low"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/form_item_height"
+                android:text="@string/upload_quality_low" />
+
+            <RadioButton
+                android:id="@+id/rb_quality_medium"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/form_item_height"
+                android:text="@string/upload_quality_medium" />
+
+            <RadioButton
+                android:id="@+id/rb_quality_highs"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/form_item_height"
+                android:checked="true"
+                android:text="@string/upload_quality_high" />
+        </RadioGroup>
+
+        <TextView
+            style="?android:attr/listSeparatorTextViewStyle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/double_spacing"
+            android:text="@string/upload_privacy_title" />
+
+        <Spinner
+            android:id="@+id/sp_privacy"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/form_item_height"
+            android:entries="@array/privacy_settings" />
+    </LinearLayout>
+
+</ScrollView>
