@@ -42,8 +42,10 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 
 		@Override
 		public boolean onSingleTapConfirmed(MotionEvent e) {
-			toggleActionBarVisibility();
-			return true;
+			if (hideFiltersView()) {
+				return true;
+			}
+			return false;
 		}
 	}
 
@@ -59,13 +61,13 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 	private PhotoSelectionController mController;
 
 	private boolean mIgnoreCheckCallback = false;
-	
+
 	private List<Friend> mFriends;
 
 	@Override
 	public void onBackPressed() {
 		if (null != mFilterGroup && mFilterGroup.getVisibility() == View.VISIBLE) {
-			toggleActionBarVisibility();
+			hideFiltersView();
 		} else {
 			super.onBackPressed();
 		}
@@ -121,7 +123,7 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 		if (null != mFilterGroup && mFilterGroup.getVisibility() == View.VISIBLE) {
 			updateFiltersView();
 		}
-		
+
 		PhotoUpload upload = mAdapter.getItem(position);
 		getSupportActionBar().setTitle(upload.getCaption());
 	}
@@ -163,7 +165,7 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 
 		final Intent intent = getIntent();
 		mViewPager.setCurrentItem(intent.getIntExtra(EXTRA_POSITION, 0));
-		
+
 		if (null == mFriends) {
 			new FriendsAsyncTask(this, this).execute();
 		}
@@ -194,7 +196,7 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 
 	private void showCaptionDialog() {
 		final PhotoUpload currentUpload = getCurrentUpload();
-		
+
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle(R.string.photo_caption);
 
@@ -202,23 +204,23 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 		final FrameLayout layout = new FrameLayout(this);
 		final int margin = getResources().getDimensionPixelSize(R.dimen.spacing);
 		layout.setPadding(margin, margin, margin, margin);
-		
+
 		final EditText input = new EditText(this);
 		input.setMinLines(2);
 		input.setText(currentUpload.getCaption());
 		layout.addView(input);
-		
+
 		builder.setView(layout);
-		
+
 		final DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int whichButton) {
-				
+
 				switch (whichButton) {
 					case AlertDialog.BUTTON_POSITIVE:
 						currentUpload.setCaption(input.getText().toString());
 						getSupportActionBar().setTitle(currentUpload.getCaption());
 						break;
-						
+
 					case AlertDialog.BUTTON_NEGATIVE:
 					default:
 						dialog.dismiss();
@@ -232,10 +234,13 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 		builder.show();
 	}
 
-	private void hideFiltersView() {
+	private boolean hideFiltersView() {
 		if (null != mFilterGroup) {
 			mFilterGroup.hide();
+			getSupportActionBar().show();
+			return true;
 		}
+		return false;
 	}
 
 	private void showFiltersView() {
@@ -260,22 +265,12 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 		mIgnoreCheckCallback = false;
 	}
 
-	private void toggleActionBarVisibility() {
-		ActionBar ab = getSupportActionBar();
-		if (ab.isShowing()) {
-			ab.hide();
-		} else {
-			ab.show();
-			hideFiltersView();
-		}
-	}
-
 	public void onFriendsLoaded(List<Friend> friends) {
 		mFriends = friends;
-		
+
 		if (Constants.DEBUG) {
 			Log.d("PhotoViewerActivity", "Got Friends Result: " + friends.size());
 		}
-		
+
 	}
 }
