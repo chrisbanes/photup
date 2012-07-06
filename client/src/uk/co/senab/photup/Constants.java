@@ -14,6 +14,6 @@ public class Constants {
 	
 	public static final String[] FACEBOOK_PERMISSIONS = { "publish_stream", "user_photos" };
 	
-	public static final int FACE_DETECTOR_MAX_FACES = 8;
+	public static final int FACE_DETECTOR_MAX_FACES = 6;
 	
 }

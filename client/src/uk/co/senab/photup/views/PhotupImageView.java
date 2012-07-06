@@ -66,7 +66,7 @@ public class PhotupImageView extends CacheableImageView {
 
 			PhotupImageView iv = mImageView.get();
 			if (null != iv) {
-				if (mFetchFullSize && mUpload.requiresFaceDetectPass()) {
+				if (mFetchFullSize) {
 					iv.requestFaceDetection(mUpload, result.getBitmap());
 				}
 				iv.setImageCachedBitmap(result);
@@ -114,7 +114,7 @@ public class PhotupImageView extends CacheableImageView {
 				public void run() {
 					mImageView.setImageBitmap(filteredBitmap);
 
-					if (mFullSize && mUpload.requiresFaceDetectPass()) {
+					if (mFullSize) {
 						mImageView.requestFaceDetection(mUpload, filteredBitmap);
 					}
 				}
@@ -171,8 +171,10 @@ public class PhotupImageView extends CacheableImageView {
 	}
 
 	void requestFaceDetection(final PhotoUpload upload, final Bitmap bitmap) {
-		PhotupApplication app = PhotupApplication.getApplication(getContext());
-		app.getMultiThreadExecutorService().submit(new FaceDetectionRunnable(upload, bitmap));
+		if (upload.requiresFaceDetectPass()) {
+			PhotupApplication app = PhotupApplication.getApplication(getContext());
+			app.getSingleThreadExecutorService().submit(new FaceDetectionRunnable(upload, bitmap));
+		}
 	}
 
 	void requestImage(final PhotoUpload upload, final boolean fullSize) {
