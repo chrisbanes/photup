@@ -13,6 +13,7 @@ import uk.co.senab.photup.model.Album;
 import uk.co.senab.photup.model.Friend;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import com.facebook.android.Facebook;
 import com.facebook.android.FacebookError;
@@ -110,6 +111,47 @@ public class FacebookRequester {
 			}
 
 			return albums;
+		} catch (FacebookError e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public String createNewAlbum(String albumName, String description, String privacy) {
+		Bundle b = new Bundle();
+		b.putString("name", albumName);
+
+		if (!TextUtils.isEmpty(description)) {
+			b.putString("message", description);
+		}
+
+		if (!TextUtils.isEmpty(privacy)) {
+			try {
+				JSONObject object = new JSONObject();
+				object.put("value", privacy);
+				b.putString("privacy", object.toString());
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+
+		String response = null;
+		try {
+			response = mFacebook.request("me/albums", b, "POST");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		if (null == response) {
+			return null;
+		}
+
+		try {
+			JSONObject document = Util.parseJson(response);
+			return document.getString("id");
 		} catch (FacebookError e) {
 			e.printStackTrace();
 		} catch (JSONException e) {

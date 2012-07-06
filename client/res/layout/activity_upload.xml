@@ -15,10 +15,24 @@
             android:layout_height="wrap_content"
             android:text="@string/upload_album_title" />
 
-        <Spinner
-            android:id="@+id/sp_upload_album"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/form_item_height" />
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <Spinner
+                android:id="@+id/sp_upload_album"
+                android:layout_width="0px"
+                android:layout_height="@dimen/form_item_height"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:id="@+id/btn_new_album"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:padding="@dimen/spacing"
+                android:src="@android:drawable/ic_menu_edit" />
+        </LinearLayout>
 
         <TextView
             style="?android:attr/listSeparatorTextViewStyle"
@@ -51,26 +65,6 @@
                 android:checked="true"
                 android:text="@string/upload_quality_high" />
         </RadioGroup>
-
-        <EditText
-            android:id="@+id/et_album_name"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/form_item_height"
-            android:hint="@string/upload_new_album_hint"
-            android:visibility="gone" />
-
-        <TextView
-            style="?android:attr/listSeparatorTextViewStyle"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/double_spacing"
-            android:text="@string/upload_privacy_title" />
-
-        <Spinner
-            android:id="@+id/sp_privacy"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/form_item_height"
-            android:entries="@array/privacy_settings" />
     </LinearLayout>
 
 </ScrollView>

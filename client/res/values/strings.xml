@@ -14,7 +14,9 @@
     <string name="upload_quality_high">High</string>
     <string name="upload_album_title">Album</string>
     <string name="upload_new_album_hint">New album name</string>
+    <string name="upload_new_album_desc_hint">Description</string>
     <string name="upload_new_album">New Album</string>
     <string name="upload_privacy_title">Privacy</string>
+    
 
 </resources>

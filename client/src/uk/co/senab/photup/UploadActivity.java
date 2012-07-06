@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uk.co.senab.photup.AlbumsAsyncTask.AlbumsResultListener;
+import uk.co.senab.photup.fragments.NewAlbumFragment;
+import uk.co.senab.photup.fragments.NewAlbumFragment.OnAlbumCreatedListener;
 import uk.co.senab.photup.model.Album;
 import uk.co.senab.photup.model.UploadQuality;
 import uk.co.senab.photup.service.PhotoUploadService;
@@ -14,28 +16,30 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 
-import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.lightbox.android.photoprocessing.R;
 
-public class UploadActivity extends SherlockActivity implements ServiceConnection, AlbumsResultListener {
+public class UploadActivity extends SherlockFragmentActivity implements ServiceConnection, AlbumsResultListener,
+		OnClickListener, OnAlbumCreatedListener {
 
 	private final ArrayList<Album> mAlbums = new ArrayList<Album>();
 
 	private ServiceBinder<PhotoUploadService> mBinder;
 
 	private RadioGroup mQualityRadioGroup;
-	private Spinner mAlbumSpinner, mPrivacySpinner;
+	private Spinner mAlbumSpinner;
+	private ImageButton mNewAlbumButton;
 
 	private ArrayAdapter<Album> mAlbumAdapter;
-
-	private EditText mNewAlbumEditText;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,8 +49,9 @@ public class UploadActivity extends SherlockActivity implements ServiceConnectio
 
 		mQualityRadioGroup = (RadioGroup) findViewById(R.id.rg_upload_quality);
 		mAlbumSpinner = (Spinner) findViewById(R.id.sp_upload_album);
-		mNewAlbumEditText = (EditText) findViewById(R.id.et_album_name);
-		mPrivacySpinner = (Spinner) findViewById(R.id.sp_privacy);
+		mNewAlbumButton = (ImageButton) findViewById(R.id.btn_new_album);
+
+		mNewAlbumButton.setOnClickListener(this);
 
 		mAlbumAdapter = new ArrayAdapter<Album>(this, android.R.layout.simple_spinner_dropdown_item, mAlbums);
 		mAlbumSpinner.setAdapter(mAlbumAdapter);
@@ -98,8 +103,18 @@ public class UploadActivity extends SherlockActivity implements ServiceConnectio
 	}
 
 	public void onAlbumsLoaded(List<Album> albums) {
+		mAlbums.clear();
 		mAlbums.addAll(albums);
 		mAlbumAdapter.notifyDataSetChanged();
+	}
+
+	public void onClick(View v) {
+		NewAlbumFragment fragment = new NewAlbumFragment();
+		fragment.show(getSupportFragmentManager(), "new_album");
+	}
+
+	public void onAlbumCreated() {
+		new AlbumsAsyncTask(this, this).execute();
 	}
 
 }

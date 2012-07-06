@@ -2,9 +2,9 @@
 <resources>
 
     <string-array name="privacy_settings">
-        <item>Default</item>
         <item>Public</item>
         <item>Friends</item>
+        <item>Me</item>
     </string-array>
 
 </resources>

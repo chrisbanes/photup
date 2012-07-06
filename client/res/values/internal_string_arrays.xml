@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="privacy_settings_values">
+        <item>EVERYONE</item>
+        <item>ALL_FRIENDS</item>
+        <item>SELF</item>
+    </string-array>
+
+</resources>
