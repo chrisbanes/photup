@@ -13,6 +13,7 @@ import android.graphics.RectF;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AbsoluteLayout;
@@ -133,13 +134,20 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 			return;
 		}
 
+		Log.d(LOG_TAG, "layoutTags. Rect: " + rect.toString());
+
 		AbsoluteLayout.LayoutParams lp;
 		for (int i = 0, z = mTagLayout.getChildCount(); i < z; i++) {
 			View tagLayout = mTagLayout.getChildAt(i);
 			PhotoTag tag = (PhotoTag) tagLayout.getTag();
 
+			// Measure View if we need to
+			if (tagLayout.getWidth() == 0) {
+				measureView(tagLayout);
+			}
+
 			lp = (AbsoluteLayout.LayoutParams) tagLayout.getLayoutParams();
-			lp.x = Math.round((rect.width() * tag.getX() / 100f) + rect.left) - (tagLayout.getWidth() / 2);
+			lp.x = Math.round((rect.width() * tag.getX() / 100f) + rect.left) - (tagLayout.getMeasuredWidth() / 2);
 			lp.y = Math.round((rect.height() * tag.getY() / 100f) + rect.top);
 
 			tagLayout.setLayoutParams(lp);
@@ -149,5 +157,22 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 				tagLayout.setVisibility(View.VISIBLE);
 			}
 		}
+	}
+
+	private void measureView(View child) {
+		ViewGroup.LayoutParams p = child.getLayoutParams();
+		if (p == null) {
+			p = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+		}
+
+		int childWidthSpec = ViewGroup.getChildMeasureSpec(0, 0, p.width);
+		int lpHeight = p.height;
+		int childHeightSpec;
+		if (lpHeight > 0) {
+			childHeightSpec = MeasureSpec.makeMeasureSpec(lpHeight, MeasureSpec.EXACTLY);
+		} else {
+			childHeightSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+		}
+		child.measure(childWidthSpec, childHeightSpec);
 	}
 }
