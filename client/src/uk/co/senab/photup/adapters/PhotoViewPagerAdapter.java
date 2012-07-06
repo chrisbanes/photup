@@ -4,6 +4,7 @@ import java.util.List;
 
 import uk.co.senab.photup.PhotoSelectionController;
 import uk.co.senab.photup.PhotupApplication;
+import uk.co.senab.photup.listeners.OnPickFriendRequestListener;
 import uk.co.senab.photup.listeners.OnSingleTapListener;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.views.MultiTouchImageView;
@@ -18,12 +19,15 @@ public class PhotoViewPagerAdapter extends PagerAdapter {
 	private final Context mContext;
 	private final PhotoSelectionController mController;
 	private final OnSingleTapListener mTapListener;
+	private final OnPickFriendRequestListener mFriendPickRequestListener;
 
 	private List<PhotoUpload> mItems;
 
-	public PhotoViewPagerAdapter(Context context, OnSingleTapListener tapListener) {
+	public PhotoViewPagerAdapter(Context context, OnSingleTapListener tapListener,
+			OnPickFriendRequestListener friendRequestListener) {
 		mContext = context;
 		mTapListener = tapListener;
+		mFriendPickRequestListener = friendRequestListener;
 
 		PhotupApplication app = PhotupApplication.getApplication(context);
 		mController = app.getPhotoSelectionController();
@@ -52,7 +56,7 @@ public class PhotoViewPagerAdapter extends PagerAdapter {
 	public Object instantiateItem(View container, int position) {
 		PhotoUpload upload = mItems.get(position);
 
-		PhotoTagItemLayout view = new PhotoTagItemLayout(mContext, upload);
+		PhotoTagItemLayout view = new PhotoTagItemLayout(mContext, upload, mFriendPickRequestListener);
 
 		MultiTouchImageView imageView = view.getImageView();
 		imageView.requestFullSize(upload, true);

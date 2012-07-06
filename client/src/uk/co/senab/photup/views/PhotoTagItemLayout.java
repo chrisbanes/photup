@@ -2,8 +2,10 @@ package uk.co.senab.photup.views;
 
 import uk.co.senab.bitmapcache.R;
 import uk.co.senab.photup.Constants;
+import uk.co.senab.photup.listeners.OnFriendPickedListener;
 import uk.co.senab.photup.listeners.OnPhotoTagsChangedListener;
 import uk.co.senab.photup.listeners.OnPhotoTapListener;
+import uk.co.senab.photup.listeners.OnPickFriendRequestListener;
 import uk.co.senab.photup.model.Friend;
 import uk.co.senab.photup.model.PhotoTag;
 import uk.co.senab.photup.model.PhotoUpload;
@@ -23,21 +25,28 @@ import android.widget.TextView;
 @SuppressLint("ViewConstructor")
 @SuppressWarnings("deprecation")
 public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageView.OnMatrixChangedListener,
-		OnPhotoTagsChangedListener, View.OnClickListener, OnPhotoTapListener {
+		OnPhotoTagsChangedListener, View.OnClickListener, OnPhotoTapListener, OnFriendPickedListener {
 
 	static final String LOG_TAG = "PhotoTagItemLayout";
 
+	private TextView mFriendRequestUpdateView;
 	private final MultiTouchImageView mImageView;
+
 	private final LayoutInflater mLayoutInflater;
 
 	private final Animation mPhotoTagInAnimation, mPhotoTagOutAnimation;
 
+	private final OnPickFriendRequestListener mPickFriendListener;
 	private final AbsoluteLayout mTagLayout;
 
 	private final PhotoUpload mUpload;
 
-	public PhotoTagItemLayout(Context context, PhotoUpload upload) {
+	public PhotoTagItemLayout(Context context, PhotoUpload upload, OnPickFriendRequestListener friendRequestListener) {
 		super(context);
+
+		mPickFriendListener = friendRequestListener;
+		mUpload = upload;
+		mUpload.setTagChangedListener(this);
 
 		mLayoutInflater = LayoutInflater.from(context);
 
@@ -48,9 +57,6 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 
 		mTagLayout = new AbsoluteLayout(context);
 		addView(mTagLayout, FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-
-		mUpload = upload;
-		mUpload.setTagChangedListener(this);
 
 		mPhotoTagInAnimation = AnimationUtils.loadAnimation(context, R.anim.tag_fade_in);
 		mPhotoTagOutAnimation = AnimationUtils.loadAnimation(context, R.anim.tag_fade_out);
@@ -63,12 +69,35 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 	}
 
 	public void onClick(View v) {
-		PhotoTag tag = (PhotoTag) v.getTag();
-		mUpload.removePhotoTag(tag);
+		final PhotoTag tag = (PhotoTag) v.getTag();
+
+		switch (v.getId()) {
+			case R.id.btn_remove_tag:
+				mUpload.removePhotoTag(tag);
+				break;
+			case R.id.tv_tag_label:
+				mFriendRequestUpdateView = (TextView) v;
+				mPickFriendListener.onPickFriendRequested(this);
+				break;
+		}
+	}
+
+	public void onFriendPicked(Friend friend) {
+		mFriendRequestUpdateView.setText(friend.getName());
+		mFriendRequestUpdateView = null;
+
+		layoutTags(mImageView.getDisplayRect());
 	}
 
 	public void onMatrixChanged(RectF rect) {
 		layoutTags(rect);
+	}
+
+	public void onNewPhotoTagTap(PhotoTag newTag) {
+		if (Constants.DEBUG) {
+			Log.d(LOG_TAG, "onPhotoTap");
+		}
+		onPhotoTagsChangedImp(newTag, true);
 	}
 
 	public void onPhotoTagsChanged(final PhotoTag tag, final boolean added) {
@@ -77,13 +106,6 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 				onPhotoTagsChangedImp(tag, added);
 			}
 		});
-	}
-
-	public void onNewPhotoTagTap(PhotoTag newTag) {
-		if (Constants.DEBUG) {
-			Log.d(LOG_TAG, "onPhotoTap");
-		}
-		onPhotoTagsChangedImp(newTag, true);
 	}
 
 	void onPhotoTagsChangedImp(final PhotoTag tag, final boolean added) {
@@ -122,6 +144,7 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 		if (null != friend) {
 			labelTv.setText(friend.getName());
 		}
+		labelTv.setOnClickListener(this);
 
 		tagLayout.setTag(tag);
 		tagLayout.setVisibility(View.GONE);

@@ -14,5 +14,10 @@ public class Friend extends AbstractFacebookObject {
 	public Friend(JSONObject object) throws JSONException {
 		super(object);
 	}
+	
+	@Override
+	public String toString() {
+		return getName();
+	}
 
 }

@@ -1,13 +1,12 @@
 package uk.co.senab.photup;
 
-import java.util.List;
-
-import uk.co.senab.photup.FriendsAsyncTask.FriendsResultListener;
 import uk.co.senab.photup.adapters.PhotoViewPagerAdapter;
+import uk.co.senab.photup.fragments.FriendsListFragment;
+import uk.co.senab.photup.listeners.OnFriendPickedListener;
+import uk.co.senab.photup.listeners.OnPickFriendRequestListener;
 import uk.co.senab.photup.listeners.OnSingleTapListener;
 import uk.co.senab.photup.listeners.OnUploadChangedListener;
 import uk.co.senab.photup.model.Filter;
-import uk.co.senab.photup.model.Friend;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.views.FiltersRadioGroup;
 import uk.co.senab.photup.views.MultiTouchImageView;
@@ -18,7 +17,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,13 +26,13 @@ import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.lightbox.android.photoprocessing.R;
 
-public class PhotoViewerActivity extends SherlockActivity implements OnUploadChangedListener, OnSingleTapListener,
-		OnCheckedChangeListener, OnPageChangeListener, FriendsResultListener {
+public class PhotoViewerActivity extends SherlockFragmentActivity implements OnUploadChangedListener,
+		OnSingleTapListener, OnCheckedChangeListener, OnPageChangeListener, OnPickFriendRequestListener {
 
 	public static final String EXTRA_POSITION = "extra_position";
 
@@ -45,9 +43,9 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 
 	private PhotoSelectionController mController;
 
-	private boolean mIgnoreCheckCallback = false;
+	private FriendsListFragment mFriendsFragment;
 
-	private List<Friend> mFriends;
+	private boolean mIgnoreCheckCallback = false;
 
 	@Override
 	public void onBackPressed() {
@@ -135,7 +133,7 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 		mViewPager = (ViewPager) findViewById(R.id.vp_photos);
 		mViewPager.setOffscreenPageLimit(1);
 		mViewPager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.viewpager_margin));
-		mAdapter = new PhotoViewPagerAdapter(this, this);
+		mAdapter = new PhotoViewPagerAdapter(this, this, this);
 		mViewPager.setAdapter(mAdapter);
 		mAdapter.notifyDataSetChanged();
 		mViewPager.setOnPageChangeListener(this);
@@ -146,9 +144,7 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 		final Intent intent = getIntent();
 		mViewPager.setCurrentItem(intent.getIntExtra(EXTRA_POSITION, 0));
 
-		if (null == mFriends) {
-			new FriendsAsyncTask(this, this).execute();
-		}
+		mFriendsFragment = new FriendsListFragment();
 	}
 
 	@Override
@@ -245,12 +241,8 @@ public class PhotoViewerActivity extends SherlockActivity implements OnUploadCha
 		mIgnoreCheckCallback = false;
 	}
 
-	public void onFriendsLoaded(List<Friend> friends) {
-		mFriends = friends;
-
-		if (Constants.DEBUG) {
-			Log.d("PhotoViewerActivity", "Got Friends Result: " + friends.size());
-		}
-
+	public void onPickFriendRequested(OnFriendPickedListener listener) {
+		mFriendsFragment.setOnFriendPickedListener(listener);
+		mFriendsFragment.show(getSupportFragmentManager(), "friends");
 	}
 }
