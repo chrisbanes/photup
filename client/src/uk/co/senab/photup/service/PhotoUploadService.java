@@ -1,7 +1,13 @@
 package uk.co.senab.photup.service;
 
-import java.io.ByteArrayOutputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 import java.util.List;
@@ -38,6 +44,8 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 	static final int NOTIFICATION_ID = 1000;
 	static final int MSG_UPLOAD_COMPLETE = 0;
+	static final int MSG_UPLOAD_PROGRESS = 1;
+	static final String TEMPORARY_FILE_NAME = "upload_temp.jpg";
 
 	public static class ServiceBinder<S> extends Binder {
 		private WeakReference<S> mService;
@@ -105,11 +113,19 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 				Log.d(LOG_TAG, "Finished processing bitmap");
 			}
 
-			ByteArrayOutputStream bos = new ByteArrayOutputStream(1024 * 128);
-			bitmap.compress(CompressFormat.JPEG, 80, bos);
+			final File temporaryFile = new File(context.getFilesDir(), TEMPORARY_FILE_NAME);
+			if (temporaryFile.exists()) {
+				temporaryFile.delete();
+			}
+
+			try {
+				temporaryFile.createNewFile();
+				OutputStream os = new BufferedOutputStream(new FileOutputStream(temporaryFile));
+				bitmap.compress(CompressFormat.JPEG, mQuality.getJpegQuality(), os);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			bitmap.recycle();
-			bundle.putByteArray("source", bos.toByteArray());
-			bos = null;
 
 			/**
 			 * Actual Request
@@ -118,7 +134,8 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 				Log.d(LOG_TAG, "Starting Facebook Request");
 			}
 			try {
-				String response = facebook.request(mAlbumId + "/photos", bundle, "POST");
+				InputStream is = new ProgressInputStream(new FileInputStream(temporaryFile), temporaryFile.length());
+				String response = facebook.request(mAlbumId + "/photos", bundle, "POST", is, "source");
 				Log.d(LOG_TAG, response);
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
@@ -126,8 +143,56 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 				e.printStackTrace();
 			}
 
+			// Delete Temporary File
+			temporaryFile.delete();
+
 			// Send complete message
 			mHandler.sendMessage(mHandler.obtainMessage(MSG_UPLOAD_COMPLETE, mUpload));
+		}
+
+		class ProgressInputStream extends FilterInputStream {
+			private final long mInputLength;
+			private volatile long mTotalBytesRead;
+			private volatile int mPercentageRead;
+
+			public ProgressInputStream(InputStream in, long maxNumBytes) {
+				super(in);
+				mTotalBytesRead = 0;
+				mPercentageRead = 0;
+				mInputLength = maxNumBytes;
+			}
+
+			@Override
+			public int read() throws IOException {
+				return updateProgress(super.read());
+			}
+
+			@Override
+			public int read(byte[] b, int off, int len) throws IOException {
+				return updateProgress(super.read(b, off, len));
+			}
+
+			@Override
+			public boolean markSupported() {
+				return false;
+			}
+
+			private int updateProgress(final int numBytesRead) {
+				if (numBytesRead > 0) {
+					mTotalBytesRead += numBytesRead;
+				}
+
+				if (Constants.DEBUG) {
+					Log.d(LOG_TAG, "Upload. File length: " + mInputLength + ". Read so far:" + mTotalBytesRead);
+				}
+
+				mPercentageRead = Math.round(mTotalBytesRead / mInputLength * 100f);
+				Message msg = mHandler.obtainMessage(MSG_UPLOAD_PROGRESS);
+				msg.arg1 = mPercentageRead;
+				mHandler.sendMessage(msg);
+
+				return numBytesRead;
+			}
 		}
 	}
 
@@ -166,6 +231,9 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		switch (msg.what) {
 			case MSG_UPLOAD_COMPLETE:
 				onFinishedUpload((PhotoUpload) msg.obj);
+				return true;
+			case MSG_UPLOAD_PROGRESS:
+				updateNotification(msg.arg1);
 				return true;
 		}
 
@@ -233,6 +301,12 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		mNotificationBuilder.setContentText(text);
 		mNotificationBuilder.setTicker(text);
 
+		mNotificationMgr.notify(NOTIFICATION_ID, mNotificationBuilder.getNotification());
+	}
+
+	void updateNotification(final int progress) {
+		String text = getString(R.string.notification_uploading_photo_progress, mNumberUploaded + 1, progress);
+		mNotificationBuilder.setContentText(text);
 		mNotificationMgr.notify(NOTIFICATION_ID, mNotificationBuilder.getNotification());
 	}
 

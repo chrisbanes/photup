@@ -20,5 +20,7 @@
     <string name="error_select_photos">Please select some photos to upload first</string>
     <string name="error_select_album">Please select an album first</string>
     <string name="notification_uploading_photo">Uploading Photo %1$s</string>
+    
+    <string name="notification_uploading_photo_progress">Uploading Photo %1$s  %2$s</string>
 
 </resources>
