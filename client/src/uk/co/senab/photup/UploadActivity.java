@@ -22,6 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
@@ -67,9 +68,12 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		UploadQuality quality = UploadQuality.mapFromButtonId(mQualityRadioGroup.getCheckedRadioButtonId());
 		Album album = (Album) mAlbumSpinner.getSelectedItem();
 
-		mBinder.getService().uploadAll(album.getId(), quality);
-		
-		finish();
+		if (null != album) {
+			mBinder.getService().uploadAll(album.getId(), quality);
+			finish();
+		} else {
+			Toast.makeText(this, getString(R.string.error_select_album), Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	@Override

@@ -17,7 +17,8 @@
     <string name="upload_new_album_desc_hint">Description</string>
     <string name="upload_new_album">New Album</string>
     <string name="upload_privacy_title">Privacy</string>
-    <string name="error_select_photos">Select some photos to upload first</string>
+    <string name="error_select_photos">Please select some photos to upload first</string>
+    <string name="error_select_album">Please select an album first</string>
     <string name="notification_uploading_photo">Uploading Photo %1$s</string>
 
 </resources>
