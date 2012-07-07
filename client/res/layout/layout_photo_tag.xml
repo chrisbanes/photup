@@ -9,7 +9,7 @@
         android:id="@+id/tv_tag_label"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:background="?android:attr/selectableItemBackground"
+        android:background="?attr/actionBarItemBackground"
         android:gravity="center_vertical"
         android:padding="@dimen/spacing"
         android:text="@string/tag_no_name"
@@ -21,7 +21,7 @@
         android:id="@+id/btn_remove_tag"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:background="?android:attr/selectableItemBackground"
+        android:background="?attr/actionBarItemBackground"
         android:padding="@dimen/spacing"
         android:src="@drawable/ic_menu_delete" />
 

@@ -27,9 +27,9 @@
 
             <ImageButton
                 android:id="@+id/btn_new_album"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?android:attr/selectableItemBackground"
+                android:layout_width="@dimen/form_item_height"
+                android:layout_height="@dimen/form_item_height"
+                android:background="?attr/actionBarItemBackground"
                 android:padding="@dimen/spacing"
                 android:src="@android:drawable/ic_menu_edit" />
         </LinearLayout>
@@ -47,10 +47,11 @@
             android:layout_height="wrap_content" >
 
             <RadioButton
-                android:id="@+id/rb_quality_low"
+                android:id="@+id/rb_quality_high"
                 android:layout_width="fill_parent"
                 android:layout_height="@dimen/form_item_height"
-                android:text="@string/upload_quality_low" />
+                android:checked="true"
+                android:text="@string/upload_quality_high" />
 
             <RadioButton
                 android:id="@+id/rb_quality_medium"
@@ -59,11 +60,10 @@
                 android:text="@string/upload_quality_medium" />
 
             <RadioButton
-                android:id="@+id/rb_quality_high"
+                android:id="@+id/rb_quality_low"
                 android:layout_width="fill_parent"
                 android:layout_height="@dimen/form_item_height"
-                android:checked="true"
-                android:text="@string/upload_quality_high" />
+                android:text="@string/upload_quality_low" />
         </RadioGroup>
     </LinearLayout>
 
