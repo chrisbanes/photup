@@ -68,6 +68,8 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		Album album = (Album) mAlbumSpinner.getSelectedItem();
 
 		mBinder.getService().uploadAll(album.getId(), quality);
+		
+		finish();
 	}
 
 	@Override
