@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <plurals name="notification_uploaded_photo">
+        <item quantity="one">Uploaded %d photo</item>
+        <item quantity="other">Uploaded %d photos</item>
+    </plurals>
+
+</resources>

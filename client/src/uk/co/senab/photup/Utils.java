@@ -165,7 +165,7 @@ public class Utils {
 
 	public static File getCameraPhotoFile() {
 		File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-		return new File(dir, "photup " + System.currentTimeMillis() + ".jpg");
+		return new File(dir, "photup_" + System.currentTimeMillis() + ".jpg");
 	}
 
 	public static void sendMediaStoreBroadcast(Context context, File file) {

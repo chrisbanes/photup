@@ -192,6 +192,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	}
 
 	private void startUpload(PhotoUpload upload) {
+		updateNotification();
 		mExecutor.submit(new UploadPhotoRunnable(this, mHandler, upload, mSession, mAlbumId, mUploadQuality));
 	}
 
@@ -203,7 +204,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		if (null != nextUpload) {
 			startUpload(nextUpload);
 		} else {
-			stopForeground(false);
+			stopForeground(true);
 			finishedNotification();
 			stopSelf();
 		}
@@ -226,17 +227,24 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	}
 
 	void updateNotification() {
+		String text = getString(R.string.notification_uploading_photo, mNumberUploaded + 1);
+
 		mNotificationBuilder.setWhen(System.currentTimeMillis());
+		mNotificationBuilder.setContentText(text);
+		mNotificationBuilder.setTicker(text);
 
 		mNotificationMgr.notify(NOTIFICATION_ID, mNotificationBuilder.getNotification());
 	}
 
 	void finishedNotification() {
+		String text = getResources().getQuantityString(R.plurals.notification_uploaded_photo, mNumberUploaded,
+				mNumberUploaded);
+
 		mNotificationBuilder.setOngoing(false);
 		mNotificationBuilder.setWhen(System.currentTimeMillis());
-		mNotificationBuilder.setContentText("Uploaded " + mNumberUploaded + " photos");
+		mNotificationBuilder.setContentText(text);
+		mNotificationBuilder.setTicker(text);
 
 		mNotificationMgr.notify(NOTIFICATION_ID, mNotificationBuilder.getNotification());
 	}
-
 }
