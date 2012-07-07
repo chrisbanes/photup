@@ -18,5 +18,7 @@
     <string name="upload_new_album">New Album</string>
     <string name="upload_privacy_title">Privacy</string>
     
+    <string name="error_select_photos">Select some photos to upload first</string>
+    
 
 </resources>

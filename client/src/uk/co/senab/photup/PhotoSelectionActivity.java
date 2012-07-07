@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Toast;
 import android.widget.ViewAnimator;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -61,20 +62,24 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		
+
 		switch (item.getItemId()) {
 			case R.id.menu_upload:
-				startActivity(new Intent(this, UploadActivity.class));
+				if (mPhotoController.getSelectedPhotoUploadsSize() == 0) {
+					Toast.makeText(this, R.string.error_select_photos, Toast.LENGTH_SHORT).show();
+				} else {
+					startActivity(new Intent(this, UploadActivity.class));
+				}
 				return true;
 		}
-		
+
 		return super.onOptionsItemSelected(item);
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
+
 		if (mPhotoController.getSelectedPhotoUploadsSize() == 0) {
 			getSupportActionBar().setSelectedNavigationItem(0);
 		}
