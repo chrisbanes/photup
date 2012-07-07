@@ -6,7 +6,7 @@ import uk.co.senab.photup.listeners.OnFriendPickedListener;
 import uk.co.senab.photup.listeners.OnPhotoTagsChangedListener;
 import uk.co.senab.photup.listeners.OnPhotoTapListener;
 import uk.co.senab.photup.listeners.OnPickFriendRequestListener;
-import uk.co.senab.photup.model.Friend;
+import uk.co.senab.photup.model.FbUser;
 import uk.co.senab.photup.model.PhotoTag;
 import uk.co.senab.photup.model.PhotoUpload;
 import android.annotation.SuppressLint;
@@ -82,7 +82,7 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 		}
 	}
 
-	public void onFriendPicked(Friend friend) {
+	public void onFriendPicked(FbUser friend) {
 		mFriendRequestTag.setFriend(friend);
 
 		View tagLayout = getTagLayout(mFriendRequestTag);
@@ -140,7 +140,7 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 		removeBtn.setTag(tag);
 
 		TextView labelTv = (TextView) tagLayout.findViewById(R.id.tv_tag_label);
-		Friend friend = tag.getFriend();
+		FbUser friend = tag.getFriend();
 		if (null != friend) {
 			labelTv.setText(friend.getName());
 		}

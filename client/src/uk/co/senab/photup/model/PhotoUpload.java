@@ -66,10 +66,10 @@ public abstract class PhotoUpload {
 		return mFilter;
 	}
 	
-	public HashSet<Friend> getTaggedFriends() {
-		HashSet<Friend> friends = new HashSet<Friend>();
+	public HashSet<FbUser> getTaggedFriends() {
+		HashSet<FbUser> friends = new HashSet<FbUser>();
 		
-		Friend friend;
+		FbUser friend;
 		for (PhotoTag tag : mTags) {
 			friend = tag.getFriend();
 			if (null != friend) {

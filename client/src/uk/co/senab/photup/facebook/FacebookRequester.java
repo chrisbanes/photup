@@ -10,7 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.co.senab.photup.model.Album;
-import uk.co.senab.photup.model.Friend;
+import uk.co.senab.photup.model.FbUser;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -22,16 +22,17 @@ import com.facebook.android.Util;
 public class FacebookRequester {
 
 	private final Context mContext;
+	private final Session mSession;
 	private final Facebook mFacebook;
 
 	public FacebookRequester(Context context) {
 		mContext = context;
 
-		Session session = Session.restore(context);
-		mFacebook = session.getFb();
+		mSession = Session.restore(context);
+		mFacebook = mSession.getFb();
 	}
 
-	public List<Friend> getFriends() {
+	public List<FbUser> getFriends() {
 		Bundle b = new Bundle();
 		b.putString("date_format", "U");
 		b.putString("limit", "3000");
@@ -51,19 +52,20 @@ public class FacebookRequester {
 			JSONObject document = Util.parseJson(response);
 
 			JSONArray data = document.getJSONArray("data");
-			ArrayList<Friend> friends = new ArrayList<Friend>(data.length());
+			ArrayList<FbUser> friends = new ArrayList<FbUser>(data.length() * 2);
+			friends.add(FbUser.getMeFromSession(mSession));
 
 			JSONObject object;
 			for (int i = 0, z = data.length(); i < z; i++) {
 				try {
 					object = data.getJSONObject(i);
-					friends.add(new Friend(object));
+					friends.add(new FbUser(object));
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
 			}
 
-			Collections.sort(friends, Friend.getComparator());
+			Collections.sort(friends, FbUser.getComparator());
 
 			return friends;
 		} catch (FacebookError e) {

@@ -2,9 +2,6 @@ package uk.co.senab.photup;
 
 import java.io.FileNotFoundException;
 
-import com.lightbox.android.photoprocessing.PhotoProcessing;
-import com.lightbox.android.photoprocessing.utils.MediaUtils;
-
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -18,6 +15,9 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.ScaleAnimation;
+
+import com.lightbox.android.photoprocessing.PhotoProcessing;
+import com.lightbox.android.photoprocessing.utils.MediaUtils;
 
 public class Utils {
 

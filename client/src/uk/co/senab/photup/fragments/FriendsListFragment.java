@@ -8,7 +8,7 @@ import uk.co.senab.photup.FriendsAsyncTask;
 import uk.co.senab.photup.FriendsAsyncTask.FriendsResultListener;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.listeners.OnFriendPickedListener;
-import uk.co.senab.photup.model.Friend;
+import uk.co.senab.photup.model.FbUser;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -26,15 +26,15 @@ import com.actionbarsherlock.app.SherlockDialogFragment;
 public class FriendsListFragment extends SherlockDialogFragment implements FriendsResultListener, OnItemClickListener,
 		TextWatcher {
 
-	private final ArrayList<Friend> mFriends = new ArrayList<Friend>();
-	private final ArrayList<Friend> mDisplayedFriends = new ArrayList<Friend>();
+	private final ArrayList<FbUser> mFriends = new ArrayList<FbUser>();
+	private final ArrayList<FbUser> mDisplayedFriends = new ArrayList<FbUser>();
 
-	private Set<Friend> mExcludedFriends;
+	private Set<FbUser> mExcludedFriends;
 
 	private ListView mListView;
 	private EditText mFilterEditText;
 
-	private ArrayAdapter<Friend> mAdapter;
+	private ArrayAdapter<FbUser> mAdapter;
 
 	private OnFriendPickedListener mPickedFriendListener;
 
@@ -44,7 +44,7 @@ public class FriendsListFragment extends SherlockDialogFragment implements Frien
 
 		setStyle(STYLE_NO_TITLE, 0);
 
-		mAdapter = new ArrayAdapter<Friend>(getActivity(), android.R.layout.simple_list_item_1, mDisplayedFriends);
+		mAdapter = new ArrayAdapter<FbUser>(getActivity(), android.R.layout.simple_list_item_1, mDisplayedFriends);
 
 		if (mDisplayedFriends.isEmpty()) {
 			new FriendsAsyncTask(getActivity(), this).execute();
@@ -65,7 +65,7 @@ public class FriendsListFragment extends SherlockDialogFragment implements Frien
 		return view;
 	}
 
-	public void onFriendsLoaded(List<Friend> friends) {
+	public void onFriendsLoaded(List<FbUser> friends) {
 		mFriends.clear();
 		mFriends.addAll(friends);
 		updateFriends();
@@ -75,7 +75,7 @@ public class FriendsListFragment extends SherlockDialogFragment implements Frien
 		mPickedFriendListener = listener;
 	}
 
-	public void setExcludedFriends(Set<Friend> excludeSet) {
+	public void setExcludedFriends(Set<FbUser> excludeSet) {
 		mExcludedFriends = excludeSet;
 		updateFriends();
 	}
@@ -84,7 +84,7 @@ public class FriendsListFragment extends SherlockDialogFragment implements Frien
 		mDisplayedFriends.clear();
 
 		if (null != mExcludedFriends && !mExcludedFriends.isEmpty()) {
-			for (Friend friend : mFriends) {
+			for (FbUser friend : mFriends) {
 				if (!mExcludedFriends.contains(friend)) {
 					mDisplayedFriends.add(friend);
 				}
@@ -99,7 +99,7 @@ public class FriendsListFragment extends SherlockDialogFragment implements Frien
 	}
 
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		Friend friend = (Friend) parent.getItemAtPosition(position);
+		FbUser friend = (FbUser) parent.getItemAtPosition(position);
 
 		if (null != mPickedFriendListener) {
 			mPickedFriendListener.onFriendPicked(friend);

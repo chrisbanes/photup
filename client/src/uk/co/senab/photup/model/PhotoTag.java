@@ -6,9 +6,9 @@ import android.util.Log;
 public class PhotoTag {
 
 	private final float mX, mY;
-	private Friend mFriend;
+	private FbUser mFriend;
 
-	public PhotoTag(Friend friend, float x, float y) {
+	public PhotoTag(FbUser friend, float x, float y) {
 		mFriend = friend;
 		mX = x;
 		mY = y;
@@ -34,7 +34,7 @@ public class PhotoTag {
 		return mY;
 	}
 
-	public Friend getFriend() {
+	public FbUser getFriend() {
 		return mFriend;
 	}
 
@@ -42,7 +42,7 @@ public class PhotoTag {
 		return null != mFriend;
 	}
 
-	public void setFriend(Friend friend) {
+	public void setFriend(FbUser friend) {
 		mFriend = friend;
 	}
 
