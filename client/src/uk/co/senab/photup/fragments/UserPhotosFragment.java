@@ -3,6 +3,7 @@ package uk.co.senab.photup.fragments;
 import uk.co.senab.photup.PhotoSelectionController;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.Utils;
+import uk.co.senab.photup.adapters.CameraBaseAdapter;
 import uk.co.senab.photup.adapters.PhotosCursorAdapter;
 import uk.co.senab.photup.listeners.OnUploadChangedListener;
 import uk.co.senab.photup.model.PhotoUpload;
@@ -15,6 +16,7 @@ import android.provider.MediaStore.Images.ImageColumns;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +29,7 @@ import android.widget.Checkable;
 import android.widget.GridView;
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.commonsware.cwac.merge.MergeAdapter;
 
 @SuppressWarnings("deprecation")
 public class UserPhotosFragment extends SherlockFragment implements LoaderManager.LoaderCallbacks<Cursor>,
@@ -58,7 +61,8 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 
 	static final int LOADER_USER_PHOTOS = 0x01;
 
-	private PhotosCursorAdapter mAdapter;
+	private MergeAdapter mAdapter;
+	private PhotosCursorAdapter mPhotoCursorAdapter;
 
 	private AbsoluteLayout mAnimationLayout;
 	private GridView mPhotoGrid;
@@ -74,8 +78,12 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		mAdapter = new MergeAdapter();
+		mAdapter.addAdapter(new CameraBaseAdapter(getActivity()));
+
 		getLoaderManager().initLoader(LOADER_USER_PHOTOS, null, this);
-		mAdapter = new PhotosCursorAdapter(getActivity(), R.layout.item_grid_photo, null, true);
+		mPhotoCursorAdapter = new PhotosCursorAdapter(getActivity(), R.layout.item_grid_photo, null, true);
+		mAdapter.addAdapter(mPhotoCursorAdapter);
 
 		mPhotoSelectionController.addPhotoSelectionListener(this);
 	}
@@ -109,24 +117,30 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 
 	public void onItemClick(AdapterView<?> gridView, View view, int position, long id) {
 		PhotoUpload object = (PhotoUpload) view.getTag();
-		Checkable checkableView = (Checkable) view;
 
-		if (checkableView.isChecked()) {
-			mPhotoSelectionController.removePhotoUpload(object);
+		if (null != object) {
+			Checkable checkableView = (Checkable) view;
+
+			if (checkableView.isChecked()) {
+				mPhotoSelectionController.removePhotoUpload(object);
+			} else {
+				mPhotoSelectionController.addPhotoUpload(object);
+				animateViewToButton(view);
+			}
+
+			checkableView.toggle();
 		} else {
-			mPhotoSelectionController.addPhotoUpload(object);
-			animateViewToButton(view);
+			// TODO Add Camera handle logic
+			Log.d("UserPhotosFragment", "Camera Click");
 		}
-
-		checkableView.toggle();
 	}
 
 	public void onLoaderReset(Loader<Cursor> loader) {
-		mAdapter.swapCursor(null);
+		mPhotoCursorAdapter.swapCursor(null);
 	}
 
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		mAdapter.swapCursor(data);
+		mPhotoCursorAdapter.swapCursor(data);
 	}
 
 	public void onUploadChanged(PhotoUpload id, boolean added) {

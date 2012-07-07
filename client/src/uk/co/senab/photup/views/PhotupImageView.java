@@ -194,7 +194,6 @@ public class PhotupImageView extends CacheableImageView {
 
 			mCurrentTask = new PhotoTask(this, upload, cache, fullSize);
 
-			// FIXME Need to fix this for less than v11
 			if (VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB) {
 				PhotupApplication app = PhotupApplication.getApplication(getContext());
 				mCurrentTask.executeOnExecutor(app.getMultiThreadExecutorService());
