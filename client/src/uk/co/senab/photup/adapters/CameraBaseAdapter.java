@@ -39,7 +39,7 @@ public class CameraBaseAdapter extends BaseAdapter {
 		PhotoItemLayout layout = (PhotoItemLayout) view;
 		
 		ImageView iv = layout.getImageView();
-		iv.setImageResource(android.R.drawable.ic_menu_camera);
+		iv.setImageResource(R.drawable.ic_menu_camera);
 		iv.setScaleType(ScaleType.CENTER_INSIDE);
 
 		return view;
