@@ -64,15 +64,17 @@ public class PhotupImageView extends CacheableImageView {
 		protected void onPostExecute(CacheableBitmapWrapper result) {
 			super.onPostExecute(result);
 
-			PhotupImageView iv = mImageView.get();
-			if (null != iv) {
-				if (mFetchFullSize && mUpload.requiresFaceDetectPass()) {
-					iv.requestFaceDetection(mUpload, result.getBitmap());
+			if (null != result) {
+				PhotupImageView iv = mImageView.get();
+				if (null != iv) {
+					if (mFetchFullSize && mUpload.requiresFaceDetectPass()) {
+						iv.requestFaceDetection(mUpload, result.getBitmap());
+					}
+					iv.setImageCachedBitmap(result);
 				}
-				iv.setImageCachedBitmap(result);
-			}
 
-			mCache.put(result);
+				mCache.put(result);
+			}
 		}
 	}
 

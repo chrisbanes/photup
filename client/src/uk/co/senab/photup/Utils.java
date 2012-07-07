@@ -1,13 +1,17 @@
 package uk.co.senab.photup;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 
 import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.FloatMath;
 import android.util.Log;
@@ -157,6 +161,18 @@ public class Utils {
 		}
 
 		return resized;
+	}
+
+	public static File getCameraPhotoFile() {
+		File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+		return new File(dir, "photup " + System.currentTimeMillis() + ".jpg");
+	}
+
+	public static void sendMediaStoreBroadcast(Context context, File file) {
+		Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+		Uri contentUri = Uri.fromFile(file);
+		mediaScanIntent.setData(contentUri);
+		context.sendBroadcast(mediaScanIntent);
 	}
 
 }

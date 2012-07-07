@@ -1,5 +1,7 @@
 package uk.co.senab.photup.fragments;
 
+import java.io.File;
+
 import uk.co.senab.photup.PhotoSelectionController;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.Utils;
@@ -9,8 +11,11 @@ import uk.co.senab.photup.listeners.OnUploadChangedListener;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.views.PhotupImageView;
 import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
 import android.provider.MediaStore.Images.ImageColumns;
 import android.support.v4.app.LoaderManager;
@@ -34,6 +39,9 @@ import com.commonsware.cwac.merge.MergeAdapter;
 @SuppressWarnings("deprecation")
 public class UserPhotosFragment extends SherlockFragment implements LoaderManager.LoaderCallbacks<Cursor>,
 		OnItemClickListener, OnUploadChangedListener {
+
+	static final int RESULT_CAMERA = 101;
+	static final String SAVE_PHOTO_URI = "camera_photo_uri";
 
 	static class ScaleAnimationListener implements AnimationListener {
 
@@ -69,10 +77,24 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 
 	private PhotoSelectionController mPhotoSelectionController;
 
+	private File mPhotoFile;
+
 	@Override
 	public void onAttach(Activity activity) {
 		mPhotoSelectionController = PhotoSelectionController.getFromContext(activity);
 		super.onAttach(activity);
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (requestCode) {
+			case RESULT_CAMERA:
+				Utils.sendMediaStoreBroadcast(getActivity(), mPhotoFile);
+				mPhotoFile = null;
+				break;
+		}
+
+		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 	public void onCreate(Bundle savedInstanceState) {
@@ -86,6 +108,12 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 		mAdapter.addAdapter(mPhotoCursorAdapter);
 
 		mPhotoSelectionController.addPhotoSelectionListener(this);
+		
+		if (null != savedInstanceState) {
+			if (savedInstanceState.containsKey(SAVE_PHOTO_URI)) {
+				mPhotoFile = new File(savedInstanceState.getString(SAVE_PHOTO_URI));
+			}
+		}
 	}
 
 	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
@@ -130,8 +158,7 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 
 			checkableView.toggle();
 		} else {
-			// TODO Add Camera handle logic
-			Log.d("UserPhotosFragment", "Camera Click");
+			takePhoto();
 		}
 	}
 
@@ -145,6 +172,24 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 
 	public void onUploadChanged(PhotoUpload id, boolean added) {
 		mAdapter.notifyDataSetChanged();
+	}
+
+	private void takePhoto() {
+		if (null == mPhotoFile) {
+			Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+			mPhotoFile = Utils.getCameraPhotoFile();
+			takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mPhotoFile));
+			startActivityForResult(takePictureIntent, RESULT_CAMERA);
+		}
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		Log.d("UserPhotosFragment", "onSaveInstanceState");
+		if (null != mPhotoFile) {
+			outState.putString(SAVE_PHOTO_URI, mPhotoFile.getAbsolutePath());
+		}
+		super.onSaveInstanceState(outState);
 	}
 
 	private void animateViewToButton(View view) {
