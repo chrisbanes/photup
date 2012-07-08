@@ -20,8 +20,8 @@ import android.view.WindowManager;
 
 public class PhotupApplication extends Application implements FriendsResultListener, AlbumsResultListener {
 
-	static final int EXECUTOR_CORE_POOL_SIZE = 2;
-	static final int EXECUTOR_MAX_POOL_SIZE = 6;
+	static final int EXECUTOR_CORE_POOL_SIZE_PER_CORE = 1;
+	static final int EXECUTOR_MAX_POOL_SIZE_PER_CORE = 4;
 
 	private ExecutorService mMultiThreadExecutor, mSingleThreadExecutor;
 	private BitmapLruCache mImageCache;
@@ -64,8 +64,10 @@ public class PhotupApplication extends Application implements FriendsResultListe
 	}
 
 	private static ExecutorService createExecutor() {
-		return new ThreadPoolExecutor(EXECUTOR_CORE_POOL_SIZE, EXECUTOR_MAX_POOL_SIZE, 1L, TimeUnit.SECONDS,
-				new LinkedBlockingQueue<Runnable>());
+		final int numCores = Runtime.getRuntime().availableProcessors();
+
+		return new ThreadPoolExecutor(numCores * EXECUTOR_CORE_POOL_SIZE_PER_CORE, numCores
+				* EXECUTOR_MAX_POOL_SIZE_PER_CORE, 1L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 	}
 
 	@SuppressWarnings("deprecation")
@@ -118,7 +120,7 @@ public class PhotupApplication extends Application implements FriendsResultListe
 		mFriends.clear();
 		mFriends.addAll(friends);
 
-		if (null != mFriendsListener) {
+		if (null != mFriendsListener && mFriendsListener != this) {
 			mFriendsListener.onFriendsLoaded(mFriends);
 			mFriendsListener = null;
 		}
@@ -128,7 +130,7 @@ public class PhotupApplication extends Application implements FriendsResultListe
 		mAlbums.clear();
 		mAlbums.addAll(albums);
 
-		if (null != mAlbumsListener) {
+		if (null != mAlbumsListener && mAlbumsListener != this) {
 			mAlbumsListener.onAlbumsLoaded(mAlbums);
 			mAlbumsListener = null;
 		}
