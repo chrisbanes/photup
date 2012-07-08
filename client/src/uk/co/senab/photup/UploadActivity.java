@@ -59,9 +59,7 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 
 		bindService(new Intent(this, PhotoUploadService.class), this, Context.BIND_AUTO_CREATE);
 
-		if (mAlbums.isEmpty()) {
-			new AlbumsAsyncTask(this, this).execute();
-		}
+		PhotupApplication.getApplication(this).getAlbums(this, false);
 	}
 
 	private void upload() {
@@ -120,7 +118,7 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 	}
 
 	public void onAlbumCreated() {
-		new AlbumsAsyncTask(this, this).execute();
+		PhotupApplication.getApplication(this).getAlbums(this, true);
 	}
 
 }

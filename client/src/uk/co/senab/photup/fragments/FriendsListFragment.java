@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import uk.co.senab.photup.FriendsAsyncTask;
 import uk.co.senab.photup.FriendsAsyncTask.FriendsResultListener;
+import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.listeners.OnFriendPickedListener;
 import uk.co.senab.photup.model.FbUser;
@@ -45,10 +45,8 @@ public class FriendsListFragment extends SherlockDialogFragment implements Frien
 		setStyle(STYLE_NO_TITLE, 0);
 
 		mAdapter = new ArrayAdapter<FbUser>(getActivity(), android.R.layout.simple_list_item_1, mDisplayedFriends);
-
-		if (mDisplayedFriends.isEmpty()) {
-			new FriendsAsyncTask(getActivity(), this).execute();
-		}
+		
+		PhotupApplication.getApplication(getActivity()).getFriends(this);
 	}
 
 	@Override
