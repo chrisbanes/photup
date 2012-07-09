@@ -54,7 +54,8 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 
 		mNewAlbumButton.setOnClickListener(this);
 
-		mAlbumAdapter = new ArrayAdapter<Album>(this, android.R.layout.simple_spinner_dropdown_item, mAlbums);
+		mAlbumAdapter = new ArrayAdapter<Album>(this, android.R.layout.simple_spinner_item, mAlbums);
+		mAlbumAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mAlbumSpinner.setAdapter(mAlbumAdapter);
 
 		bindService(new Intent(this, PhotoUploadService.class), this, Context.BIND_AUTO_CREATE);
