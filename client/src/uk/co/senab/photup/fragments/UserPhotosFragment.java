@@ -159,8 +159,6 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 				mPhotoSelectionController.addPhotoUpload(object);
 				animateViewToButton(view);
 			}
-
-			checkableView.toggle();
 		} else {
 			takePhoto();
 		}
@@ -174,8 +172,15 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 		mPhotoCursorAdapter.swapCursor(data);
 	}
 
-	public void onUploadChanged(PhotoUpload id, boolean added) {
-		mAdapter.notifyDataSetChanged();
+	public void onUploadChanged(PhotoUpload upload, boolean added) {
+		for (int i = 0, z = mPhotoGrid.getChildCount(); i < z; i++) {
+			View view = mPhotoGrid.getChildAt(i);
+			if (null != view && upload == view.getTag()) {
+				Log.d("UserPhotosFragment", "Found View, setChecked");
+				((Checkable) view).setChecked(added);
+				break;
+			}
+		}
 	}
 
 	private void takePhoto() {
