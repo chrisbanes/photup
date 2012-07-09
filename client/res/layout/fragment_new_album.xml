@@ -41,7 +41,7 @@
             android:layout_width="fill_parent"
             android:layout_height="@dimen/form_item_height"
             android:layout_marginTop="@dimen/double_spacing"
-            android:src="@android:drawable/ic_menu_send" />
+            android:src="@drawable/ic_menu_send" />
 
         <ProgressBar
             android:id="@+id/pb_loading"
