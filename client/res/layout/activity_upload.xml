@@ -31,7 +31,7 @@
                 android:layout_height="@dimen/form_item_height"
                 android:background="?attr/actionBarItemBackground"
                 android:padding="@dimen/spacing"
-                android:src="@android:drawable/ic_menu_edit" />
+                android:src="@drawable/ic_menu_add" />
         </LinearLayout>
 
         <TextView
