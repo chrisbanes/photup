@@ -83,7 +83,9 @@ public class PhotupApplication extends Application implements FriendsResultListe
 
 	@Override
 	public void onCreate() {
-		ACRA.init(this);
+		if (!BuildConfig.DEBUG) {
+			ACRA.init(this);
+		}
 
 		super.onCreate();
 		mFriends = new ArrayList<FbUser>();
