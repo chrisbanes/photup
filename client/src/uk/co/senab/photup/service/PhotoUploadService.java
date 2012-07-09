@@ -292,7 +292,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	private void startForeground() {
 		if (null == mNotificationBuilder) {
 			mNotificationBuilder = new NotificationCompat.Builder(this);
-			mNotificationBuilder.setSmallIcon(R.drawable.ic_launcher);
+			mNotificationBuilder.setSmallIcon(R.drawable.ic_notification);
 			mNotificationBuilder.setContentTitle(getString(R.string.app_name));
 			mNotificationBuilder.setOngoing(true);
 			mNotificationBuilder.setWhen(System.currentTimeMillis());
