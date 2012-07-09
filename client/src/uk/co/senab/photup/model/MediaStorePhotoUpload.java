@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 
 import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.PhotupApplication;
+import uk.co.senab.photup.R;
 import uk.co.senab.photup.Utils;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -24,8 +25,10 @@ public class MediaStorePhotoUpload extends PhotoUpload {
 	}
 
 	public Bitmap getThumbnailImage(Context context) {
+		final int kind = context.getResources().getBoolean(R.bool.load_mini_thumbnails) ? Thumbnails.MINI_KIND
+				: Thumbnails.MICRO_KIND;
 		try {
-			return Thumbnails.getThumbnail(context.getContentResolver(), mId, Thumbnails.MINI_KIND, null);
+			return Thumbnails.getThumbnail(context.getContentResolver(), mId, kind, null);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
