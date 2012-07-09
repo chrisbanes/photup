@@ -111,7 +111,11 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnU
 		}
 
 		PhotoUpload upload = mAdapter.getItem(position);
-		getSupportActionBar().setTitle(upload.getCaption());
+		String caption = upload.getCaption();
+		if (null == caption) {
+			caption = "";
+		}
+		getSupportActionBar().setTitle(caption);
 	}
 
 	public boolean onSingleTap(MotionEvent event) {
