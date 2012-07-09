@@ -149,7 +149,12 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnU
 		mController.addPhotoSelectionListener(this);
 
 		final Intent intent = getIntent();
-		mViewPager.setCurrentItem(intent.getIntExtra(EXTRA_POSITION, 0));
+		final int requestedPosition = intent.getIntExtra(EXTRA_POSITION, 0);
+		if (mViewPager.getCurrentItem() != requestedPosition) {
+			mViewPager.setCurrentItem(requestedPosition);
+		} else {
+			onPageSelected(requestedPosition);
+		}
 
 		mFriendsFragment = new FriendsListFragment();
 	}
