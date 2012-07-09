@@ -17,7 +17,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
-import android.provider.MediaStore.Images.ImageColumns;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -122,10 +121,10 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 	}
 
 	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
-		String[] projection = { ImageColumns._ID };
+		String[] projection = { Images.Media._ID, Images.Media.MINI_THUMB_MAGIC };
 
 		CursorLoader cursorLoader = new CursorLoader(getActivity(), Images.Media.EXTERNAL_CONTENT_URI, projection,
-				null, null, Images.Media.DATE_ADDED + " desc");
+				Images.Media.MINI_THUMB_MAGIC + " IS NOT NULL", null, Images.Media.DATE_ADDED + " desc");
 
 		return cursorLoader;
 	}
