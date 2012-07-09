@@ -8,6 +8,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.acra.ACRA;
+import org.acra.ReportingInteractionMode;
+import org.acra.annotation.ReportsCrashes;
+
 import uk.co.senab.bitmapcache.BitmapLruCache;
 import uk.co.senab.photup.AlbumsAsyncTask.AlbumsResultListener;
 import uk.co.senab.photup.FriendsAsyncTask.FriendsResultListener;
@@ -18,6 +22,7 @@ import android.content.Context;
 import android.view.Display;
 import android.view.WindowManager;
 
+@ReportsCrashes(formKey = Constants.ACRA_GOOGLE_DOC_ID, mode = ReportingInteractionMode.TOAST, resToastText = R.string.crash_toast)
 public class PhotupApplication extends Application implements FriendsResultListener, AlbumsResultListener {
 
 	static final int EXECUTOR_CORE_POOL_SIZE_PER_CORE = 2;
@@ -70,7 +75,6 @@ public class PhotupApplication extends Application implements FriendsResultListe
 				* EXECUTOR_MAX_POOL_SIZE_PER_CORE, 1L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 	}
 
-	@SuppressWarnings("deprecation")
 	public int getLargestScreenDimension() {
 		WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
 		Display display = wm.getDefaultDisplay();
@@ -79,6 +83,8 @@ public class PhotupApplication extends Application implements FriendsResultListe
 
 	@Override
 	public void onCreate() {
+		ACRA.init(this);
+
 		super.onCreate();
 		mFriends = new ArrayList<FbUser>();
 		mAlbums = new ArrayList<Album>();

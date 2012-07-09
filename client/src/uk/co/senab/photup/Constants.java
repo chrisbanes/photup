@@ -16,4 +16,6 @@ public class Constants {
 	
 	public static final int FACE_DETECTOR_MAX_FACES = 8;
 	
+	public static final String ACRA_GOOGLE_DOC_ID = "dHlELWNlMndaVktHanhsYTl1ZEQtYUE6MQ";
+	
 }

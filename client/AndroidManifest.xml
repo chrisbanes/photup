@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="uk.co.senab.photup"
-    android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionCode="00901"
+    android:versionName="0.9b1" >
 
-    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="11" />
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="11" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -29,7 +31,6 @@
             android:name=".PhotoSelectionActivity"
             android:uiOptions="splitActionBarWhenNarrow" >
         </activity>
-        
         <activity
             android:name=".UploadActivity"
             android:uiOptions="splitActionBarWhenNarrow" >
