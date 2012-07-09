@@ -23,6 +23,9 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.RadioGroup;
@@ -32,17 +35,49 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.lightbox.android.photoprocessing.R;
 
 public class PhotoViewerActivity extends SherlockFragmentActivity implements OnUploadChangedListener,
 		OnSingleTapListener, OnCheckedChangeListener, OnPageChangeListener, OnPickFriendRequestListener {
 
 	public static final String EXTRA_POSITION = "extra_position";
 
+	class PhotoRemoveAnimListener implements AnimationListener {
+		private final View mView;
+
+		public PhotoRemoveAnimListener(View view) {
+			mView = view;
+		}
+
+		public void onAnimationEnd(Animation animation) {
+			mView.setVisibility(View.GONE);
+			animation.setAnimationListener(null);
+
+			if (mController.getSelectedPhotoUploadsSize() == 0) {
+				finish();
+			} else {
+				View view = (View) mView.getParent();
+				view.post(new Runnable() {
+					public void run() {
+						mAdapter.notifyDataSetChanged();
+					}
+				});
+			}
+		}
+
+		public void onAnimationRepeat(Animation animation) {
+		}
+
+		public void onAnimationStart(Animation animation) {
+		}
+
+	}
+
 	private ViewPager mViewPager;
 	private PhotoViewPagerAdapter mAdapter;
 	private ViewGroup mContentView;
 	private FiltersRadioGroup mFilterGroup;
+
+	private Animation mFadeOutAnimation;
 
 	private PhotoSelectionController mController;
 
@@ -123,11 +158,9 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnU
 	}
 
 	public void onUploadChanged(PhotoUpload upload, boolean added) {
-		mAdapter.notifyDataSetChanged();
-
-		if (mController.getSelectedPhotoUploadsSize() == 0) {
-			finish();
-		}
+		View view = getCurrentView();
+		mFadeOutAnimation.setAnimationListener(new PhotoRemoveAnimListener(view));
+		view.startAnimation(mFadeOutAnimation);
 	}
 
 	@Override
@@ -155,6 +188,8 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnU
 		} else {
 			onPageSelected(requestedPosition);
 		}
+
+		mFadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.photo_fade_out);
 
 		mFriendsFragment = new FriendsListFragment();
 	}

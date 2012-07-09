@@ -9,8 +9,11 @@ import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.model.PhotoUpload;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.AsyncTask;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
@@ -142,6 +145,11 @@ public class PhotupImageView extends CacheableImageView {
 	};
 
 	private PhotoTask mCurrentTask;
+	private boolean mFadeInDrawables = false;
+
+	public void setFadeInDrawables(boolean fadeIn) {
+		mFadeInDrawables = fadeIn;
+	}
 
 	public PhotupImageView(Context context) {
 		super(context);
@@ -220,6 +228,18 @@ public class PhotupImageView extends CacheableImageView {
 		}
 
 		return null;
+	}
+
+	@Override
+	public void setImageDrawable(Drawable drawable) {
+		if (mFadeInDrawables && null != drawable) {
+			TransitionDrawable newDrawable = new TransitionDrawable(new Drawable[] {
+					new ColorDrawable(Color.TRANSPARENT), drawable });
+			super.setImageDrawable(newDrawable);
+			newDrawable.startTransition(300);
+		} else {
+			super.setImageDrawable(drawable);
+		}
 	}
 
 }
