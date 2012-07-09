@@ -26,9 +26,13 @@ public class FacebookRequester {
 	private final Facebook mFacebook;
 
 	public FacebookRequester(Context context) {
+		this(context, Session.restore(context));
+	}
+
+	public FacebookRequester(Context context, Session session) {
 		mContext = context;
 
-		mSession = Session.restore(context);
+		mSession = session;
 		mFacebook = mSession.getFb();
 	}
 

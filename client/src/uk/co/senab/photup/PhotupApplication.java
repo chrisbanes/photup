@@ -15,6 +15,7 @@ import org.acra.annotation.ReportsCrashes;
 import uk.co.senab.bitmapcache.BitmapLruCache;
 import uk.co.senab.photup.AlbumsAsyncTask.AlbumsResultListener;
 import uk.co.senab.photup.FriendsAsyncTask.FriendsResultListener;
+import uk.co.senab.photup.facebook.Session;
 import uk.co.senab.photup.model.Album;
 import uk.co.senab.photup.model.FbUser;
 import android.app.Application;
@@ -92,9 +93,11 @@ public class PhotupApplication extends Application implements FriendsResultListe
 		mAlbums = new ArrayList<Album>();
 
 		// TODO Need to check for Facebook login
-		getFriends(null);
-		getAlbums(null, false);
-
+		Session session = Session.restore(this);
+		if (null != session) {
+			getFriends(null);
+			getAlbums(null, false);
+		}
 	}
 
 	public void getAlbums(AlbumsResultListener listener, boolean forceRefresh) {
