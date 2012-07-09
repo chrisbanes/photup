@@ -14,12 +14,16 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.telephony.TelephonyManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -75,6 +79,34 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		}
 	}
 
+	private void checkConnectionSpeed() {
+		ConnectivityManager mgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo info = mgr.getActiveNetworkInfo();
+
+		if (null != info) {
+			int checkedId;
+
+			switch (info.getType()) {
+				case ConnectivityManager.TYPE_MOBILE: {
+					if (info.getSubtype() == TelephonyManager.NETWORK_TYPE_EDGE
+							|| info.getSubtype() == TelephonyManager.NETWORK_TYPE_GPRS) {
+						checkedId = R.id.rb_quality_low;
+					} else {
+						checkedId = R.id.rb_quality_medium;
+					}
+				}
+
+				default:
+				case ConnectivityManager.TYPE_WIFI:
+					checkedId = R.id.rb_quality_high;
+					break;
+			}
+
+			RadioButton button = (RadioButton) mQualityRadioGroup.findViewById(checkedId);
+			button.setChecked(true);
+		}
+	}
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getSupportMenuInflater().inflate(R.menu.menu_photo_upload, menu);
@@ -90,6 +122,12 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		}
 
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		checkConnectionSpeed();
 	}
 
 	@Override
