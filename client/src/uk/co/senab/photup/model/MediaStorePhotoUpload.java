@@ -1,6 +1,8 @@
 package uk.co.senab.photup.model;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.PhotupApplication;
@@ -11,6 +13,13 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images.Thumbnails;
+import android.util.Log;
+import android.view.Window;
+
+import com.lightbox.android.photoprocessing.PhotoProcessing;
+import com.lightbox.android.photoprocessing.utils.BitmapUtils;
+import com.lightbox.android.photoprocessing.utils.FileUtils;
+import com.lightbox.android.photoprocessing.utils.BitmapUtils.BitmapSize;
 
 public class MediaStorePhotoUpload extends PhotoUpload {
 
@@ -48,14 +57,67 @@ public class MediaStorePhotoUpload extends PhotoUpload {
 	}
 
 	@Override
-	public Bitmap getUploadImage(Context context, UploadQuality quality) {
-		try {
-			return Utils.resizeBitmap(context.getContentResolver(), getOriginalPhotoUri(), quality.getMaxDimension(),
-					true);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
+	public Bitmap getUploadImage(Context context, final UploadQuality quality) {
+		Bitmap bitmap = null;
 
+		try {
+			String path = Utils.getPathFromContentUri(context.getContentResolver(), getOriginalPhotoUri());
+			if (null != path) {
+				BitmapSize size = BitmapUtils.getBitmapSize(path);
+
+				byte[] jpegData = FileUtils.readFileToByteArray(new File(path));
+				if (Constants.DEBUG) {
+					Log.d("MediaStorePhotoUpload", "getUploadImage. Read file to RAM!");
+				}
+
+				final float resizeRatio = Math.max(size.width, size.height) / (float) quality.getMaxDimension();
+				size = new BitmapSize(Math.round(size.width / resizeRatio), Math.round(size.height / resizeRatio));
+
+				PhotoProcessing.nativeInitBitmap(size.width, size.height);
+				if (Constants.DEBUG) {
+					Log.d("MediaStorePhotoUpload", "getUploadImage. Init " + size.width + "x" + size.height);
+				}
+
+				PhotoProcessing.nativeLoadResizedJpegBitmap(jpegData, jpegData.length, size.width * size.height);
+				if (Constants.DEBUG) {
+					Log.d("MediaStorePhotoUpload", "getUploadImage. Native decode complete!");
+				}
+
+				// Free the byte[]
+				jpegData = null;
+
+				if (requiresProcessing()) {
+					PhotoProcessing.filterPhoto(getFilterUsed().getId());
+					if (Constants.DEBUG) {
+						Log.d("MediaStorePhotoUpload", "getUploadImage. Native filter complete!");
+					}
+				}
+
+				if (Constants.DEBUG) {
+					Log.d("MediaStorePhotoUpload", "getUploadImage. Native worked!");
+				}
+				bitmap = PhotoProcessing.getBitmapFromNative(null);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		if (null == bitmap) {
+			if (Constants.DEBUG) {
+				Log.d("MediaStorePhotoUpload", "getUploadImage. Native failed, trying Java decode!");
+			}
+			try {
+				bitmap = Utils.resizeBitmap(context.getContentResolver(), getOriginalPhotoUri(),
+						quality.getMaxDimension(), true);
+				if (requiresProcessing()) {
+					bitmap = processBitmap(bitmap, true);
+				}
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+
+		return bitmap;
+	}
 }

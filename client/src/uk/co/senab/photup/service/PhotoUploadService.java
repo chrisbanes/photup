@@ -12,7 +12,6 @@ import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.PhotoSelectionActivity;
@@ -104,14 +103,10 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 			/**
 			 * Photo
 			 */
-			Bitmap bitmap = mUpload.getUploadImage(context, mQuality);
-			if (mUpload.requiresProcessing()) {
-				bitmap = mUpload.processBitmap(bitmap, true);
-			}
-
 			if (Constants.DEBUG) {
-				Log.d(LOG_TAG, "Finished processing bitmap");
+				Log.d(LOG_TAG, "About to get Upload bitmap");
 			}
+			Bitmap bitmap = mUpload.getUploadImage(context, mQuality);
 
 			final File temporaryFile = new File(context.getFilesDir(), TEMPORARY_FILE_NAME);
 			if (temporaryFile.exists()) {
@@ -214,8 +209,11 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	public void onCreate() {
 		super.onCreate();
 		mBinder = new ServiceBinder<PhotoUploadService>(this);
-		mController = PhotupApplication.getApplication(this).getPhotoSelectionController();
-		mExecutor = Executors.newSingleThreadExecutor();
+
+		PhotupApplication app = PhotupApplication.getApplication(this);
+
+		mController = app.getPhotoSelectionController();
+		mExecutor = app.getSingleThreadExecutorService();
 		mSession = Session.restore(this);
 
 		mNotificationMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -260,6 +258,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	}
 
 	private void startUpload(PhotoUpload upload) {
+		trimCache();
 		updateNotification();
 		mExecutor.submit(new UploadPhotoRunnable(this, mHandler, upload, mSession, mAlbumId, mUploadQuality));
 	}
@@ -292,6 +291,10 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		}
 
 		startForeground(NOTIFICATION_ID, mNotificationBuilder.getNotification());
+	}
+
+	private void trimCache() {
+		PhotupApplication.getApplication(this).getImageCache().trimMemory();
 	}
 
 	void updateNotification() {
