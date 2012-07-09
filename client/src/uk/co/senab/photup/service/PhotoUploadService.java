@@ -41,6 +41,8 @@ import com.facebook.android.Facebook;
 
 public class PhotoUploadService extends Service implements Handler.Callback {
 
+	static final int MAX_NUMBER_RETRIES = 3;
+
 	static final int NOTIFICATION_ID = 1000;
 	static final int MSG_UPLOAD_COMPLETE = 0;
 	static final int MSG_UPLOAD_PROGRESS = 1;
@@ -128,15 +130,25 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 			if (Constants.DEBUG) {
 				Log.d(LOG_TAG, "Starting Facebook Request");
 			}
-			try {
-				InputStream is = new ProgressInputStream(new FileInputStream(temporaryFile), temporaryFile.length());
-				String response = facebook.request(mAlbumId + "/photos", bundle, "POST", is, "source");
-				Log.d(LOG_TAG, response);
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+
+			boolean complete = false;
+			int retries = 0;
+			do {
+				try {
+					InputStream is = new ProgressInputStream(new FileInputStream(temporaryFile), temporaryFile.length());
+					String response = facebook.request(mAlbumId + "/photos", bundle, "POST", is, "source");
+					complete = true;
+					
+					// TODO Parse Response
+					Log.d(LOG_TAG, response);
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} finally {
+					retries++;
+				}
+			} while (!complete && retries < MAX_NUMBER_RETRIES);
 
 			// Delete Temporary File
 			temporaryFile.delete();
