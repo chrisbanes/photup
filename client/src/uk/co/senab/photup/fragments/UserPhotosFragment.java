@@ -46,16 +46,21 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 	static class ScaleAnimationListener implements AnimationListener {
 
 		private final PhotupImageView mAnimatedView;
+		private final ViewGroup mParent;
 
-		public ScaleAnimationListener(PhotupImageView view) {
+		public ScaleAnimationListener(ViewGroup parent, PhotupImageView view) {
+			mParent = parent;
 			mAnimatedView = view;
 		}
 
 		public void onAnimationEnd(Animation animation) {
 			mAnimatedView.setVisibility(View.GONE);
-			ViewGroup parent = (ViewGroup) mAnimatedView.getParent();
-			parent.removeView(mAnimatedView);
-			mAnimatedView.recycleBitmap();
+			mParent.post(new Runnable() {
+				public void run() {
+					mParent.removeView(mAnimatedView);
+					mAnimatedView.recycleBitmap();
+				}
+			});
 		}
 
 		public void onAnimationRepeat(Animation animation) {
@@ -108,7 +113,7 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 		mAdapter.addAdapter(mPhotoCursorAdapter);
 
 		mPhotoSelectionController.addPhotoSelectionListener(this);
-		
+
 		if (null != savedInstanceState) {
 			if (savedInstanceState.containsKey(SAVE_PHOTO_URI)) {
 				mPhotoFile = new File(savedInstanceState.getString(SAVE_PHOTO_URI));
@@ -207,7 +212,7 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 
 		Animation animaton = Utils.createScaleAnimation(view, mPhotoGrid.getWidth(), mPhotoGrid.getHeight(),
 				midSecondTabX, mPhotoGrid.getTop() - halfTabHeight);
-		animaton.setAnimationListener(new ScaleAnimationListener(iv));
+		animaton.setAnimationListener(new ScaleAnimationListener(mAnimationLayout, iv));
 		iv.startAnimation(animaton);
 	}
 
