@@ -1,12 +1,10 @@
 package uk.co.senab.photup.model;
 
-import uk.co.senab.photup.Constants;
-
 import com.lightbox.android.photoprocessing.R;
 
 public enum UploadQuality {
 
-	LOW(640, 75), MEDIUM(1024, 80), HIGH(Constants.FACEBOOK_MAX_PHOTO_SIZE, 85);
+	LOW(640, 75), MEDIUM(1024, 80), HIGH(2048, 85);
 
 	private final int mMaxDimension, mJpegQuality;
 
