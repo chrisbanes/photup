@@ -25,8 +25,8 @@ import android.view.WindowManager;
 @ReportsCrashes(formKey = Constants.ACRA_GOOGLE_DOC_ID, mode = ReportingInteractionMode.TOAST, resToastText = R.string.crash_toast)
 public class PhotupApplication extends Application implements FriendsResultListener, AlbumsResultListener {
 
-	static final int EXECUTOR_CORE_POOL_SIZE_PER_CORE = 2;
-	static final int EXECUTOR_MAX_POOL_SIZE_PER_CORE = 5;
+	static final int EXECUTOR_CORE_POOL_SIZE_PER_CORE = 1;
+	static final int EXECUTOR_MAX_POOL_SIZE_PER_CORE = 4;
 
 	private ExecutorService mMultiThreadExecutor, mSingleThreadExecutor;
 	private BitmapLruCache mImageCache;

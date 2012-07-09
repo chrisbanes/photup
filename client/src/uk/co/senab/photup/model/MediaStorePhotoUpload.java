@@ -25,7 +25,7 @@ public class MediaStorePhotoUpload extends PhotoUpload {
 
 	public Bitmap getThumbnailImage(Context context) {
 		try {
-			return Thumbnails.getThumbnail(context.getContentResolver(), mId, Thumbnails.MICRO_KIND, null);
+			return Thumbnails.getThumbnail(context.getContentResolver(), mId, Thumbnails.MINI_KIND, null);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
