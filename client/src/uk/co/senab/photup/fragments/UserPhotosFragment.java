@@ -173,14 +173,7 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 	}
 
 	public void onUploadChanged(PhotoUpload upload, boolean added) {
-		for (int i = 0, z = mPhotoGrid.getChildCount(); i < z; i++) {
-			View view = mPhotoGrid.getChildAt(i);
-			if (null != view && upload == view.getTag()) {
-				Log.d("UserPhotosFragment", "Found View, setChecked");
-				((Checkable) view).setChecked(added);
-				break;
-			}
-		}
+		mAdapter.notifyDataSetChanged();
 	}
 
 	private void takePhoto() {
