@@ -2,7 +2,7 @@ package uk.co.senab.photup.adapters;
 
 import java.util.List;
 
-import uk.co.senab.photup.PhotoSelectionController;
+import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.listeners.OnPickFriendRequestListener;
 import uk.co.senab.photup.listeners.OnSingleTapListener;
@@ -17,7 +17,7 @@ import android.view.View;
 public class PhotoViewPagerAdapter extends PagerAdapter {
 
 	private final Context mContext;
-	private final PhotoSelectionController mController;
+	private final PhotoUploadController mController;
 	private final OnSingleTapListener mTapListener;
 	private final OnPickFriendRequestListener mFriendPickRequestListener;
 
@@ -30,7 +30,7 @@ public class PhotoViewPagerAdapter extends PagerAdapter {
 		mFriendPickRequestListener = friendRequestListener;
 
 		PhotupApplication app = PhotupApplication.getApplication(context);
-		mController = app.getPhotoSelectionController();
+		mController = app.getPhotoUploadController();
 		mItems = mController.getSelectedPhotoUploads();
 	}
 

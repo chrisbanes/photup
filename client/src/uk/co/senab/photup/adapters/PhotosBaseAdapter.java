@@ -2,7 +2,7 @@ package uk.co.senab.photup.adapters;
 
 import java.util.List;
 
-import uk.co.senab.photup.PhotoSelectionController;
+import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.model.PhotoUpload;
@@ -19,14 +19,14 @@ public class PhotosBaseAdapter extends BaseAdapter {
 
 	private final Context mContext;
 	private final LayoutInflater mLayoutInflater;
-	private final PhotoSelectionController mController;
+	private final PhotoUploadController mController;
 
 	public PhotosBaseAdapter(Context context) {
 		mContext = context;
 		mLayoutInflater = LayoutInflater.from(mContext);
 
 		PhotupApplication app = PhotupApplication.getApplication(context);
-		mController = app.getPhotoSelectionController();
+		mController = app.getPhotoUploadController();
 		mItems = mController.getSelectedPhotoUploads();
 	}
 

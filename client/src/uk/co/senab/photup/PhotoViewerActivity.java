@@ -7,7 +7,7 @@ import uk.co.senab.photup.fragments.FriendsListFragment;
 import uk.co.senab.photup.listeners.OnFriendPickedListener;
 import uk.co.senab.photup.listeners.OnPickFriendRequestListener;
 import uk.co.senab.photup.listeners.OnSingleTapListener;
-import uk.co.senab.photup.listeners.OnUploadChangedListener;
+import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
 import uk.co.senab.photup.model.FbUser;
 import uk.co.senab.photup.model.Filter;
 import uk.co.senab.photup.model.PhotoUpload;
@@ -36,7 +36,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-public class PhotoViewerActivity extends SherlockFragmentActivity implements OnUploadChangedListener,
+public class PhotoViewerActivity extends SherlockFragmentActivity implements OnPhotoSelectionChangedListener,
 		OnSingleTapListener, OnCheckedChangeListener, OnPageChangeListener, OnPickFriendRequestListener {
 
 	public static final String EXTRA_POSITION = "extra_position";
@@ -79,7 +79,7 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnU
 
 	private Animation mFadeOutAnimation;
 
-	private PhotoSelectionController mController;
+	private PhotoUploadController mController;
 
 	private FriendsListFragment mFriendsFragment;
 
@@ -122,7 +122,7 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnU
 				showFiltersView();
 				return true;
 			case R.id.menu_remove:
-				mController.removePhotoUpload(getCurrentUpload());
+				mController.removePhotoSelection(getCurrentUpload());
 				return true;
 			case R.id.menu_caption:
 				showCaptionDialog();
@@ -156,8 +156,12 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnU
 	public boolean onSingleTap(MotionEvent event) {
 		return hideFiltersView();
 	}
+	
+	public void onPhotoSelectionCleared() {
+		mAdapter.notifyDataSetChanged();
+	}
 
-	public void onUploadChanged(PhotoUpload upload, boolean added) {
+	public void onPhotoSelectionChanged(PhotoUpload upload, boolean added) {
 		View view = getCurrentView();
 		mFadeOutAnimation.setAnimationListener(new PhotoRemoveAnimListener(view));
 		view.startAnimation(mFadeOutAnimation);
@@ -178,7 +182,7 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnU
 		mAdapter.notifyDataSetChanged();
 		mViewPager.setOnPageChangeListener(this);
 
-		mController = PhotoSelectionController.getFromContext(this);
+		mController = PhotoUploadController.getFromContext(this);
 		mController.addPhotoSelectionListener(this);
 
 		final Intent intent = getIntent();

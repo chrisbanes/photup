@@ -1,6 +1,6 @@
 package uk.co.senab.photup.adapters;
 
-import uk.co.senab.photup.PhotoSelectionController;
+import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.model.MediaStorePhotoUpload;
 import uk.co.senab.photup.model.PhotoUpload;
@@ -15,13 +15,13 @@ import android.widget.Checkable;
 
 public class PhotosCursorAdapter extends ResourceCursorAdapter {
 
-	private final PhotoSelectionController mController;
+	private final PhotoUploadController mController;
 
 	public PhotosCursorAdapter(Context context, int layout, Cursor c, boolean autoRequery) {
 		super(context, layout, c, autoRequery);
 
 		PhotupApplication app = PhotupApplication.getApplication(context);
-		mController = app.getPhotoSelectionController();
+		mController = app.getPhotoUploadController();
 	}
 
 	@Override

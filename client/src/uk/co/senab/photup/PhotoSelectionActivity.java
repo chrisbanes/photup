@@ -1,6 +1,6 @@
 package uk.co.senab.photup;
 
-import uk.co.senab.photup.listeners.OnUploadChangedListener;
+import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
 import uk.co.senab.photup.model.PhotoUpload;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,14 +17,14 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-public class PhotoSelectionActivity extends SherlockFragmentActivity implements OnUploadChangedListener, TabListener {
+public class PhotoSelectionActivity extends SherlockFragmentActivity implements OnPhotoSelectionChangedListener, TabListener {
 
 	static final int TAB_PHOTOS = 0;
 	static final int TAB_SELECTED = 1;
 
 	private ViewAnimator mFlipper;
 
-	private PhotoSelectionController mPhotoController;
+	private PhotoUploadController mPhotoController;
 
 	private Animation mSlideInLeftAnim, mSlideOutLeftAnim;
 	private Animation mSlideInRightAnim, mSlideOutRightAnim;
@@ -35,7 +35,7 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_choose_photos);
 
-		mPhotoController = PhotoSelectionController.getFromContext(this);
+		mPhotoController = PhotoUploadController.getFromContext(this);
 		mPhotoController.addPhotoSelectionListener(this);
 
 		mFlipper = (ViewAnimator) findViewById(R.id.vs_frag_flipper);
@@ -85,8 +85,12 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 			getSupportActionBar().setSelectedNavigationItem(0);
 		}
 	}
+	
+	public void onPhotoSelectionCleared() {
+		onPhotoSelectionChanged(null, false);
+	}
 
-	public void onUploadChanged(PhotoUpload upload, boolean added) {
+	public void onPhotoSelectionChanged(PhotoUpload upload, boolean added) {
 		getSupportActionBar().getTabAt(1).setText(getSelectedTabTitle());
 	}
 

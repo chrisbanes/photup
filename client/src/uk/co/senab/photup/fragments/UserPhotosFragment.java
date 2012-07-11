@@ -2,12 +2,12 @@ package uk.co.senab.photup.fragments;
 
 import java.io.File;
 
-import uk.co.senab.photup.PhotoSelectionController;
+import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.Utils;
 import uk.co.senab.photup.adapters.CameraBaseAdapter;
 import uk.co.senab.photup.adapters.PhotosCursorAdapter;
-import uk.co.senab.photup.listeners.OnUploadChangedListener;
+import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.views.PhotupImageView;
 import android.app.Activity;
@@ -37,7 +37,7 @@ import com.commonsware.cwac.merge.MergeAdapter;
 
 @SuppressWarnings("deprecation")
 public class UserPhotosFragment extends SherlockFragment implements LoaderManager.LoaderCallbacks<Cursor>,
-		OnItemClickListener, OnUploadChangedListener {
+		OnItemClickListener, OnPhotoSelectionChangedListener {
 
 	static final int RESULT_CAMERA = 101;
 	static final String SAVE_PHOTO_URI = "camera_photo_uri";
@@ -79,13 +79,13 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 	private AbsoluteLayout mAnimationLayout;
 	private GridView mPhotoGrid;
 
-	private PhotoSelectionController mPhotoSelectionController;
+	private PhotoUploadController mPhotoSelectionController;
 
 	private File mPhotoFile;
 
 	@Override
 	public void onAttach(Activity activity) {
-		mPhotoSelectionController = PhotoSelectionController.getFromContext(activity);
+		mPhotoSelectionController = PhotoUploadController.getFromContext(activity);
 		super.onAttach(activity);
 	}
 
@@ -154,9 +154,9 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 			Checkable checkableView = (Checkable) view;
 
 			if (checkableView.isChecked()) {
-				mPhotoSelectionController.removePhotoUpload(object);
+				mPhotoSelectionController.removePhotoSelection(object);
 			} else {
-				mPhotoSelectionController.addPhotoUpload(object);
+				mPhotoSelectionController.addPhotoSelection(object);
 				animateViewToButton(view);
 			}
 		} else {
@@ -171,8 +171,12 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		mPhotoCursorAdapter.swapCursor(data);
 	}
+	
+	public void onPhotoSelectionCleared() {
+		mAdapter.notifyDataSetChanged();
+	}
 
-	public void onUploadChanged(PhotoUpload upload, boolean added) {
+	public void onPhotoSelectionChanged(PhotoUpload upload, boolean added) {
 		mAdapter.notifyDataSetChanged();
 	}
 

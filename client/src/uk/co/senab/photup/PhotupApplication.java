@@ -38,7 +38,7 @@ public class PhotupApplication extends Application implements FriendsResultListe
 	private AlbumsResultListener mAlbumsListener;
 	private ArrayList<Album> mAlbums;
 
-	private final PhotoSelectionController mPhotoController = new PhotoSelectionController();
+	private final PhotoUploadController mPhotoController = new PhotoUploadController();
 
 	public static PhotupApplication getApplication(Context context) {
 		return (PhotupApplication) context.getApplicationContext();
@@ -65,7 +65,7 @@ public class PhotupApplication extends Application implements FriendsResultListe
 		return mImageCache;
 	}
 
-	public PhotoSelectionController getPhotoSelectionController() {
+	public PhotoUploadController getPhotoUploadController() {
 		return mPhotoController;
 	}
 

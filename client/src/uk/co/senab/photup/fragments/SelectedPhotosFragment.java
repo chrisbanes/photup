@@ -1,10 +1,10 @@
 package uk.co.senab.photup.fragments;
 
 import uk.co.senab.bitmapcache.R;
-import uk.co.senab.photup.PhotoSelectionController;
+import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotoViewerActivity;
 import uk.co.senab.photup.adapters.PhotosBaseAdapter;
-import uk.co.senab.photup.listeners.OnUploadChangedListener;
+import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
 import uk.co.senab.photup.model.PhotoUpload;
 import android.app.Activity;
 import android.content.Intent;
@@ -18,15 +18,15 @@ import android.widget.GridView;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
-public class SelectedPhotosFragment extends SherlockFragment implements OnUploadChangedListener, OnItemClickListener {
+public class SelectedPhotosFragment extends SherlockFragment implements OnPhotoSelectionChangedListener, OnItemClickListener {
 
 	private GridView mGridView;
 	private PhotosBaseAdapter mAdapter;
-	private PhotoSelectionController mPhotoSelectionController;
+	private PhotoUploadController mPhotoSelectionController;
 
 	@Override
 	public void onAttach(Activity activity) {
-		mPhotoSelectionController = PhotoSelectionController.getFromContext(activity);
+		mPhotoSelectionController = PhotoUploadController.getFromContext(activity);
 		super.onAttach(activity);
 	}
 
@@ -66,7 +66,11 @@ public class SelectedPhotosFragment extends SherlockFragment implements OnUpload
 		// TODO Save Scroll position
 	}
 
-	public void onUploadChanged(PhotoUpload id, boolean added) {
+	public void onPhotoSelectionCleared() {
+		mAdapter.notifyDataSetChanged();
+	}
+	
+	public void onPhotoSelectionChanged(PhotoUpload id, boolean added) {
 		mAdapter.notifyDataSetChanged();
 	}
 

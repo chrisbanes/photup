@@ -15,7 +15,7 @@ import java.util.concurrent.ExecutorService;
 
 import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.PhotoSelectionActivity;
-import uk.co.senab.photup.PhotoSelectionController;
+import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.facebook.Session;
@@ -207,7 +207,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 	private ExecutorService mExecutor;
 	private Session mSession;
-	private PhotoSelectionController mController;
+	private PhotoUploadController mController;
 
 	private final Handler mHandler = new Handler(this);
 	private int mNumberUploaded = 0;
@@ -224,7 +224,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 		PhotupApplication app = PhotupApplication.getApplication(this);
 
-		mController = app.getPhotoSelectionController();
+		mController = app.getPhotoUploadController();
 		mExecutor = app.getSingleThreadExecutorService();
 		mSession = Session.restore(this);
 
@@ -276,7 +276,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	}
 
 	private void onFinishedUpload(PhotoUpload completedUpload) {
-		mController.removePhotoUpload(completedUpload);
+		mController.removePhotoSelection(completedUpload);
 		mNumberUploaded++;
 
 		PhotoUpload nextUpload = getNextUpload();
