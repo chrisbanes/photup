@@ -60,7 +60,7 @@ public class PhotupApplication extends Application implements FriendsResultListe
 
 	public BitmapLruCache getImageCache() {
 		if (null == mImageCache) {
-			mImageCache = new BitmapLruCache(this);
+			mImageCache = new BitmapLruCache(this, Constants.IMAGE_CACHE_HEAP_PERCENTAGE);
 		}
 		return mImageCache;
 	}
