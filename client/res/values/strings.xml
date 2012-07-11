@@ -8,6 +8,7 @@
     <string name="photo_remove">Remove</string>
     <string name="photo_caption">Caption</string>
     <string name="tag_no_name">Who\'s this?</string>
+    <string name="tab_uploads">Uploads</string>
     <string name="upload_title">Upload</string>
     <string name="upload_quality_title">Quality</string>
     <string name="upload_quality_low">Low (640px)</string>

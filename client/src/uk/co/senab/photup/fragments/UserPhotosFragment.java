@@ -171,7 +171,7 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		mPhotoCursorAdapter.swapCursor(data);
 	}
-	
+
 	public void onSelectionsAddedToUploads() {
 		mAdapter.notifyDataSetChanged();
 	}
@@ -209,7 +209,7 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 		mAnimationLayout.addView(iv, lp);
 
 		int halfTabHeight = getResources().getDimensionPixelSize(R.dimen.abs__action_bar_default_height) / 2;
-		int midSecondTabX = Math.round(mPhotoGrid.getWidth() * 0.75f);
+		int midSecondTabX = mPhotoGrid.getWidth() / 2;
 
 		Animation animaton = Utils.createScaleAnimation(view, mPhotoGrid.getWidth(), mPhotoGrid.getHeight(),
 				midSecondTabX, mPhotoGrid.getTop() - halfTabHeight);

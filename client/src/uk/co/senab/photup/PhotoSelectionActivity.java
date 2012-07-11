@@ -52,7 +52,7 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 		ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		ab.addTab(ab.newTab().setText(R.string.tab_photos).setTag(TAB_PHOTOS).setTabListener(this));
 		ab.addTab(ab.newTab().setText(getSelectedTabTitle()).setTag(TAB_SELECTED).setTabListener(this));
-		ab.addTab(ab.newTab().setText(R.string.upload_title).setTag(TAB_UPLOADS).setTabListener(this));
+		ab.addTab(ab.newTab().setText(R.string.tab_uploads).setTag(TAB_UPLOADS).setTabListener(this));
 
 		setCorrectAnimations(0, 1);
 	}
@@ -90,15 +90,11 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 	}
 
 	public void onSelectionsAddedToUploads() {
-		onPhotoSelectionChanged(null, false);
+		refreshSelectedTabTitle();
 	}
 
 	public void onPhotoSelectionChanged(PhotoSelection upload, boolean added) {
-		getSupportActionBar().getTabAt(1).setText(getSelectedTabTitle());
-	}
-
-	private CharSequence getSelectedTabTitle() {
-		return getString(R.string.tab_selected_photos, mPhotoController.getSelectedPhotoUploadsSize());
+		refreshSelectedTabTitle();
 	}
 
 	private void setCorrectAnimations(final int currentPosition, final int newPosition) {
@@ -132,6 +128,14 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 
 	public void onTabReselected(Tab tab, FragmentTransaction ft) {
 		// NO-OP
+	}
+
+	private void refreshSelectedTabTitle() {
+		getSupportActionBar().getTabAt(1).setText(getSelectedTabTitle());
+	}
+
+	private CharSequence getSelectedTabTitle() {
+		return getString(R.string.tab_selected_photos, mPhotoController.getSelectedPhotoUploadsSize());
 	}
 
 }

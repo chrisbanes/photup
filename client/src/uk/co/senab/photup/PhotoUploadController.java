@@ -72,6 +72,10 @@ public class PhotoUploadController {
 	public List<PhotoSelection> getUploadingPhotoUploads() {
 		return new ArrayList<PhotoSelection>(mUploadingList);
 	}
+	
+	public int getUploadsSize() {
+		return mSelectedPhotoList.size();
+	}
 
 	public void moveSelectedPhotosToUploads() {
 		mUploadingList.addAll(mSelectedPhotoList);
