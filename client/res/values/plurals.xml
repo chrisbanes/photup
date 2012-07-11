@@ -6,4 +6,9 @@
         <item quantity="other">Uploaded %d photos</item>
     </plurals>
 
+    <plurals name="tag_summary_photo">
+        <item quantity="one">With one person</item>
+        <item quantity="other">With %d people</item>
+    </plurals>
+    
 </resources>

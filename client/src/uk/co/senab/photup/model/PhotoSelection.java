@@ -172,6 +172,10 @@ public abstract class PhotoSelection extends PhotoUpload {
 	public List<PhotoTag> getPhotoTags() {
 		return new ArrayList<PhotoTag>(mTags);
 	}
+	
+	public int getPhotoTagsCount() {
+		return mTags.size();
+	}
 
 	@Override
 	public int hashCode() {

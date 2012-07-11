@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -118,18 +117,14 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 				break;
 		}
 
-		Log.d("PhotoSelection", "onTabSelected");
-
 		if (null != mPreviouslySelectedTab) {
 			final int oldId = (Integer) mPreviouslySelectedTab.getTag();
 			final int enterAnim = id > oldId ? R.anim.slide_in_right : R.anim.slide_in_left;
 			final int exitAnim = id > oldId ? R.anim.slide_out_left : R.anim.slide_out_right;
-
 			ft.setCustomAnimations(enterAnim, exitAnim);
 		}
 
 		ft.replace(R.id.fl_fragment, fragment);
-
 		supportInvalidateOptionsMenu();
 	}
 

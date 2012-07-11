@@ -6,8 +6,8 @@
 
     <uk.co.senab.photup.views.PhotupImageView
         android:id="@+id/iv_photo"
-        android:layout_width="@dimen/gridview_item_dimension"
-        android:layout_height="@dimen/gridview_item_dimension"
+        android:layout_width="@dimen/listview_item_dimension"
+        android:layout_height="fill_parent"
         android:scaleType="centerCrop" />
 
     <LinearLayout
@@ -27,11 +27,10 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
-            android:id="@+id/tv_photo_line_below"
+            android:id="@+id/tv_photo_tags"
             android:layout_width="fill_parent"
-            android:layout_height="0px"
-            android:layout_weight="1"
-            android:gravity="center_vertical" />
+            android:layout_height="wrap_content"
+            android:singleLine="true" />
 
         <ProgressBar
             android:id="@+id/pb_upload_progress"
@@ -40,5 +39,12 @@
             android:layout_height="wrap_content"
             android:max="100" />
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/iv_upload_result"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:paddingRight="@dimen/spacing"
+        android:visibility="gone" />
 
 </uk.co.senab.photup.views.UploadItemLayout>
