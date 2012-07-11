@@ -129,21 +129,27 @@ public class PhotupApplication extends Application implements FriendsResultListe
 
 	public void onFriendsLoaded(List<FbUser> friends) {
 		mFriends.clear();
-		mFriends.addAll(friends);
 
-		if (null != mFriendsListener && mFriendsListener != this) {
-			mFriendsListener.onFriendsLoaded(mFriends);
-			mFriendsListener = null;
+		if (null != friends) {
+			mFriends.addAll(friends);
+
+			if (null != mFriendsListener && mFriendsListener != this) {
+				mFriendsListener.onFriendsLoaded(mFriends);
+				mFriendsListener = null;
+			}
 		}
 	}
 
 	public void onAlbumsLoaded(List<Album> albums) {
 		mAlbums.clear();
-		mAlbums.addAll(albums);
 
-		if (null != mAlbumsListener && mAlbumsListener != this) {
-			mAlbumsListener.onAlbumsLoaded(mAlbums);
-			mAlbumsListener = null;
+		if (null != albums) {
+			mAlbums.addAll(albums);
+
+			if (null != mAlbumsListener && mAlbumsListener != this) {
+				mAlbumsListener.onAlbumsLoaded(mAlbums);
+				mAlbumsListener = null;
+			}
 		}
 	}
 
