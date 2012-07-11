@@ -52,14 +52,15 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 		ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		ab.addTab(ab.newTab().setText(R.string.tab_photos).setTag(TAB_PHOTOS).setTabListener(this));
 		ab.addTab(ab.newTab().setText(getSelectedTabTitle()).setTag(TAB_SELECTED).setTabListener(this));
-		ab.addTab(ab.newTab().setText(R.string.tab_uploads).setTag(TAB_UPLOADS).setTabListener(this));
 
 		setCorrectAnimations(0, 1);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.menu_photo_grid, menu);
+		if (getSupportActionBar().getSelectedNavigationIndex() < 2) {
+			getSupportMenuInflater().inflate(R.menu.menu_photo_grid, menu);
+		}
 
 		return super.onCreateOptionsMenu(menu);
 	}
@@ -84,12 +85,19 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 	protected void onResume() {
 		super.onResume();
 
-		if (mPhotoController.getSelectedPhotoUploadsSize() == 0) {
+		if (mPhotoController.hasUploads()) {
+			addUploadTab();
+		}
+
+		if (mPhotoController.getActiveUploadsSize() > 0) {
+			getSupportActionBar().setSelectedNavigationItem(2);
+		} else if (mPhotoController.getSelectedPhotoUploadsSize() == 0) {
 			getSupportActionBar().setSelectedNavigationItem(0);
 		}
 	}
 
 	public void onSelectionsAddedToUploads() {
+		addUploadTab();
 		refreshSelectedTabTitle();
 	}
 
@@ -120,6 +128,8 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 		setCorrectAnimations(mFlipper.getDisplayedChild(), tab.getPosition());
 
 		mFlipper.setDisplayedChild(id);
+
+		supportInvalidateOptionsMenu();
 	}
 
 	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
@@ -136,6 +146,15 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 
 	private CharSequence getSelectedTabTitle() {
 		return getString(R.string.tab_selected_photos, mPhotoController.getSelectedPhotoUploadsSize());
+	}
+
+	private void addUploadTab() {
+		ActionBar ab = getSupportActionBar();
+		
+		// Bit of a hack as but we expect the upload tab to be the third
+		if (ab.getTabCount() == 2) {
+			ab.addTab(ab.newTab().setText(R.string.tab_uploads).setTag(TAB_UPLOADS).setTabListener(this));
+		}
 	}
 
 }

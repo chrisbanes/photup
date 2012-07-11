@@ -73,8 +73,18 @@ public class PhotoUploadController {
 		return new ArrayList<PhotoSelection>(mUploadingList);
 	}
 	
-	public int getUploadsSize() {
-		return mSelectedPhotoList.size();
+	public int getActiveUploadsSize() {
+		int count = 0;
+		for (PhotoSelection upload : mUploadingList) {
+			if (upload.getState() != PhotoUpload.STATE_UPLOAD_COMPLETED) {
+				count++;
+			}
+		}
+		return count;
+	}
+	
+	public boolean hasUploads() {
+		return !mUploadingList.isEmpty();
 	}
 
 	public void moveSelectedPhotosToUploads() {
