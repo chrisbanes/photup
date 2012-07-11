@@ -5,7 +5,7 @@ import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotoViewerActivity;
 import uk.co.senab.photup.adapters.PhotosBaseAdapter;
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
-import uk.co.senab.photup.model.PhotoUpload;
+import uk.co.senab.photup.model.PhotoSelection;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -70,7 +70,7 @@ public class SelectedPhotosFragment extends SherlockFragment implements OnPhotoS
 		mAdapter.notifyDataSetChanged();
 	}
 	
-	public void onPhotoSelectionChanged(PhotoUpload id, boolean added) {
+	public void onPhotoSelectionChanged(PhotoSelection id, boolean added) {
 		mAdapter.notifyDataSetChanged();
 	}
 

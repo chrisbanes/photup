@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 import uk.co.senab.photup.Constants;
@@ -19,6 +18,7 @@ import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.facebook.Session;
+import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.model.UploadQuality;
 import android.app.NotificationManager;
@@ -44,8 +44,10 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	static final int MAX_NUMBER_RETRIES = 3;
 
 	static final int NOTIFICATION_ID = 1000;
+
 	static final int MSG_UPLOAD_COMPLETE = 0;
 	static final int MSG_UPLOAD_PROGRESS = 1;
+
 	static final String TEMPORARY_FILE_NAME = "upload_temp.jpg";
 
 	public static class ServiceBinder<S> extends Binder {
@@ -72,11 +74,11 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		private final WeakReference<Context> mContextRef;
 		private final Handler mHandler;
 		private final Session mSession;
-		private final PhotoUpload mUpload;
+		private final PhotoSelection mUpload;
 		private final String mAlbumId;
 		private final UploadQuality mQuality;
 
-		public UploadPhotoRunnable(Context context, Handler handler, PhotoUpload upload, Session session,
+		public UploadPhotoRunnable(Context context, Handler handler, PhotoSelection upload, Session session,
 				String albumId, UploadQuality quality) {
 			mContextRef = new WeakReference<Context>(context);
 			mHandler = handler;
@@ -138,7 +140,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 					InputStream is = new ProgressInputStream(new FileInputStream(temporaryFile), temporaryFile.length());
 					String response = facebook.request(mAlbumId + "/photos", bundle, "POST", is, "source");
 					complete = true;
-					
+
 					// TODO Parse Response
 					Log.d(LOG_TAG, response);
 				} catch (MalformedURLException e) {
@@ -160,12 +162,10 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		class ProgressInputStream extends FilterInputStream {
 			private final long mInputLength;
 			private volatile long mTotalBytesRead;
-			private volatile int mPercentageRead;
 
 			public ProgressInputStream(InputStream in, long maxNumBytes) {
 				super(in);
 				mTotalBytesRead = 0;
-				mPercentageRead = 0;
 				mInputLength = maxNumBytes;
 			}
 
@@ -193,10 +193,8 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 					Log.d(LOG_TAG, "Upload. File length: " + mInputLength + ". Read so far:" + mTotalBytesRead);
 				}
 
-				mPercentageRead = Math.round(mTotalBytesRead / mInputLength * 100f);
-				Message msg = mHandler.obtainMessage(MSG_UPLOAD_PROGRESS);
-				msg.arg1 = mPercentageRead;
-				mHandler.sendMessage(msg);
+				mUpload.setUploadProgress(Math.round(mTotalBytesRead / mInputLength * 100f));
+				mHandler.sendMessage(mHandler.obtainMessage(MSG_UPLOAD_PROGRESS, mUpload));
 
 				return numBytesRead;
 			}
@@ -240,10 +238,10 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	public boolean handleMessage(Message msg) {
 		switch (msg.what) {
 			case MSG_UPLOAD_COMPLETE:
-				onFinishedUpload((PhotoUpload) msg.obj);
+				onFinishedUpload((PhotoSelection) msg.obj);
 				return true;
 			case MSG_UPLOAD_PROGRESS:
-				updateNotification(msg.arg1);
+				updateNotification((PhotoSelection) msg.obj);
 				return true;
 		}
 
@@ -254,32 +252,24 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		mAlbumId = albumId;
 		mUploadQuality = quality;
 
-		PhotoUpload nextUpload = getNextUpload();
+		PhotoSelection nextUpload = mController.getNextPhotoToUpload();
 		if (null != nextUpload) {
 			startForeground();
 			startUpload(nextUpload);
 		}
 	}
 
-	private PhotoUpload getNextUpload() {
-		List<PhotoUpload> uploads = mController.getSelectedPhotoUploads();
-		if (!uploads.isEmpty()) {
-			return uploads.get(0);
-		}
-		return null;
-	}
-
-	private void startUpload(PhotoUpload upload) {
+	private void startUpload(PhotoSelection upload) {
 		trimCache();
 		updateNotification();
 		mExecutor.submit(new UploadPhotoRunnable(this, mHandler, upload, mSession, mAlbumId, mUploadQuality));
 	}
 
-	private void onFinishedUpload(PhotoUpload completedUpload) {
-		mController.removePhotoSelection(completedUpload);
+	private void onFinishedUpload(PhotoSelection completedUpload) {
+		completedUpload.setState(PhotoUpload.STATE_UPLOAD_COMPLETED);
 		mNumberUploaded++;
 
-		PhotoUpload nextUpload = getNextUpload();
+		PhotoSelection nextUpload = mController.getNextPhotoToUpload();
 		if (null != nextUpload) {
 			startUpload(nextUpload);
 		} else {
@@ -319,8 +309,9 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		mNotificationMgr.notify(NOTIFICATION_ID, mNotificationBuilder.getNotification());
 	}
 
-	void updateNotification(final int progress) {
-		String text = getString(R.string.notification_uploading_photo_progress, mNumberUploaded + 1, progress);
+	void updateNotification(final PhotoSelection upload) {
+		String text = getString(R.string.notification_uploading_photo_progress, mNumberUploaded + 1,
+				upload.getUploadProgress());
 		mNotificationBuilder.setContentText(text);
 		mNotificationMgr.notify(NOTIFICATION_ID, mNotificationBuilder.getNotification());
 	}

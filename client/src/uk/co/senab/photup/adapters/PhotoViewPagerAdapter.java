@@ -6,7 +6,7 @@ import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.listeners.OnPickFriendRequestListener;
 import uk.co.senab.photup.listeners.OnSingleTapListener;
-import uk.co.senab.photup.model.PhotoUpload;
+import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.views.MultiTouchImageView;
 import uk.co.senab.photup.views.PhotoTagItemLayout;
 import android.content.Context;
@@ -21,7 +21,7 @@ public class PhotoViewPagerAdapter extends PagerAdapter {
 	private final OnSingleTapListener mTapListener;
 	private final OnPickFriendRequestListener mFriendPickRequestListener;
 
-	private List<PhotoUpload> mItems;
+	private List<PhotoSelection> mItems;
 
 	public PhotoViewPagerAdapter(Context context, OnSingleTapListener tapListener,
 			OnPickFriendRequestListener friendRequestListener) {
@@ -48,13 +48,13 @@ public class PhotoViewPagerAdapter extends PagerAdapter {
 		return POSITION_NONE;
 	}
 
-	public PhotoUpload getItem(int position) {
+	public PhotoSelection getItem(int position) {
 		return mItems.get(position);
 	}
 
 	@Override
 	public Object instantiateItem(View container, int position) {
-		PhotoUpload upload = mItems.get(position);
+		PhotoSelection upload = mItems.get(position);
 
 		PhotoTagItemLayout view = new PhotoTagItemLayout(mContext, upload, mFriendPickRequestListener);
 

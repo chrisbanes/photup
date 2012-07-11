@@ -3,7 +3,7 @@ package uk.co.senab.photup.adapters;
 import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.model.MediaStorePhotoUpload;
-import uk.co.senab.photup.model.PhotoUpload;
+import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.views.PhotoItemLayout;
 import uk.co.senab.photup.views.PhotupImageView;
 import android.content.Context;
@@ -30,7 +30,7 @@ public class PhotosCursorAdapter extends ResourceCursorAdapter {
 		PhotupImageView iv = layout.getImageView();
 
 		long id = cursor.getInt(cursor.getColumnIndexOrThrow(ImageColumns._ID));
-		final PhotoUpload upload = new MediaStorePhotoUpload(id);
+		final PhotoSelection upload = new MediaStorePhotoUpload(id);
 		iv.requestThumbnail(upload,false);
 
 		view.setTag(upload);

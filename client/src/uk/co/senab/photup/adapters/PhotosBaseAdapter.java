@@ -5,7 +5,7 @@ import java.util.List;
 import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
-import uk.co.senab.photup.model.PhotoUpload;
+import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.views.PhotoItemLayout;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -15,7 +15,7 @@ import android.widget.BaseAdapter;
 
 public class PhotosBaseAdapter extends BaseAdapter {
 
-	private List<PhotoUpload> mItems;
+	private List<PhotoSelection> mItems;
 
 	private final Context mContext;
 	private final LayoutInflater mLayoutInflater;
@@ -38,7 +38,7 @@ public class PhotosBaseAdapter extends BaseAdapter {
 		return position;
 	}
 
-	public PhotoUpload getItem(int position) {
+	public PhotoSelection getItem(int position) {
 		return mItems.get(position);
 	}
 

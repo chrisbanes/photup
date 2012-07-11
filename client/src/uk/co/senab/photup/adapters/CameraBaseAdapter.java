@@ -1,7 +1,7 @@
 package uk.co.senab.photup.adapters;
 
 import uk.co.senab.photup.R;
-import uk.co.senab.photup.model.PhotoUpload;
+import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.views.PhotoItemLayout;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -27,7 +27,7 @@ public class CameraBaseAdapter extends BaseAdapter {
 		return position;
 	}
 
-	public PhotoUpload getItem(int position) {
+	public PhotoSelection getItem(int position) {
 		return null;
 	}
 

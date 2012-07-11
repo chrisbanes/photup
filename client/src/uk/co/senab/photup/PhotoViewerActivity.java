@@ -10,7 +10,7 @@ import uk.co.senab.photup.listeners.OnSingleTapListener;
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
 import uk.co.senab.photup.model.FbUser;
 import uk.co.senab.photup.model.Filter;
-import uk.co.senab.photup.model.PhotoUpload;
+import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.views.FiltersRadioGroup;
 import uk.co.senab.photup.views.MultiTouchImageView;
 import uk.co.senab.photup.views.PhotoTagItemLayout;
@@ -100,7 +100,7 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 			MultiTouchImageView imageView = currentView.getImageView();
 
 			Filter filter = checkedId != -1 ? Filter.FILTERS[checkedId] : null;
-			PhotoUpload upload = getCurrentUpload();
+			PhotoSelection upload = getCurrentUpload();
 			upload.setFilterUsed(filter);
 
 			imageView.requestFullSize(upload, true);
@@ -145,7 +145,7 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 			updateFiltersView();
 		}
 
-		PhotoUpload upload = mAdapter.getItem(position);
+		PhotoSelection upload = mAdapter.getItem(position);
 		String caption = upload.getCaption();
 		if (null == caption) {
 			caption = "";
@@ -161,7 +161,7 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 		mAdapter.notifyDataSetChanged();
 	}
 
-	public void onPhotoSelectionChanged(PhotoUpload upload, boolean added) {
+	public void onPhotoSelectionChanged(PhotoSelection upload, boolean added) {
 		View view = getCurrentView();
 		mFadeOutAnimation.setAnimationListener(new PhotoRemoveAnimListener(view));
 		view.startAnimation(mFadeOutAnimation);
@@ -204,12 +204,12 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 		mController.removePhotoSelectionListener(this);
 	}
 
-	private PhotoUpload getCurrentUpload() {
+	private PhotoSelection getCurrentUpload() {
 		return mAdapter.getItem(mViewPager.getCurrentItem());
 	}
 
 	private View getCurrentView() {
-		final PhotoUpload upload = getCurrentUpload();
+		final PhotoSelection upload = getCurrentUpload();
 
 		for (int i = 0, z = mViewPager.getChildCount(); i < z; i++) {
 			View child = mViewPager.getChildAt(i);
@@ -222,7 +222,7 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 	}
 
 	private void showCaptionDialog() {
-		final PhotoUpload currentUpload = getCurrentUpload();
+		final PhotoSelection currentUpload = getCurrentUpload();
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle(R.string.photo_caption);

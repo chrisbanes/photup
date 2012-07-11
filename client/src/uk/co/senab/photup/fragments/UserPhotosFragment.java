@@ -8,7 +8,7 @@ import uk.co.senab.photup.Utils;
 import uk.co.senab.photup.adapters.CameraBaseAdapter;
 import uk.co.senab.photup.adapters.PhotosCursorAdapter;
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
-import uk.co.senab.photup.model.PhotoUpload;
+import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.views.PhotupImageView;
 import android.app.Activity;
 import android.content.Intent;
@@ -148,7 +148,7 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 	}
 
 	public void onItemClick(AdapterView<?> gridView, View view, int position, long id) {
-		PhotoUpload object = (PhotoUpload) view.getTag();
+		PhotoSelection object = (PhotoSelection) view.getTag();
 
 		if (null != object) {
 			Checkable checkableView = (Checkable) view;
@@ -176,7 +176,7 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 		mAdapter.notifyDataSetChanged();
 	}
 
-	public void onPhotoSelectionChanged(PhotoUpload upload, boolean added) {
+	public void onPhotoSelectionChanged(PhotoSelection upload, boolean added) {
 		mAdapter.notifyDataSetChanged();
 	}
 

@@ -6,7 +6,7 @@ import uk.co.senab.bitmapcache.BitmapLruCache;
 import uk.co.senab.bitmapcache.CacheableBitmapWrapper;
 import uk.co.senab.bitmapcache.CacheableImageView;
 import uk.co.senab.photup.PhotupApplication;
-import uk.co.senab.photup.model.PhotoUpload;
+import uk.co.senab.photup.model.PhotoSelection;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -26,9 +26,9 @@ public class PhotupImageView extends CacheableImageView {
 		private final WeakReference<PhotupImageView> mImageView;
 		private final BitmapLruCache mCache;
 		private final boolean mFetchFullSize;
-		private final PhotoUpload mUpload;
+		private final PhotoSelection mUpload;
 
-		public PhotoTask(PhotupImageView imageView, PhotoUpload upload, BitmapLruCache cache, boolean fullSize) {
+		public PhotoTask(PhotupImageView imageView, PhotoSelection upload, BitmapLruCache cache, boolean fullSize) {
 			mImageView = new WeakReference<PhotupImageView>(imageView);
 			mCache = cache;
 			mFetchFullSize = fullSize;
@@ -85,11 +85,11 @@ public class PhotupImageView extends CacheableImageView {
 
 		private final Context mContext;
 		private final PhotupImageView mImageView;
-		private final PhotoUpload mUpload;
+		private final PhotoSelection mUpload;
 		private final boolean mFullSize;
 		private final BitmapLruCache mCache;
 
-		public FilterRunnable(PhotupImageView imageView, PhotoUpload upload, final boolean fullSize) {
+		public FilterRunnable(PhotupImageView imageView, PhotoSelection upload, final boolean fullSize) {
 			mContext = imageView.getContext();
 			mImageView = imageView;
 			mUpload = upload;
@@ -129,10 +129,10 @@ public class PhotupImageView extends CacheableImageView {
 
 	static final class FaceDetectionRunnable implements Runnable {
 
-		private final PhotoUpload mUpload;
+		private final PhotoSelection mUpload;
 		private final Bitmap mBitmap;
 
-		public FaceDetectionRunnable(PhotoUpload upload, Bitmap bitmap) {
+		public FaceDetectionRunnable(PhotoSelection upload, Bitmap bitmap) {
 			mUpload = upload;
 			mBitmap = bitmap;
 		}
@@ -159,7 +159,7 @@ public class PhotupImageView extends CacheableImageView {
 		super(context, attrs);
 	}
 
-	public void requestThumbnail(final PhotoUpload upload, final boolean honourFilter) {
+	public void requestThumbnail(final PhotoSelection upload, final boolean honourFilter) {
 		if (upload.requiresProcessing() && honourFilter) {
 			requestFiltered(upload, false);
 		} else {
@@ -167,7 +167,7 @@ public class PhotupImageView extends CacheableImageView {
 		}
 	}
 
-	public void requestFullSize(final PhotoUpload upload, final boolean honourFilter) {
+	public void requestFullSize(final PhotoSelection upload, final boolean honourFilter) {
 		if (upload.requiresProcessing() && honourFilter) {
 			requestFiltered(upload, true);
 		} else {
@@ -175,17 +175,17 @@ public class PhotupImageView extends CacheableImageView {
 		}
 	}
 
-	void requestFiltered(final PhotoUpload upload, boolean fullSize) {
+	void requestFiltered(final PhotoSelection upload, boolean fullSize) {
 		PhotupApplication app = PhotupApplication.getApplication(getContext());
 		app.getSingleThreadExecutorService().submit(new FilterRunnable(this, upload, fullSize));
 	}
 
-	void requestFaceDetection(final PhotoUpload upload, final Bitmap bitmap) {
+	void requestFaceDetection(final PhotoSelection upload, final Bitmap bitmap) {
 		PhotupApplication app = PhotupApplication.getApplication(getContext());
 		app.getMultiThreadExecutorService().submit(new FaceDetectionRunnable(upload, bitmap));
 	}
 
-	void requestImage(final PhotoUpload upload, final boolean fullSize) {
+	void requestImage(final PhotoSelection upload, final boolean fullSize) {
 		if (null != mCurrentTask) {
 			mCurrentTask.cancel(false);
 		}

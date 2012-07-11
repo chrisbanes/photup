@@ -8,7 +8,7 @@ import uk.co.senab.photup.listeners.OnPhotoTapListener;
 import uk.co.senab.photup.listeners.OnPickFriendRequestListener;
 import uk.co.senab.photup.model.FbUser;
 import uk.co.senab.photup.model.PhotoTag;
-import uk.co.senab.photup.model.PhotoUpload;
+import uk.co.senab.photup.model.PhotoSelection;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.RectF;
@@ -39,9 +39,9 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 	private final OnPickFriendRequestListener mPickFriendListener;
 	private final AbsoluteLayout mTagLayout;
 
-	private final PhotoUpload mUpload;
+	private final PhotoSelection mUpload;
 
-	public PhotoTagItemLayout(Context context, PhotoUpload upload, OnPickFriendRequestListener friendRequestListener) {
+	public PhotoTagItemLayout(Context context, PhotoSelection upload, OnPickFriendRequestListener friendRequestListener) {
 		super(context);
 
 		mPickFriendListener = friendRequestListener;

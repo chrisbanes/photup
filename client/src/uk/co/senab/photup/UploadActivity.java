@@ -68,6 +68,8 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 	}
 
 	private void upload() {
+		PhotupApplication.getApplication(this).getPhotoUploadController().moveSelectedPhotosToUploads();
+
 		UploadQuality quality = UploadQuality.mapFromButtonId(mQualityRadioGroup.getCheckedRadioButtonId());
 		Album album = (Album) mAlbumSpinner.getSelectedItem();
 

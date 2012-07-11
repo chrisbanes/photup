@@ -21,7 +21,7 @@ import com.lightbox.android.photoprocessing.utils.BitmapUtils;
 import com.lightbox.android.photoprocessing.utils.BitmapUtils.BitmapSize;
 import com.lightbox.android.photoprocessing.utils.FileUtils;
 
-public class MediaStorePhotoUpload extends PhotoUpload {
+public class MediaStorePhotoUpload extends PhotoSelection {
 
 	private final long mId;
 

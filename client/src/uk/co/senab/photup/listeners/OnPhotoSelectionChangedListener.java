@@ -1,10 +1,10 @@
 package uk.co.senab.photup.listeners;
 
-import uk.co.senab.photup.model.PhotoUpload;
+import uk.co.senab.photup.model.PhotoSelection;
 
 public interface OnPhotoSelectionChangedListener {
 
-	void onPhotoSelectionChanged(PhotoUpload upload, boolean added);
+	void onPhotoSelectionChanged(PhotoSelection upload, boolean added);
 
 	void onPhotoSelectionCleared();
 

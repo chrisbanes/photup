@@ -1,7 +1,7 @@
 package uk.co.senab.photup;
 
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
-import uk.co.senab.photup.model.PhotoUpload;
+import uk.co.senab.photup.model.PhotoSelection;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -90,7 +90,7 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 		onPhotoSelectionChanged(null, false);
 	}
 
-	public void onPhotoSelectionChanged(PhotoUpload upload, boolean added) {
+	public void onPhotoSelectionChanged(PhotoSelection upload, boolean added) {
 		getSupportActionBar().getTabAt(1).setText(getSelectedTabTitle());
 	}
 

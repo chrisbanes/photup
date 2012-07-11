@@ -4,7 +4,7 @@ import java.util.concurrent.ExecutorService;
 
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.model.Filter;
-import uk.co.senab.photup.model.PhotoUpload;
+import uk.co.senab.photup.model.PhotoSelection;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -35,10 +35,10 @@ public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 		private final Context mContext;
 		private final RadioButton mButton;
 
-		private final PhotoUpload mUpload;
+		private final PhotoSelection mUpload;
 		private final Filter mFilter;
 
-		public FilterRunnable(Context context, PhotoUpload upload, Filter filter, RadioButton button) {
+		public FilterRunnable(Context context, PhotoSelection upload, Filter filter, RadioButton button) {
 			mContext = context;
 			mUpload = upload;
 			mFilter = filter;
@@ -111,7 +111,7 @@ public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 		}
 	}
 
-	public void setPhotoUpload(PhotoUpload upload) {
+	public void setPhotoUpload(PhotoSelection upload) {
 		for (final Filter filter : Filter.FILTERS) {
 			final RadioButton button = (RadioButton) findViewById(filter.getId());
 			mExecutor.submit(new FilterRunnable(getContext(), upload, filter, button));
