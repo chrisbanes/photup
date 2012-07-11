@@ -21,6 +21,7 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 
 	static final int TAB_PHOTOS = 0;
 	static final int TAB_SELECTED = 1;
+	static final int TAB_UPLOADS = 2;
 
 	private ViewAnimator mFlipper;
 
@@ -50,6 +51,7 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 		ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		ab.addTab(ab.newTab().setText(R.string.tab_photos).setTag(TAB_PHOTOS).setTabListener(this));
 		ab.addTab(ab.newTab().setText(getSelectedTabTitle()).setTag(TAB_SELECTED).setTabListener(this));
+		ab.addTab(ab.newTab().setText(R.string.upload_title).setTag(TAB_UPLOADS).setTabListener(this));
 
 		setCorrectAnimations(0);
 	}
@@ -86,7 +88,7 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 		}
 	}
 	
-	public void onPhotoSelectionCleared() {
+	public void onSelectionsAddedToUploads() {
 		onPhotoSelectionChanged(null, false);
 	}
 

@@ -157,7 +157,7 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 		return hideFiltersView();
 	}
 	
-	public void onPhotoSelectionCleared() {
+	public void onSelectionsAddedToUploads() {
 		mAdapter.notifyDataSetChanged();
 	}
 

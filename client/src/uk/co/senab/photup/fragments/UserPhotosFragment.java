@@ -172,7 +172,7 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 		mPhotoCursorAdapter.swapCursor(data);
 	}
 	
-	public void onPhotoSelectionCleared() {
+	public void onSelectionsAddedToUploads() {
 		mAdapter.notifyDataSetChanged();
 	}
 

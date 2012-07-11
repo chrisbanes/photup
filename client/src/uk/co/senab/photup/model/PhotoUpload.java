@@ -1,10 +1,19 @@
 package uk.co.senab.photup.model;
 
+import java.lang.ref.WeakReference;
+import java.util.HashSet;
+
 public class PhotoUpload {
+
+	public static interface OnUploadStateChanged {
+		void onUploadStateChanged(PhotoUpload upload, int state, int progress);
+	}
 
 	public static final int STATE_WAITING = 0;
 	public static final int STATE_UPLOAD_IN_PROGRESS = 1;
 	public static final int STATE_UPLOAD_COMPLETED = 2;
+
+	private HashSet<WeakReference<OnUploadStateChanged>> mStateListeners;
 
 	private int mState;
 	private int mProgress;
@@ -18,19 +27,60 @@ public class PhotoUpload {
 	}
 
 	public void setState(int state) {
-		mState = state;
+		if (mState != state) {
+			mState = state;
 
-		if (STATE_UPLOAD_IN_PROGRESS != state) {
-			mProgress = -1;
+			if (STATE_UPLOAD_IN_PROGRESS != state) {
+				mProgress = -1;
+			}
+
+			notifyListeners();
 		}
 	}
 
 	public int getUploadProgress() {
 		return mProgress;
 	}
-	
+
 	public void setUploadProgress(int progress) {
-		mProgress = progress;
+		if (progress != mProgress) {
+			mProgress = progress;
+			notifyListeners();
+		}
+	}
+
+	public void addUploadStateChangedListener(OnUploadStateChanged listener) {
+		if (null == mStateListeners) {
+			mStateListeners = new HashSet<WeakReference<OnUploadStateChanged>>();
+		}
+
+		mStateListeners.add(new WeakReference<PhotoUpload.OnUploadStateChanged>(listener));
+	}
+
+	public void removeUploadStateChangedListener(OnUploadStateChanged listener) {
+		WeakReference<OnUploadStateChanged> refToRemove = null;
+
+		for (WeakReference<OnUploadStateChanged> ref : mStateListeners) {
+			if (ref.get() == listener) {
+				refToRemove = ref;
+				break;
+			}
+		}
+
+		if (null != refToRemove) {
+			mStateListeners.remove(refToRemove);
+		}
+	}
+
+	private void notifyListeners() {
+		if (null != mStateListeners && !mStateListeners.isEmpty()) {
+			for (WeakReference<OnUploadStateChanged> ref : mStateListeners) {
+				OnUploadStateChanged listener = ref.get();
+				if (null != listener) {
+					listener.onUploadStateChanged(this, mState, mProgress);
+				}
+			}
+		}
 	}
 
 }

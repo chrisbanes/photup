@@ -66,7 +66,7 @@ public class SelectedPhotosFragment extends SherlockFragment implements OnPhotoS
 		// TODO Save Scroll position
 	}
 
-	public void onPhotoSelectionCleared() {
+	public void onSelectionsAddedToUploads() {
 		mAdapter.notifyDataSetChanged();
 	}
 	

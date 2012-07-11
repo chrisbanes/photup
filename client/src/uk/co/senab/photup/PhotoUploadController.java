@@ -78,7 +78,7 @@ public class PhotoUploadController {
 		mSelectedPhotoList.clear();
 
 		for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
-			l.onPhotoSelectionCleared();
+			l.onSelectionsAddedToUploads();
 		}
 	}
 
