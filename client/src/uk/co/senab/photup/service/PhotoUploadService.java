@@ -93,6 +93,8 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 			if (null == context) {
 				return;
 			}
+			
+			mUpload.setState(PhotoUpload.STATE_UPLOAD_IN_PROGRESS);
 
 			Facebook facebook = mSession.getFb();
 			Bundle bundle = new Bundle();
