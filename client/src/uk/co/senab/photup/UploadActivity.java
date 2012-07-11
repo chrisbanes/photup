@@ -54,8 +54,9 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 
 		mQualityRadioGroup = (RadioGroup) findViewById(R.id.rg_upload_quality);
 		mAlbumSpinner = (Spinner) findViewById(R.id.sp_upload_album);
+		mAlbumSpinner.setEnabled(false);
+		
 		mNewAlbumButton = (ImageButton) findViewById(R.id.btn_new_album);
-
 		mNewAlbumButton.setOnClickListener(this);
 
 		mAlbumAdapter = new ArrayAdapter<Album>(this, android.R.layout.simple_spinner_item, mAlbums);
@@ -151,6 +152,7 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		mAlbums.clear();
 		mAlbums.addAll(albums);
 		mAlbumAdapter.notifyDataSetChanged();
+		mAlbumSpinner.setEnabled(true);
 	}
 
 	public void onClick(View v) {
