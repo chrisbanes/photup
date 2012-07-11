@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<color name="grid_background">#FF000000</color>
+<color name="cell_empty">#FF993311</color>
+<color name="cell_filled">#FFA99033</color>
+<color name="cell_empty_hover">#ff00ff00</color>
+<color name="cell_filled_hover">#ffaadddd</color>
+<color name="red">#ffff0000</color>
+<color name="green">#ff00ff00</color>
+<color name="blue">#ff0000ff</color>
+<color name="drop_target_color1">#FF993311</color>
+<color name="drop_target_color2">#FFA99033</color>
+<color name="drop_target_enabled">#FF009933</color>
+<color name="drop_target_disabled">#FFdddddd</color>
+</resources>
