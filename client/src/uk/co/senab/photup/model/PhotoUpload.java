@@ -1,7 +1,9 @@
 package uk.co.senab.photup.model;
 
 import java.lang.ref.WeakReference;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 
 public class PhotoUpload {
 
@@ -13,7 +15,7 @@ public class PhotoUpload {
 	public static final int STATE_UPLOAD_IN_PROGRESS = 1;
 	public static final int STATE_UPLOAD_COMPLETED = 2;
 
-	private HashSet<WeakReference<OnUploadStateChanged>> mStateListeners;
+	private Set<WeakReference<OnUploadStateChanged>> mStateListeners;
 
 	private int mState;
 	private int mProgress;
@@ -51,33 +53,42 @@ public class PhotoUpload {
 
 	public void addUploadStateChangedListener(OnUploadStateChanged listener) {
 		if (null == mStateListeners) {
-			mStateListeners = new HashSet<WeakReference<OnUploadStateChanged>>();
+			mStateListeners = Collections.synchronizedSet(new HashSet<WeakReference<OnUploadStateChanged>>());
 		}
 
-		mStateListeners.add(new WeakReference<PhotoUpload.OnUploadStateChanged>(listener));
+		synchronized (mStateListeners) {
+			mStateListeners.add(new WeakReference<PhotoUpload.OnUploadStateChanged>(listener));
+		}
 	}
 
 	public void removeUploadStateChangedListener(OnUploadStateChanged listener) {
-		WeakReference<OnUploadStateChanged> refToRemove = null;
-
-		for (WeakReference<OnUploadStateChanged> ref : mStateListeners) {
-			if (ref.get() == listener) {
-				refToRemove = ref;
-				break;
+		synchronized (mStateListeners) {
+			WeakReference<OnUploadStateChanged> refToRemove = null;
+			for (WeakReference<OnUploadStateChanged> ref : mStateListeners) {
+				if (ref.get() == listener) {
+					refToRemove = ref;
+					break;
+				}
 			}
-		}
 
-		if (null != refToRemove) {
-			mStateListeners.remove(refToRemove);
+			if (null != refToRemove) {
+				mStateListeners.remove(refToRemove);
+			}
+			
+			if (mStateListeners.isEmpty()) {
+				mStateListeners = null;
+			}
 		}
 	}
 
 	private void notifyListeners() {
-		if (null != mStateListeners && !mStateListeners.isEmpty()) {
-			for (WeakReference<OnUploadStateChanged> ref : mStateListeners) {
-				OnUploadStateChanged listener = ref.get();
-				if (null != listener) {
-					listener.onUploadStateChanged(this, mState, mProgress);
+		if (null != mStateListeners) {
+			synchronized (mStateListeners) {
+				for (WeakReference<OnUploadStateChanged> ref : mStateListeners) {
+					OnUploadStateChanged listener = ref.get();
+					if (null != listener) {
+						listener.onUploadStateChanged(this, mState, mProgress);
+					}
 				}
 			}
 		}
