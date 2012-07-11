@@ -15,14 +15,14 @@
         android:layout_height="fill_parent"
         android:layout_margin="@dimen/spacing"
         android:layout_weight="1"
+        android:gravity="center_vertical"
         android:orientation="vertical"
         android:padding="@dimen/spacing" >
 
         <TextView
             android:id="@+id/tv_photo_caption"
             android:layout_width="fill_parent"
-            android:layout_height="0px"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -30,13 +30,16 @@
             android:id="@+id/tv_photo_tags"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:singleLine="true" />
+            android:layout_marginTop="@dimen/spacing"
+            android:singleLine="true"
+            android:visibility="gone" />
 
         <ProgressBar
             android:id="@+id/pb_upload_progress"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing"
             android:max="100" />
     </LinearLayout>
 

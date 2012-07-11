@@ -57,8 +57,7 @@ public class MediaStorePhotoUpload extends PhotoSelection {
 	@Override
 	public Bitmap getDisplayImage(Context context) {
 		try {
-			final int size = Math.min(PhotupApplication.getApplication(context).getLargestScreenDimension(),
-					Constants.DISPLAY_PHOTO_SIZE);
+			final int size = PhotupApplication.getApplication(context).getSmallestScreenDimension();
 			return Utils.resizeBitmap(context.getContentResolver(), getOriginalPhotoUri(), size, false);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

@@ -76,10 +76,10 @@ public class PhotupApplication extends Application implements FriendsResultListe
 				* EXECUTOR_MAX_POOL_SIZE_PER_CORE, 1L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 	}
 
-	public int getLargestScreenDimension() {
+	public int getSmallestScreenDimension() {
 		WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
 		Display display = wm.getDefaultDisplay();
-		return Math.max(display.getHeight(), display.getWidth());
+		return Math.min(display.getHeight(), display.getWidth());
 	}
 
 	@Override
