@@ -217,4 +217,7 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 		iv.startAnimation(animaton);
 	}
 
+	public void onUploadsCleared() {
+		// NO-OP
+	}
 }

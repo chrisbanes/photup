@@ -95,6 +95,16 @@ public class PhotoUploadController {
 			l.onSelectionsAddedToUploads();
 		}
 	}
+	
+	public void removePhotoFromUploads(PhotoSelection selection) {
+		mUploadingList.remove(selection);
+		
+		if (mUploadingList.isEmpty()) {
+			for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
+				l.onUploadsCleared();
+			}
+		}
+	}
 
 	public PhotoSelection getNextPhotoToUpload() {
 		for (PhotoSelection selection : mUploadingList) {

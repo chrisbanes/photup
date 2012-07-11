@@ -156,7 +156,7 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 	public boolean onSingleTap(MotionEvent event) {
 		return hideFiltersView();
 	}
-	
+
 	public void onSelectionsAddedToUploads() {
 		mAdapter.notifyDataSetChanged();
 	}
@@ -296,5 +296,9 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 		mFriendsFragment.setOnFriendPickedListener(listener);
 		mFriendsFragment.setExcludedFriends(excludeSet);
 		mFriendsFragment.show(getSupportFragmentManager(), "friends");
+	}
+
+	public void onUploadsCleared() {
+		// NO-OP
 	}
 }

@@ -1,7 +1,6 @@
 package uk.co.senab.photup.model;
 
 import java.lang.ref.WeakReference;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -53,43 +52,43 @@ public class PhotoUpload {
 
 	public void addUploadStateChangedListener(OnUploadStateChanged listener) {
 		if (null == mStateListeners) {
-			mStateListeners = Collections.synchronizedSet(new HashSet<WeakReference<OnUploadStateChanged>>());
+			mStateListeners = new HashSet<WeakReference<OnUploadStateChanged>>();
 		}
 
-		synchronized (mStateListeners) {
-			mStateListeners.add(new WeakReference<PhotoUpload.OnUploadStateChanged>(listener));
-		}
+		mStateListeners.add(new WeakReference<PhotoUpload.OnUploadStateChanged>(listener));
 	}
 
 	public void removeUploadStateChangedListener(OnUploadStateChanged listener) {
-		synchronized (mStateListeners) {
-			WeakReference<OnUploadStateChanged> refToRemove = null;
-			for (WeakReference<OnUploadStateChanged> ref : mStateListeners) {
-				if (ref.get() == listener) {
-					refToRemove = ref;
-					break;
-				}
-			}
+		if (null == mStateListeners) {
+			return;
+		}
 
-			if (null != refToRemove) {
-				mStateListeners.remove(refToRemove);
+		WeakReference<OnUploadStateChanged> refToRemove = null;
+		for (WeakReference<OnUploadStateChanged> ref : mStateListeners) {
+			if (ref.get() == listener) {
+				refToRemove = ref;
+				break;
 			}
-			
-			if (mStateListeners.isEmpty()) {
-				mStateListeners = null;
-			}
+		}
+
+		if (null != refToRemove) {
+			mStateListeners.remove(refToRemove);
+		}
+
+		if (mStateListeners.isEmpty()) {
+			mStateListeners = null;
 		}
 	}
 
 	private void notifyListeners() {
-		if (null != mStateListeners) {
-			synchronized (mStateListeners) {
-				for (WeakReference<OnUploadStateChanged> ref : mStateListeners) {
-					OnUploadStateChanged listener = ref.get();
-					if (null != listener) {
-						listener.onUploadStateChanged(this, mState, mProgress);
-					}
-				}
+		if (null == mStateListeners) {
+			return;
+		}
+
+		for (WeakReference<OnUploadStateChanged> ref : mStateListeners) {
+			OnUploadStateChanged listener = ref.get();
+			if (null != listener) {
+				listener.onUploadStateChanged(this, mState, mProgress);
 			}
 		}
 	}

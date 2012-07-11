@@ -88,4 +88,7 @@ public class SelectedPhotosFragment extends SherlockFragment implements OnPhotoS
 		ActivityCompat2.startActivity(getActivity(), intent, options.toBundle());
 	}
 
+	public void onUploadsCleared() {
+		// NO-OP
+	}
 }

@@ -4,11 +4,15 @@ import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.adapters.UploadsBaseAdapter;
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
 import uk.co.senab.photup.model.PhotoSelection;
+import uk.co.senab.photup.model.PhotoUpload;
 import android.os.Bundle;
+import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
+import com.example.android.swipedismiss.SwipeDismissListViewTouchListener;
+import com.example.android.swipedismiss.SwipeDismissListViewTouchListener.OnDismissCallback;
 
-public class UploadsFragment extends SherlockListFragment implements OnPhotoSelectionChangedListener {
+public class UploadsFragment extends SherlockListFragment implements OnPhotoSelectionChangedListener, OnDismissCallback {
 
 	private PhotoUploadController mPhotoSelectionController;
 	private UploadsBaseAdapter mAdapter;
@@ -26,7 +30,13 @@ public class UploadsFragment extends SherlockListFragment implements OnPhotoSele
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-		getListView().setAdapter(mAdapter);
+		ListView listView = getListView();
+
+		SwipeDismissListViewTouchListener swipeListener = new SwipeDismissListViewTouchListener(listView, this);
+		listView.setOnTouchListener(swipeListener);
+		listView.setOnScrollListener(swipeListener.makeScrollListener());
+
+		listView.setAdapter(mAdapter);
 		setListShown(true);
 	}
 
@@ -41,6 +51,22 @@ public class UploadsFragment extends SherlockListFragment implements OnPhotoSele
 
 	public void onSelectionsAddedToUploads() {
 		mAdapter.notifyDataSetChanged();
+	}
+
+	public void onDismiss(ListView listView, int[] reverseSortedPositions) {
+		for (int i = 0, z = reverseSortedPositions.length; i < z; i++) {
+			PhotoSelection upload = (PhotoSelection) listView.getItemAtPosition(reverseSortedPositions[i]);
+			mPhotoSelectionController.removePhotoFromUploads(upload);
+		}
+		mAdapter.notifyDataSetChanged();
+	}
+
+	public boolean canDismiss(ListView listView, int position) {
+		return ((PhotoUpload) listView.getItemAtPosition(position)).getState() == PhotoUpload.STATE_UPLOAD_COMPLETED;
+	}
+
+	public void onUploadsCleared() {
+		// NO-OP
 	}
 
 }

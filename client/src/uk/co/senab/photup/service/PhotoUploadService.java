@@ -93,7 +93,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 			if (null == context) {
 				return;
 			}
-			
+
 			mUpload.setState(PhotoUpload.STATE_UPLOAD_IN_PROGRESS);
 
 			Facebook facebook = mSession.getFb();
@@ -195,8 +195,9 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 					Log.d(LOG_TAG, "Upload. File length: " + mInputLength + ". Read so far:" + mTotalBytesRead);
 				}
 
-				mUpload.setUploadProgress(Math.round((mTotalBytesRead * 100f) / mInputLength));
-				mHandler.sendMessage(mHandler.obtainMessage(MSG_UPLOAD_PROGRESS, mUpload));
+				Message msg = mHandler.obtainMessage(MSG_UPLOAD_PROGRESS, mUpload);
+				msg.arg1 = Math.round((mTotalBytesRead * 100f) / mInputLength);
+				mHandler.sendMessage(msg);
 
 				return numBytesRead;
 			}
@@ -243,7 +244,11 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 				onFinishedUpload((PhotoSelection) msg.obj);
 				return true;
 			case MSG_UPLOAD_PROGRESS:
-				updateNotification((PhotoSelection) msg.obj);
+				// Update the upload progress on the main thread
+				PhotoSelection upload = (PhotoSelection) msg.obj;
+				upload.setUploadProgress(msg.arg1);
+				
+				updateNotification(upload);
 				return true;
 		}
 

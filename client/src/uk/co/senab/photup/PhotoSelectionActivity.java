@@ -153,4 +153,9 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 		}
 	}
 
+	public void onUploadsCleared() {
+		getSupportActionBar().setSelectedNavigationItem(0);
+		getSupportActionBar().removeTabAt(2);
+	}
+
 }
