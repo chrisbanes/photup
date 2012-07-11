@@ -17,7 +17,8 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-public class PhotoSelectionActivity extends SherlockFragmentActivity implements OnPhotoSelectionChangedListener, TabListener {
+public class PhotoSelectionActivity extends SherlockFragmentActivity implements OnPhotoSelectionChangedListener,
+		TabListener {
 
 	static final int TAB_PHOTOS = 0;
 	static final int TAB_SELECTED = 1;
@@ -53,7 +54,7 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 		ab.addTab(ab.newTab().setText(getSelectedTabTitle()).setTag(TAB_SELECTED).setTabListener(this));
 		ab.addTab(ab.newTab().setText(R.string.upload_title).setTag(TAB_UPLOADS).setTabListener(this));
 
-		setCorrectAnimations(0);
+		setCorrectAnimations(0, 1);
 	}
 
 	@Override
@@ -87,7 +88,7 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 			getSupportActionBar().setSelectedNavigationItem(0);
 		}
 	}
-	
+
 	public void onSelectionsAddedToUploads() {
 		onPhotoSelectionChanged(null, false);
 	}
@@ -100,8 +101,8 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 		return getString(R.string.tab_selected_photos, mPhotoController.getSelectedPhotoUploadsSize());
 	}
 
-	private void setCorrectAnimations(final int currentPosition) {
-		if (currentPosition == 0) {
+	private void setCorrectAnimations(final int currentPosition, final int newPosition) {
+		if (newPosition > currentPosition) {
 			mFlipper.setInAnimation(mSlideInRightAnim);
 			mFlipper.setOutAnimation(mSlideOutLeftAnim);
 		} else {
@@ -118,10 +119,11 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 
 	public void onTabSelected(Tab tab, FragmentTransaction ft) {
 		final int id = (Integer) tab.getTag();
-		mFlipper.setDisplayedChild(id);
 
 		// Set correct animations for next flip
-		setCorrectAnimations(tab.getPosition());
+		setCorrectAnimations(mFlipper.getDisplayedChild(), tab.getPosition());
+
+		mFlipper.setDisplayedChild(id);
 	}
 
 	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
