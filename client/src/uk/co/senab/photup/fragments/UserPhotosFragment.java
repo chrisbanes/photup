@@ -209,7 +209,13 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 		mAnimationLayout.addView(iv, lp);
 
 		int halfTabHeight = getResources().getDimensionPixelSize(R.dimen.abs__action_bar_default_height) / 2;
-		int midSecondTabX = mPhotoGrid.getWidth() / 2;
+		int midSecondTabX;
+
+		if (getSherlockActivity().getSupportActionBar().getTabCount() == 2) {
+			midSecondTabX = Math.round(mPhotoGrid.getWidth() * 0.75f);
+		} else {
+			midSecondTabX = mPhotoGrid.getWidth() / 2;
+		}
 
 		Animation animaton = Utils.createScaleAnimation(view, mPhotoGrid.getWidth(), mPhotoGrid.getHeight(),
 				midSecondTabX, mPhotoGrid.getTop() - halfTabHeight);
