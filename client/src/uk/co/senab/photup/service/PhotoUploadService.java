@@ -193,7 +193,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 					Log.d(LOG_TAG, "Upload. File length: " + mInputLength + ". Read so far:" + mTotalBytesRead);
 				}
 
-				mUpload.setUploadProgress(Math.round(mTotalBytesRead / mInputLength * 100f));
+				mUpload.setUploadProgress(Math.round((mTotalBytesRead * 100f) / mInputLength));
 				mHandler.sendMessage(mHandler.obtainMessage(MSG_UPLOAD_PROGRESS, mUpload));
 
 				return numBytesRead;
