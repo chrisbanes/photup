@@ -3,6 +3,7 @@ package uk.co.senab.photup.fragments;
 import uk.co.senab.bitmapcache.R;
 import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotoViewerActivity;
+import uk.co.senab.photup.Utils;
 import uk.co.senab.photup.adapters.PhotosBaseAdapter;
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
 import uk.co.senab.photup.model.PhotoSelection;
@@ -17,8 +18,11 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.jakewharton.activitycompat2.ActivityCompat2;
+import com.jakewharton.activitycompat2.ActivityOptionsCompat2;
 
-public class SelectedPhotosFragment extends SherlockFragment implements OnPhotoSelectionChangedListener, OnItemClickListener {
+public class SelectedPhotosFragment extends SherlockFragment implements OnPhotoSelectionChangedListener,
+		OnItemClickListener {
 
 	private GridView mGridView;
 	private PhotosBaseAdapter mAdapter;
@@ -69,15 +73,19 @@ public class SelectedPhotosFragment extends SherlockFragment implements OnPhotoS
 	public void onSelectionsAddedToUploads() {
 		mAdapter.notifyDataSetChanged();
 	}
-	
+
 	public void onPhotoSelectionChanged(PhotoSelection id, boolean added) {
 		mAdapter.notifyDataSetChanged();
 	}
 
-	public void onItemClick(AdapterView<?> parent, View view, int position, long arg3) {
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		ActivityOptionsCompat2 options = ActivityOptionsCompat2.makeThumbnailScaleUpAnimation(view,
+				Utils.drawViewOntoBitmap(view), 0, 0);
+
 		Intent intent = new Intent(getActivity(), PhotoViewerActivity.class);
 		intent.putExtra(PhotoViewerActivity.EXTRA_POSITION, position);
-		startActivity(intent);
+
+		ActivityCompat2.startActivity(getActivity(), intent, options.toBundle());
 	}
 
 }
