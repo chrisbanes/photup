@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="gridview_item_margin">6dp</dimen>
+    <dimen name="gridview_item_dimension">200dp</dimen>
+
+</resources>

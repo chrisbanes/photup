@@ -9,6 +9,7 @@ import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.Utils;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -35,11 +36,15 @@ public class MediaStorePhotoUpload extends PhotoSelection {
 	}
 
 	public Bitmap getThumbnailImage(Context context) {
-		final int kind = context.getResources().getBoolean(R.bool.load_mini_thumbnails) ? Thumbnails.MINI_KIND
-				: Thumbnails.MICRO_KIND;
+		Resources res = context.getResources();
 
-		BitmapFactory.Options opts = new BitmapFactory.Options();
-		opts.inSampleSize = 2;
+		final int kind = res.getBoolean(R.bool.load_mini_thumbnails) ? Thumbnails.MINI_KIND : Thumbnails.MICRO_KIND;
+
+		BitmapFactory.Options opts = null;
+		if (kind == Thumbnails.MINI_KIND && res.getBoolean(R.bool.sample_mini_thumbnails)) {
+			opts = new BitmapFactory.Options();
+			opts.inSampleSize = 2;
+		}
 
 		try {
 			return Thumbnails.getThumbnail(context.getContentResolver(), mId, kind, opts);
