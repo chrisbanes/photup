@@ -8,6 +8,7 @@ import uk.co.senab.photup.views.PhotoItemLayout;
 import uk.co.senab.photup.views.PhotupImageView;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.provider.MediaStore.Images.ImageColumns;
 import android.support.v4.widget.ResourceCursorAdapter;
 import android.view.View;
@@ -16,12 +17,17 @@ import android.widget.Checkable;
 public class PhotosCursorAdapter extends ResourceCursorAdapter {
 
 	private final PhotoUploadController mController;
+	private Uri mContentUri;
 
 	public PhotosCursorAdapter(Context context, int layout, Cursor c, boolean autoRequery) {
 		super(context, layout, c, autoRequery);
 
 		PhotupApplication app = PhotupApplication.getApplication(context);
 		mController = app.getPhotoUploadController();
+	}
+	
+	public void setContentUri(Uri contentUri) {
+		mContentUri = contentUri;
 	}
 
 	@Override
@@ -30,7 +36,7 @@ public class PhotosCursorAdapter extends ResourceCursorAdapter {
 		PhotupImageView iv = layout.getImageView();
 
 		long id = cursor.getInt(cursor.getColumnIndexOrThrow(ImageColumns._ID));
-		final PhotoSelection upload = new MediaStorePhotoUpload(id);
+		final PhotoSelection upload = new MediaStorePhotoUpload(mContentUri, id);
 		iv.requestThumbnail(upload,false);
 
 		view.setTag(upload);

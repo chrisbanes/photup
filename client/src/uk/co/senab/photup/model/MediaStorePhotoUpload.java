@@ -12,7 +12,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.provider.MediaStore.Images.Thumbnails;
 import android.util.Log;
 
@@ -24,22 +23,24 @@ import com.lightbox.android.photoprocessing.utils.FileUtils;
 public class MediaStorePhotoUpload extends PhotoSelection {
 
 	private final long mId;
+	private final Uri mContentUri;
 
-	public MediaStorePhotoUpload(long id) {
+	public MediaStorePhotoUpload(Uri contentUri, long id) {
+		mContentUri = contentUri;
 		mId = id;
 	}
 
 	public Uri getOriginalPhotoUri() {
-		return Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, String.valueOf(mId));
+		return Uri.withAppendedPath(mContentUri, String.valueOf(mId));
 	}
 
 	public Bitmap getThumbnailImage(Context context) {
 		final int kind = context.getResources().getBoolean(R.bool.load_mini_thumbnails) ? Thumbnails.MINI_KIND
 				: Thumbnails.MICRO_KIND;
-		
+
 		BitmapFactory.Options opts = new BitmapFactory.Options();
 		opts.inSampleSize = 2;
-		
+
 		try {
 			return Thumbnails.getThumbnail(context.getContentResolver(), mId, kind, opts);
 		} catch (Exception e) {

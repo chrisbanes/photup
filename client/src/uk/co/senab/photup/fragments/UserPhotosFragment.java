@@ -2,6 +2,7 @@ package uk.co.senab.photup.fragments;
 
 import java.io.File;
 
+import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.Utils;
@@ -71,7 +72,8 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 		}
 	}
 
-	static final int LOADER_USER_PHOTOS = 0x01;
+	static final int LOADER_USER_PHOTOS_EXTERNAL = 0x01;
+	static final int LOADER_USER_PHOTOS_INTERNAL = 0x02;
 
 	private MergeAdapter mAdapter;
 	private PhotosCursorAdapter mPhotoCursorAdapter;
@@ -107,7 +109,7 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 		mAdapter = new MergeAdapter();
 		mAdapter.addAdapter(new CameraBaseAdapter(getActivity()));
 
-		getLoaderManager().initLoader(LOADER_USER_PHOTOS, null, this);
+		getLoaderManager().initLoader(LOADER_USER_PHOTOS_EXTERNAL, null, this);
 		mPhotoCursorAdapter = new PhotosCursorAdapter(getActivity(), R.layout.item_grid_photo, null, true);
 		mAdapter.addAdapter(mPhotoCursorAdapter);
 
@@ -123,8 +125,11 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
 		String[] projection = { Images.Media._ID, Images.Media.MINI_THUMB_MAGIC };
 
-		CursorLoader cursorLoader = new CursorLoader(getActivity(), Images.Media.EXTERNAL_CONTENT_URI, projection,
-				Images.Media.MINI_THUMB_MAGIC + " IS NOT NULL", null, Images.Media.DATE_ADDED + " desc");
+		final Uri contentUri = (id == LOADER_USER_PHOTOS_EXTERNAL) ? Images.Media.EXTERNAL_CONTENT_URI
+				: Images.Media.INTERNAL_CONTENT_URI;
+
+		CursorLoader cursorLoader = new CursorLoader(getActivity(), contentUri, projection, null, null,
+				Images.Media.DATE_ADDED + " desc");
 
 		return cursorLoader;
 	}
@@ -169,6 +174,32 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 	}
 
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+		switch (loader.getId()) {
+			case LOADER_USER_PHOTOS_EXTERNAL:
+				if (Constants.DEBUG) {
+					Log.d("UserPhotosFragment", "External Cursor Count: " + data.getCount());
+				}
+				if (data.getCount() == 0) {
+					getLoaderManager().destroyLoader(loader.getId());
+
+					if (Constants.DEBUG) {
+						Log.d("UserPhotosFragment", "Trying Internal Storage");
+					}
+					getLoaderManager().initLoader(LOADER_USER_PHOTOS_INTERNAL, null, this);
+					return;
+				}
+
+				mPhotoCursorAdapter.setContentUri(Images.Media.EXTERNAL_CONTENT_URI);
+				break;
+
+			case LOADER_USER_PHOTOS_INTERNAL:
+				if (Constants.DEBUG) {
+					Log.d("UserPhotosFragment", "Internal Cursor Count: " + data.getCount());
+				}
+				mPhotoCursorAdapter.setContentUri(Images.Media.INTERNAL_CONTENT_URI);
+				break;
+		}
+
 		mPhotoCursorAdapter.swapCursor(data);
 	}
 
