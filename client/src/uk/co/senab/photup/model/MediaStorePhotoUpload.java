@@ -10,16 +10,16 @@ import uk.co.senab.photup.R;
 import uk.co.senab.photup.Utils;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images.Thumbnails;
 import android.util.Log;
-import android.view.Window;
 
 import com.lightbox.android.photoprocessing.PhotoProcessing;
 import com.lightbox.android.photoprocessing.utils.BitmapUtils;
-import com.lightbox.android.photoprocessing.utils.FileUtils;
 import com.lightbox.android.photoprocessing.utils.BitmapUtils.BitmapSize;
+import com.lightbox.android.photoprocessing.utils.FileUtils;
 
 public class MediaStorePhotoUpload extends PhotoUpload {
 
@@ -36,8 +36,12 @@ public class MediaStorePhotoUpload extends PhotoUpload {
 	public Bitmap getThumbnailImage(Context context) {
 		final int kind = context.getResources().getBoolean(R.bool.load_mini_thumbnails) ? Thumbnails.MINI_KIND
 				: Thumbnails.MICRO_KIND;
+		
+		BitmapFactory.Options opts = new BitmapFactory.Options();
+		opts.inSampleSize = 2;
+		
 		try {
-			return Thumbnails.getThumbnail(context.getContentResolver(), mId, kind, null);
+			return Thumbnails.getThumbnail(context.getContentResolver(), mId, kind, opts);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
