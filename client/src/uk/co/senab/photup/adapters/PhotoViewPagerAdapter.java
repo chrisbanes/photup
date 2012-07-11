@@ -59,7 +59,6 @@ public class PhotoViewPagerAdapter extends PagerAdapter {
 		PhotoTagItemLayout view = new PhotoTagItemLayout(mContext, upload, mFriendPickRequestListener);
 
 		MultiTouchImageView imageView = view.getImageView();
-		imageView.setFadeInDrawables(true);
 		imageView.requestFullSize(upload, true);
 		imageView.setSingleTapListener(mTapListener);
 
