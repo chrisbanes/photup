@@ -192,7 +192,7 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 		mMode = intent.getIntExtra(EXTRA_MODE, MODE_ALL_VALUE);
 
 		mViewPager = (ViewPager) findViewById(R.id.vp_photos);
-		mViewPager.setOffscreenPageLimit(1);
+		mViewPager.setOffscreenPageLimit(2);
 		mViewPager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.viewpager_margin));
 		mViewPager.setOnPageChangeListener(this);
 
