@@ -30,7 +30,6 @@ import android.view.animation.Animation.AnimationListener;
 import android.widget.AbsoluteLayout;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Checkable;
 import android.widget.GridView;
 
 import com.actionbarsherlock.app.SherlockFragment;
@@ -93,11 +92,13 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		switch (requestCode) {
-			case RESULT_CAMERA:
-				Utils.sendMediaStoreBroadcast(getActivity(), mPhotoFile);
-				mPhotoFile = null;
-				break;
+		if (requestCode == Activity.RESULT_OK) {
+			switch (requestCode) {
+				case RESULT_CAMERA:
+					Utils.sendMediaStoreBroadcast(getActivity(), mPhotoFile);
+					mPhotoFile = null;
+					return;
+			}
 		}
 
 		super.onActivityResult(requestCode, resultCode, data);
@@ -153,19 +154,10 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 	}
 
 	public void onItemClick(AdapterView<?> gridView, View view, int position, long id) {
-		PhotoSelection object = (PhotoSelection) view.getTag();
-
-		if (null != object) {
-			Checkable checkableView = (Checkable) view;
-
-			if (checkableView.isChecked()) {
-				mPhotoSelectionController.removePhotoSelection(object);
-			} else {
-				mPhotoSelectionController.addPhotoSelection(object);
-				animateViewToButton(view);
-			}
-		} else {
+		if (view.getId() == R.id.iv_camera_button) {
 			takePhoto();
+		} else {
+			// TODO Open Photo Viewer!!!
 		}
 	}
 

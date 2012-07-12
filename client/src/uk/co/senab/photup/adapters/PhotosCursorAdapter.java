@@ -37,9 +37,9 @@ public class PhotosCursorAdapter extends ResourceCursorAdapter {
 
 		long id = cursor.getInt(cursor.getColumnIndexOrThrow(ImageColumns._ID));
 		final PhotoSelection upload = new MediaStorePhotoUpload(mContentUri, id);
+		
 		iv.requestThumbnail(upload,false);
-
-		view.setTag(upload);
+		layout.setPhotoSelection(upload);
 
 		if (null != mController) {
 			((Checkable) view).setChecked(mController.isPhotoUploadSelected(upload));

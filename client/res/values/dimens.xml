@@ -12,6 +12,7 @@
     <dimen name="viewpager_margin">4dp</dimen>
     <dimen name="photo_tag_textSize">14sp</dimen>
     
+    <dimen name="button_selection_dimension">36dp</dimen>
     <dimen name="form_item_height">48dp</dimen>
 
 </resources>
