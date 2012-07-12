@@ -10,6 +10,7 @@ import uk.co.senab.photup.adapters.CameraBaseAdapter;
 import uk.co.senab.photup.adapters.PhotosCursorAdapter;
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
 import uk.co.senab.photup.model.PhotoSelection;
+import uk.co.senab.photup.views.PhotoItemLayout;
 import uk.co.senab.photup.views.PhotupImageView;
 import android.app.Activity;
 import android.content.Intent;
@@ -200,7 +201,20 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 	}
 
 	public void onPhotoSelectionChanged(PhotoSelection upload, boolean added) {
-		mAdapter.notifyDataSetChanged();
+		for (int i = 0, z = mPhotoGrid.getChildCount(); i < z; i++) {
+			View view = mPhotoGrid.getChildAt(i);
+
+			if (view instanceof PhotoItemLayout) {
+				PhotoItemLayout layout = (PhotoItemLayout) view;
+				if (upload == layout.getPhotoSelection()) {
+					if (Constants.DEBUG) {
+						Log.d("UserPhotosFragment", "Found View, setChecked");
+					}
+					layout.setChecked(added);
+					break;
+				}
+			}
+		}
 	}
 
 	private void takePhoto() {

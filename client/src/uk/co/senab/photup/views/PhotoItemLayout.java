@@ -34,11 +34,10 @@ public class PhotoItemLayout extends CheckableFrameLayout implements View.OnClic
 		mButton = new ImageView(context);
 		mButton.setScaleType(ScaleType.CENTER);
 		mButton.setOnClickListener(this);
+		mButton.setImageResource(R.drawable.ic_btn_selection_normal);
 
 		int dimension = getResources().getDimensionPixelSize(R.dimen.button_selection_dimension);
 		addView(mButton, new FrameLayout.LayoutParams(dimension, dimension, Gravity.RIGHT | Gravity.TOP));
-
-		setChecked(false);
 	}
 
 	public PhotupImageView getImageView() {
@@ -48,8 +47,13 @@ public class PhotoItemLayout extends CheckableFrameLayout implements View.OnClic
 	public void onClick(View v) {
 		if (null != mSelection) {
 
+			final boolean wasChecked = isChecked();
+
+			// Toggle check to show new state
+			toggle();
+
 			Animation anim;
-			if (isChecked()) {
+			if (wasChecked) {
 				mController.removePhotoSelection(mSelection);
 				anim = AnimationUtils.loadAnimation(getContext(), R.anim.photo_selection_removed);
 			} else {
@@ -57,17 +61,16 @@ public class PhotoItemLayout extends CheckableFrameLayout implements View.OnClic
 				anim = AnimationUtils.loadAnimation(getContext(), R.anim.photo_selection_added);
 			}
 
-			// Toggle check to show new state
-			toggle();
-
 			v.startAnimation(anim);
 		}
 	}
 
 	@Override
 	public void setChecked(boolean b) {
-		super.setChecked(b);
-		mButton.setImageResource(b ? R.drawable.ic_btn_selection_checked : R.drawable.ic_btn_selection_normal);
+		if (isChecked() != b) {
+			super.setChecked(b);
+			mButton.setImageResource(b ? R.drawable.ic_btn_selection_checked : R.drawable.ic_btn_selection_normal);
+		}
 	}
 
 	public PhotoSelection getPhotoSelection() {
