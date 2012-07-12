@@ -2,6 +2,7 @@ package uk.co.senab.photup.views;
 
 import uk.co.senab.bitmapcache.R;
 import uk.co.senab.photup.Constants;
+import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.listeners.OnFriendPickedListener;
 import uk.co.senab.photup.listeners.OnPhotoTagsChangedListener;
 import uk.co.senab.photup.listeners.OnPhotoTapListener;
@@ -31,6 +32,7 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 
 	private PhotoTag mFriendRequestTag;
 	private final MultiTouchImageView mImageView;
+	private final CheckableImageView mButton;
 
 	private final LayoutInflater mLayoutInflater;
 
@@ -40,10 +42,13 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 	private final AbsoluteLayout mTagLayout;
 
 	private final PhotoSelection mUpload;
+	private final PhotoUploadController mController;
 
-	public PhotoTagItemLayout(Context context, PhotoSelection upload, OnPickFriendRequestListener friendRequestListener) {
+	public PhotoTagItemLayout(Context context, PhotoUploadController controller, PhotoSelection upload,
+			OnPickFriendRequestListener friendRequestListener) {
 		super(context);
 
+		mController = controller;
 		mPickFriendListener = friendRequestListener;
 		mUpload = upload;
 		mUpload.setTagChangedListener(this);
@@ -60,6 +65,12 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 
 		mPhotoTagInAnimation = AnimationUtils.loadAnimation(context, R.anim.tag_fade_in);
 		mPhotoTagOutAnimation = AnimationUtils.loadAnimation(context, R.anim.tag_fade_out);
+
+		mButton = (CheckableImageView) LayoutInflater.from(context).inflate(R.layout.layout_check_button_lrg, this,
+				false);
+		mButton.setOnClickListener(this);
+		addView(mButton);
+		mButton.setChecked(mController.isPhotoUploadSelected(upload));
 
 		addPhotoTags();
 	}
@@ -78,6 +89,16 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 			case R.id.tv_tag_label:
 				mFriendRequestTag = tag;
 				mPickFriendListener.onPickFriendRequested(this, mUpload.getTaggedFriends());
+				break;
+			case R.id.iv_large_selection_btn:
+				mButton.toggle();
+
+				// Update the controller
+				updateController();
+
+				Animation anim = AnimationUtils.loadAnimation(getContext(),
+						mButton.isChecked() ? R.anim.photo_selection_added : R.anim.photo_selection_removed);
+				v.startAnimation(anim);
 				break;
 		}
 	}
@@ -208,5 +229,13 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 			childHeightSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
 		}
 		child.measure(childWidthSpec, childHeightSpec);
+	}
+
+	void updateController() {
+		if (mButton.isChecked()) {
+			mController.addPhotoSelection(mUpload);
+		} else {
+			mController.removePhotoSelection(mUpload);
+		}
 	}
 }

@@ -40,6 +40,10 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 		OnSingleTapListener, OnCheckedChangeListener, OnPageChangeListener, OnPickFriendRequestListener {
 
 	public static final String EXTRA_POSITION = "extra_position";
+	public static final String EXTRA_MODE = "extra_mode";
+
+	public static int MODE_ALL_VALUE = 100;
+	public static int MODE_SELECTED_VALUE = 101;
 
 	class PhotoRemoveAnimListener implements AnimationListener {
 		private final View mView;
@@ -78,12 +82,12 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 	private FiltersRadioGroup mFilterGroup;
 
 	private Animation mFadeOutAnimation;
-
 	private PhotoUploadController mController;
-
 	private FriendsListFragment mFriendsFragment;
 
-	private boolean mIgnoreCheckCallback = false;
+	private boolean mIgnoreFilterCheckCallback = false;
+
+	private int mMode = MODE_SELECTED_VALUE;
 
 	@Override
 	public void onBackPressed() {
@@ -95,7 +99,7 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 	}
 
 	public void onCheckedChanged(RadioGroup group, int checkedId) {
-		if (!mIgnoreCheckCallback) {
+		if (!mIgnoreFilterCheckCallback) {
 			PhotoTagItemLayout currentView = (PhotoTagItemLayout) getCurrentView();
 			MultiTouchImageView imageView = currentView.getImageView();
 
@@ -110,7 +114,6 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getSupportMenuInflater().inflate(R.menu.menu_photo_viewer, menu);
-
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -120,9 +123,6 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 		switch (item.getItemId()) {
 			case R.id.menu_filters:
 				showFiltersView();
-				return true;
-			case R.id.menu_remove:
-				mController.removePhotoSelection(getCurrentUpload());
 				return true;
 			case R.id.menu_caption:
 				showCaptionDialog();
@@ -162,9 +162,11 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 	}
 
 	public void onPhotoSelectionChanged(PhotoSelection upload, boolean added) {
-		View view = getCurrentView();
-		mFadeOutAnimation.setAnimationListener(new PhotoRemoveAnimListener(view));
-		view.startAnimation(mFadeOutAnimation);
+		if (mMode == MODE_SELECTED_VALUE) {
+			View view = getCurrentView();
+			mFadeOutAnimation.setAnimationListener(new PhotoRemoveAnimListener(view));
+			view.startAnimation(mFadeOutAnimation);
+		}
 	}
 
 	@Override
@@ -174,18 +176,21 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 		setContentView(R.layout.activity_photo_viewer);
 		mContentView = (ViewGroup) findViewById(R.id.fl_root);
 
-		mViewPager = (ViewPager) findViewById(R.id.vp_photos);
-		mViewPager.setOffscreenPageLimit(1);
-		mViewPager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.viewpager_margin));
-		mAdapter = new PhotoViewPagerAdapter(this, this, this);
-		mViewPager.setAdapter(mAdapter);
-		mAdapter.notifyDataSetChanged();
-		mViewPager.setOnPageChangeListener(this);
-
 		mController = PhotoUploadController.getFromContext(this);
 		mController.addPhotoSelectionListener(this);
 
 		final Intent intent = getIntent();
+		mMode = intent.getIntExtra(EXTRA_MODE, MODE_SELECTED_VALUE);
+
+		mViewPager = (ViewPager) findViewById(R.id.vp_photos);
+		mViewPager.setOffscreenPageLimit(1);
+		mViewPager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.viewpager_margin));
+		mViewPager.setOnPageChangeListener(this);
+
+		mAdapter = new PhotoViewPagerAdapter(this, this, this);
+		mViewPager.setAdapter(mAdapter);
+		mAdapter.notifyDataSetChanged();
+
 		final int requestedPosition = intent.getIntExtra(EXTRA_POSITION, 0);
 		if (mAdapter.getCount() > requestedPosition) {
 			if (mViewPager.getCurrentItem() != requestedPosition) {
@@ -196,7 +201,6 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 		}
 
 		mFadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.photo_fade_out);
-
 		mFriendsFragment = new FriendsListFragment();
 	}
 
@@ -289,9 +293,9 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 	}
 
 	private void updateFiltersView() {
-		mIgnoreCheckCallback = true;
+		mIgnoreFilterCheckCallback = true;
 		mFilterGroup.setPhotoUpload(mAdapter.getItem(mViewPager.getCurrentItem()));
-		mIgnoreCheckCallback = false;
+		mIgnoreFilterCheckCallback = false;
 	}
 
 	public void onPickFriendRequested(OnFriendPickedListener listener, Set<FbUser> excludeSet) {

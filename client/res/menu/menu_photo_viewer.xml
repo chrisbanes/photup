@@ -9,9 +9,5 @@
         android:id="@+id/menu_filters"
         android:showAsAction="always"
         android:title="@string/photo_effects"/>
-    <item
-        android:id="@+id/menu_remove"
-        android:showAsAction="always"
-        android:title="@string/photo_remove"/>
 
 </menu>
