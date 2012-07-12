@@ -93,13 +93,18 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == Activity.RESULT_OK) {
-			switch (requestCode) {
-				case RESULT_CAMERA:
+		switch (requestCode) {
+			case RESULT_CAMERA:
+				if (resultCode == Activity.RESULT_OK) {
 					Utils.sendMediaStoreBroadcast(getActivity(), mPhotoFile);
-					mPhotoFile = null;
-					return;
-			}
+				} else {
+					if (Constants.DEBUG) {
+						Log.d("UserPhotosFragment", "Deleting Photo File");
+					}
+					mPhotoFile.delete();
+				}
+				mPhotoFile = null;
+				return;
 		}
 
 		super.onActivityResult(requestCode, resultCode, data);
