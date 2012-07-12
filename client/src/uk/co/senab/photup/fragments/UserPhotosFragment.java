@@ -206,7 +206,7 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 
 			if (view instanceof PhotoItemLayout) {
 				PhotoItemLayout layout = (PhotoItemLayout) view;
-				if (upload == layout.getPhotoSelection()) {
+				if (upload.equals(layout.getPhotoSelection())) {
 					if (Constants.DEBUG) {
 						Log.d("UserPhotosFragment", "Found View, setChecked");
 					}

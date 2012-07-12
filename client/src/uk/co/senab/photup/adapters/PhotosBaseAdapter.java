@@ -54,6 +54,7 @@ public class PhotosBaseAdapter extends BaseAdapter {
 		final PhotoSelection upload = getItem(position);
 
 		iv.requestThumbnail(upload, true);
+		layout.setAnimateWhenChecked(false);
 		layout.setPhotoSelection(upload);
 		layout.setChecked(true);
 

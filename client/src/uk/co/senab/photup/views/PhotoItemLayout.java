@@ -11,14 +11,15 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 
 public class PhotoItemLayout extends CheckableFrameLayout implements View.OnClickListener {
 
 	private final PhotupImageView mImageView;
-	private final ImageView mButton;
+	private final CheckableImageView mButton;
 	private PhotoSelection mSelection;
+
+	private boolean mAnimateCheck = true;
 
 	private PhotoUploadController mController;
 
@@ -31,10 +32,10 @@ public class PhotoItemLayout extends CheckableFrameLayout implements View.OnClic
 		addView(mImageView, FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
 		mImageView.setScaleType(ScaleType.CENTER_CROP);
 
-		mButton = new ImageView(context);
+		mButton = new CheckableImageView(context);
 		mButton.setScaleType(ScaleType.CENTER);
 		mButton.setOnClickListener(this);
-		mButton.setImageResource(R.drawable.ic_btn_selection_normal);
+		mButton.setImageResource(R.drawable.btn_selection);
 
 		int dimension = getResources().getDimensionPixelSize(R.dimen.button_selection_dimension);
 		addView(mButton, new FrameLayout.LayoutParams(dimension, dimension, Gravity.RIGHT | Gravity.TOP));
@@ -44,33 +45,32 @@ public class PhotoItemLayout extends CheckableFrameLayout implements View.OnClic
 		return mImageView;
 	}
 
+	public void setAnimateWhenChecked(boolean animate) {
+		mAnimateCheck = animate;
+	}
+
 	public void onClick(View v) {
 		if (null != mSelection) {
-
-			final boolean wasChecked = isChecked();
 
 			// Toggle check to show new state
 			toggle();
 
-			Animation anim;
-			if (wasChecked) {
-				mController.removePhotoSelection(mSelection);
-				anim = AnimationUtils.loadAnimation(getContext(), R.anim.photo_selection_removed);
-			} else {
-				mController.addPhotoSelection(mSelection);
-				anim = AnimationUtils.loadAnimation(getContext(), R.anim.photo_selection_added);
-			}
+			// Update the controller
+			updateController();
 
-			v.startAnimation(anim);
+			// Show animate if we've been set to
+			if (mAnimateCheck) {
+				Animation anim = AnimationUtils.loadAnimation(getContext(), isChecked() ? R.anim.photo_selection_added
+						: R.anim.photo_selection_removed);
+				v.startAnimation(anim);
+			}
 		}
 	}
 
 	@Override
-	public void setChecked(boolean b) {
-		if (isChecked() != b) {
-			super.setChecked(b);
-			mButton.setImageResource(b ? R.drawable.ic_btn_selection_checked : R.drawable.ic_btn_selection_normal);
-		}
+	public void setChecked(final boolean b) {
+		super.setChecked(b);
+		mButton.setChecked(b);
 	}
 
 	public PhotoSelection getPhotoSelection() {
@@ -78,7 +78,18 @@ public class PhotoItemLayout extends CheckableFrameLayout implements View.OnClic
 	}
 
 	public void setPhotoSelection(PhotoSelection selection) {
-		mSelection = selection;
+		if (mSelection != selection) {
+			mButton.clearAnimation();
+			mSelection = selection;
+		}
+	}
+
+	void updateController() {
+		if (isChecked()) {
+			mController.addPhotoSelection(mSelection);
+		} else {
+			mController.removePhotoSelection(mSelection);
+		}
 	}
 
 }
