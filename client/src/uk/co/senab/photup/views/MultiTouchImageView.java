@@ -133,16 +133,17 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 		if (null != mSingleTapListener && mSingleTapListener.onSingleTap(e)) {
 			return true;
 		}
-		
+
 		if (null != mPhotoTapListener) {
-
 			final RectF displayRect = getDisplayRect();
-			final float x = e.getX(), y = e.getY();
 
-			if (displayRect.contains(x, y)) {
-				mPhotoTapListener.onNewPhotoTagTap(new PhotoTag(x - displayRect.left, y - displayRect.top, displayRect
-						.width(), displayRect.height()));
-				return true;
+			if (null != displayRect) {
+				final float x = e.getX(), y = e.getY();
+				if (displayRect.contains(x, y)) {
+					mPhotoTapListener.onNewPhotoTagTap(new PhotoTag(x - displayRect.left, y - displayRect.top,
+							displayRect.width(), displayRect.height()));
+					return true;
+				}
 			}
 		}
 		return false;
@@ -224,7 +225,7 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 	public void setPhotoTapListener(OnPhotoTapListener listener) {
 		mPhotoTapListener = listener;
 	}
-	
+
 	public void setSingleTapListener(OnSingleTapListener listener) {
 		mSingleTapListener = listener;
 	}
