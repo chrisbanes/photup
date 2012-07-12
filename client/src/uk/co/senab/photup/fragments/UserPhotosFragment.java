@@ -1,12 +1,10 @@
 package uk.co.senab.photup.fragments;
 
 import java.io.File;
-import java.util.ArrayList;
 
 import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotoViewerActivity;
-import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.Utils;
 import uk.co.senab.photup.adapters.CameraBaseAdapter;
@@ -17,14 +15,9 @@ import uk.co.senab.photup.views.PhotoItemLayout;
 import uk.co.senab.photup.views.PhotupImageView;
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.provider.MediaStore.Images;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,8 +33,8 @@ import com.commonsware.cwac.merge.MergeAdapter;
 import com.jakewharton.activitycompat2.ActivityCompat2;
 import com.jakewharton.activitycompat2.ActivityOptionsCompat2;
 
-public class UserPhotosFragment extends SherlockFragment implements LoaderManager.LoaderCallbacks<Cursor>,
-		OnItemClickListener, OnPhotoSelectionChangedListener {
+public class UserPhotosFragment extends SherlockFragment implements OnItemClickListener,
+		OnPhotoSelectionChangedListener {
 
 	static final int RESULT_CAMERA = 101;
 	static final String SAVE_PHOTO_URI = "camera_photo_uri";
@@ -127,20 +120,6 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 				mPhotoFile = new File(savedInstanceState.getString(SAVE_PHOTO_URI));
 			}
 		}
-
-		getLoaderManager().initLoader(LOADER_USER_PHOTOS_EXTERNAL, null, this);
-	}
-
-	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
-		String[] projection = { Images.Media._ID, Images.Media.MINI_THUMB_MAGIC };
-
-		final Uri contentUri = (id == LOADER_USER_PHOTOS_EXTERNAL) ? Images.Media.EXTERNAL_CONTENT_URI
-				: Images.Media.INTERNAL_CONTENT_URI;
-
-		CursorLoader cursorLoader = new CursorLoader(getActivity(), contentUri, projection, null, null,
-				Images.Media.DATE_ADDED + " desc");
-
-		return cursorLoader;
 	}
 
 	@Override
@@ -168,54 +147,17 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 					Utils.drawViewOntoBitmap(view), 0, 0);
 
 			Intent intent = new Intent(getActivity(), PhotoViewerActivity.class);
-			intent.putExtra(PhotoViewerActivity.EXTRA_POSITION, position);
+			
+			// Need take Camera icon into account so minus 1
+			intent.putExtra(PhotoViewerActivity.EXTRA_POSITION, position - 1); 
 			intent.putExtra(PhotoViewerActivity.EXTRA_MODE, PhotoViewerActivity.MODE_ALL_VALUE);
 
 			ActivityCompat2.startActivity(getActivity(), intent, options.toBundle());
 		}
 	}
 
-	public void onLoaderReset(Loader<Cursor> loader) {
-	}
-
-	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
-		Uri contentUri;
-
-		switch (loader.getId()) {
-			case LOADER_USER_PHOTOS_INTERNAL:
-				if (Constants.DEBUG) {
-					Log.d("UserPhotosFragment", "Internal Cursor Count: " + data.getCount());
-				}
-				contentUri = Images.Media.INTERNAL_CONTENT_URI;
-				break;
-
-			case LOADER_USER_PHOTOS_EXTERNAL:
-			default:
-				if (Constants.DEBUG) {
-					Log.d("UserPhotosFragment", "External Cursor Count: " + data.getCount());
-				}
-				if (data.getCount() == 0) {
-					getLoaderManager().destroyLoader(loader.getId());
-
-					if (Constants.DEBUG) {
-						Log.d("UserPhotosFragment", "Trying Internal Storage");
-					}
-					getLoaderManager().initLoader(LOADER_USER_PHOTOS_INTERNAL, null, this);
-					return;
-				}
-
-				contentUri = Images.Media.EXTERNAL_CONTENT_URI;
-				break;
-		}
-
-		ArrayList<PhotoSelection> selection = Utils.cursorToSelectionList(contentUri, data);
-		PhotupApplication.getApplication(getActivity()).setMediaPhotoSelections(selection);
-		mPhotoAdapter.notifyDataSetChanged();
-	}
-
 	public void onSelectionsAddedToUploads() {
-		mAdapter.notifyDataSetChanged();
+		mPhotoAdapter.refresh();
 	}
 
 	public void onPhotoSelectionChanged(PhotoSelection upload, boolean added) {

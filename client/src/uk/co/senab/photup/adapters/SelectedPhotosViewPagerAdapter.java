@@ -31,7 +31,8 @@ public class SelectedPhotosViewPagerAdapter extends PagerAdapter {
 
 		PhotupApplication app = PhotupApplication.getApplication(context);
 		mController = app.getPhotoUploadController();
-		mItems = refreshData(context);
+		
+		refresh();
 	}
 
 	@Override
@@ -72,14 +73,17 @@ public class SelectedPhotosViewPagerAdapter extends PagerAdapter {
 		return view == ((View) object);
 	}
 
-	@Override
-	public void notifyDataSetChanged() {
-		mItems = refreshData(mContext);
-		super.notifyDataSetChanged();
+	public void refresh() {
+		setData(mController.getSelectedPhotoUploads());
 	}
 
-	public List<PhotoSelection> refreshData(Context context) {
-		return mController.getSelectedPhotoUploads();
+	protected void setData(List<PhotoSelection> selection) {
+		mItems = selection;
+		notifyDataSetChanged();
+	}
+	
+	protected Context getContext() {
+		return mContext;
 	}
 
 }

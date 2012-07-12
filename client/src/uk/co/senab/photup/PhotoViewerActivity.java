@@ -63,7 +63,7 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 				View view = (View) mView.getParent();
 				view.post(new Runnable() {
 					public void run() {
-						mAdapter.notifyDataSetChanged();
+						mAdapter.refresh();
 					}
 				});
 			}
@@ -159,7 +159,7 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 	}
 
 	public void onSelectionsAddedToUploads() {
-		mAdapter.notifyDataSetChanged();
+		mAdapter.refresh();
 	}
 
 	public void onPhotoSelectionChanged(PhotoSelection upload, boolean added) {
@@ -195,7 +195,6 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 		}
 
 		mViewPager.setAdapter(mAdapter);
-		mAdapter.notifyDataSetChanged();
 
 		final int requestedPosition = intent.getIntExtra(EXTRA_POSITION, 0);
 		if (mAdapter.getCount() > requestedPosition) {

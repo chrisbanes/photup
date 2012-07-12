@@ -15,6 +15,7 @@ import org.acra.annotation.ReportsCrashes;
 import uk.co.senab.bitmapcache.BitmapLruCache;
 import uk.co.senab.photup.AlbumsAsyncTask.AlbumsResultListener;
 import uk.co.senab.photup.FriendsAsyncTask.FriendsResultListener;
+import uk.co.senab.photup.MediaStoreAsyncTask.MediaStoreResultListener;
 import uk.co.senab.photup.facebook.Session;
 import uk.co.senab.photup.model.Album;
 import uk.co.senab.photup.model.FbUser;
@@ -25,7 +26,8 @@ import android.view.Display;
 import android.view.WindowManager;
 
 @ReportsCrashes(formKey = Constants.ACRA_GOOGLE_DOC_ID, mode = ReportingInteractionMode.TOAST, resToastText = R.string.crash_toast)
-public class PhotupApplication extends Application implements FriendsResultListener, AlbumsResultListener {
+public class PhotupApplication extends Application implements FriendsResultListener, AlbumsResultListener,
+		MediaStoreResultListener {
 
 	static final int EXECUTOR_CORE_POOL_SIZE_PER_CORE = 1;
 	static final int EXECUTOR_MAX_POOL_SIZE_PER_CORE = 4;
@@ -38,7 +40,9 @@ public class PhotupApplication extends Application implements FriendsResultListe
 
 	private AlbumsResultListener mAlbumsListener;
 	private ArrayList<Album> mAlbums;
-	
+
+	private MediaStoreAsyncTask mMediaStoreAsyncTask;
+	private MediaStoreResultListener mMediaStoreListener;
 	private final ArrayList<PhotoSelection> mMediaStorePhotos = new ArrayList<PhotoSelection>();
 
 	private final PhotoUploadController mPhotoController = new PhotoUploadController();
@@ -156,14 +160,30 @@ public class PhotupApplication extends Application implements FriendsResultListe
 			}
 		}
 	}
-	
-	public void setMediaPhotoSelections(List<PhotoSelection> selection) {
-		mMediaStorePhotos.clear();
-		mMediaStorePhotos.addAll(selection);
-	}
-	
-	public List<PhotoSelection> getMediaStorePhotos() {
+
+	public List<PhotoSelection> getMediaStorePhotos(MediaStoreResultListener listener) {
+		if (null == mMediaStoreAsyncTask) {
+			mMediaStoreListener = listener;
+			mMediaStoreAsyncTask = new MediaStoreAsyncTask(this, this);
+			mMediaStoreAsyncTask.execute();
+		} else {
+			listener.onPhotosLoaded(new ArrayList<PhotoSelection>(mMediaStorePhotos));
+		}
+
 		return new ArrayList<PhotoSelection>(mMediaStorePhotos);
+	}
+
+	public void onPhotosLoaded(List<PhotoSelection> friends) {
+		mMediaStorePhotos.clear();
+
+		if (null != friends) {
+			mMediaStorePhotos.addAll(friends);
+
+			if (null != mMediaStoreListener && mMediaStoreListener != this) {
+				mMediaStoreListener.onPhotosLoaded(new ArrayList<PhotoSelection>(mMediaStorePhotos));
+				mMediaStoreListener = null;
+			}
+		}
 	}
 
 }
