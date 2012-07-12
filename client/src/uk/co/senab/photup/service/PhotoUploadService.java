@@ -268,7 +268,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 	private void startUpload(PhotoSelection upload) {
 		trimCache();
-		updateNotification();
+		updateNotification(upload);
 		mExecutor.submit(new UploadPhotoRunnable(this, mHandler, upload, mSession, mAlbumId, mUploadQuality));
 	}
 
@@ -306,24 +306,28 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		PhotupApplication.getApplication(this).getImageCache().trimMemory();
 	}
 
-	void updateNotification() {
-		String text = getString(R.string.notification_uploading_photo, mNumberUploaded + 1);
-
-		mNotificationBuilder.setProgress(0, 0, true);
-		mNotificationBuilder.setWhen(System.currentTimeMillis());
-		mNotificationBuilder.setContentText(text);
-		mNotificationBuilder.setTicker(text);
-
-		mNotificationMgr.notify(NOTIFICATION_ID, mNotificationBuilder.build());
-	}
-
 	void updateNotification(final PhotoSelection upload) {
-		String text = getString(R.string.notification_uploading_photo_progress, mNumberUploaded + 1,
-				upload.getUploadProgress());
-		
-		// TODO Fix ordering when Jake updates lib
-		mNotificationBuilder.setProgress(upload.getUploadProgress(), 100, false);
-		mNotificationBuilder.setContentText(text);
+		String text;
+
+		switch (upload.getState()) {
+			case PhotoUpload.STATE_WAITING:
+				text = getString(R.string.notification_uploading_photo, mNumberUploaded + 1);
+				mNotificationBuilder.setProgress(0, 0, true);
+				mNotificationBuilder.setWhen(System.currentTimeMillis());
+				mNotificationBuilder.setContentText(text);
+				mNotificationBuilder.setTicker(text);
+				break;
+
+			case PhotoUpload.STATE_UPLOAD_IN_PROGRESS:
+				text = getString(R.string.notification_uploading_photo_progress, mNumberUploaded + 1,
+						upload.getUploadProgress());
+
+				// TODO Fix ordering when Jake updates lib
+				mNotificationBuilder.setProgress(upload.getUploadProgress(), 100, false);
+				mNotificationBuilder.setContentText(text);
+				break;
+		}
+
 		mNotificationMgr.notify(NOTIFICATION_ID, mNotificationBuilder.build());
 	}
 
