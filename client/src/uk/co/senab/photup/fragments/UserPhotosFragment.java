@@ -28,7 +28,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
-import android.widget.AbsoluteLayout;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
@@ -78,11 +77,9 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 	private MergeAdapter mAdapter;
 	private PhotosCursorAdapter mPhotoCursorAdapter;
 
-	private AbsoluteLayout mAnimationLayout;
 	private GridView mPhotoGrid;
 
 	private PhotoUploadController mPhotoSelectionController;
-
 	private File mPhotoFile;
 
 	@Override
@@ -149,7 +146,6 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 		mPhotoGrid.setAdapter(mAdapter);
 		mPhotoGrid.setOnItemClickListener(this);
 
-		mAnimationLayout = (AbsoluteLayout) view.findViewById(R.id.al_animation);
 		return view;
 	}
 
@@ -240,30 +236,35 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 		super.onSaveInstanceState(outState);
 	}
 
-	private void animateViewToButton(View view) {
-		// New ImageView with Bitmap of View
-		PhotupImageView iv = new PhotupImageView(getActivity());
-		iv.setImageBitmap(Utils.drawViewOntoBitmap(view));
-
-		// Align it so that it's directly over the current View
-		AbsoluteLayout.LayoutParams lp = new AbsoluteLayout.LayoutParams(AbsoluteLayout.LayoutParams.WRAP_CONTENT,
-				AbsoluteLayout.LayoutParams.WRAP_CONTENT, view.getLeft(), view.getTop());
-		mAnimationLayout.addView(iv, lp);
-
-		int halfTabHeight = getResources().getDimensionPixelSize(R.dimen.abs__action_bar_default_height) / 2;
-		int midSecondTabX;
-
-		if (getSherlockActivity().getSupportActionBar().getTabCount() == 2) {
-			midSecondTabX = Math.round(mPhotoGrid.getWidth() * 0.75f);
-		} else {
-			midSecondTabX = mPhotoGrid.getWidth() / 2;
-		}
-
-		Animation animaton = Utils.createScaleAnimation(view, mPhotoGrid.getWidth(), mPhotoGrid.getHeight(),
-				midSecondTabX, mPhotoGrid.getTop() - halfTabHeight);
-		animaton.setAnimationListener(new ScaleAnimationListener(mAnimationLayout, iv));
-		iv.startAnimation(animaton);
-	}
+	// private void animateViewToButton(View view) {
+	// // New ImageView with Bitmap of View
+	// PhotupImageView iv = new PhotupImageView(getActivity());
+	// iv.setImageBitmap(Utils.drawViewOntoBitmap(view));
+	//
+	// // Align it so that it's directly over the current View
+	// AbsoluteLayout.LayoutParams lp = new
+	// AbsoluteLayout.LayoutParams(AbsoluteLayout.LayoutParams.WRAP_CONTENT,
+	// AbsoluteLayout.LayoutParams.WRAP_CONTENT, view.getLeft(), view.getTop());
+	// mAnimationLayout.addView(iv, lp);
+	//
+	// int halfTabHeight =
+	// getResources().getDimensionPixelSize(R.dimen.abs__action_bar_default_height)
+	// / 2;
+	// int midSecondTabX;
+	//
+	// if (getSherlockActivity().getSupportActionBar().getTabCount() == 2) {
+	// midSecondTabX = Math.round(mPhotoGrid.getWidth() * 0.75f);
+	// } else {
+	// midSecondTabX = mPhotoGrid.getWidth() / 2;
+	// }
+	//
+	// Animation animaton = Utils.createScaleAnimation(view,
+	// mPhotoGrid.getWidth(), mPhotoGrid.getHeight(),
+	// midSecondTabX, mPhotoGrid.getTop() - halfTabHeight);
+	// animaton.setAnimationListener(new
+	// ScaleAnimationListener(mAnimationLayout, iv));
+	// iv.startAnimation(animaton);
+	// }
 
 	public void onUploadsCleared() {
 		// NO-OP
