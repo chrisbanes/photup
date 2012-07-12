@@ -33,11 +33,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.facebook.android.Facebook;
+import com.jakewharton.notificationcompat2.NotificationCompat2;
 
 public class PhotoUploadService extends Service implements Handler.Callback {
 
@@ -216,7 +216,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	private UploadQuality mUploadQuality;
 
 	private NotificationManager mNotificationMgr;
-	private NotificationCompat.Builder mNotificationBuilder;
+	private NotificationCompat2.Builder mNotificationBuilder;
 
 	@Override
 	public void onCreate() {
@@ -247,7 +247,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 				// Update the upload progress on the main thread
 				PhotoSelection upload = (PhotoSelection) msg.obj;
 				upload.setUploadProgress(msg.arg1);
-				
+
 				updateNotification(upload);
 				return true;
 		}
@@ -288,7 +288,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 	private void startForeground() {
 		if (null == mNotificationBuilder) {
-			mNotificationBuilder = new NotificationCompat.Builder(this);
+			mNotificationBuilder = new NotificationCompat2.Builder(this);
 			mNotificationBuilder.setSmallIcon(R.drawable.ic_stat_upload);
 			mNotificationBuilder.setContentTitle(getString(R.string.app_name));
 			mNotificationBuilder.setOngoing(true);
@@ -299,7 +299,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 			mNotificationBuilder.setContentIntent(intent);
 		}
 
-		startForeground(NOTIFICATION_ID, mNotificationBuilder.getNotification());
+		startForeground(NOTIFICATION_ID, mNotificationBuilder.build());
 	}
 
 	private void trimCache() {
@@ -309,18 +309,22 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	void updateNotification() {
 		String text = getString(R.string.notification_uploading_photo, mNumberUploaded + 1);
 
+		mNotificationBuilder.setProgress(0, 0, true);
 		mNotificationBuilder.setWhen(System.currentTimeMillis());
 		mNotificationBuilder.setContentText(text);
 		mNotificationBuilder.setTicker(text);
 
-		mNotificationMgr.notify(NOTIFICATION_ID, mNotificationBuilder.getNotification());
+		mNotificationMgr.notify(NOTIFICATION_ID, mNotificationBuilder.build());
 	}
 
 	void updateNotification(final PhotoSelection upload) {
 		String text = getString(R.string.notification_uploading_photo_progress, mNumberUploaded + 1,
 				upload.getUploadProgress());
+		
+		// TODO Fix ordering when Jake updates lib
+		mNotificationBuilder.setProgress(upload.getUploadProgress(), 100, false);
 		mNotificationBuilder.setContentText(text);
-		mNotificationMgr.notify(NOTIFICATION_ID, mNotificationBuilder.getNotification());
+		mNotificationMgr.notify(NOTIFICATION_ID, mNotificationBuilder.build());
 	}
 
 	void finishedNotification() {
@@ -332,6 +336,6 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		mNotificationBuilder.setContentText(text);
 		mNotificationBuilder.setTicker(text);
 
-		mNotificationMgr.notify(NOTIFICATION_ID, mNotificationBuilder.getNotification());
+		mNotificationMgr.notify(NOTIFICATION_ID, mNotificationBuilder.build());
 	}
 }
