@@ -39,7 +39,8 @@ public class MainActivity extends Activity {
 
 	private void loginToFacebook() {
 		mFacebook = new Facebook(Constants.FACEBOOK_APP_ID);
-		mFacebook.authorize(this, Constants.FACEBOOK_PERMISSIONS, RESULT_FACEBOOK_AUTH, new DialogListener() {
+		mFacebook.authorize(this, Constants.FACEBOOK_PERMISSIONS, BuildConfig.DEBUG ? Facebook.FORCE_DIALOG_AUTH
+				: RESULT_FACEBOOK_AUTH, new DialogListener() {
 
 			public void onFacebookError(FacebookError e) {
 				e.printStackTrace();
@@ -98,7 +99,7 @@ public class MainActivity extends Activity {
 
 					Session session = new Session(mFacebook, id, name);
 					session.save(getApplicationContext());
-					
+
 					launchSelectionActivity();
 				} catch (JSONException e) {
 					e.printStackTrace();
