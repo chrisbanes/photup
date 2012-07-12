@@ -31,7 +31,7 @@ public class SelectedPhotosViewPagerAdapter extends PagerAdapter {
 
 		PhotupApplication app = PhotupApplication.getApplication(context);
 		mController = app.getPhotoUploadController();
-		
+
 		refresh();
 	}
 
@@ -59,6 +59,8 @@ public class SelectedPhotosViewPagerAdapter extends PagerAdapter {
 
 		PhotoTagItemLayout view = new PhotoTagItemLayout(mContext, mController, upload, mFriendPickRequestListener);
 
+		upload.setFaceDetectionListener(view);
+
 		MultiTouchImageView imageView = view.getImageView();
 		imageView.requestFullSize(upload, true);
 		imageView.setSingleTapListener(mTapListener);
@@ -81,7 +83,7 @@ public class SelectedPhotosViewPagerAdapter extends PagerAdapter {
 		mItems = selection;
 		notifyDataSetChanged();
 	}
-	
+
 	protected Context getContext() {
 		return mContext;
 	}

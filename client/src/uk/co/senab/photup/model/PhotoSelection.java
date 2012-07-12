@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import uk.co.senab.photup.Constants;
+import uk.co.senab.photup.listeners.OnFaceDetectionListener;
 import uk.co.senab.photup.listeners.OnPhotoTagsChangedListener;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -27,6 +28,7 @@ public abstract class PhotoSelection extends PhotoUpload {
 	private final HashSet<PhotoTag> mTags;
 	private boolean mCompletedDetection;
 
+	private WeakReference<OnFaceDetectionListener> mFaceDetectListener;
 	private WeakReference<OnPhotoTagsChangedListener> mTagChangedListener;
 
 	public PhotoSelection() {
@@ -65,10 +67,10 @@ public abstract class PhotoSelection extends PhotoUpload {
 	public Filter getFilterUsed() {
 		return mFilter;
 	}
-	
+
 	public HashSet<FbUser> getTaggedFriends() {
 		HashSet<FbUser> friends = new HashSet<FbUser>();
-		
+
 		FbUser friend;
 		for (PhotoTag tag : mTags) {
 			friend = tag.getFriend();
@@ -76,7 +78,7 @@ public abstract class PhotoSelection extends PhotoUpload {
 				friends.add(friend);
 			}
 		}
-		
+
 		return friends;
 	}
 
@@ -100,10 +102,22 @@ public abstract class PhotoSelection extends PhotoUpload {
 		return !mCompletedDetection;
 	}
 
+	public void setFaceDetectionListener(OnFaceDetectionListener listener) {
+		// No point keeping listener if we've already done a pass
+		if (!mCompletedDetection) {
+			mFaceDetectListener = new WeakReference<OnFaceDetectionListener>(listener);
+		}
+	}
+
 	public void detectPhotoTags(final Bitmap originalBitmap) {
 		// If we've already done Face detection, don't do it again...
 		if (mCompletedDetection) {
 			return;
+		}
+
+		final OnFaceDetectionListener listener = mFaceDetectListener.get();
+		if (null != listener) {
+			listener.onFaceDetectionStarted(this);
 		}
 
 		final int bitmapWidth = originalBitmap.getWidth();
@@ -143,6 +157,11 @@ public abstract class PhotoSelection extends PhotoUpload {
 			}
 		}
 
+		if (null != listener) {
+			listener.onFaceDetectionFinished(this);
+		}
+		mFaceDetectListener = null;
+
 		mCompletedDetection = true;
 	}
 
@@ -172,7 +191,7 @@ public abstract class PhotoSelection extends PhotoUpload {
 	public List<PhotoTag> getPhotoTags() {
 		return new ArrayList<PhotoTag>(mTags);
 	}
-	
+
 	public int getPhotoTagsCount() {
 		return mTags.size();
 	}

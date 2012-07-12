@@ -3,5 +3,7 @@
 
     <color name="item_bg_dark">#ff33b5e5</color>
     <color name="item_bg_mid">#ff6FCDF7</color>
+    
+    <color name="translucent_grey">#88000000</color>
 
 </resources>

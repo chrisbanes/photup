@@ -3,6 +3,7 @@ package uk.co.senab.photup.views;
 import uk.co.senab.bitmapcache.R;
 import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.PhotoUploadController;
+import uk.co.senab.photup.listeners.OnFaceDetectionListener;
 import uk.co.senab.photup.listeners.OnFriendPickedListener;
 import uk.co.senab.photup.listeners.OnPhotoTagsChangedListener;
 import uk.co.senab.photup.listeners.OnPhotoTapListener;
@@ -26,7 +27,8 @@ import android.widget.TextView;
 @SuppressLint("ViewConstructor")
 @SuppressWarnings("deprecation")
 public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageView.OnMatrixChangedListener,
-		OnPhotoTagsChangedListener, View.OnClickListener, OnPhotoTapListener, OnFriendPickedListener {
+		OnPhotoTagsChangedListener, View.OnClickListener, OnPhotoTapListener, OnFriendPickedListener,
+		OnFaceDetectionListener {
 
 	static final String LOG_TAG = "PhotoTagItemLayout";
 
@@ -43,6 +45,7 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 
 	private final PhotoSelection mUpload;
 	private final PhotoUploadController mController;
+	private final View mFaceDetectIndicator;
 
 	public PhotoTagItemLayout(Context context, PhotoUploadController controller, PhotoSelection upload,
 			OnPickFriendRequestListener friendRequestListener) {
@@ -66,11 +69,15 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 		mPhotoTagInAnimation = AnimationUtils.loadAnimation(context, R.anim.tag_fade_in);
 		mPhotoTagOutAnimation = AnimationUtils.loadAnimation(context, R.anim.tag_fade_out);
 
-		mButton = (CheckableImageView) LayoutInflater.from(context).inflate(R.layout.layout_check_button_lrg, this,
-				false);
+		LayoutInflater inflater = LayoutInflater.from(context);
+
+		mButton = (CheckableImageView) inflater.inflate(R.layout.layout_check_button_lrg, this, false);
 		mButton.setOnClickListener(this);
 		addView(mButton);
 		mButton.setChecked(mController.isPhotoUploadSelected(upload));
+
+		mFaceDetectIndicator = inflater.inflate(R.layout.layout_face_detect, this, false);
+		addView(mFaceDetectIndicator);
 
 		addPhotoTags();
 	}
@@ -237,5 +244,28 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 		} else {
 			mController.removePhotoSelection(mUpload);
 		}
+	}
+
+	/**
+	 * More than likely on another thread
+	 */
+	public void onFaceDetectionStarted(PhotoSelection selection) {
+		mFaceDetectIndicator.post(new Runnable() {
+			public void run() {
+				Animation anim = AnimationUtils.loadAnimation(getContext(), R.anim.fade_in);
+				mFaceDetectIndicator.startAnimation(anim);
+				mFaceDetectIndicator.setVisibility(View.VISIBLE);
+			}
+		});
+	}
+
+	public void onFaceDetectionFinished(PhotoSelection selection) {
+		mFaceDetectIndicator.post(new Runnable() {
+			public void run() {
+				Animation anim = AnimationUtils.loadAnimation(getContext(), R.anim.fade_out);
+				mFaceDetectIndicator.startAnimation(anim);
+				mFaceDetectIndicator.setVisibility(View.GONE);
+			}
+		});
 	}
 }
