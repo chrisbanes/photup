@@ -4,6 +4,12 @@ import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.Set;
 
+import uk.co.senab.photup.R;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 public class PhotoUpload {
 
 	public static interface OnUploadStateChanged {
@@ -13,6 +19,8 @@ public class PhotoUpload {
 	public static final int STATE_WAITING = 0;
 	public static final int STATE_UPLOAD_IN_PROGRESS = 1;
 	public static final int STATE_UPLOAD_COMPLETED = 2;
+
+	private Bitmap mBigPictureNotificationBmp;
 
 	private Set<WeakReference<OnUploadStateChanged>> mStateListeners;
 
@@ -31,8 +39,16 @@ public class PhotoUpload {
 		if (mState != state) {
 			mState = state;
 
-			if (STATE_UPLOAD_IN_PROGRESS != state) {
-				mProgress = -1;
+			switch (state) {
+				case STATE_UPLOAD_COMPLETED:
+					if (null != mBigPictureNotificationBmp) {
+						mBigPictureNotificationBmp.recycle();
+						mBigPictureNotificationBmp = null;
+					}
+				case STATE_WAITING:
+					mProgress = -1;
+					break;
+
 			}
 
 			notifyListeners();
@@ -90,6 +106,18 @@ public class PhotoUpload {
 			if (null != listener) {
 				listener.onUploadStateChanged(this, mState, mProgress);
 			}
+		}
+	}
+
+	public Bitmap getBigPictureNotificationBmp() {
+		return mBigPictureNotificationBmp;
+	}
+
+	public void setBigPictureNotificationBmp(Context context, Bitmap bigPictureNotificationBmp) {
+		if (null == bigPictureNotificationBmp) {
+			mBigPictureNotificationBmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_logo);
+		} else {
+			mBigPictureNotificationBmp = bigPictureNotificationBmp;
 		}
 	}
 

@@ -18,6 +18,7 @@ import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.facebook.Session;
+import uk.co.senab.photup.model.Album;
 import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.model.UploadQuality;
@@ -29,6 +30,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.os.Binder;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -38,6 +41,7 @@ import android.util.Log;
 
 import com.facebook.android.Facebook;
 import com.jakewharton.notificationcompat2.NotificationCompat2;
+import com.jakewharton.notificationcompat2.NotificationCompat2.BigPictureStyle;
 
 public class PhotoUploadService extends Service implements Handler.Callback {
 
@@ -65,6 +69,22 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		public S getService() {
 			return mService.get();
 		}
+	}
+
+	private class UpdateBigPictureStyleRunnable implements Runnable {
+
+		private final PhotoSelection mSelection;
+
+		public UpdateBigPictureStyleRunnable(PhotoSelection selection) {
+			mSelection = selection;
+		}
+
+		public void run() {
+			mSelection.setBigPictureNotificationBmp(PhotoUploadService.this,
+					mSelection.processBitmap(mSelection.getThumbnailImage(PhotoUploadService.this), true));
+			updateNotification(mSelection);
+		}
+
 	}
 
 	private static class UploadPhotoRunnable implements Runnable {
@@ -212,11 +232,14 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 	private final Handler mHandler = new Handler(this);
 	private int mNumberUploaded = 0;
-	private String mAlbumId;
+	private Album mAlbum;
 	private UploadQuality mUploadQuality;
 
 	private NotificationManager mNotificationMgr;
 	private NotificationCompat2.Builder mNotificationBuilder;
+	private BigPictureStyle mBigPicStyle;
+
+	private String mNotificationSubtitle;
 
 	@Override
 	public void onCreate() {
@@ -255,8 +278,8 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		return false;
 	}
 
-	public void uploadAll(String albumId, UploadQuality quality) {
-		mAlbumId = albumId;
+	public void uploadAll(Album album, UploadQuality quality) {
+		mAlbum = album;
 		mUploadQuality = quality;
 
 		PhotoSelection nextUpload = mController.getNextPhotoToUpload();
@@ -269,7 +292,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	private void startUpload(PhotoSelection upload) {
 		trimCache();
 		updateNotification(upload);
-		mExecutor.submit(new UploadPhotoRunnable(this, mHandler, upload, mSession, mAlbumId, mUploadQuality));
+		mExecutor.submit(new UploadPhotoRunnable(this, mHandler, upload, mSession, mAlbum.getId(), mUploadQuality));
 	}
 
 	private void onFinishedUpload(PhotoSelection completedUpload) {
@@ -294,9 +317,16 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 			mNotificationBuilder.setOngoing(true);
 			mNotificationBuilder.setWhen(System.currentTimeMillis());
 
+			mNotificationSubtitle = getString(R.string.notification_uploading_album_subtitle, mAlbum.getName());
+			mNotificationBuilder.setContentText(mNotificationSubtitle);
+
 			PendingIntent intent = PendingIntent
 					.getActivity(this, 0, new Intent(this, PhotoSelectionActivity.class), 0);
 			mNotificationBuilder.setContentIntent(intent);
+		}
+
+		if (null == mBigPicStyle) {
+			mBigPicStyle = new BigPictureStyle(mNotificationBuilder);
 		}
 
 		startForeground(NOTIFICATION_ID, mNotificationBuilder.build());
@@ -309,26 +339,32 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	void updateNotification(final PhotoSelection upload) {
 		String text;
 
+		if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN && null == upload.getBigPictureNotificationBmp()) {
+			mExecutor.submit(new UpdateBigPictureStyleRunnable(upload));
+		}
+
 		switch (upload.getState()) {
 			case PhotoUpload.STATE_WAITING:
 				text = getString(R.string.notification_uploading_photo, mNumberUploaded + 1);
+				mNotificationBuilder.setContentTitle(text);
+				mNotificationBuilder.setTicker(text);
 				mNotificationBuilder.setProgress(0, 0, true);
 				mNotificationBuilder.setWhen(System.currentTimeMillis());
-				mNotificationBuilder.setContentText(text);
-				mNotificationBuilder.setTicker(text);
 				break;
 
 			case PhotoUpload.STATE_UPLOAD_IN_PROGRESS:
 				text = getString(R.string.notification_uploading_photo_progress, mNumberUploaded + 1,
 						upload.getUploadProgress());
+				mNotificationBuilder.setContentTitle(text);
 
 				// TODO Fix ordering when Jake updates lib
 				mNotificationBuilder.setProgress(upload.getUploadProgress(), 100, false);
-				mNotificationBuilder.setContentText(text);
 				break;
 		}
 
-		mNotificationMgr.notify(NOTIFICATION_ID, mNotificationBuilder.build());
+		mBigPicStyle.setSummaryText(mNotificationSubtitle).bigPicture(upload.getBigPictureNotificationBmp());
+
+		mNotificationMgr.notify(NOTIFICATION_ID, mBigPicStyle.build());
 	}
 
 	void finishedNotification() {
@@ -336,8 +372,9 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 				mNumberUploaded);
 
 		mNotificationBuilder.setOngoing(false);
+		mNotificationBuilder.setProgress(100, 100, false);
 		mNotificationBuilder.setWhen(System.currentTimeMillis());
-		mNotificationBuilder.setContentText(text);
+		mNotificationBuilder.setContentTitle(text);
 		mNotificationBuilder.setTicker(text);
 
 		mNotificationMgr.notify(NOTIFICATION_ID, mNotificationBuilder.build());

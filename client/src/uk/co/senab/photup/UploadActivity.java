@@ -75,7 +75,7 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		Album album = (Album) mAlbumSpinner.getSelectedItem();
 
 		if (null != album) {
-			mBinder.getService().uploadAll(album.getId(), quality);
+			mBinder.getService().uploadAll(album, quality);
 			finish();
 		} else {
 			Toast.makeText(this, getString(R.string.error_select_album), Toast.LENGTH_SHORT).show();
