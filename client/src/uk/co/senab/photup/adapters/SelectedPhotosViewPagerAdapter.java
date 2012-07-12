@@ -14,7 +14,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 
-public class PhotoViewPagerAdapter extends PagerAdapter {
+public class SelectedPhotosViewPagerAdapter extends PagerAdapter {
 
 	private final Context mContext;
 	private final PhotoUploadController mController;
@@ -23,7 +23,7 @@ public class PhotoViewPagerAdapter extends PagerAdapter {
 
 	private List<PhotoSelection> mItems;
 
-	public PhotoViewPagerAdapter(Context context, OnSingleTapListener tapListener,
+	public SelectedPhotosViewPagerAdapter(Context context, OnSingleTapListener tapListener,
 			OnPickFriendRequestListener friendRequestListener) {
 		mContext = context;
 		mTapListener = tapListener;
@@ -31,7 +31,7 @@ public class PhotoViewPagerAdapter extends PagerAdapter {
 
 		PhotupApplication app = PhotupApplication.getApplication(context);
 		mController = app.getPhotoUploadController();
-		mItems = mController.getSelectedPhotoUploads();
+		mItems = refreshData(context);
 	}
 
 	@Override
@@ -74,8 +74,12 @@ public class PhotoViewPagerAdapter extends PagerAdapter {
 
 	@Override
 	public void notifyDataSetChanged() {
-		mItems = mController.getSelectedPhotoUploads();
+		mItems = refreshData(mContext);
 		super.notifyDataSetChanged();
+	}
+
+	public List<PhotoSelection> refreshData(Context context) {
+		return mController.getSelectedPhotoUploads();
 	}
 
 }

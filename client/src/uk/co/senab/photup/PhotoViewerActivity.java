@@ -2,7 +2,8 @@ package uk.co.senab.photup;
 
 import java.util.Set;
 
-import uk.co.senab.photup.adapters.PhotoViewPagerAdapter;
+import uk.co.senab.photup.adapters.SelectedPhotosViewPagerAdapter;
+import uk.co.senab.photup.adapters.UserPhotosViewPagerAdapter;
 import uk.co.senab.photup.fragments.FriendsListFragment;
 import uk.co.senab.photup.listeners.OnFriendPickedListener;
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
@@ -77,7 +78,7 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 	}
 
 	private ViewPager mViewPager;
-	private PhotoViewPagerAdapter mAdapter;
+	private SelectedPhotosViewPagerAdapter mAdapter;
 	private ViewGroup mContentView;
 	private FiltersRadioGroup mFilterGroup;
 
@@ -180,14 +181,19 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 		mController.addPhotoSelectionListener(this);
 
 		final Intent intent = getIntent();
-		mMode = intent.getIntExtra(EXTRA_MODE, MODE_SELECTED_VALUE);
+		mMode = intent.getIntExtra(EXTRA_MODE, MODE_ALL_VALUE);
 
 		mViewPager = (ViewPager) findViewById(R.id.vp_photos);
 		mViewPager.setOffscreenPageLimit(1);
 		mViewPager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.viewpager_margin));
 		mViewPager.setOnPageChangeListener(this);
 
-		mAdapter = new PhotoViewPagerAdapter(this, this, this);
+		if (mMode == MODE_ALL_VALUE) {
+			mAdapter = new UserPhotosViewPagerAdapter(this, this, this);
+		} else {
+			mAdapter = new SelectedPhotosViewPagerAdapter(this, this, this);
+		}
+
 		mViewPager.setAdapter(mAdapter);
 		mAdapter.notifyDataSetChanged();
 

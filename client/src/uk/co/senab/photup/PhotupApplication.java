@@ -18,6 +18,7 @@ import uk.co.senab.photup.FriendsAsyncTask.FriendsResultListener;
 import uk.co.senab.photup.facebook.Session;
 import uk.co.senab.photup.model.Album;
 import uk.co.senab.photup.model.FbUser;
+import uk.co.senab.photup.model.PhotoSelection;
 import android.app.Application;
 import android.content.Context;
 import android.view.Display;
@@ -37,6 +38,8 @@ public class PhotupApplication extends Application implements FriendsResultListe
 
 	private AlbumsResultListener mAlbumsListener;
 	private ArrayList<Album> mAlbums;
+	
+	private final ArrayList<PhotoSelection> mMediaStorePhotos = new ArrayList<PhotoSelection>();
 
 	private final PhotoUploadController mPhotoController = new PhotoUploadController();
 
@@ -76,6 +79,7 @@ public class PhotupApplication extends Application implements FriendsResultListe
 				* EXECUTOR_MAX_POOL_SIZE_PER_CORE, 1L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 	}
 
+	@SuppressWarnings("deprecation")
 	public int getSmallestScreenDimension() {
 		WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
 		Display display = wm.getDefaultDisplay();
@@ -151,6 +155,15 @@ public class PhotupApplication extends Application implements FriendsResultListe
 				mAlbumsListener = null;
 			}
 		}
+	}
+	
+	public void setMediaPhotoSelections(List<PhotoSelection> selection) {
+		mMediaStorePhotos.clear();
+		mMediaStorePhotos.addAll(selection);
+	}
+	
+	public List<PhotoSelection> getMediaStorePhotos() {
+		return new ArrayList<PhotoSelection>(mMediaStorePhotos);
 	}
 
 }

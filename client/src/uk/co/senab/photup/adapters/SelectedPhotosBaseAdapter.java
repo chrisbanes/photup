@@ -6,14 +6,15 @@ import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.model.PhotoSelection;
-import uk.co.senab.photup.views.UploadItemLayout;
+import uk.co.senab.photup.views.PhotoItemLayout;
+import uk.co.senab.photup.views.PhotupImageView;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-public class UploadsBaseAdapter extends BaseAdapter {
+public class SelectedPhotosBaseAdapter extends BaseAdapter {
 
 	private List<PhotoSelection> mItems;
 
@@ -21,13 +22,13 @@ public class UploadsBaseAdapter extends BaseAdapter {
 	private final LayoutInflater mLayoutInflater;
 	private final PhotoUploadController mController;
 
-	public UploadsBaseAdapter(Context context) {
+	public SelectedPhotosBaseAdapter(Context context) {
 		mContext = context;
 		mLayoutInflater = LayoutInflater.from(mContext);
 
 		PhotupApplication app = PhotupApplication.getApplication(context);
 		mController = app.getPhotoUploadController();
-		mItems = mController.getUploadingPhotoUploads();
+		mItems = mController.getSelectedPhotoUploads();
 	}
 
 	public int getCount() {
@@ -44,18 +45,25 @@ public class UploadsBaseAdapter extends BaseAdapter {
 
 	public View getView(int position, View view, ViewGroup parent) {
 		if (null == view) {
-			view = mLayoutInflater.inflate(R.layout.item_list_upload, parent, false);
+			view = mLayoutInflater.inflate(R.layout.item_grid_photo, parent, false);
 		}
 
-		UploadItemLayout layout = (UploadItemLayout) view;
-		layout.setPhotoSelection(getItem(position));
+		PhotoItemLayout layout = (PhotoItemLayout) view;
+		PhotupImageView iv = layout.getImageView();
+
+		final PhotoSelection upload = getItem(position);
+
+		iv.requestThumbnail(upload, true);
+		layout.setAnimateWhenChecked(false);
+		layout.setPhotoSelection(upload);
+		layout.setChecked(true);
 
 		return view;
 	}
 
 	@Override
 	public void notifyDataSetChanged() {
-		mItems = mController.getUploadingPhotoUploads();
+		mItems = mController.getSelectedPhotoUploads();
 		super.notifyDataSetChanged();
 	}
 

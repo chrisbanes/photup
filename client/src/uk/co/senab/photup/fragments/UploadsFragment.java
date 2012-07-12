@@ -1,7 +1,7 @@
 package uk.co.senab.photup.fragments;
 
 import uk.co.senab.photup.PhotoUploadController;
-import uk.co.senab.photup.adapters.UploadsBaseAdapter;
+import uk.co.senab.photup.adapters.UploadsListBaseAdapter;
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
 import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.model.PhotoUpload;
@@ -15,12 +15,12 @@ import com.example.android.swipedismiss.SwipeDismissListViewTouchListener.OnDism
 public class UploadsFragment extends SherlockListFragment implements OnPhotoSelectionChangedListener, OnDismissCallback {
 
 	private PhotoUploadController mPhotoSelectionController;
-	private UploadsBaseAdapter mAdapter;
+	private UploadsListBaseAdapter mAdapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mAdapter = new UploadsBaseAdapter(getActivity());
+		mAdapter = new UploadsListBaseAdapter(getActivity());
 
 		mPhotoSelectionController = PhotoUploadController.getFromContext(getActivity());
 		mPhotoSelectionController.addPhotoSelectionListener(this);

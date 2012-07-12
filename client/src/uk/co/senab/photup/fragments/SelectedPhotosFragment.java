@@ -4,7 +4,7 @@ import uk.co.senab.bitmapcache.R;
 import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotoViewerActivity;
 import uk.co.senab.photup.Utils;
-import uk.co.senab.photup.adapters.PhotosBaseAdapter;
+import uk.co.senab.photup.adapters.SelectedPhotosBaseAdapter;
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
 import uk.co.senab.photup.model.PhotoSelection;
 import android.app.Activity;
@@ -25,7 +25,7 @@ public class SelectedPhotosFragment extends SherlockFragment implements OnPhotoS
 		OnItemClickListener {
 
 	private GridView mGridView;
-	private PhotosBaseAdapter mAdapter;
+	private SelectedPhotosBaseAdapter mAdapter;
 	private PhotoUploadController mPhotoSelectionController;
 
 	@Override
@@ -42,7 +42,7 @@ public class SelectedPhotosFragment extends SherlockFragment implements OnPhotoS
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_selected_photos, container, false);
-		mAdapter = new PhotosBaseAdapter(getActivity());
+		mAdapter = new SelectedPhotosBaseAdapter(getActivity());
 
 		mGridView = (GridView) view.findViewById(R.id.gv_photos);
 		mGridView.setOnItemClickListener(this);
@@ -84,6 +84,7 @@ public class SelectedPhotosFragment extends SherlockFragment implements OnPhotoS
 
 		Intent intent = new Intent(getActivity(), PhotoViewerActivity.class);
 		intent.putExtra(PhotoViewerActivity.EXTRA_POSITION, position);
+		intent.putExtra(PhotoViewerActivity.EXTRA_MODE, PhotoViewerActivity.MODE_SELECTED_VALUE);
 
 		ActivityCompat2.startActivity(getActivity(), intent, options.toBundle());
 	}

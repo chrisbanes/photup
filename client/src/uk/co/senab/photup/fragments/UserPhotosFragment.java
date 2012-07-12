@@ -1,13 +1,16 @@
 package uk.co.senab.photup.fragments;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.PhotoUploadController;
+import uk.co.senab.photup.PhotoViewerActivity;
+import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.Utils;
 import uk.co.senab.photup.adapters.CameraBaseAdapter;
-import uk.co.senab.photup.adapters.PhotosCursorAdapter;
+import uk.co.senab.photup.adapters.UsersPhotosBaseAdapter;
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
 import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.views.PhotoItemLayout;
@@ -34,6 +37,8 @@ import android.widget.GridView;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.commonsware.cwac.merge.MergeAdapter;
+import com.jakewharton.activitycompat2.ActivityCompat2;
+import com.jakewharton.activitycompat2.ActivityOptionsCompat2;
 
 public class UserPhotosFragment extends SherlockFragment implements LoaderManager.LoaderCallbacks<Cursor>,
 		OnItemClickListener, OnPhotoSelectionChangedListener {
@@ -74,7 +79,7 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 	static final int LOADER_USER_PHOTOS_INTERNAL = 0x02;
 
 	private MergeAdapter mAdapter;
-	private PhotosCursorAdapter mPhotoCursorAdapter;
+	private UsersPhotosBaseAdapter mPhotoAdapter;
 
 	private GridView mPhotoGrid;
 
@@ -112,9 +117,8 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 		mAdapter = new MergeAdapter();
 		mAdapter.addAdapter(new CameraBaseAdapter(getActivity()));
 
-		getLoaderManager().initLoader(LOADER_USER_PHOTOS_EXTERNAL, null, this);
-		mPhotoCursorAdapter = new PhotosCursorAdapter(getActivity(), R.layout.item_grid_photo, null, true);
-		mAdapter.addAdapter(mPhotoCursorAdapter);
+		mPhotoAdapter = new UsersPhotosBaseAdapter(getActivity());
+		mAdapter.addAdapter(mPhotoAdapter);
 
 		mPhotoSelectionController.addPhotoSelectionListener(this);
 
@@ -123,6 +127,8 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 				mPhotoFile = new File(savedInstanceState.getString(SAVE_PHOTO_URI));
 			}
 		}
+
+		getLoaderManager().initLoader(LOADER_USER_PHOTOS_EXTERNAL, null, this);
 	}
 
 	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
@@ -158,17 +164,34 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 		if (view.getId() == R.id.iv_camera_button) {
 			takePhoto();
 		} else {
-			// TODO Open Photo Viewer!!!
+			ActivityOptionsCompat2 options = ActivityOptionsCompat2.makeThumbnailScaleUpAnimation(view,
+					Utils.drawViewOntoBitmap(view), 0, 0);
+
+			Intent intent = new Intent(getActivity(), PhotoViewerActivity.class);
+			intent.putExtra(PhotoViewerActivity.EXTRA_POSITION, position);
+			intent.putExtra(PhotoViewerActivity.EXTRA_MODE, PhotoViewerActivity.MODE_ALL_VALUE);
+
+			ActivityCompat2.startActivity(getActivity(), intent, options.toBundle());
 		}
 	}
 
 	public void onLoaderReset(Loader<Cursor> loader) {
-		mPhotoCursorAdapter.swapCursor(null);
 	}
 
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+		Uri contentUri;
+
 		switch (loader.getId()) {
+			case LOADER_USER_PHOTOS_INTERNAL:
+				if (Constants.DEBUG) {
+					Log.d("UserPhotosFragment", "Internal Cursor Count: " + data.getCount());
+				}
+				contentUri = Images.Media.INTERNAL_CONTENT_URI;
+				break;
+
 			case LOADER_USER_PHOTOS_EXTERNAL:
+			default:
 				if (Constants.DEBUG) {
 					Log.d("UserPhotosFragment", "External Cursor Count: " + data.getCount());
 				}
@@ -182,18 +205,13 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 					return;
 				}
 
-				mPhotoCursorAdapter.setContentUri(Images.Media.EXTERNAL_CONTENT_URI);
-				break;
-
-			case LOADER_USER_PHOTOS_INTERNAL:
-				if (Constants.DEBUG) {
-					Log.d("UserPhotosFragment", "Internal Cursor Count: " + data.getCount());
-				}
-				mPhotoCursorAdapter.setContentUri(Images.Media.INTERNAL_CONTENT_URI);
+				contentUri = Images.Media.EXTERNAL_CONTENT_URI;
 				break;
 		}
 
-		mPhotoCursorAdapter.swapCursor(data);
+		ArrayList<PhotoSelection> selection = Utils.cursorToSelectionList(contentUri, data);
+		PhotupApplication.getApplication(getActivity()).setMediaPhotoSelections(selection);
+		mPhotoAdapter.notifyDataSetChanged();
 	}
 
 	public void onSelectionsAddedToUploads() {
