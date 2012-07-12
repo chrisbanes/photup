@@ -21,7 +21,7 @@ import android.util.AttributeSet;
 
 public class PhotupImageView extends CacheableImageView {
 
-	static final int FACE_DETECTION_DELAY = 800;
+	static final int FACE_DETECTION_DELAY = 1000;
 
 	private static class PhotoTask extends AsyncTask<Void, Void, CacheableBitmapWrapper> {
 
