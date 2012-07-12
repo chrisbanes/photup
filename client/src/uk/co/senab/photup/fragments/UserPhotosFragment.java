@@ -35,7 +35,6 @@ import android.widget.GridView;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.commonsware.cwac.merge.MergeAdapter;
 
-@SuppressWarnings("deprecation")
 public class UserPhotosFragment extends SherlockFragment implements LoaderManager.LoaderCallbacks<Cursor>,
 		OnItemClickListener, OnPhotoSelectionChangedListener {
 
@@ -142,7 +141,7 @@ public class UserPhotosFragment extends SherlockFragment implements LoaderManage
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_user_photos, null);
 
-		mPhotoGrid = (GridView) view.findViewById(R.id.gv_users_photos);
+		mPhotoGrid = (GridView) view.findViewById(R.id.gv_photos);
 		mPhotoGrid.setAdapter(mAdapter);
 		mPhotoGrid.setOnItemClickListener(this);
 

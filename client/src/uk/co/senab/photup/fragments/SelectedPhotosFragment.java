@@ -44,7 +44,7 @@ public class SelectedPhotosFragment extends SherlockFragment implements OnPhotoS
 		View view = inflater.inflate(R.layout.fragment_selected_photos, container, false);
 		mAdapter = new PhotosBaseAdapter(getActivity());
 
-		mGridView = (GridView) view.findViewById(R.id.gv_selected_photos);
+		mGridView = (GridView) view.findViewById(R.id.gv_photos);
 		mGridView.setOnItemClickListener(this);
 		mGridView.setAdapter(mAdapter);
 
