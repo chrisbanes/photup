@@ -138,20 +138,28 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 	}
 
 	public void onPageScrollStateChanged(int state) {
-		// NO-OP
+		if (state != ViewPager.SCROLL_STATE_IDLE) {
+			clearFaceDetectionPasses();
+		}
 	}
 
 	public void onPageSelected(int position) {
-		if (null != mFilterGroup && mFilterGroup.getVisibility() == View.VISIBLE) {
-			updateFiltersView();
-		}
-
 		PhotoSelection upload = mAdapter.getItem(position);
 		String caption = upload.getCaption();
 		if (null == caption) {
 			caption = "";
 		}
 		getSupportActionBar().setTitle(caption);
+
+		// Request Face Detection
+		PhotoTagItemLayout currentView = (PhotoTagItemLayout) getCurrentView();
+		if (null != currentView) {
+			currentView.getImageView().postFaceDetection(upload);
+		}
+
+		if (null != mFilterGroup && mFilterGroup.getVisibility() == View.VISIBLE) {
+			updateFiltersView();
+		}
 	}
 
 	public boolean onSingleTap(MotionEvent event) {
@@ -230,6 +238,15 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 		}
 
 		return null;
+	}
+
+	private void clearFaceDetectionPasses() {
+		for (int i = 0, z = mViewPager.getChildCount(); i < z; i++) {
+			PhotoTagItemLayout child = (PhotoTagItemLayout) mViewPager.getChildAt(i);
+			if (null != child) {
+				child.getImageView().clearFaceDetection();
+			}
+		}
 	}
 
 	private void showCaptionDialog() {

@@ -21,6 +21,8 @@ import android.util.AttributeSet;
 
 public class PhotupImageView extends CacheableImageView {
 
+	static final int FACE_DETECTION_DELAY = 800;
+
 	private static class PhotoTask extends AsyncTask<Void, Void, CacheableBitmapWrapper> {
 
 		private final WeakReference<PhotupImageView> mImageView;
@@ -70,14 +72,26 @@ public class PhotupImageView extends CacheableImageView {
 			if (null != result) {
 				PhotupImageView iv = mImageView.get();
 				if (null != iv) {
-					if (mFetchFullSize && mUpload.requiresFaceDetectPass()) {
-						iv.requestFaceDetection(mUpload, result.getBitmap());
-					}
 					iv.setImageCachedBitmap(result);
 				}
 
 				mCache.put(result);
 			}
+		}
+	}
+
+	static class RequestFaceDetectionPassRunnable implements Runnable {
+
+		private final PhotupImageView mImageView;
+		private final PhotoSelection mSelection;
+
+		public RequestFaceDetectionPassRunnable(PhotupImageView imageView, PhotoSelection selection) {
+			mImageView = imageView;
+			mSelection = selection;
+		}
+
+		public void run() {
+			mImageView.requestFaceDetection(mSelection);
 		}
 	}
 
@@ -118,10 +132,6 @@ public class PhotupImageView extends CacheableImageView {
 			mImageView.post(new Runnable() {
 				public void run() {
 					mImageView.setImageBitmap(filteredBitmap);
-
-					if (mFullSize && mUpload.requiresFaceDetectPass()) {
-						mImageView.requestFaceDetection(mUpload, filteredBitmap);
-					}
 				}
 			});
 		}
@@ -130,22 +140,25 @@ public class PhotupImageView extends CacheableImageView {
 	static final class FaceDetectionRunnable implements Runnable {
 
 		private final PhotoSelection mUpload;
-		private final Bitmap mBitmap;
+		private final CacheableBitmapWrapper mBitmapWrapper;
 
-		public FaceDetectionRunnable(PhotoSelection upload, Bitmap bitmap) {
+		public FaceDetectionRunnable(PhotoSelection upload, CacheableBitmapWrapper bitmap) {
 			mUpload = upload;
-			mBitmap = bitmap;
+			mBitmapWrapper = bitmap;
 		}
 
 		public void run() {
-			if (!mBitmap.isRecycled()) {
-				mUpload.detectPhotoTags(mBitmap);
+			if (mBitmapWrapper.hasValidBitmap()) {
+				mUpload.detectPhotoTags(mBitmapWrapper.getBitmap());
 			}
+			mBitmapWrapper.setBeingUsed(false);
 		}
 	};
 
 	private PhotoTask mCurrentTask;
 	private boolean mFadeInDrawables = false;
+
+	private Runnable mRequestFaceDetectionRunnable;
 
 	public void setFadeInDrawables(boolean fadeIn) {
 		mFadeInDrawables = fadeIn;
@@ -157,6 +170,20 @@ public class PhotupImageView extends CacheableImageView {
 
 	public PhotupImageView(Context context, AttributeSet attrs) {
 		super(context, attrs);
+	}
+
+	public void postFaceDetection(PhotoSelection selection) {
+		if (null == mRequestFaceDetectionRunnable && selection.requiresFaceDetectPass()) {
+			mRequestFaceDetectionRunnable = new RequestFaceDetectionPassRunnable(this, selection);
+			postDelayed(mRequestFaceDetectionRunnable, FACE_DETECTION_DELAY);
+		}
+	}
+
+	public void clearFaceDetection() {
+		if (null != mRequestFaceDetectionRunnable) {
+			removeCallbacks(mRequestFaceDetectionRunnable);
+			mRequestFaceDetectionRunnable = null;
+		}
 	}
 
 	public void requestThumbnail(final PhotoSelection upload, final boolean honourFilter) {
@@ -180,9 +207,14 @@ public class PhotupImageView extends CacheableImageView {
 		app.getSingleThreadExecutorService().submit(new FilterRunnable(this, upload, fullSize));
 	}
 
-	void requestFaceDetection(final PhotoSelection upload, final Bitmap bitmap) {
-		PhotupApplication app = PhotupApplication.getApplication(getContext());
-		app.getMultiThreadExecutorService().submit(new FaceDetectionRunnable(upload, bitmap));
+	void requestFaceDetection(final PhotoSelection upload) {
+		CacheableBitmapWrapper wrapper = getCachedBitmapWrapper();
+		if (null != wrapper && wrapper.hasValidBitmap()) {
+			wrapper.setBeingUsed(true);
+
+			PhotupApplication app = PhotupApplication.getApplication(getContext());
+			app.getMultiThreadExecutorService().submit(new FaceDetectionRunnable(upload, wrapper));
+		}
 	}
 
 	void requestImage(final PhotoSelection upload, final boolean fullSize) {
