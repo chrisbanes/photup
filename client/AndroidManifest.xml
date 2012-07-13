@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="uk.co.senab.photup"
+    android:installLocation="auto"
     android:versionCode="00901"
-    android:versionName="0.9b1"
-    android:installLocation="auto">
+    android:versionName="0.9b1" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -12,7 +12,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    
+
     <application
         android:name=".PhotupApplication"
         android:hardwareAccelerated="true"
@@ -40,9 +40,13 @@
             android:uiOptions="splitActionBarWhenNarrow" >
         </activity>
         <activity
-            android:name="PhotoViewerActivity"
+            android:name=".PhotoViewerActivity"
             android:theme="@style/Theme.Photup.FullscreenOverlay"
             android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name=".LoginActivity"
+            android:theme="@style/Theme.Sherlock.NoActionBar" >
         </activity>
 
         <service android:name=".service.PhotoUploadService" />

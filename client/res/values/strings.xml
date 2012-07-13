@@ -26,7 +26,8 @@
     <string name="crash_toast">photup just crashed :( The developer has been notified of the cause.</string>
     <string name="untitled_photo">Untitled Photo</string>
     <string name="detecting_faces">Detecting Faces</string>
-    
     <string name="empty_selected_photos">You have not selected any photos yet.</string>
+    <string name="welcome_message">Welcome to photup. To continue press the button below to login to Facebook.</string>
+    <string name="login">Login</string>
 
 </resources>
