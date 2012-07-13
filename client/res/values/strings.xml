@@ -30,6 +30,7 @@
     <string name="welcome_message">Welcome to photup. To continue press the button below to login to Facebook.</string>
     <string name="login">Login</string>
     <string name="logout">Logout %1$s</string>
+    <string name="logout_prompt_title">Are you sure?</string>
     <string name="libraries">Libraries</string>
 
 </resources>

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="item_bg_dark">#ff1087B3</color>
-    <color name="item_bg_mid">#ff33b5e5</color>
-    <color name="item_bg_light">#ff6FCDF7</color>
-    
-    <color name="translucent_grey">#88000000</color>
+	<color name="item_bg_dark">#ff1087B3</color>
+	<color name="item_bg_mid">#ff33b5e5</color>
+	<color name="item_bg_light">#ff6FCDF7</color>
+	<color name="translucent_dk_grey">#88000000</color>
+	<color name="translucent_grey">#40000000</color>
 
 </resources>

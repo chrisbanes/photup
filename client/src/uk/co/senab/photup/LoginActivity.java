@@ -9,6 +9,8 @@ import org.json.JSONObject;
 
 import uk.co.senab.photup.facebook.Session;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -37,7 +39,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 		if (v == mLoginBtn) {
 			loginToFacebook();
 		} else if (v == mLogoutBtn) {
-			logoutOfFacebook();
+			showLogoutPrompt();
 		} else if (v == mFacebookBtn) {
 			startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.facebook_address))));
 		} else if (v == mTwitterBtn) {
@@ -112,7 +114,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 	private void refreshUi() {
 		Session session = Session.restore(this);
 		if (null != session) {
-			mMessageTv.setVisibility(View.INVISIBLE);
+			mMessageTv.setVisibility(View.GONE);
 			mLoginBtn.setVisibility(View.GONE);
 			mLogoutBtn.setText(getString(R.string.logout, session.getName()));
 			mLogoutBtn.setVisibility(View.VISIBLE);
@@ -162,6 +164,22 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 				e.printStackTrace();
 			}
 		});
+	}
+
+	private void showLogoutPrompt() {
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(R.string.logout_prompt_title);
+		builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+			public void onClick(DialogInterface dialog, int which) {
+				logoutOfFacebook();
+				dialog.dismiss();
+			}
+		});
+		builder.setNegativeButton(android.R.string.cancel, null);
+
+		builder.show();
 	}
 
 }

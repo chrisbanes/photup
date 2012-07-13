@@ -1,99 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/bg_login_gradient"
-    android:orientation="vertical" >
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@drawable/bg_login_gradient"
+	android:orientation="vertical" >
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/double_spacing"
-        android:background="@color/translucent_grey"
-        android:gravity="center"
-        android:paddingBottom="@dimen/double_spacing"
-        android:paddingTop="@dimen/double_spacing" >
+	<LinearLayout
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:background="@color/translucent_dk_grey"
+		android:gravity="center"
+		android:paddingBottom="@dimen/double_spacing"
+		android:paddingTop="@dimen/double_spacing" >
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/spacing"
-            android:src="@drawable/ic_launcher" />
+		<ImageView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginRight="@dimen/spacing"
+			android:src="@drawable/ic_launcher" />
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_logo" />
-    </LinearLayout>
+		<ImageView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:src="@drawable/ic_logo" />
+	</LinearLayout>
 
-    <TextView
-        android:id="@+id/tv_login_message"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center_vertical"
-        android:padding="@dimen/double_spacing"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@android:color/white" />
+	<ScrollView
+		android:layout_width="fill_parent"
+		android:layout_height="0px"
+		android:layout_weight="1"
+		android:fillViewport="true" >
 
-    <ScrollView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
+		<LinearLayout
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center"
+			android:orientation="vertical" >
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/white"
-            android:gravity="center"
-            android:orientation="vertical" >
+			<TextView
+				android:id="@+id/tv_login_message"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:gravity="center_vertical"
+				android:padding="@dimen/double_spacing"
+				android:textAppearance="?android:attr/textAppearanceMedium" />
 
-            <Button
-                android:id="@+id/btn_login"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/double_spacing"
-                android:text="@string/login" />
+			<Button
+				android:id="@+id/btn_login"
+				style="@style/StyledButton"
+				android:background="@drawable/btn_blue"
+				android:text="@string/login"
+				android:textStyle="bold" />
 
-            <Button
-                android:id="@+id/btn_logout"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/double_spacing"
-                android:text="@string/logout"
-                android:visibility="gone" />
+			<Button
+				android:id="@+id/btn_logout"
+				style="@style/StyledButton"
+				android:background="@drawable/btn_red"
+				android:text="@string/logout"
+				android:textStyle="bold"
+				android:visibility="gone" />
 
-            <Button
-                android:id="@+id/btn_libraries"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/double_spacing"
-                android:text="@string/libraries"
-                android:visibility="gone" />
-        </LinearLayout>
-    </ScrollView>
+			<Button
+				android:id="@+id/btn_libraries"
+				style="@style/StyledButton"
+				android:background="@drawable/btn_blue"
+				android:text="@string/libraries"
+				android:visibility="gone" />
+		</LinearLayout>
+	</ScrollView>
 
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="0px"
-        android:layout_weight="1" />
+	<View
+		android:layout_width="fill_parent"
+		android:layout_height="1dp"
+		android:background="@color/translucent_grey"
+		android:layout_marginLeft="@dimen/double_spacing"
+		android:layout_marginRight="@dimen/double_spacing" />
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:padding="@dimen/double_spacing" >
+	<LinearLayout
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center"
+		android:padding="@dimen/spacing" >
 
-        <TextView
-            android:id="@+id/tv_social_fb"
-            style="@style/SocialHandleTextView"
-            android:drawableLeft="@drawable/ic_social_fb"
-            android:text="@string/facebook_handle" />
+		<TextView
+			android:id="@+id/tv_social_fb"
+			style="@style/SocialHandleTextView"
+			android:drawableLeft="@drawable/ic_social_fb"
+			android:text="@string/facebook_handle" />
 
-        <TextView
-            android:id="@+id/tv_social_twitter"
-            style="@style/SocialHandleTextView"
-            android:drawableLeft="@drawable/ic_social_twitter"
-            android:text="@string/twitter_handle" />
-    </LinearLayout>
+		<TextView
+			android:id="@+id/tv_social_twitter"
+			style="@style/SocialHandleTextView"
+			android:drawableLeft="@drawable/ic_social_twitter"
+			android:text="@string/twitter_handle" />
+	</LinearLayout>
 
 </LinearLayout>
