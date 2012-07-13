@@ -58,6 +58,7 @@ public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 			final Drawable background = createDrawable(mContext.getResources(), filteredBitmap);
 
 			mButton.post(new Runnable() {
+				@SuppressWarnings("deprecation")
 				public void run() {
 					mButton.setBackgroundDrawable(background);
 				}

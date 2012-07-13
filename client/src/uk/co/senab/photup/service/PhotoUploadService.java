@@ -14,7 +14,6 @@ import java.util.concurrent.ExecutorService;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.PhotoSelectionActivity;

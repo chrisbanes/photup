@@ -21,7 +21,7 @@ import com.facebook.android.Util;
 
 public class FacebookRequester {
 
-	private final Context mContext;
+	// private final Context mContext;
 	private final Session mSession;
 	private final Facebook mFacebook;
 
@@ -30,7 +30,7 @@ public class FacebookRequester {
 	}
 
 	public FacebookRequester(Context context, Session session) {
-		mContext = context;
+		// mContext = context;
 
 		mSession = session;
 		mFacebook = mSession.getFb();
