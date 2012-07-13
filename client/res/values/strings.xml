@@ -26,5 +26,7 @@
     <string name="crash_toast">photup just crashed :( The developer has been notified of the cause.</string>
     <string name="untitled_photo">Untitled Photo</string>
     <string name="detecting_faces">Detecting Faces</string>
+    
+    <string name="empty_selected_photos">You have not selected any photos yet.</string>
 
 </resources>

@@ -41,12 +41,16 @@ public class SelectedPhotosFragment extends SherlockFragment implements OnPhotoS
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_selected_photos, container, false);
+		ViewGroup view = (ViewGroup) inflater.inflate(R.layout.fragment_selected_photos, container, false);
 		mAdapter = new SelectedPhotosBaseAdapter(getActivity());
 
 		mGridView = (GridView) view.findViewById(R.id.gv_photos);
 		mGridView.setOnItemClickListener(this);
 		mGridView.setAdapter(mAdapter);
+		
+		View emptyView = inflater.inflate(R.layout.layout_empty_user_photos, container, false);
+		view.addView(emptyView);
+		mGridView.setEmptyView(emptyView);
 
 		return view;
 	}
