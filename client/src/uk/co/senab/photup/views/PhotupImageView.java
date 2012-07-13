@@ -5,6 +5,7 @@ import java.lang.ref.WeakReference;
 import uk.co.senab.bitmapcache.BitmapLruCache;
 import uk.co.senab.bitmapcache.CacheableBitmapWrapper;
 import uk.co.senab.bitmapcache.CacheableImageView;
+import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.model.PhotoSelection;
 import android.content.Context;
@@ -18,6 +19,7 @@ import android.os.AsyncTask;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.util.AttributeSet;
+import android.util.Log;
 
 public class PhotupImageView extends CacheableImageView {
 
@@ -35,16 +37,6 @@ public class PhotupImageView extends CacheableImageView {
 			mCache = cache;
 			mFetchFullSize = fullSize;
 			mUpload = upload;
-		}
-
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-
-			PhotupImageView iv = mImageView.get();
-			if (null != iv) {
-				iv.setImageDrawable(null);
-			}
 		}
 
 		@Override
@@ -190,14 +182,34 @@ public class PhotupImageView extends CacheableImageView {
 		if (upload.requiresProcessing() && honourFilter) {
 			requestFiltered(upload, false);
 		} else {
+			// Clear Drawable
+			setImageDrawable(null);
+
 			requestImage(upload, false);
 		}
 	}
 
 	public void requestFullSize(final PhotoSelection upload, final boolean honourFilter) {
+		boolean clearDrawable = true;
+
+		// Show thumbnail if it's in the cache
+		BitmapLruCache cache = PhotupApplication.getApplication(getContext()).getImageCache();
+		CacheableBitmapWrapper thumbWrapper = cache.get(upload.getThumbnailImageKey());
+		if (null != thumbWrapper && thumbWrapper.hasValidBitmap()) {
+			if (Constants.DEBUG) {
+				Log.d("requestFullSize", "Got Cached Thumbnail");
+			}
+			setImageCachedBitmap(thumbWrapper);
+			clearDrawable = false;
+		}
+
 		if (upload.requiresProcessing() && honourFilter) {
 			requestFiltered(upload, true);
 		} else {
+			if (clearDrawable) {
+				// Clear Drawable
+				setImageDrawable(null);
+			}
 			requestImage(upload, true);
 		}
 	}
