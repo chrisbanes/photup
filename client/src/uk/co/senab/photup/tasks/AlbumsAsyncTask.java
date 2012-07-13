@@ -1,4 +1,4 @@
-package uk.co.senab.photup;
+package uk.co.senab.photup.tasks;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -7,35 +7,35 @@ import org.json.JSONException;
 
 import uk.co.senab.photup.facebook.FacebookRequester;
 import uk.co.senab.photup.listeners.FacebookErrorListener;
-import uk.co.senab.photup.model.FbUser;
+import uk.co.senab.photup.model.Album;
 import android.content.Context;
 import android.os.AsyncTask;
 
 import com.facebook.android.FacebookError;
 
-public class FriendsAsyncTask extends AsyncTask<Void, Void, List<FbUser>> {
+public class AlbumsAsyncTask extends AsyncTask<Void, Void, List<Album>> {
 
-	public static interface FriendsResultListener extends FacebookErrorListener {
-		public void onFriendsLoaded(List<FbUser> friends);
+	public static interface AlbumsResultListener extends FacebookErrorListener {
+		void onAlbumsLoaded(List<Album> albums);
 	}
 
 	private final WeakReference<Context> mContext;
-	private final WeakReference<FriendsResultListener> mListener;
+	private final WeakReference<AlbumsResultListener> mListener;
 
-	public FriendsAsyncTask(Context context, FriendsResultListener listener) {
+	public AlbumsAsyncTask(Context context, AlbumsResultListener listener) {
 		mContext = new WeakReference<Context>(context);
-		mListener = new WeakReference<FriendsResultListener>(listener);
+		mListener = new WeakReference<AlbumsResultListener>(listener);
 	}
 
 	@Override
-	protected List<FbUser> doInBackground(Void... params) {
+	protected List<Album> doInBackground(Void... params) {
 		Context context = mContext.get();
 		if (null != context) {
 			FacebookRequester requester = new FacebookRequester(context);
 			try {
-				return requester.getFriends();
+				return requester.getUploadableAlbums();
 			} catch (FacebookError e) {
-				FriendsResultListener listener = mListener.get();
+				AlbumsResultListener listener = mListener.get();
 				if (null != listener) {
 					listener.onFacebookError(e);
 				} else {
@@ -49,12 +49,12 @@ public class FriendsAsyncTask extends AsyncTask<Void, Void, List<FbUser>> {
 	}
 
 	@Override
-	protected void onPostExecute(List<FbUser> result) {
+	protected void onPostExecute(List<Album> result) {
 		super.onPostExecute(result);
 
-		FriendsResultListener listener = mListener.get();
-		if (null != result && null != listener) {
-			listener.onFriendsLoaded(result);
+		AlbumsResultListener listener = mListener.get();
+		if (null != listener && null != result) {
+			listener.onAlbumsLoaded(result);
 		}
 	}
 

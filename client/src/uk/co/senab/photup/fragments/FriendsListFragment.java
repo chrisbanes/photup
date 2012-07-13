@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import uk.co.senab.photup.FriendsAsyncTask.FriendsResultListener;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.listeners.OnFriendPickedListener;
 import uk.co.senab.photup.model.FbUser;
+import uk.co.senab.photup.tasks.FriendsAsyncTask.FriendsResultListener;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;

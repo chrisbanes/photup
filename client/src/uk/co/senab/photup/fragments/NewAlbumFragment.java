@@ -1,7 +1,7 @@
 package uk.co.senab.photup.fragments;
 
-import uk.co.senab.photup.NewAlbumAsyncTask;
-import uk.co.senab.photup.NewAlbumAsyncTask.NewAlbumResultListener;
+import uk.co.senab.photup.tasks.NewAlbumAsyncTask;
+import uk.co.senab.photup.tasks.NewAlbumAsyncTask.NewAlbumResultListener;
 import uk.co.senab.photup.R;
 import android.app.Activity;
 import android.os.Bundle;

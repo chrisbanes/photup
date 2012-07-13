@@ -3,13 +3,13 @@ package uk.co.senab.photup;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.co.senab.photup.AlbumsAsyncTask.AlbumsResultListener;
 import uk.co.senab.photup.fragments.NewAlbumFragment;
 import uk.co.senab.photup.fragments.NewAlbumFragment.OnAlbumCreatedListener;
 import uk.co.senab.photup.model.Album;
 import uk.co.senab.photup.model.UploadQuality;
 import uk.co.senab.photup.service.PhotoUploadService;
 import uk.co.senab.photup.service.PhotoUploadService.ServiceBinder;
+import uk.co.senab.photup.tasks.AlbumsAsyncTask.AlbumsResultListener;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;

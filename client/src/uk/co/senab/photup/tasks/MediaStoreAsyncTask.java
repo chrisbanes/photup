@@ -1,8 +1,9 @@
-package uk.co.senab.photup;
+package uk.co.senab.photup.tasks;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
 
+import uk.co.senab.photup.Utils;
 import uk.co.senab.photup.model.PhotoSelection;
 import android.content.Context;
 import android.database.Cursor;

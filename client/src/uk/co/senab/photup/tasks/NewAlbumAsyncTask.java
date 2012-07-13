@@ -1,4 +1,4 @@
-package uk.co.senab.photup;
+package uk.co.senab.photup.tasks;
 
 import java.lang.ref.WeakReference;
 
