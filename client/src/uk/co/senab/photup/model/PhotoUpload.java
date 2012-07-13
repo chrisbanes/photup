@@ -1,11 +1,8 @@
 package uk.co.senab.photup.model;
 
 import java.lang.ref.WeakReference;
-import java.util.HashSet;
-import java.util.Set;
 
 import uk.co.senab.photup.R;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,7 +20,7 @@ public class PhotoUpload {
 
 	private Bitmap mBigPictureNotificationBmp;
 
-	private Set<WeakReference<OnUploadStateChanged>> mStateListeners;
+	private WeakReference<OnUploadStateChanged> mStateListener;
 
 	private int mState;
 	private int mProgress;
@@ -67,46 +64,22 @@ public class PhotoUpload {
 		}
 	}
 
-	public void addUploadStateChangedListener(OnUploadStateChanged listener) {
-		if (null == mStateListeners) {
-			mStateListeners = new HashSet<WeakReference<OnUploadStateChanged>>();
-		}
-
-		mStateListeners.add(new WeakReference<PhotoUpload.OnUploadStateChanged>(listener));
+	public void setUploadStateChangedListener(OnUploadStateChanged listener) {
+		mStateListener = new WeakReference<PhotoUpload.OnUploadStateChanged>(listener);
 	}
 
-	public void removeUploadStateChangedListener(OnUploadStateChanged listener) {
-		if (null == mStateListeners) {
-			return;
-		}
-
-		WeakReference<OnUploadStateChanged> refToRemove = null;
-		for (WeakReference<OnUploadStateChanged> ref : mStateListeners) {
-			if (ref.get() == listener) {
-				refToRemove = ref;
-				break;
-			}
-		}
-
-		if (null != refToRemove) {
-			mStateListeners.remove(refToRemove);
-		}
-
-		if (mStateListeners.isEmpty()) {
-			mStateListeners = null;
-		}
+	public void removeUploadStateChangedListener() {
+		mStateListener = null;
 	}
 
 	private void notifyListeners() {
-		if (null == mStateListeners) {
+		if (null == mStateListener) {
 			return;
 		}
 
-		for (WeakReference<OnUploadStateChanged> ref : mStateListeners) {
-			OnUploadStateChanged listener = ref.get();
-			if (null != listener) {
-				listener.onUploadStateChanged(this, mState, mProgress);
-			}
+		OnUploadStateChanged listener = mStateListener.get();
+		if (null != listener) {
+			listener.onUploadStateChanged(this, mState, mProgress);
 		}
 	}
 

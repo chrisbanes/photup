@@ -80,7 +80,8 @@
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:gravity="center"
-		android:padding="@dimen/spacing" >
+		android:paddingTop="@dimen/spacing" 
+		android:paddingBottom="@dimen/spacing" >
 
 		<TextView
 			android:id="@+id/tv_social_fb"

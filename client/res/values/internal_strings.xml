@@ -9,7 +9,7 @@
 
     <string name="twitter_handle">\@photup</string>
     <string name="twitter_address">http://twitter.com/photup</string>
-    <string name="facebook_handle">PhotupUsers</string>
+    <string name="facebook_handle">photup</string>
     <string name="facebook_address">http://www.facebook.com/PhotupUsers</string>
 
 </resources>

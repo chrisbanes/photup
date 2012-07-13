@@ -43,22 +43,15 @@ public class UploadItemLayout extends LinearLayout implements OnUploadStateChang
 
 	public void setPhotoSelection(PhotoSelection selection) {
 		if (null != mSelection) {
-			mSelection.removeUploadStateChangedListener(this);
+			mSelection.removeUploadStateChangedListener();
 			mSelection = null;
 		}
-
 		mSelection = selection;
-		refreshUploadUi();
 
-		mSelection.addUploadStateChangedListener(this);
-	}
-
-	public void refreshUploadUi() {
-		if (null == mSelection) {
-			return;
-		}
-
-		getImageView().requestThumbnail(mSelection, true);
+		/**
+		 * Initial UI Update
+		 */
+		getImageView().requestThumbnail(mSelection, false);
 
 		String caption = mSelection.getCaption();
 		if (TextUtils.isEmpty(caption)) {
@@ -76,6 +69,18 @@ public class UploadItemLayout extends LinearLayout implements OnUploadStateChang
 			tagsTv.setVisibility(View.GONE);
 		}
 
+		/**
+		 * Refresh Progrss Bar and add listener
+		 */
+		refreshUploadUi();
+		mSelection.setUploadStateChangedListener(this);
+	}
+
+	public void refreshUploadUi() {
+		if (null == mSelection) {
+			return;
+		}
+
 		ProgressBar pb = getProgressBar();
 		ImageView resultIv = getResultImageView();
 
@@ -85,7 +90,7 @@ public class UploadItemLayout extends LinearLayout implements OnUploadStateChang
 				resultIv.setImageResource(R.drawable.ic_success);
 				resultIv.setVisibility(View.VISIBLE);
 				break;
-				
+
 			case PhotoUpload.STATE_UPLOAD_ERROR:
 				pb.setVisibility(View.GONE);
 				resultIv.setImageResource(R.drawable.ic_error);
@@ -111,7 +116,7 @@ public class UploadItemLayout extends LinearLayout implements OnUploadStateChang
 
 	public void onUploadStateChanged(PhotoUpload upload, int state, int progress) {
 		if (state == PhotoUpload.STATE_UPLOAD_COMPLETED || state == PhotoUpload.STATE_UPLOAD_ERROR) {
-			upload.removeUploadStateChangedListener(this);
+			upload.removeUploadStateChangedListener();
 		}
 
 		post(new Runnable() {
