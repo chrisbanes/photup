@@ -6,6 +6,7 @@ import java.util.List;
 import org.json.JSONException;
 
 import uk.co.senab.photup.facebook.FacebookRequester;
+import uk.co.senab.photup.listeners.FacebookErrorListener;
 import uk.co.senab.photup.model.FbUser;
 import android.content.Context;
 import android.os.AsyncTask;

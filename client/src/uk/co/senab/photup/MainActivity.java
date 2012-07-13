@@ -1,5 +1,8 @@
 package uk.co.senab.photup;
 
+import com.facebook.android.FacebookError;
+import com.facebook.android.Facebook.ServiceListener;
+
 import uk.co.senab.photup.facebook.Session;
 import android.app.Activity;
 import android.content.Intent;
@@ -17,7 +20,7 @@ public class MainActivity extends Activity {
 		if (null == session) {
 			launchLoginActivity();
 		} else {
-			launchSelectionActivity();
+			launchSelectionActivity(session);
 		}
 	}
 
@@ -25,7 +28,24 @@ public class MainActivity extends Activity {
 		startActivityForResult(new Intent(this, LoginActivity.class), REQUEST_FACEBOOK_LOGIN);
 	}
 
-	private void launchSelectionActivity() {
+	private void launchSelectionActivity(final Session session) {
+		// Extend Access Token if we're not on a debug build
+		if (!Constants.DEBUG) {
+			session.getFb().extendAccessTokenIfNeeded(getApplicationContext(), new ServiceListener() {
+				public void onFacebookError(FacebookError e) {
+					e.printStackTrace();
+				}
+
+				public void onError(Error e) {
+					e.printStackTrace();
+				}
+
+				public void onComplete(Bundle values) {
+					session.save(getApplicationContext());
+				}
+			});
+		}
+
 		startActivity(new Intent(this, PhotoSelectionActivity.class));
 		finish();
 	}
@@ -35,7 +55,7 @@ public class MainActivity extends Activity {
 		switch (requestCode) {
 			case REQUEST_FACEBOOK_LOGIN:
 				if (resultCode == RESULT_OK) {
-					launchSelectionActivity();
+					launchSelectionActivity(Session.restore(this));
 				} else {
 					finish();
 				}

@@ -20,6 +20,7 @@ import uk.co.senab.photup.Constants;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.util.Log;
 
 import com.facebook.android.Facebook;
 
@@ -86,6 +87,7 @@ public class Session {
 	 * @return
 	 */
 	public void save(Context context) {
+		Log.d(getClass().getSimpleName(), "Saving Session! Expires: " + fb.getAccessExpires());
 		Editor editor = context.getSharedPreferences(KEY, Context.MODE_PRIVATE).edit();
 		editor.putString(TOKEN, fb.getAccessToken());
 		editor.putLong(EXPIRES, fb.getAccessExpires());

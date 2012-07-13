@@ -107,6 +107,13 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 	}
 
 	private void logoutOfFacebook() {
+		// Actual log out request
+		Session session = Session.restore(this);
+		if (null != session) {
+			new AsyncFacebookRunner(session.getFb()).logout(getApplicationContext(),
+					new AsyncFacebookRunner.SimpleRequestListener());
+		}
+
 		Session.clearSavedSession(this);
 		refreshUi();
 	}
