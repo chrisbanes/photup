@@ -55,6 +55,7 @@ public class UsersPhotosBaseAdapter extends BaseAdapter implements MediaStoreRes
 
 		final PhotoSelection upload = getItem(position);
 
+		iv.setFadeInDrawables(true);
 		iv.requestThumbnail(upload, false);
 		layout.setPhotoSelection(upload);
 

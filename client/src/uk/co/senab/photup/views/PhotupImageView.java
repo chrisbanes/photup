@@ -148,12 +148,20 @@ public class PhotupImageView extends CacheableImageView {
 	};
 
 	private PhotoTask mCurrentTask;
+
 	private boolean mFadeInDrawables = false;
+	private Drawable mFadeFromDrawable;
+	private int mFadeDuration = 200;
 
 	private Runnable mRequestFaceDetectionRunnable;
 
 	public void setFadeInDrawables(boolean fadeIn) {
 		mFadeInDrawables = fadeIn;
+
+		if (fadeIn && null == mFadeFromDrawable) {
+			mFadeFromDrawable = new ColorDrawable(Color.TRANSPARENT);
+			mFadeDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
+		}
 	}
 
 	public PhotupImageView(Context context) {
@@ -190,26 +198,21 @@ public class PhotupImageView extends CacheableImageView {
 	}
 
 	public void requestFullSize(final PhotoSelection upload, final boolean honourFilter) {
-		boolean clearDrawable = true;
-
-		// Show thumbnail if it's in the cache
-		BitmapLruCache cache = PhotupApplication.getApplication(getContext()).getImageCache();
-		CacheableBitmapWrapper thumbWrapper = cache.get(upload.getThumbnailImageKey());
-		if (null != thumbWrapper && thumbWrapper.hasValidBitmap()) {
-			if (Constants.DEBUG) {
-				Log.d("requestFullSize", "Got Cached Thumbnail");
-			}
-			setImageCachedBitmap(thumbWrapper);
-			clearDrawable = false;
-		}
-
 		if (upload.requiresProcessing() && honourFilter) {
 			requestFiltered(upload, true);
 		} else {
-			if (clearDrawable) {
-				// Clear Drawable
+			// Show thumbnail if it's in the cache
+			BitmapLruCache cache = PhotupApplication.getApplication(getContext()).getImageCache();
+			CacheableBitmapWrapper thumbWrapper = cache.get(upload.getThumbnailImageKey());
+			if (null != thumbWrapper && thumbWrapper.hasValidBitmap()) {
+				if (Constants.DEBUG) {
+					Log.d("requestFullSize", "Got Cached Thumbnail");
+				}
+				setImageCachedBitmap(thumbWrapper);
+			} else {
 				setImageDrawable(null);
 			}
+
 			requestImage(upload, true);
 		}
 	}
@@ -277,10 +280,9 @@ public class PhotupImageView extends CacheableImageView {
 	@Override
 	public void setImageDrawable(Drawable drawable) {
 		if (mFadeInDrawables && null != drawable) {
-			TransitionDrawable newDrawable = new TransitionDrawable(new Drawable[] {
-					new ColorDrawable(Color.TRANSPARENT), drawable });
+			TransitionDrawable newDrawable = new TransitionDrawable(new Drawable[] { mFadeFromDrawable, drawable });
 			super.setImageDrawable(newDrawable);
-			newDrawable.startTransition(300);
+			newDrawable.startTransition(mFadeDuration);
 		} else {
 			super.setImageDrawable(drawable);
 		}
