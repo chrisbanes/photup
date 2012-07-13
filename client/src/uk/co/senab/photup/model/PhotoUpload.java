@@ -19,6 +19,7 @@ public class PhotoUpload {
 	public static final int STATE_WAITING = 0;
 	public static final int STATE_UPLOAD_IN_PROGRESS = 1;
 	public static final int STATE_UPLOAD_COMPLETED = 2;
+	public static final int STATE_UPLOAD_ERROR = 3;
 
 	private Bitmap mBigPictureNotificationBmp;
 
@@ -40,6 +41,7 @@ public class PhotoUpload {
 			mState = state;
 
 			switch (state) {
+				case STATE_UPLOAD_ERROR:
 				case STATE_UPLOAD_COMPLETED:
 					if (null != mBigPictureNotificationBmp) {
 						mBigPictureNotificationBmp.recycle();
@@ -48,7 +50,6 @@ public class PhotoUpload {
 				case STATE_WAITING:
 					mProgress = -1;
 					break;
-
 			}
 
 			notifyListeners();

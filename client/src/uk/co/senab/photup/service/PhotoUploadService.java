@@ -40,6 +40,8 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.facebook.android.Facebook;
+import com.facebook.android.FacebookError;
+import com.facebook.android.Util;
 import com.jakewharton.notificationcompat2.NotificationCompat2;
 import com.jakewharton.notificationcompat2.NotificationCompat2.BigPictureStyle;
 
@@ -51,6 +53,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 	static final int MSG_UPLOAD_COMPLETE = 0;
 	static final int MSG_UPLOAD_PROGRESS = 1;
+	static final int MSG_UPLOAD_FAILED = 2;
 
 	static final String TEMPORARY_FILE_NAME = "upload_temp.jpg";
 
@@ -155,15 +158,12 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 				Log.d(LOG_TAG, "Starting Facebook Request");
 			}
 
-			boolean complete = false;
+			String response = null;
 			int retries = 0;
 			do {
 				try {
 					InputStream is = new ProgressInputStream(new FileInputStream(temporaryFile), temporaryFile.length());
-					String response = facebook.request(mAlbumId + "/photos", bundle, "POST", is, "source");
-					complete = true;
-
-					// TODO Parse Response
+					response = facebook.request(mAlbumId + "/photos", bundle, "POST", is, "source");
 					Log.d(LOG_TAG, response);
 				} catch (MalformedURLException e) {
 					e.printStackTrace();
@@ -172,13 +172,26 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 				} finally {
 					retries++;
 				}
-			} while (!complete && retries < MAX_NUMBER_RETRIES);
+			} while (response == null && retries < MAX_NUMBER_RETRIES);
 
 			// Delete Temporary File
 			temporaryFile.delete();
 
-			// Send complete message
-			mHandler.sendMessage(mHandler.obtainMessage(MSG_UPLOAD_COMPLETE, mUpload));
+			if (null != response) {
+				try {
+					Util.parseJson(response);
+					// If we get here, we've successfully uploaded the photos
+					mHandler.sendMessage(mHandler.obtainMessage(MSG_UPLOAD_COMPLETE, mUpload));
+					return;
+				} catch (FacebookError e) {
+					e.printStackTrace();
+				} catch (Throwable e) {
+					e.printStackTrace();
+				}
+			}
+
+			// If we get here, we've errored somewhere
+			mHandler.sendMessage(mHandler.obtainMessage(MSG_UPLOAD_FAILED, mUpload));
 		}
 
 		class ProgressInputStream extends FilterInputStream {
@@ -266,6 +279,9 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 			case MSG_UPLOAD_COMPLETE:
 				onFinishedUpload((PhotoSelection) msg.obj);
 				return true;
+			case MSG_UPLOAD_FAILED:
+				onFailedUpload((PhotoSelection) msg.obj);
+				return true;
 			case MSG_UPLOAD_PROGRESS:
 				// Update the upload progress on the main thread
 				PhotoSelection upload = (PhotoSelection) msg.obj;
@@ -298,7 +314,16 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	private void onFinishedUpload(PhotoSelection completedUpload) {
 		completedUpload.setState(PhotoUpload.STATE_UPLOAD_COMPLETED);
 		mNumberUploaded++;
+		startNextUploadOrFinish();
+	}
 
+	private void onFailedUpload(PhotoSelection failedUpload) {
+		failedUpload.setState(PhotoUpload.STATE_UPLOAD_ERROR);
+		mNumberUploaded++;
+		startNextUploadOrFinish();
+	}
+
+	void startNextUploadOrFinish() {
 		PhotoSelection nextUpload = mController.getNextPhotoToUpload();
 		if (null != nextUpload) {
 			startUpload(nextUpload);

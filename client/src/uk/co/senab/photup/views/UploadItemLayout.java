@@ -82,8 +82,13 @@ public class UploadItemLayout extends LinearLayout implements OnUploadStateChang
 		switch (mSelection.getState()) {
 			case PhotoUpload.STATE_UPLOAD_COMPLETED:
 				pb.setVisibility(View.GONE);
-
 				resultIv.setImageResource(R.drawable.ic_success);
+				resultIv.setVisibility(View.VISIBLE);
+				break;
+				
+			case PhotoUpload.STATE_UPLOAD_ERROR:
+				pb.setVisibility(View.GONE);
+				resultIv.setImageResource(R.drawable.ic_error);
 				resultIv.setVisibility(View.VISIBLE);
 				break;
 
@@ -105,7 +110,7 @@ public class UploadItemLayout extends LinearLayout implements OnUploadStateChang
 	}
 
 	public void onUploadStateChanged(PhotoUpload upload, int state, int progress) {
-		if (state == PhotoUpload.STATE_UPLOAD_COMPLETED) {
+		if (state == PhotoUpload.STATE_UPLOAD_COMPLETED || state == PhotoUpload.STATE_UPLOAD_ERROR) {
 			upload.removeUploadStateChangedListener(this);
 		}
 
