@@ -25,7 +25,6 @@ public class MainActivity extends Activity {
 		startActivityForResult(new Intent(this, LoginActivity.class), REQUEST_FACEBOOK_LOGIN);
 	}
 
-	
 	private void launchSelectionActivity() {
 		startActivity(new Intent(this, PhotoSelectionActivity.class));
 		finish();
@@ -37,6 +36,8 @@ public class MainActivity extends Activity {
 			case REQUEST_FACEBOOK_LOGIN:
 				if (resultCode == RESULT_OK) {
 					launchSelectionActivity();
+				} else {
+					finish();
 				}
 				return;
 		}

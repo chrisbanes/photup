@@ -12,8 +12,6 @@ import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 
-import com.facebook.android.FacebookError;
-
 import uk.co.senab.bitmapcache.BitmapLruCache;
 import uk.co.senab.photup.AlbumsAsyncTask.AlbumsResultListener;
 import uk.co.senab.photup.FriendsAsyncTask.FriendsResultListener;
@@ -24,9 +22,12 @@ import uk.co.senab.photup.model.FbUser;
 import uk.co.senab.photup.model.PhotoSelection;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
+
+import com.facebook.android.FacebookError;
 
 @ReportsCrashes(formKey = Constants.ACRA_GOOGLE_DOC_ID, mode = ReportingInteractionMode.TOAST, resToastText = R.string.crash_toast)
 public class PhotupApplication extends Application implements FriendsResultListener, AlbumsResultListener,
@@ -192,6 +193,11 @@ public class PhotupApplication extends Application implements FriendsResultListe
 	public void onFacebookError(FacebookError e) {
 		Log.e("PhotupApplication", "FacebookError");
 		e.printStackTrace();
+
+		Session.clearSavedSession(this);
+		Intent intent = new Intent(this, MainActivity.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+		startActivity(intent);
 	}
 
 }

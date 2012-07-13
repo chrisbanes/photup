@@ -34,10 +34,18 @@
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <Button
+        android:id="@+id/btn_login"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/double_spacing"
-        android:onClick="loginToFacebook"
         android:text="@string/login" />
+
+    <Button
+        android:id="@+id/btn_logout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/double_spacing"
+        android:text="@string/logout"
+        android:visibility="gone" />
 
 </LinearLayout>
