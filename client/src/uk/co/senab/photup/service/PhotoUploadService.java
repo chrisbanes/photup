@@ -12,6 +12,10 @@ import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 import java.util.concurrent.ExecutorService;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.PhotoSelectionActivity;
 import uk.co.senab.photup.PhotoUploadController;
@@ -20,6 +24,7 @@ import uk.co.senab.photup.R;
 import uk.co.senab.photup.facebook.Session;
 import uk.co.senab.photup.model.Album;
 import uk.co.senab.photup.model.PhotoSelection;
+import uk.co.senab.photup.model.PhotoTag;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.model.UploadQuality;
 import android.app.NotificationManager;
@@ -125,6 +130,26 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 			String caption = mUpload.getCaption();
 			if (!TextUtils.isEmpty(caption)) {
 				bundle.putString("message", caption);
+			}
+
+			/**
+			 * Photo Tags
+			 */
+			if (mUpload.getPhotoTagsCount() > 0) {
+				JSONArray tags = new JSONArray();
+				for (PhotoTag tag : mUpload.getPhotoTags()) {
+					if (tag.hasFriend()) {
+						try {
+							tags.put(tag.toJsonObject());
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+
+				if (tags.length() > 0) {
+					bundle.putString("tags", tags.toString());
+				}
 			}
 
 			// TODO ADD PLACE param

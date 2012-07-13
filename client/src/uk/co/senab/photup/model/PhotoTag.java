@@ -1,5 +1,8 @@
 package uk.co.senab.photup.model;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import uk.co.senab.photup.Constants;
 import android.util.Log;
 
@@ -44,6 +47,14 @@ public class PhotoTag {
 
 	public void setFriend(FbUser friend) {
 		mFriend = friend;
+	}
+
+	public JSONObject toJsonObject() throws JSONException {
+		JSONObject object = new JSONObject();
+		object.put("tag_uid", mFriend.getId());
+		object.put("x", mX);
+		object.put("y", mY);
+		return object;
 	}
 
 }
