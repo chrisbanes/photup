@@ -26,40 +26,51 @@
             android:src="@drawable/ic_logo" />
     </LinearLayout>
 
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="0px"
-        android:layout_weight="1" />
-
-    <LinearLayout
+    <TextView
+        android:id="@+id/tv_login_message"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
-        android:gravity="center"
-        android:orientation="vertical" >
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:padding="@dimen/double_spacing"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@android:color/white" />
 
-        <TextView
-            android:id="@+id/tv_login_message"
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/double_spacing"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:background="@android:color/white"
+            android:gravity="center"
+            android:orientation="vertical" >
 
-        <Button
-            android:id="@+id/btn_login"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/double_spacing"
-            android:text="@string/login" />
+            <Button
+                android:id="@+id/btn_login"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/double_spacing"
+                android:text="@string/login" />
 
-        <Button
-            android:id="@+id/btn_logout"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/double_spacing"
-            android:text="@string/logout"
-            android:visibility="gone" />
-    </LinearLayout>
+            <Button
+                android:id="@+id/btn_logout"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/double_spacing"
+                android:text="@string/logout"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/btn_libraries"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/double_spacing"
+                android:text="@string/libraries"
+                android:visibility="gone" />
+        </LinearLayout>
+    </ScrollView>
 
     <View
         android:layout_width="fill_parent"
