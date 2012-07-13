@@ -56,6 +56,9 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 	public boolean onOptionsItemSelected(MenuItem item) {
 
 		switch (item.getItemId()) {
+			case android.R.id.home:
+				startActivity(new Intent(this, LoginActivity.class));
+				return true;
 			case R.id.menu_upload:
 				if (mPhotoController.getSelectedPhotoUploadsSize() == 0) {
 					Toast.makeText(this, R.string.error_select_photos, Toast.LENGTH_SHORT).show();

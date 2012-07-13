@@ -46,7 +46,7 @@
         </activity>
         <activity
             android:name=".LoginActivity"
-            android:theme="@style/Theme.Sherlock.NoActionBar" >
+            android:theme="@style/Theme.Sherlock.Light.NoActionBar" >
         </activity>
 
         <service android:name=".service.PhotoUploadService" />

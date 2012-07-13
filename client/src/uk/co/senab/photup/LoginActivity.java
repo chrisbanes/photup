@@ -10,9 +10,11 @@ import org.json.JSONObject;
 import uk.co.senab.photup.facebook.Session;
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.facebook.android.AsyncFacebookRunner;
 import com.facebook.android.AsyncFacebookRunner.RequestListener;
@@ -28,12 +30,18 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 	private Facebook mFacebook;
 
 	private Button mLoginBtn, mLogoutBtn;
+	private View mFacebookBtn, mTwitterBtn;
+	private TextView mMessageTv;
 
 	public void onClick(View v) {
 		if (v == mLoginBtn) {
 			loginToFacebook();
 		} else if (v == mLogoutBtn) {
 			logoutOfFacebook();
+		} else if (v == mFacebookBtn) {
+			startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.facebook_address))));
+		} else if (v == mTwitterBtn) {
+			startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.twitter_address))));
 		}
 	}
 
@@ -50,11 +58,19 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
 		mLoginBtn = (Button) findViewById(R.id.btn_login);
 		mLoginBtn.setOnClickListener(this);
-		
+
 		mLogoutBtn = (Button) findViewById(R.id.btn_logout);
 		mLogoutBtn.setOnClickListener(this);
+
+		mFacebookBtn = findViewById(R.id.tv_social_fb);
+		mFacebookBtn.setOnClickListener(this);
+
+		mTwitterBtn = findViewById(R.id.tv_social_twitter);
+		mTwitterBtn.setOnClickListener(this);
+
+		mMessageTv = (TextView) findViewById(R.id.tv_login_message);
 	}
-	
+
 	@Override
 	protected void onStart() {
 		super.onStart();
@@ -90,9 +106,12 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 	private void refreshUi() {
 		Session session = Session.restore(this);
 		if (null != session) {
+			mMessageTv.setVisibility(View.GONE);
 			mLoginBtn.setVisibility(View.GONE);
 			mLogoutBtn.setVisibility(View.VISIBLE);
 		} else {
+			mMessageTv.setText(R.string.welcome_message);
+			mMessageTv.setVisibility(View.VISIBLE);
 			mLoginBtn.setVisibility(View.VISIBLE);
 			mLogoutBtn.setVisibility(View.GONE);
 		}

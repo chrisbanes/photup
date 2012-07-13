@@ -122,6 +122,9 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 	public boolean onOptionsItemSelected(MenuItem item) {
 
 		switch (item.getItemId()) {
+			case android.R.id.home:
+				finish();
+				return true;
 			case R.id.menu_filters:
 				showFiltersView();
 				return true;
@@ -211,6 +214,8 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 
 		mFadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.photo_fade_out);
 		mFriendsFragment = new FriendsListFragment();
+		
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
 	@Override

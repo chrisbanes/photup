@@ -3,12 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_login_gradient"
-    android:gravity="center"
     android:orientation="vertical" >
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/double_spacing"
         android:background="@color/translucent_grey"
         android:gravity="center"
         android:paddingBottom="@dimen/double_spacing"
@@ -26,26 +26,63 @@
             android:src="@drawable/ic_logo" />
     </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/double_spacing"
-        android:text="@string/welcome_message"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="0px"
+        android:layout_weight="1" />
 
-    <Button
-        android:id="@+id/btn_login"
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/double_spacing"
-        android:text="@string/login" />
+        android:background="@android:color/white"
+        android:gravity="center"
+        android:orientation="vertical" >
 
-    <Button
-        android:id="@+id/btn_logout"
+        <TextView
+            android:id="@+id/tv_login_message"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/double_spacing"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <Button
+            android:id="@+id/btn_login"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/double_spacing"
+            android:text="@string/login" />
+
+        <Button
+            android:id="@+id/btn_logout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/double_spacing"
+            android:text="@string/logout"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="0px"
+        android:layout_weight="1" />
+
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/double_spacing"
-        android:text="@string/logout"
-        android:visibility="gone" />
+        android:gravity="center"
+        android:padding="@dimen/double_spacing" >
+
+        <TextView
+            android:id="@+id/tv_social_fb"
+            style="@style/SocialHandleTextView"
+            android:drawableLeft="@drawable/ic_social_fb"
+            android:text="@string/facebook_handle" />
+
+        <TextView
+            android:id="@+id/tv_social_twitter"
+            style="@style/SocialHandleTextView"
+            android:drawableLeft="@drawable/ic_social_twitter"
+            android:text="@string/twitter_handle" />
+    </LinearLayout>
 
 </LinearLayout>
