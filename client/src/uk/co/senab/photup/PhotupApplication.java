@@ -12,6 +12,8 @@ import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 
+import com.facebook.android.FacebookError;
+
 import uk.co.senab.bitmapcache.BitmapLruCache;
 import uk.co.senab.photup.AlbumsAsyncTask.AlbumsResultListener;
 import uk.co.senab.photup.FriendsAsyncTask.FriendsResultListener;
@@ -22,6 +24,7 @@ import uk.co.senab.photup.model.FbUser;
 import uk.co.senab.photup.model.PhotoSelection;
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
@@ -184,6 +187,11 @@ public class PhotupApplication extends Application implements FriendsResultListe
 				mMediaStoreListener = null;
 			}
 		}
+	}
+
+	public void onFacebookError(FacebookError e) {
+		Log.e("PhotupApplication", "FacebookError");
+		e.printStackTrace();
 	}
 
 }

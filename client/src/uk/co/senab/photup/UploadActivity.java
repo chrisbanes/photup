@@ -31,6 +31,7 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.facebook.android.FacebookError;
 import com.lightbox.android.photoprocessing.R;
 
 public class UploadActivity extends SherlockFragmentActivity implements ServiceConnection, AlbumsResultListener,
@@ -55,7 +56,7 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		mQualityRadioGroup = (RadioGroup) findViewById(R.id.rg_upload_quality);
 		mAlbumSpinner = (Spinner) findViewById(R.id.sp_upload_album);
 		mAlbumSpinner.setEnabled(false);
-		
+
 		mNewAlbumButton = (ImageButton) findViewById(R.id.btn_new_album);
 		mNewAlbumButton.setOnClickListener(this);
 
@@ -162,6 +163,10 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 
 	public void onAlbumCreated() {
 		PhotupApplication.getApplication(this).getAlbums(this, true);
+	}
+
+	public void onFacebookError(FacebookError e) {
+		// NO-OP
 	}
 
 }

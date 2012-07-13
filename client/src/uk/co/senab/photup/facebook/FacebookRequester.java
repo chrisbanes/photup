@@ -36,7 +36,7 @@ public class FacebookRequester {
 		mFacebook = mSession.getFb();
 	}
 
-	public List<FbUser> getFriends() {
+	public List<FbUser> getFriends() throws FacebookError, JSONException {
 		Bundle b = new Bundle();
 		b.putString("date_format", "U");
 		b.putString("limit", "3000");
@@ -52,36 +52,29 @@ public class FacebookRequester {
 			return null;
 		}
 
-		try {
-			JSONObject document = Util.parseJson(response);
+		JSONObject document = Util.parseJson(response);
 
-			JSONArray data = document.getJSONArray("data");
-			ArrayList<FbUser> friends = new ArrayList<FbUser>(data.length() * 2);
-			friends.add(FbUser.getMeFromSession(mSession));
+		JSONArray data = document.getJSONArray("data");
+		ArrayList<FbUser> friends = new ArrayList<FbUser>(data.length() * 2);
+		friends.add(FbUser.getMeFromSession(mSession));
 
-			JSONObject object;
-			for (int i = 0, z = data.length(); i < z; i++) {
-				try {
-					object = data.getJSONObject(i);
-					friends.add(new FbUser(object));
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
+		JSONObject object;
+		for (int i = 0, z = data.length(); i < z; i++) {
+			try {
+				object = data.getJSONObject(i);
+				friends.add(new FbUser(object));
+			} catch (JSONException e) {
+				e.printStackTrace();
 			}
-
-			Collections.sort(friends, FbUser.getComparator());
-
-			return friends;
-		} catch (FacebookError e) {
-			e.printStackTrace();
-		} catch (JSONException e) {
-			e.printStackTrace();
 		}
 
-		return null;
+		Collections.sort(friends, FbUser.getComparator());
+
+		return friends;
+
 	}
 
-	public List<Album> getUploadableAlbums() {
+	public List<Album> getUploadableAlbums() throws FacebookError, JSONException {
 		Bundle b = new Bundle();
 		b.putString("date_format", "U");
 		b.putString("limit", "3000");
@@ -97,33 +90,25 @@ public class FacebookRequester {
 			return null;
 		}
 
-		try {
-			JSONObject document = Util.parseJson(response);
+		JSONObject document = Util.parseJson(response);
 
-			JSONArray data = document.getJSONArray("data");
-			ArrayList<Album> albums = new ArrayList<Album>(data.length());
+		JSONArray data = document.getJSONArray("data");
+		ArrayList<Album> albums = new ArrayList<Album>(data.length());
 
-			JSONObject object;
-			for (int i = 0, z = data.length(); i < z; i++) {
-				try {
-					object = data.getJSONObject(i);
-					Album album = new Album(object);
-					if (album.canUpload()) {
-						albums.add(album);
-					}
-				} catch (JSONException e) {
-					e.printStackTrace();
+		JSONObject object;
+		for (int i = 0, z = data.length(); i < z; i++) {
+			try {
+				object = data.getJSONObject(i);
+				Album album = new Album(object);
+				if (album.canUpload()) {
+					albums.add(album);
 				}
+			} catch (JSONException e) {
+				e.printStackTrace();
 			}
-
-			return albums;
-		} catch (FacebookError e) {
-			e.printStackTrace();
-		} catch (JSONException e) {
-			e.printStackTrace();
 		}
 
-		return null;
+		return albums;
 	}
 
 	public String createNewAlbum(String albumName, String description, String privacy) {

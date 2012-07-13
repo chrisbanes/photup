@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockDialogFragment;
+import com.facebook.android.FacebookError;
 
 public class FriendsListFragment extends SherlockDialogFragment implements FriendsResultListener, OnItemClickListener,
 		TextWatcher {
@@ -116,6 +117,10 @@ public class FriendsListFragment extends SherlockDialogFragment implements Frien
 
 	public void onTextChanged(CharSequence s, int start, int before, int count) {
 		mAdapter.getFilter().filter(s);
+	}
+
+	public void onFacebookError(FacebookError e) {
+		// NO-OP
 	}
 
 }

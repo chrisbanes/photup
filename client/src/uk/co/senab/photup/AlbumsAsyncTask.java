@@ -3,15 +3,19 @@ package uk.co.senab.photup;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
+import org.json.JSONException;
+
 import uk.co.senab.photup.facebook.FacebookRequester;
 import uk.co.senab.photup.model.Album;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.facebook.android.FacebookError;
+
 public class AlbumsAsyncTask extends AsyncTask<Void, Void, List<Album>> {
 
-	public static interface AlbumsResultListener {
-		public void onAlbumsLoaded(List<Album> albums);
+	public static interface AlbumsResultListener extends FacebookErrorListener {
+		void onAlbumsLoaded(List<Album> albums);
 	}
 
 	private final WeakReference<Context> mContext;
@@ -27,7 +31,18 @@ public class AlbumsAsyncTask extends AsyncTask<Void, Void, List<Album>> {
 		Context context = mContext.get();
 		if (null != context) {
 			FacebookRequester requester = new FacebookRequester(context);
-			return requester.getUploadableAlbums();
+			try {
+				return requester.getUploadableAlbums();
+			} catch (FacebookError e) {
+				AlbumsResultListener listener = mListener.get();
+				if (null != listener) {
+					listener.onFacebookError(e);
+				} else {
+					e.printStackTrace();
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
 		}
 		return null;
 	}
@@ -37,7 +52,7 @@ public class AlbumsAsyncTask extends AsyncTask<Void, Void, List<Album>> {
 		super.onPostExecute(result);
 
 		AlbumsResultListener listener = mListener.get();
-		if (null != listener) {
+		if (null != listener && null != result) {
 			listener.onAlbumsLoaded(result);
 		}
 	}
