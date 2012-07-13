@@ -48,6 +48,9 @@
             android:name=".LoginActivity"
             android:theme="@style/Theme.Sherlock.Light.NoActionBar" >
         </activity>
+        <activity
+            android:name=".LicencesActivity"
+            android:label="@string/libraries" />
 
         <service android:name=".service.PhotoUploadService" />
     </application>

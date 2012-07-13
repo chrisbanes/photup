@@ -29,8 +29,7 @@
     <string name="empty_selected_photos">You have not selected any photos yet.</string>
     <string name="welcome_message">Welcome to photup. To continue press the button below to login to Facebook.</string>
     <string name="login">Login</string>
-    <string name="logout">Logout</string>
-    
+    <string name="logout">Logout %1$s</string>
     <string name="libraries">Libraries</string>
 
 </resources>

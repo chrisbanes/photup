@@ -43,7 +43,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 		} else if (v == mTwitterBtn) {
 			startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.twitter_address))));
 		} else if (v == mLibrariesBtn) {
-			// TODO Add this
+			startActivity(new Intent(this, LicencesActivity.class));
 		}
 	}
 
@@ -114,6 +114,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 		if (null != session) {
 			mMessageTv.setVisibility(View.INVISIBLE);
 			mLoginBtn.setVisibility(View.GONE);
+			mLogoutBtn.setText(getString(R.string.logout, session.getName()));
 			mLogoutBtn.setVisibility(View.VISIBLE);
 			mLibrariesBtn.setVisibility(View.VISIBLE);
 		} else {
