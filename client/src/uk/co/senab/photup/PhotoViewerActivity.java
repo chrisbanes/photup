@@ -206,11 +206,7 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 
 		final int requestedPosition = intent.getIntExtra(EXTRA_POSITION, 0);
 		if (mAdapter.getCount() > requestedPosition) {
-			if (mViewPager.getCurrentItem() != requestedPosition) {
-				mViewPager.setCurrentItem(requestedPosition);
-			} else {
-				onPageSelected(requestedPosition);
-			}
+			mViewPager.setCurrentItem(requestedPosition);
 		}
 
 		mFadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.photo_fade_out);
