@@ -37,8 +37,10 @@ public class PhotoItemLayout extends CheckableFrameLayout implements View.OnClic
 		mButton.setOnClickListener(this);
 		mButton.setImageResource(R.drawable.btn_selection);
 
-		int dimension = getResources().getDimensionPixelSize(R.dimen.button_selection_dimension);
-		addView(mButton, new FrameLayout.LayoutParams(dimension, dimension, Gravity.RIGHT | Gravity.TOP));
+		int dimension = getResources().getDimensionPixelSize(R.dimen.spacing);
+		addView(mButton, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
+				FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.RIGHT | Gravity.TOP));
+		mButton.setPadding(dimension, dimension, dimension, dimension);
 	}
 
 	public PhotupImageView getImageView() {
