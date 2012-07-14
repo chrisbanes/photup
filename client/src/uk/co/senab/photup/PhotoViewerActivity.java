@@ -24,6 +24,7 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
@@ -204,18 +205,28 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 		} else {
 			mAdapter = new SelectedPhotosViewPagerAdapter(this, this, this);
 		}
-
 		mViewPager.setAdapter(mAdapter);
 
 		final int requestedPosition = intent.getIntExtra(EXTRA_POSITION, 0);
-		if (mAdapter.getCount() > requestedPosition) {
-			mViewPager.setCurrentItem(requestedPosition);
-		}
+		mViewPager.setCurrentItem(requestedPosition);
 
 		mFadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.photo_fade_out);
 		mFriendsFragment = new FriendsListFragment();
-		
+
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+		/**
+		 * Nasty hack, basically we need to know when the ViewPager is laid out,
+		 * we then manually call onPageSelected. This is to fix onPageSelected
+		 * not being called on the first item.
+		 */
+		mViewPager.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+			@SuppressWarnings("deprecation")
+			public void onGlobalLayout() {
+				mViewPager.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+				onPageSelected(mViewPager.getCurrentItem());
+			}
+		});
 	}
 
 	@Override
