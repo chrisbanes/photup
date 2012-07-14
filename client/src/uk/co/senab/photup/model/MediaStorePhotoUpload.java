@@ -80,8 +80,32 @@ public class MediaStorePhotoUpload extends PhotoSelection {
 	@Override
 	public Bitmap getUploadImage(Context context, final UploadQuality quality) {
 		Utils.checkPhotoProcessingThread();
-		
-		Bitmap bitmap = null;
+
+		// Try and get bitmap natively first
+		Bitmap bitmap = getUploadImageNative(context, quality);
+
+		if (null == bitmap) {
+			if (Constants.DEBUG) {
+				Log.d("MediaStorePhotoUpload", "getUploadImageNative failed, trying Java decode!");
+			}
+			try {
+				bitmap = Utils.resizeBitmap(context.getContentResolver(), getOriginalPhotoUri(),
+						quality.getMaxDimension());
+				bitmap = Utils.fineResizePhoto(bitmap, quality.getMaxDimension());
+
+				if (requiresProcessing()) {
+					bitmap = processBitmap(bitmap, true);
+				}
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+
+		return bitmap;
+	}
+
+	Bitmap getUploadImageNative(final Context context, final UploadQuality quality) {
 		try {
 			String path = Utils.getPathFromContentUri(context.getContentResolver(), getOriginalPhotoUri());
 			if (null != path) {
@@ -100,9 +124,19 @@ public class MediaStorePhotoUpload extends PhotoSelection {
 					Log.d("MediaStorePhotoUpload", "getUploadImage. Init " + size.width + "x" + size.height);
 				}
 
-				PhotoProcessing.nativeLoadResizedJpegBitmap(jpegData, jpegData.length, size.width * size.height);
-				if (Constants.DEBUG) {
-					Log.d("MediaStorePhotoUpload", "getUploadImage. Native decode complete!");
+				final int decodeResult = PhotoProcessing.nativeLoadResizedJpegBitmap(jpegData, jpegData.length,
+						size.width * size.height);
+				if (decodeResult == 0) {
+					if (Constants.DEBUG) {
+						Log.d("MediaStorePhotoUpload", "getUploadImage. Native decode complete! Result: "
+								+ decodeResult);
+					}
+				} else {
+					if (Constants.DEBUG) {
+						Log.d("MediaStorePhotoUpload", "getUploadImage. Native decode failed :( Result: "
+								+ decodeResult);
+					}
+					return null;
 				}
 
 				// Free the byte[]
@@ -117,49 +151,37 @@ public class MediaStorePhotoUpload extends PhotoSelection {
 
 				final int orientation = Utils.getOrientationFromContentUri(context.getContentResolver(),
 						getOriginalPhotoUri());
-				switch (orientation) {
-					case 90:
-						PhotoProcessing.nativeRotate90();
-						break;
-					case 180:
-						PhotoProcessing.nativeRotate180();
-						break;
-					case 270:
-						PhotoProcessing.nativeRotate180();
-						PhotoProcessing.nativeRotate90();
-						break;
-				}
-				if (Constants.DEBUG && orientation != 0) {
-					Log.d("MediaStorePhotoUpload", "getUploadImage. " + orientation + " degree rotation complete!");
+				if (orientation != 0) {
+					switch (orientation) {
+						case 90:
+							PhotoProcessing.nativeRotate90();
+							break;
+						case 180:
+							PhotoProcessing.nativeRotate180();
+							break;
+						case 270:
+							PhotoProcessing.nativeRotate180();
+							PhotoProcessing.nativeRotate90();
+							break;
+					}
+					if (Constants.DEBUG) {
+						Log.d("MediaStorePhotoUpload", "getUploadImage. " + orientation + " degree rotation complete!");
+					}
 				}
 
 				if (Constants.DEBUG) {
 					Log.d("MediaStorePhotoUpload", "getUploadImage. Native worked!");
 				}
-				bitmap = PhotoProcessing.getBitmapFromNative(null);
+
+				return PhotoProcessing.getBitmapFromNative(null);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			// Just in case...
+			PhotoProcessing.nativeDeleteBitmap();
 		}
 
-		if (null == bitmap) {
-			if (Constants.DEBUG) {
-				Log.d("MediaStorePhotoUpload", "getUploadImage. Native failed, trying Java decode!");
-			}
-			try {
-				bitmap = Utils.resizeBitmap(context.getContentResolver(), getOriginalPhotoUri(),
-						quality.getMaxDimension());
-				bitmap = Utils.fineResizePhoto(bitmap, quality.getMaxDimension());
-				
-				if (requiresProcessing()) {
-					bitmap = processBitmap(bitmap, true);
-				}
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-				return null;
-			}
-		}
-
-		return bitmap;
+		return null;
 	}
 }
