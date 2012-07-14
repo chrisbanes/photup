@@ -154,15 +154,12 @@ public class Utils {
 				Log.d("Utils", "Resized bitmap to: " + bitmap.getWidth() + "x" + bitmap.getHeight());
 			}
 
-			final String filePath = getPathFromContentUri(resolver, uri);
-			if (null != filePath) {
-				final int angle = MediaUtils.getExifOrientation(filePath);
-				if (angle != 0) {
-					if (Constants.DEBUG) {
-						Log.d("Utils", "Rotating bitmap by: " + angle);
-					}
-					bitmap = rotate(bitmap, angle);
+			final int angle = Utils.getOrientationFromContentUri(resolver, uri);
+			if (angle != 0) {
+				if (Constants.DEBUG) {
+					Log.d("Utils", "Rotating bitmap by: " + angle);
 				}
+				bitmap = rotate(bitmap, angle);
 			}
 		}
 
@@ -212,7 +209,7 @@ public class Utils {
 	}
 
 	public static Bitmap rotate(Bitmap original, int angle) {
-		
+
 		final boolean dimensionsChanged = angle == 90 || angle == 270;
 		final int oldWidth = original.getWidth();
 		final int oldHeight = original.getHeight();

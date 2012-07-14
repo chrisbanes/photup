@@ -114,6 +114,24 @@ public class MediaStorePhotoUpload extends PhotoSelection {
 					}
 				}
 
+				final int orientation = Utils.getOrientationFromContentUri(context.getContentResolver(),
+						getOriginalPhotoUri());
+				switch (orientation) {
+					case 90:
+						PhotoProcessing.nativeRotate90();
+						break;
+					case 180:
+						PhotoProcessing.nativeRotate180();
+						break;
+					case 270:
+						PhotoProcessing.nativeRotate180();
+						PhotoProcessing.nativeRotate90();
+						break;
+				}
+				if (Constants.DEBUG) {
+					Log.d("MediaStorePhotoUpload", "getUploadImage. Rotation complete!");
+				}
+
 				if (Constants.DEBUG) {
 					Log.d("MediaStorePhotoUpload", "getUploadImage. Native worked!");
 				}
