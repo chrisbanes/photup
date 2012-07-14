@@ -53,6 +53,8 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 
 		setContentView(R.layout.activity_upload);
 
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 		mQualityRadioGroup = (RadioGroup) findViewById(R.id.rg_upload_quality);
 		mAlbumSpinner = (Spinner) findViewById(R.id.sp_upload_album);
 		mAlbumSpinner.setEnabled(false);
@@ -120,6 +122,9 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+			case android.R.id.home:
+				finish();
+				return true;
 			case R.id.menu_upload:
 				upload();
 				return true;
