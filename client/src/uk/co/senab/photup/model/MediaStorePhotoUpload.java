@@ -128,8 +128,8 @@ public class MediaStorePhotoUpload extends PhotoSelection {
 						PhotoProcessing.nativeRotate90();
 						break;
 				}
-				if (Constants.DEBUG) {
-					Log.d("MediaStorePhotoUpload", "getUploadImage. Rotation complete!");
+				if (Constants.DEBUG && orientation != 0) {
+					Log.d("MediaStorePhotoUpload", "getUploadImage. " + orientation + " degree rotation complete!");
 				}
 
 				if (Constants.DEBUG) {
