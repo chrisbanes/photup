@@ -2,10 +2,7 @@ package uk.co.senab.photup;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 
-import uk.co.senab.photup.model.MediaStorePhotoUpload;
-import uk.co.senab.photup.model.PhotoSelection;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -17,7 +14,6 @@ import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.provider.MediaStore.Images.ImageColumns;
 import android.util.FloatMath;
 import android.util.Log;
 import android.view.View;
@@ -191,18 +187,6 @@ public class Utils {
 		Uri contentUri = Uri.fromFile(file);
 		mediaScanIntent.setData(contentUri);
 		context.sendBroadcast(mediaScanIntent);
-	}
-
-	public static ArrayList<PhotoSelection> cursorToSelectionList(Uri contentUri, Cursor cursor) {
-		PhotoSelection item;
-		ArrayList<PhotoSelection> items = new ArrayList<PhotoSelection>(cursor.getCount());
-
-		while (cursor.moveToNext()) {
-			item = new MediaStorePhotoUpload(contentUri, cursor.getInt(cursor.getColumnIndexOrThrow(ImageColumns._ID)));
-			items.add(item);
-		}
-
-		return items;
 	}
 
 	public static Bitmap rotate(Bitmap original, int angle) {
