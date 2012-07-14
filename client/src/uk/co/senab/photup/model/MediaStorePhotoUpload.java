@@ -70,7 +70,7 @@ public class MediaStorePhotoUpload extends PhotoSelection {
 	public Bitmap getDisplayImage(Context context) {
 		try {
 			final int size = PhotupApplication.getApplication(context).getSmallestScreenDimension();
-			return Utils.resizeBitmap(context.getContentResolver(), getOriginalPhotoUri(), size, false);
+			return Utils.resizeBitmap(context.getContentResolver(), getOriginalPhotoUri(), size);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			return null;
@@ -79,8 +79,9 @@ public class MediaStorePhotoUpload extends PhotoSelection {
 
 	@Override
 	public Bitmap getUploadImage(Context context, final UploadQuality quality) {
+		Utils.checkPhotoProcessingThread();
+		
 		Bitmap bitmap = null;
-
 		try {
 			String path = Utils.getPathFromContentUri(context.getContentResolver(), getOriginalPhotoUri());
 			if (null != path) {
@@ -147,7 +148,9 @@ public class MediaStorePhotoUpload extends PhotoSelection {
 			}
 			try {
 				bitmap = Utils.resizeBitmap(context.getContentResolver(), getOriginalPhotoUri(),
-						quality.getMaxDimension(), true);
+						quality.getMaxDimension());
+				bitmap = Utils.fineResizePhoto(bitmap, quality.getMaxDimension());
+				
 				if (requiresProcessing()) {
 					bitmap = processBitmap(bitmap, true);
 				}

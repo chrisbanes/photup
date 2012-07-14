@@ -104,8 +104,8 @@ public class Utils {
 		return returnValue;
 	}
 
-	public static Bitmap resizeBitmap(final ContentResolver resolver, final Uri uri, final int MAX_DIM,
-			final boolean fineResize) throws FileNotFoundException {
+	public static Bitmap resizeBitmap(final ContentResolver resolver, final Uri uri, final int MAX_DIM)
+			throws FileNotFoundException {
 
 		// Get original dimensions
 		BitmapFactory.Options o = new BitmapFactory.Options();
@@ -145,11 +145,6 @@ public class Utils {
 		}
 
 		if (null != bitmap) {
-			// Do fine resize if needed
-			if (fineResize) {
-				bitmap = fineResizePhoto(bitmap, MAX_DIM);
-			}
-
 			if (Constants.DEBUG) {
 				Log.d("Utils", "Resized bitmap to: " + bitmap.getWidth() + "x" + bitmap.getHeight());
 			}
@@ -167,6 +162,8 @@ public class Utils {
 	}
 
 	public static Bitmap fineResizePhoto(final Bitmap bitmap, final int maxDimension) {
+		Utils.checkPhotoProcessingThread();
+
 		final int width = bitmap.getWidth();
 		final int height = bitmap.getHeight();
 		final int biggestDimension = Math.max(width, height);
@@ -227,6 +224,12 @@ public class Utils {
 		original.recycle();
 
 		return bitmap;
+	}
+
+	public static void checkPhotoProcessingThread() {
+		if (!PhotupApplication.THREAD_FILTERS.equals(Thread.currentThread().getName())) {
+			throw new IllegalStateException("PhotoProcessing should be done on corrent thread!");
+		}
 	}
 
 }

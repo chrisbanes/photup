@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -35,6 +36,8 @@ import com.facebook.android.FacebookError;
 @ReportsCrashes(formKey = Constants.ACRA_GOOGLE_DOC_ID, mode = ReportingInteractionMode.TOAST, resToastText = R.string.crash_toast)
 public class PhotupApplication extends Application implements FriendsResultListener, AlbumsResultListener,
 		MediaStoreResultListener {
+	
+	public static final String THREAD_FILTERS = "filters_thread";
 
 	static final int EXECUTOR_CORE_POOL_SIZE_PER_CORE = 1;
 	static final int EXECUTOR_MAX_POOL_SIZE_PER_CORE = 4;
@@ -67,7 +70,12 @@ public class PhotupApplication extends Application implements FriendsResultListe
 
 	public ExecutorService getSingleThreadExecutorService() {
 		if (null == mSingleThreadExecutor) {
-			mSingleThreadExecutor = Executors.newSingleThreadExecutor();
+			mSingleThreadExecutor = Executors.newSingleThreadExecutor(new ThreadFactory() {
+				
+				public Thread newThread(Runnable r) {
+					return new Thread(r, THREAD_FILTERS);
+				}
+			});
 		}
 		return mSingleThreadExecutor;
 	}

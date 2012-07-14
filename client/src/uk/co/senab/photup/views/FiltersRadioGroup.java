@@ -3,6 +3,7 @@ package uk.co.senab.photup.views;
 import java.util.concurrent.ExecutorService;
 
 import uk.co.senab.photup.PhotupApplication;
+import uk.co.senab.photup.Utils;
 import uk.co.senab.photup.model.Filter;
 import uk.co.senab.photup.model.PhotoSelection;
 import android.content.Context;
@@ -46,6 +47,8 @@ public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 		}
 
 		public void run() {
+			Utils.checkPhotoProcessingThread();
+
 			Bitmap bitmap = mUpload.getThumbnailImage(mContext);
 			final Bitmap filteredBitmap = PhotoProcessing.filterPhoto(bitmap, mFilter.getId());
 			bitmap.recycle();

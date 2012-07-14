@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import uk.co.senab.photup.Constants;
+import uk.co.senab.photup.Utils;
 import uk.co.senab.photup.listeners.OnFaceDetectionListener;
 import uk.co.senab.photup.listeners.OnPhotoTagsChangedListener;
 import android.content.Context;
@@ -45,6 +46,8 @@ public abstract class PhotoSelection extends PhotoUpload {
 	public abstract Bitmap getUploadImage(Context context, UploadQuality quality);
 
 	public Bitmap processBitmap(Bitmap bitmap, final boolean modifyOriginal) {
+		Utils.checkPhotoProcessingThread();
+
 		if (requiresProcessing()) {
 			return PhotoProcessing.filterPhoto(bitmap, mFilter.getId(), modifyOriginal);
 		} else {
