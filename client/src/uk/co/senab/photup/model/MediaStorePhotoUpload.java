@@ -70,7 +70,7 @@ public class MediaStorePhotoUpload extends PhotoSelection {
 	public Bitmap getDisplayImage(Context context) {
 		try {
 			final int size = PhotupApplication.getApplication(context).getSmallestScreenDimension();
-			return Utils.decodeImage(context.getContentResolver(), getOriginalPhotoUri(), size);
+			return Utils.decodeImage(context.getContentResolver(), getOriginalPhotoUri(), size, true);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			return null;
@@ -80,32 +80,10 @@ public class MediaStorePhotoUpload extends PhotoSelection {
 	@Override
 	public Bitmap getUploadImage(Context context, final UploadQuality quality) {
 		Utils.checkPhotoProcessingThread();
-
-		// Try and get bitmap natively first
-		Bitmap bitmap = getUploadImageNative(context, quality);
-
-		if (null == bitmap) {
-			if (Constants.DEBUG) {
-				Log.d("MediaStorePhotoUpload", "getUploadImageNative failed, trying Java decode!");
-			}
-			try {
-				bitmap = Utils.decodeImage(context.getContentResolver(), getOriginalPhotoUri(),
-						quality.getMaxDimension());
-				bitmap = Utils.fineResizePhoto(bitmap, quality.getMaxDimension());
-
-				if (requiresProcessing()) {
-					bitmap = processBitmap(bitmap, true);
-				}
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-				return null;
-			}
-		}
-
-		return bitmap;
+		return getUploadImageNative(context, quality);
 	}
 
-	Bitmap getUploadImageNative(final Context context, final UploadQuality quality) {
+	private Bitmap getUploadImageNative(final Context context, final UploadQuality quality) {
 		try {
 			String path = Utils.getPathFromContentUri(context.getContentResolver(), getOriginalPhotoUri());
 			if (null != path) {
@@ -126,22 +104,35 @@ public class MediaStorePhotoUpload extends PhotoSelection {
 
 				final int decodeResult = PhotoProcessing.nativeLoadResizedJpegBitmap(jpegData, jpegData.length,
 						size.width * size.height);
-				if (decodeResult == 0) {
-					if (Constants.DEBUG) {
-						Log.d("MediaStorePhotoUpload", "getUploadImage. Native decode complete! Result: "
-								+ decodeResult);
-					}
-				} else {
-					if (Constants.DEBUG) {
-						Log.d("MediaStorePhotoUpload", "getUploadImage. Native decode failed :( Result: "
-								+ decodeResult);
-					}
-					return null;
-				}
 
 				// Free the byte[]
 				jpegData = null;
 
+				if (decodeResult == 0) {
+					if (Constants.DEBUG) {
+						Log.d("MediaStorePhotoUpload", "getUploadImage. Native decode complete!");
+					}
+				} else {
+					if (Constants.DEBUG) {
+						Log.d("MediaStorePhotoUpload", "getUploadImage. Native decode failed. Trying Android decode");
+					}
+
+					// Just in case
+					PhotoProcessing.nativeDeleteBitmap();
+
+					// Decode in Android and send to native
+					Bitmap bitmap = Utils.decodeImage(context.getContentResolver(), getOriginalPhotoUri(),
+							quality.getMaxDimension(), false);
+					PhotoProcessing.sendBitmapToNative(bitmap);
+					bitmap.recycle();
+
+					// Do resize
+					PhotoProcessing.nativeResizeBitmap(size.width, size.height);
+				}
+
+				/**
+				 * Apply filter if needed
+				 */
 				if (requiresProcessing()) {
 					PhotoProcessing.filterPhoto(getFilterUsed().getId());
 					if (Constants.DEBUG) {
@@ -149,6 +140,9 @@ public class MediaStorePhotoUpload extends PhotoSelection {
 					}
 				}
 
+				/**
+				 * Rotate if needed
+				 */
 				final int orientation = Utils.getOrientationFromContentUri(context.getContentResolver(),
 						getOriginalPhotoUri());
 				if (orientation != 0) {

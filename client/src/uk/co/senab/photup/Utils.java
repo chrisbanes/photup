@@ -100,7 +100,8 @@ public class Utils {
 		return returnValue;
 	}
 
-	public static Bitmap decodeImage(final ContentResolver resolver, final Uri uri, final int MAX_DIM) throws FileNotFoundException {
+	public static Bitmap decodeImage(final ContentResolver resolver, final Uri uri, final int MAX_DIM,
+			final boolean autoRotate) throws FileNotFoundException {
 
 		// Get original dimensions
 		BitmapFactory.Options o = new BitmapFactory.Options();
@@ -145,12 +146,14 @@ public class Utils {
 				Log.d("Utils", "Resized bitmap to: " + bitmap.getWidth() + "x" + bitmap.getHeight());
 			}
 
-			final int angle = Utils.getOrientationFromContentUri(resolver, uri);
-			if (angle != 0) {
-				if (Constants.DEBUG) {
-					Log.d("Utils", "Rotating bitmap by: " + angle);
+			if (autoRotate) {
+				final int angle = Utils.getOrientationFromContentUri(resolver, uri);
+				if (angle != 0) {
+					if (Constants.DEBUG) {
+						Log.d("Utils", "Rotating bitmap by: " + angle);
+					}
+					bitmap = rotate(bitmap, angle);
 				}
-				bitmap = rotate(bitmap, angle);
 			}
 		}
 
