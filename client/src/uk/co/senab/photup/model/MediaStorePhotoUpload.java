@@ -8,6 +8,7 @@ import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.Utils;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -47,7 +48,18 @@ public class MediaStorePhotoUpload extends PhotoSelection {
 		}
 
 		try {
-			return Thumbnails.getThumbnail(context.getContentResolver(), mId, kind, opts);
+			ContentResolver cr = context.getContentResolver();
+			Bitmap bitmap = Thumbnails.getThumbnail(cr, mId, kind, opts);
+
+			final int orientation = Utils.getOrientationFromContentUri(cr, getOriginalPhotoUri());
+			if (orientation != 0) {
+				if (Constants.DEBUG) {
+					Log.d(LOG_TAG, "Orientation: " + orientation);
+				}
+				bitmap = Utils.rotate(bitmap, orientation);
+			}
+
+			return bitmap;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

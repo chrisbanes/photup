@@ -13,6 +13,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -70,15 +71,34 @@ public class Utils {
 			Cursor cursor = cr.query(contentUri, proj, null, null, null);
 
 			if (null != cursor) {
-				final int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-
 				if (cursor.moveToFirst()) {
-					returnValue = cursor.getString(column_index);
+					returnValue = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
 				}
 				cursor.close();
 			}
 		} else if (ContentResolver.SCHEME_FILE.equals(contentUri.getScheme())) {
 			returnValue = contentUri.getPath();
+		}
+
+		return returnValue;
+	}
+
+	public static int getOrientationFromContentUri(ContentResolver cr, Uri contentUri) {
+		int returnValue = 0;
+
+		if (ContentResolver.SCHEME_CONTENT.equals(contentUri.getScheme())) {
+			// can post image
+			String[] proj = { MediaStore.Images.Media.ORIENTATION };
+			Cursor cursor = cr.query(contentUri, proj, null, null, null);
+
+			if (null != cursor) {
+				if (cursor.moveToFirst()) {
+					returnValue = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.ORIENTATION));
+				}
+				cursor.close();
+			}
+		} else if (ContentResolver.SCHEME_FILE.equals(contentUri.getScheme())) {
+			returnValue = MediaUtils.getExifOrientation(contentUri.getPath());
 		}
 
 		return returnValue;
@@ -141,7 +161,7 @@ public class Utils {
 					if (Constants.DEBUG) {
 						Log.d("Utils", "Rotating bitmap by: " + angle);
 					}
-					bitmap = PhotoProcessing.rotate(bitmap, angle);
+					bitmap = rotate(bitmap, angle);
 				}
 			}
 		}
@@ -189,6 +209,27 @@ public class Utils {
 		}
 
 		return items;
+	}
+
+	public static Bitmap rotate(Bitmap original, int angle) {
+		
+		final boolean dimensionsChanged = angle == 90 || angle == 270;
+		final int oldWidth = original.getWidth();
+		final int oldHeight = original.getHeight();
+		final int newWidth = dimensionsChanged ? oldHeight : oldWidth;
+		final int newHeight = dimensionsChanged ? oldWidth : oldHeight;
+
+		Bitmap bitmap = Bitmap.createBitmap(newWidth, newHeight, original.getConfig());
+		Canvas canvas = new Canvas(bitmap);
+
+		Matrix matrix = new Matrix();
+		matrix.preTranslate((newWidth - oldWidth) / 2f, (newHeight - oldHeight) / 2f);
+		matrix.postRotate(angle, bitmap.getWidth() / 2f, bitmap.getHeight() / 2);
+		canvas.drawBitmap(original, matrix, null);
+
+		original.recycle();
+
+		return bitmap;
 	}
 
 }
