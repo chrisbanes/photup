@@ -100,8 +100,7 @@ public class Utils {
 		return returnValue;
 	}
 
-	public static Bitmap resizeBitmap(final ContentResolver resolver, final Uri uri, final int MAX_DIM)
-			throws FileNotFoundException {
+	public static Bitmap decodeImage(final ContentResolver resolver, final Uri uri, final int MAX_DIM) throws FileNotFoundException {
 
 		// Get original dimensions
 		BitmapFactory.Options o = new BitmapFactory.Options();
@@ -120,10 +119,11 @@ public class Utils {
 		Bitmap bitmap;
 
 		o.inJustDecodeBounds = false;
-		o.inDither = false;
 		o.inScaled = false;
 		o.inPurgeable = true;
 		o.inInputShareable = true;
+		o.inDither = true;
+		o.inPreferredConfig = Bitmap.Config.RGB_565;
 
 		if (origWidth > MAX_DIM || origHeight > MAX_DIM) {
 			int k = 1;

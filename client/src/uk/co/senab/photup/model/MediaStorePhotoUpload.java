@@ -70,7 +70,7 @@ public class MediaStorePhotoUpload extends PhotoSelection {
 	public Bitmap getDisplayImage(Context context) {
 		try {
 			final int size = PhotupApplication.getApplication(context).getSmallestScreenDimension();
-			return Utils.resizeBitmap(context.getContentResolver(), getOriginalPhotoUri(), size);
+			return Utils.decodeImage(context.getContentResolver(), getOriginalPhotoUri(), size);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			return null;
@@ -89,7 +89,7 @@ public class MediaStorePhotoUpload extends PhotoSelection {
 				Log.d("MediaStorePhotoUpload", "getUploadImageNative failed, trying Java decode!");
 			}
 			try {
-				bitmap = Utils.resizeBitmap(context.getContentResolver(), getOriginalPhotoUri(),
+				bitmap = Utils.decodeImage(context.getContentResolver(), getOriginalPhotoUri(),
 						quality.getMaxDimension());
 				bitmap = Utils.fineResizePhoto(bitmap, quality.getMaxDimension());
 
