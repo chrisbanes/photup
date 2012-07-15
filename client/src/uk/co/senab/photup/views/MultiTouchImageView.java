@@ -7,6 +7,7 @@ import android.content.Context;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -20,7 +21,7 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 		void onMatrixChanged(RectF rect);
 	}
 
-	static final long ANIMATION_DURATION = 180;
+	static final long ANIMATION_DURATION = 200;
 
 	private class AnimatedZoomRunnable implements Runnable {
 
@@ -45,7 +46,7 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 			centerAndDisplayMatrix();
 
 			if (currentMs < ANIMATION_DURATION) {
-				postDelayed(this, 17);
+				ViewCompat.postOnAnimation(MultiTouchImageView.this, this);
 			}
 		}
 	}
