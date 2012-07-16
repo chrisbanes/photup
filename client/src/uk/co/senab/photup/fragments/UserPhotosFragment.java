@@ -163,6 +163,15 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 		}
 	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+
+		if (mPhotoAdapter.getCount() == 0) {
+			mPhotoAdapter.refresh();
+		}
+	}
+
 	public void onSelectionsAddedToUploads() {
 		mPhotoAdapter.refresh();
 	}
