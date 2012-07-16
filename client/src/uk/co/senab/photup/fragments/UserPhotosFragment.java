@@ -86,18 +86,31 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 	}
 
 	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+
+		if (null != savedInstanceState) {
+			if (savedInstanceState.containsKey(SAVE_PHOTO_URI)) {
+				mPhotoFile = new File(savedInstanceState.getString(SAVE_PHOTO_URI));
+			}
+		}
+	}
+
+	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (requestCode) {
 			case RESULT_CAMERA:
-				if (resultCode == Activity.RESULT_OK) {
-					Utils.sendMediaStoreBroadcast(getActivity(), mPhotoFile);
-				} else {
-					if (Constants.DEBUG) {
-						Log.d("UserPhotosFragment", "Deleting Photo File");
+				if (null != mPhotoFile) {
+					if (resultCode == Activity.RESULT_OK) {
+						Utils.sendMediaStoreBroadcast(getActivity(), mPhotoFile);
+					} else {
+						if (Constants.DEBUG) {
+							Log.d("UserPhotosFragment", "Deleting Photo File");
+						}
+						mPhotoFile.delete();
 					}
-					mPhotoFile.delete();
+					mPhotoFile = null;
 				}
-				mPhotoFile = null;
 				return;
 		}
 
@@ -114,12 +127,6 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 		mAdapter.addAdapter(mPhotoAdapter);
 
 		mPhotoSelectionController.addPhotoSelectionListener(this);
-
-		if (null != savedInstanceState) {
-			if (savedInstanceState.containsKey(SAVE_PHOTO_URI)) {
-				mPhotoFile = new File(savedInstanceState.getString(SAVE_PHOTO_URI));
-			}
-		}
 	}
 
 	@Override
