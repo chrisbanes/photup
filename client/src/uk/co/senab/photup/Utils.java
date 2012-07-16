@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 import android.content.ContentResolver;
-import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -183,13 +181,6 @@ public class Utils {
 	public static File getCameraPhotoFile() {
 		File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
 		return new File(dir, "photup_" + System.currentTimeMillis() + ".jpg");
-	}
-
-	public static void sendMediaStoreBroadcast(Context context, File file) {
-		Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-		Uri contentUri = Uri.fromFile(file);
-		mediaScanIntent.setData(contentUri);
-		context.sendBroadcast(mediaScanIntent);
 	}
 
 	public static Bitmap rotate(Bitmap original, int angle) {

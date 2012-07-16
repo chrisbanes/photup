@@ -25,15 +25,20 @@ import com.lightbox.android.photoprocessing.utils.FileUtils;
 public class MediaStorePhotoUpload extends PhotoSelection {
 
 	private final long mId;
-	private final Uri mContentUri;
+	private final Uri mFullUri;
 
 	public MediaStorePhotoUpload(Uri contentUri, long id) {
-		mContentUri = contentUri;
+		mFullUri = Uri.withAppendedPath(contentUri, String.valueOf(id));
 		mId = id;
+	}
+	
+	public MediaStorePhotoUpload(Uri uri) {
+		mFullUri = uri;
+		mId = Long.parseLong(uri.getLastPathSegment());
 	}
 
 	public Uri getOriginalPhotoUri() {
-		return Uri.withAppendedPath(mContentUri, String.valueOf(mId));
+		return mFullUri;
 	}
 
 	public Bitmap getThumbnailImage(Context context) {

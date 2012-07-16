@@ -5,6 +5,7 @@ import java.io.File;
 import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotoViewerActivity;
+import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.Utils;
 import uk.co.senab.photup.adapters.CameraBaseAdapter;
@@ -15,6 +16,8 @@ import uk.co.senab.photup.views.PhotoItemLayout;
 import uk.co.senab.photup.views.PhotupImageView;
 import android.app.Activity;
 import android.content.Intent;
+import android.media.MediaScannerConnection;
+import android.media.MediaScannerConnection.OnScanCompletedListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -34,7 +37,7 @@ import com.jakewharton.activitycompat2.ActivityCompat2;
 import com.jakewharton.activitycompat2.ActivityOptionsCompat2;
 
 public class UserPhotosFragment extends SherlockFragment implements OnItemClickListener,
-		OnPhotoSelectionChangedListener {
+		OnPhotoSelectionChangedListener, OnScanCompletedListener {
 
 	static final int RESULT_CAMERA = 101;
 	static final String SAVE_PHOTO_URI = "camera_photo_uri";
@@ -102,7 +105,8 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 			case RESULT_CAMERA:
 				if (null != mPhotoFile) {
 					if (resultCode == Activity.RESULT_OK) {
-						Utils.sendMediaStoreBroadcast(getActivity(), mPhotoFile);
+						MediaScannerConnection.scanFile(getActivity(), new String[] { mPhotoFile.getAbsolutePath() },
+								new String[] { "image/jpg" }, this);
 					} else {
 						if (Constants.DEBUG) {
 							Log.d("UserPhotosFragment", "Deleting Photo File");
@@ -173,7 +177,7 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 	}
 
 	public void onSelectionsAddedToUploads() {
-		mPhotoAdapter.refresh();
+		mPhotoAdapter.notifyDataSetChanged();
 	}
 
 	public void onPhotoSelectionChanged(PhotoSelection upload, boolean added) {
@@ -242,5 +246,17 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 
 	public void onUploadsCleared() {
 		// NO-OP
+	}
+
+	public void onScanCompleted(String path, Uri uri) {
+		if (null != uri) {
+			PhotupApplication.getApplication(getActivity()).addScannedCameraUri(uri);
+			
+			getActivity().runOnUiThread(new Runnable() {	
+				public void run() {
+					mPhotoAdapter.refresh();
+				}
+			});
+		}
 	}
 }

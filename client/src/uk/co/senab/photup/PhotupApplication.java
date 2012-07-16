@@ -17,6 +17,7 @@ import uk.co.senab.bitmapcache.BitmapLruCache;
 import uk.co.senab.photup.facebook.Session;
 import uk.co.senab.photup.model.Album;
 import uk.co.senab.photup.model.FbUser;
+import uk.co.senab.photup.model.MediaStorePhotoUpload;
 import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.tasks.AlbumsAsyncTask;
 import uk.co.senab.photup.tasks.AlbumsAsyncTask.AlbumsResultListener;
@@ -27,6 +28,7 @@ import uk.co.senab.photup.tasks.MediaStoreAsyncTask.MediaStoreResultListener;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
@@ -176,16 +178,18 @@ public class PhotupApplication extends Application implements FriendsResultListe
 		}
 	}
 
-	public List<PhotoSelection> getMediaStorePhotos(MediaStoreResultListener listener) {
-		if (null == mMediaStoreAsyncTask) {
+	public void addScannedCameraUri(Uri uri) {
+		mMediaStorePhotos.add(0, new MediaStorePhotoUpload(uri));
+	}
+
+	public void getMediaStorePhotos(MediaStoreResultListener listener) {
+		if (null == mMediaStoreAsyncTask && mMediaStorePhotos.isEmpty()) {
 			mMediaStoreListener = listener;
 			mMediaStoreAsyncTask = new MediaStoreAsyncTask(this, this);
 			mMediaStoreAsyncTask.execute();
 		} else {
 			listener.onPhotosLoaded(new ArrayList<PhotoSelection>(mMediaStorePhotos));
 		}
-
-		return new ArrayList<PhotoSelection>(mMediaStorePhotos);
 	}
 
 	public void onPhotosLoaded(List<PhotoSelection> friends) {

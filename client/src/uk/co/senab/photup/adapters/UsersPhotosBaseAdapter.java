@@ -30,7 +30,8 @@ public class UsersPhotosBaseAdapter extends BaseAdapter implements MediaStoreRes
 
 		PhotupApplication app = PhotupApplication.getApplication(context);
 		mController = app.getPhotoUploadController();
-		mItems = PhotupApplication.getApplication(mContext).getMediaStorePhotos(this);
+
+		refresh();
 	}
 
 	public int getCount() {
