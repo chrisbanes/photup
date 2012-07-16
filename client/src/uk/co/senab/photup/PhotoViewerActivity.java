@@ -149,20 +149,23 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 
 	public void onPageSelected(int position) {
 		PhotoSelection upload = mAdapter.getItem(position);
-		String caption = upload.getCaption();
-		if (null == caption) {
-			caption = "";
-		}
-		getSupportActionBar().setTitle(caption);
+		
+		if (null != upload) {
+			String caption = upload.getCaption();
+			if (null == caption) {
+				caption = "";
+			}
+			getSupportActionBar().setTitle(caption);
 
-		// Request Face Detection
-		PhotoTagItemLayout currentView = (PhotoTagItemLayout) getCurrentView();
-		if (null != currentView) {
-			currentView.getImageView().postFaceDetection(upload);
-		}
+			// Request Face Detection
+			PhotoTagItemLayout currentView = (PhotoTagItemLayout) getCurrentView();
+			if (null != currentView) {
+				currentView.getImageView().postFaceDetection(upload);
+			}
 
-		if (null != mFilterGroup && mFilterGroup.getVisibility() == View.VISIBLE) {
-			updateFiltersView();
+			if (null != mFilterGroup && mFilterGroup.getVisibility() == View.VISIBLE) {
+				updateFiltersView();
+			}
 		}
 	}
 

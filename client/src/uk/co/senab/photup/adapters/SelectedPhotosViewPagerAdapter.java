@@ -50,7 +50,11 @@ public class SelectedPhotosViewPagerAdapter extends PagerAdapter {
 	}
 
 	public PhotoSelection getItem(int position) {
-		return mItems.get(position);
+		try {
+			return mItems.get(position);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	@Override
