@@ -107,7 +107,7 @@ public class PhotupApplication extends Application implements FriendsResultListe
 
 	@Override
 	public void onCreate() {
-		if (!BuildConfig.DEBUG) {
+		if (Constants.ENABLE_ACRA) {
 			ACRA.init(this);
 		}
 

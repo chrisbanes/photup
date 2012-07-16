@@ -1,10 +1,12 @@
 package uk.co.senab.photup;
 
+
 public class Constants {
 
 	public static final float IMAGE_CACHE_HEAP_PERCENTAGE = 1f / 6f;
 
 	public static final boolean DEBUG = BuildConfig.DEBUG;
+	public static final boolean ENABLE_ACRA = false;
 
 	public static final long SCALE_ANIMATION_DURATION_FULL_DISTANCE = 800;
 
