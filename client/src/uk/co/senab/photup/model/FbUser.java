@@ -26,7 +26,7 @@ public class FbUser extends AbstractFacebookObject {
 			}
 		};
 	}
-	
+
 	public static FbUser getMeFromSession(Session session) {
 		return new FbUser(session.getUid(), session.getName());
 	}

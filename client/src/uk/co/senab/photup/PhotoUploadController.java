@@ -72,7 +72,7 @@ public class PhotoUploadController {
 	public List<PhotoSelection> getUploadingPhotoUploads() {
 		return new ArrayList<PhotoSelection>(mUploadingList);
 	}
-	
+
 	public int getActiveUploadsSize() {
 		int count = 0;
 		for (PhotoSelection upload : mUploadingList) {
@@ -82,7 +82,7 @@ public class PhotoUploadController {
 		}
 		return count;
 	}
-	
+
 	public boolean hasUploads() {
 		return !mUploadingList.isEmpty();
 	}
@@ -95,10 +95,10 @@ public class PhotoUploadController {
 			l.onSelectionsAddedToUploads();
 		}
 	}
-	
+
 	public void removePhotoFromUploads(PhotoSelection selection) {
 		mUploadingList.remove(selection);
-		
+
 		if (mUploadingList.isEmpty()) {
 			for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
 				l.onUploadsCleared();

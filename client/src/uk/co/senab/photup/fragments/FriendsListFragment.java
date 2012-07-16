@@ -46,7 +46,7 @@ public class FriendsListFragment extends SherlockDialogFragment implements Frien
 		setStyle(STYLE_NO_TITLE, 0);
 
 		mAdapter = new ArrayAdapter<FbUser>(getActivity(), android.R.layout.simple_list_item_1, mDisplayedFriends);
-		
+
 		PhotupApplication.getApplication(getActivity()).getFriends(this);
 	}
 

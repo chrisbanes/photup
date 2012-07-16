@@ -147,9 +147,9 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 					Utils.drawViewOntoBitmap(view), 0, 0);
 
 			Intent intent = new Intent(getActivity(), PhotoViewerActivity.class);
-			
+
 			// Need take Camera icon into account so minus 1
-			intent.putExtra(PhotoViewerActivity.EXTRA_POSITION, position - 1); 
+			intent.putExtra(PhotoViewerActivity.EXTRA_POSITION, position - 1);
 			intent.putExtra(PhotoViewerActivity.EXTRA_MODE, PhotoViewerActivity.MODE_ALL_VALUE);
 
 			ActivityCompat2.startActivity(getActivity(), intent, options.toBundle());
@@ -188,7 +188,6 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		Log.d("UserPhotosFragment", "onSaveInstanceState");
 		if (null != mPhotoFile) {
 			outState.putString(SAVE_PHOTO_URI, mPhotoFile.getAbsolutePath());
 		}

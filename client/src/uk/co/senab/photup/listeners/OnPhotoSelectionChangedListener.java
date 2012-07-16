@@ -7,7 +7,7 @@ public interface OnPhotoSelectionChangedListener {
 	void onPhotoSelectionChanged(PhotoSelection upload, boolean added);
 
 	void onSelectionsAddedToUploads();
-	
+
 	void onUploadsCleared();
 
 }

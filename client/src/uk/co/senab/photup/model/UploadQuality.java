@@ -16,7 +16,7 @@ public enum UploadQuality {
 	public int getMaxDimension() {
 		return mMaxDimension;
 	}
-	
+
 	public int getJpegQuality() {
 		return mJpegQuality;
 	}

@@ -21,11 +21,11 @@ public class Album extends AbstractFacebookObject {
 		mCanUpload = object.getBoolean("can_upload");
 		mUpdatedTime = object.getLong("updated_time");
 	}
-	
+
 	public boolean canUpload() {
 		return mCanUpload;
 	}
-	
+
 	public long getUpdatedTime() {
 		return mUpdatedTime;
 	}

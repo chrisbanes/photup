@@ -1,12 +1,12 @@
 package uk.co.senab.photup;
 
-import com.facebook.android.FacebookError;
-import com.facebook.android.Facebook.ServiceListener;
-
 import uk.co.senab.photup.facebook.Session;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+
+import com.facebook.android.Facebook.ServiceListener;
+import com.facebook.android.FacebookError;
 
 public class MainActivity extends Activity {
 

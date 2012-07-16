@@ -188,7 +188,9 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 				try {
 					InputStream is = new ProgressInputStream(new FileInputStream(temporaryFile), temporaryFile.length());
 					response = facebook.request(mAlbumId + "/photos", bundle, "POST", is, "source");
-					Log.d(LOG_TAG, response);
+					if (Constants.DEBUG) {
+						Log.d(LOG_TAG, response);
+					}
 				} catch (MalformedURLException e) {
 					e.printStackTrace();
 				} catch (IOException e) {

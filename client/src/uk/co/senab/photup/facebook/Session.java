@@ -87,7 +87,9 @@ public class Session {
 	 * @return
 	 */
 	public void save(Context context) {
-		Log.d(getClass().getSimpleName(), "Saving Session! Expires: " + fb.getAccessExpires());
+		if (Constants.DEBUG) {
+			Log.d(getClass().getSimpleName(), "Saving Session! Expires: " + fb.getAccessExpires());
+		}
 		Editor editor = context.getSharedPreferences(KEY, Context.MODE_PRIVATE).edit();
 		editor.putString(TOKEN, fb.getAccessToken());
 		editor.putLong(EXPIRES, fb.getAccessExpires());
@@ -115,7 +117,7 @@ public class Session {
 		if (fb.isSessionValid() && uid != null && name != null) {
 			return new Session(fb, uid, name);
 		}
-		
+
 		return null;
 	}
 

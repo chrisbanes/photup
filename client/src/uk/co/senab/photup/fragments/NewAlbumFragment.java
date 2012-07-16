@@ -1,8 +1,8 @@
 package uk.co.senab.photup.fragments;
 
+import uk.co.senab.photup.R;
 import uk.co.senab.photup.tasks.NewAlbumAsyncTask;
 import uk.co.senab.photup.tasks.NewAlbumAsyncTask.NewAlbumResultListener;
-import uk.co.senab.photup.R;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -25,11 +25,11 @@ public class NewAlbumFragment extends SherlockDialogFragment implements View.OnC
 	private Spinner mPrivacySpinner;
 	private ImageButton mSendButton;
 	private ProgressBar mLoadingProgressBar;
-	
+
 	private OnAlbumCreatedListener mAlbumCreated;
 
 	private String[] mPrivacyValues;
-	
+
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
@@ -69,7 +69,7 @@ public class NewAlbumFragment extends SherlockDialogFragment implements View.OnC
 
 		String privacyValue = mPrivacyValues[mPrivacySpinner.getSelectedItemPosition()];
 		String description = mAlbumDescEditText.getText().toString();
-		
+
 		v.setVisibility(View.GONE);
 		mLoadingProgressBar.setVisibility(View.VISIBLE);
 

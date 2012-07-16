@@ -19,10 +19,10 @@ import uk.co.senab.photup.model.Album;
 import uk.co.senab.photup.model.FbUser;
 import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.tasks.AlbumsAsyncTask;
-import uk.co.senab.photup.tasks.FriendsAsyncTask;
-import uk.co.senab.photup.tasks.MediaStoreAsyncTask;
 import uk.co.senab.photup.tasks.AlbumsAsyncTask.AlbumsResultListener;
+import uk.co.senab.photup.tasks.FriendsAsyncTask;
 import uk.co.senab.photup.tasks.FriendsAsyncTask.FriendsResultListener;
+import uk.co.senab.photup.tasks.MediaStoreAsyncTask;
 import uk.co.senab.photup.tasks.MediaStoreAsyncTask.MediaStoreResultListener;
 import android.app.Application;
 import android.content.Context;
@@ -36,7 +36,7 @@ import com.facebook.android.FacebookError;
 @ReportsCrashes(formKey = Constants.ACRA_GOOGLE_DOC_ID, mode = ReportingInteractionMode.TOAST, resToastText = R.string.crash_toast)
 public class PhotupApplication extends Application implements FriendsResultListener, AlbumsResultListener,
 		MediaStoreResultListener {
-	
+
 	public static final String THREAD_FILTERS = "filters_thread";
 
 	static final int EXECUTOR_CORE_POOL_SIZE_PER_CORE = 1;
@@ -71,7 +71,7 @@ public class PhotupApplication extends Application implements FriendsResultListe
 	public ExecutorService getSingleThreadExecutorService() {
 		if (null == mSingleThreadExecutor) {
 			mSingleThreadExecutor = Executors.newSingleThreadExecutor(new ThreadFactory() {
-				
+
 				public Thread newThread(Runnable r) {
 					return new Thread(r, THREAD_FILTERS);
 				}

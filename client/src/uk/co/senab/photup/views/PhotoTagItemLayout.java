@@ -196,7 +196,9 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 			return;
 		}
 
-		Log.d(LOG_TAG, "layoutTags. Rect: " + rect.toString());
+		if (Constants.DEBUG) {
+			Log.d(LOG_TAG, "layoutTags. Rect: " + rect.toString());
+		}
 
 		AbsoluteLayout.LayoutParams lp;
 		for (int i = 0, z = mTagLayout.getChildCount(); i < z; i++) {
