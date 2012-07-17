@@ -1,8 +1,8 @@
 package uk.co.senab.photup.views;
 
-import uk.co.senab.bitmapcache.R;
 import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.PhotoUploadController;
+import uk.co.senab.photup.R;
 import uk.co.senab.photup.listeners.OnFaceDetectionListener;
 import uk.co.senab.photup.listeners.OnFriendPickedListener;
 import uk.co.senab.photup.listeners.OnPhotoTagsChangedListener;

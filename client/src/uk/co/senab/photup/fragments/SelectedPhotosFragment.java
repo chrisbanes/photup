@@ -1,8 +1,8 @@
 package uk.co.senab.photup.fragments;
 
-import uk.co.senab.bitmapcache.R;
 import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotoViewerActivity;
+import uk.co.senab.photup.R;
 import uk.co.senab.photup.Utils;
 import uk.co.senab.photup.adapters.SelectedPhotosBaseAdapter;
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
