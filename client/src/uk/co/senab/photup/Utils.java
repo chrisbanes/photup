@@ -3,7 +3,11 @@ package uk.co.senab.photup;
 import java.io.File;
 import java.io.FileNotFoundException;
 
+import uk.co.senab.photup.service.InstantUploadService;
+
 import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -208,6 +212,10 @@ public class Utils {
 		if (!PhotupApplication.THREAD_FILTERS.equals(Thread.currentThread().getName())) {
 			throw new IllegalStateException("PhotoProcessing should be done on corrent thread!");
 		}
+	}
+	
+	public static void startInstantUploadService(Context context) {
+		context.startService(new Intent(context, InstantUploadService.class));
 	}
 
 }

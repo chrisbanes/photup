@@ -50,9 +50,11 @@ import com.jakewharton.notificationcompat2.NotificationCompat2;
 import com.jakewharton.notificationcompat2.NotificationCompat2.BigPictureStyle;
 
 public class PhotoUploadService extends Service implements Handler.Callback {
+	
+	public static final String EXTRA_QUALITY = "extra_quality";
+	public static final String EXTRA_ALBUM_ID = "extra_album_id";
 
 	static final int MAX_NUMBER_RETRIES = 3;
-
 	static final int NOTIFICATION_ID = 1000;
 
 	static final int MSG_UPLOAD_COMPLETE = 0;
@@ -271,7 +273,9 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 	private final Handler mHandler = new Handler(this);
 	private int mNumberUploaded = 0;
-	private Album mAlbum;
+	
+	private String mAlbumId;
+	private String mAlbumName;
 	private UploadQuality mUploadQuality;
 
 	private NotificationManager mNotificationMgr;
@@ -292,6 +296,13 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		mSession = Session.restore(this);
 
 		mNotificationMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+	}
+	
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		
+		
+		return START_NOT_STICKY;
 	}
 
 	@Override
@@ -321,7 +332,8 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	}
 
 	public void uploadAll(Album album, UploadQuality quality) {
-		mAlbum = album;
+		mAlbumId = album.getId();
+		mAlbumName = album.getName();
 		mUploadQuality = quality;
 
 		PhotoSelection nextUpload = mController.getNextPhotoToUpload();
@@ -334,7 +346,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	private void startUpload(PhotoSelection upload) {
 		trimCache();
 		updateNotification(upload);
-		mExecutor.submit(new UploadPhotoRunnable(this, mHandler, upload, mSession, mAlbum.getId(), mUploadQuality));
+		mExecutor.submit(new UploadPhotoRunnable(this, mHandler, upload, mSession, mAlbumId, mUploadQuality));
 	}
 
 	private void onFinishedUpload(PhotoSelection completedUpload) {
@@ -368,7 +380,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 			mNotificationBuilder.setOngoing(true);
 			mNotificationBuilder.setWhen(System.currentTimeMillis());
 
-			mNotificationSubtitle = getString(R.string.notification_uploading_album_subtitle, mAlbum.getName());
+			mNotificationSubtitle = getString(R.string.notification_uploading_album_subtitle, mAlbumName);
 			mNotificationBuilder.setContentText(mNotificationSubtitle);
 
 			PendingIntent intent = PendingIntent

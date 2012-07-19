@@ -57,8 +57,19 @@
 			android:name=".LicencesActivity"
 			android:label="@string/libraries" />
 
+		<receiver
+			android:name=".receivers.BootReceiver" >
+			<intent-filter>
+				<action
+					android:name="android.intent.action.BOOT_COMPLETED" />
+			</intent-filter>
+		</receiver>
+
 		<service
 			android:name=".service.PhotoUploadService" />
+		<service
+			android:name=".service.InstantUploadService" >
+		</service>
 	</application>
 
 </manifest>
