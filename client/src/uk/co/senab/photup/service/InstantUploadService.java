@@ -2,9 +2,13 @@ package uk.co.senab.photup.service;
 
 import java.io.File;
 
+import uk.co.senab.photup.Constants;
+import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.model.MediaStorePhotoUpload;
 import uk.co.senab.photup.model.PhotoSelection;
+import uk.co.senab.photup.model.UploadQuality;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.database.ContentObserver;
 import android.database.Cursor;
@@ -15,23 +19,34 @@ import android.util.Log;
 
 public class InstantUploadService extends Service {
 
-	final static String[] PROJECTION = { Images.Media._ID, Images.Media.DATA };
+	private static class ImageObserver extends ContentObserver {
 
-	private final ContentObserver mObserver = new ContentObserver(null) {
+		final static String[] PROJECTION = { Images.Media._ID, Images.Media.DATA };
+
+		private final Context mContext;
+
+		public ImageObserver(Context context) {
+			super(null);
+			mContext = context;
+		}
 
 		@Override
 		public void onChange(boolean selfChange) {
 			Log.d("InstantUploadService", "onChange");
-			
+
 			PhotoSelection lastAdded = getLastTakenImage();
+			lastAdded.setUploadParams("625766908580", null, UploadQuality.MEDIUM);
+			
+			PhotupApplication.getApplication(mContext).getPhotoUploadController().addPhotoToUploads(lastAdded);
+			mContext.startService(new Intent(Constants.INTENT_SERVICE_UPLOAD_ALL));
 		}
 
 		private PhotoSelection getLastTakenImage() {
-			Cursor cursor = getContentResolver().query(Images.Media.EXTERNAL_CONTENT_URI, PROJECTION, null, null,
-					Images.Media.DATE_ADDED + " desc");
+			Cursor cursor = mContext.getContentResolver().query(Images.Media.EXTERNAL_CONTENT_URI, PROJECTION, null,
+					null, Images.Media.DATE_ADDED + " desc");
 
 			PhotoSelection lastAdded = null;
-			
+
 			if (cursor.moveToNext()) {
 				try {
 					File file = new File(cursor.getString(cursor.getColumnIndexOrThrow(ImageColumns.DATA)));
@@ -49,9 +64,12 @@ public class InstantUploadService extends Service {
 		}
 	};
 
+	private ContentObserver mObserver;
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		mObserver = new ImageObserver(this);
 		getContentResolver().registerContentObserver(Images.Media.EXTERNAL_CONTENT_URI, false, mObserver);
 	}
 

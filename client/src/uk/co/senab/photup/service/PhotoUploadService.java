@@ -21,7 +21,6 @@ import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.facebook.Session;
-import uk.co.senab.photup.model.Album;
 import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.model.PhotoTag;
 import uk.co.senab.photup.model.PhotoUpload;
@@ -50,9 +49,6 @@ import com.jakewharton.notificationcompat2.NotificationCompat2;
 import com.jakewharton.notificationcompat2.NotificationCompat2.BigPictureStyle;
 
 public class PhotoUploadService extends Service implements Handler.Callback {
-	
-	public static final String EXTRA_QUALITY = "extra_quality";
-	public static final String EXTRA_ALBUM_ID = "extra_album_id";
 
 	static final int MAX_NUMBER_RETRIES = 3;
 	static final int NOTIFICATION_ID = 1000;
@@ -104,17 +100,12 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		private final Handler mHandler;
 		private final Session mSession;
 		private final PhotoSelection mUpload;
-		private final String mAlbumId;
-		private final UploadQuality mQuality;
 
-		public UploadPhotoRunnable(Context context, Handler handler, PhotoSelection upload, Session session,
-				String albumId, UploadQuality quality) {
+		public UploadPhotoRunnable(Context context, Handler handler, PhotoSelection upload, Session session) {
 			mContextRef = new WeakReference<Context>(context);
 			mHandler = handler;
 			mUpload = upload;
 			mSession = session;
-			mAlbumId = albumId;
-			mQuality = quality;
 		}
 
 		public void run() {
@@ -161,7 +152,8 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 			if (Constants.DEBUG) {
 				Log.d(LOG_TAG, "About to get Upload bitmap");
 			}
-			Bitmap bitmap = mUpload.getUploadImage(context, mQuality);
+			UploadQuality quality = mUpload.getQuality();
+			Bitmap bitmap = mUpload.getUploadImage(context, quality);
 
 			final File temporaryFile = new File(context.getFilesDir(), TEMPORARY_FILE_NAME);
 			if (temporaryFile.exists()) {
@@ -171,7 +163,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 			try {
 				temporaryFile.createNewFile();
 				OutputStream os = new BufferedOutputStream(new FileOutputStream(temporaryFile));
-				bitmap.compress(CompressFormat.JPEG, mQuality.getJpegQuality(), os);
+				bitmap.compress(CompressFormat.JPEG, quality.getJpegQuality(), os);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -189,7 +181,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 			do {
 				try {
 					InputStream is = new ProgressInputStream(new FileInputStream(temporaryFile), temporaryFile.length());
-					response = facebook.request(mAlbumId + "/photos", bundle, "POST", is, "source");
+					response = facebook.request(mUpload.getAlbumId() + "/photos", bundle, "POST", is, "source");
 					if (Constants.DEBUG) {
 						Log.d(LOG_TAG, response);
 					}
@@ -273,10 +265,6 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 	private final Handler mHandler = new Handler(this);
 	private int mNumberUploaded = 0;
-	
-	private String mAlbumId;
-	private String mAlbumName;
-	private UploadQuality mUploadQuality;
 
 	private NotificationManager mNotificationMgr;
 	private NotificationCompat2.Builder mNotificationBuilder;
@@ -297,11 +285,13 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 		mNotificationMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 	}
-	
+
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		
-		
+		if (Constants.INTENT_SERVICE_UPLOAD_ALL.equals(intent.getAction())) {
+			uploadAll();
+		}
+
 		return START_NOT_STICKY;
 	}
 
@@ -331,11 +321,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		return false;
 	}
 
-	public void uploadAll(Album album, UploadQuality quality) {
-		mAlbumId = album.getId();
-		mAlbumName = album.getName();
-		mUploadQuality = quality;
-
+	public void uploadAll() {
 		PhotoSelection nextUpload = mController.getNextPhotoToUpload();
 		if (null != nextUpload) {
 			startForeground();
@@ -346,7 +332,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	private void startUpload(PhotoSelection upload) {
 		trimCache();
 		updateNotification(upload);
-		mExecutor.submit(new UploadPhotoRunnable(this, mHandler, upload, mSession, mAlbumId, mUploadQuality));
+		mExecutor.submit(new UploadPhotoRunnable(this, mHandler, upload, mSession));
 	}
 
 	private void onFinishedUpload(PhotoSelection completedUpload) {
@@ -379,9 +365,6 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 			mNotificationBuilder.setContentTitle(getString(R.string.app_name));
 			mNotificationBuilder.setOngoing(true);
 			mNotificationBuilder.setWhen(System.currentTimeMillis());
-
-			mNotificationSubtitle = getString(R.string.notification_uploading_album_subtitle, mAlbumName);
-			mNotificationBuilder.setContentText(mNotificationSubtitle);
 
 			PendingIntent intent = PendingIntent
 					.getActivity(this, 0, new Intent(this, PhotoSelectionActivity.class), 0);

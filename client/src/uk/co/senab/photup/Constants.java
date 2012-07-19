@@ -1,6 +1,5 @@
 package uk.co.senab.photup;
 
-
 public class Constants {
 
 	public static final float IMAGE_CACHE_HEAP_PERCENTAGE = 1f / 6f;
@@ -19,5 +18,7 @@ public class Constants {
 	public static final int FACE_DETECTOR_MAX_FACES = 8;
 
 	public static final String ACRA_GOOGLE_DOC_ID = "dHlELWNlMndaVktHanhsYTl1ZEQtYUE6MQ";
+
+	public static final String INTENT_SERVICE_UPLOAD_ALL = "photup.intent.action.UPLOAD_ALL";
 
 }

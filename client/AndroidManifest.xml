@@ -66,7 +66,12 @@
 		</receiver>
 
 		<service
-			android:name=".service.PhotoUploadService" />
+			android:name=".service.PhotoUploadService" >
+			<intent-filter>
+				<action
+					android:name="photup.intent.action.UPLOAD_ALL" />
+			</intent-filter>
+		</service>
 		<service
 			android:name=".service.InstantUploadService" >
 		</service>

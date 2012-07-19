@@ -5,8 +5,10 @@ import java.util.HashSet;
 import java.util.List;
 
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
+import uk.co.senab.photup.model.Album;
 import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.model.PhotoUpload;
+import uk.co.senab.photup.model.UploadQuality;
 import android.content.Context;
 
 public class PhotoUploadController {
@@ -87,9 +89,23 @@ public class PhotoUploadController {
 		return !mUploadingList.isEmpty();
 	}
 
-	public void moveSelectedPhotosToUploads() {
+	public void addPhotoToUploads(PhotoSelection upload) {
+		if (null != upload) {
+			mUploadingList.add(upload);
+		}
+
+		for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
+			l.onSelectionsAddedToUploads();
+		}
+	}
+
+	public void moveSelectedPhotosToUploads(Album album, UploadQuality quality) {
 		mUploadingList.addAll(mSelectedPhotoList);
 		mSelectedPhotoList.clear();
+
+		for (PhotoUpload upload : mUploadingList) {
+			upload.setUploadParams(album.getId(), album.getName(), quality);
+		}
 
 		for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
 			l.onSelectionsAddedToUploads();

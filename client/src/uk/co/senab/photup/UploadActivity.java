@@ -72,13 +72,13 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 	}
 
 	private void upload() {
-		PhotupApplication.getApplication(this).getPhotoUploadController().moveSelectedPhotosToUploads();
-
 		UploadQuality quality = UploadQuality.mapFromButtonId(mQualityRadioGroup.getCheckedRadioButtonId());
 		Album album = (Album) mAlbumSpinner.getSelectedItem();
 
+		PhotupApplication.getApplication(this).getPhotoUploadController().moveSelectedPhotosToUploads(album, quality);
+
 		if (null != album) {
-			mBinder.getService().uploadAll(album, quality);
+			mBinder.getService().uploadAll();
 			finish();
 		} else {
 			Toast.makeText(this, getString(R.string.error_select_album), Toast.LENGTH_SHORT).show();
