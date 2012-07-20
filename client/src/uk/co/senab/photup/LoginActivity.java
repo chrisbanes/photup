@@ -56,6 +56,12 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 		mFacebook.authorizeCallback(requestCode, resultCode, data);
 		super.onActivityResult(requestCode, resultCode, data);
 	}
+	
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

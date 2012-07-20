@@ -63,6 +63,7 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 		switch (item.getItemId()) {
 			case android.R.id.home:
 				startActivity(new Intent(this, LoginActivity.class));
+				overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 				return true;
 			case R.id.menu_upload:
 				if (mPhotoController.getSelectedPhotoUploadsSize() == 0) {
