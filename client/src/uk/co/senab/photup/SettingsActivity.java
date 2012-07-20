@@ -41,5 +41,11 @@ public class SettingsActivity extends PreferenceActivity implements AlbumsResult
 		albumsPref.setEntryValues(entryValues);
 		albumsPref.setEnabled(true);
 	}
+	
+	@Override
+	protected void onStop() {
+		super.onStop();
+		PhotupApplication.getApplication(this).checkInstantUploadReceiverState();
+	}
 
 }

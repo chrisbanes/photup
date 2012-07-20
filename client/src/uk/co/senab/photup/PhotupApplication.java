@@ -19,6 +19,7 @@ import uk.co.senab.photup.model.Album;
 import uk.co.senab.photup.model.FbUser;
 import uk.co.senab.photup.model.MediaStorePhotoUpload;
 import uk.co.senab.photup.model.PhotoSelection;
+import uk.co.senab.photup.receivers.PhotoWatcherReceiver;
 import uk.co.senab.photup.tasks.AlbumsAsyncTask;
 import uk.co.senab.photup.tasks.AlbumsAsyncTask.AlbumsResultListener;
 import uk.co.senab.photup.tasks.FriendsAsyncTask;
@@ -26,9 +27,13 @@ import uk.co.senab.photup.tasks.FriendsAsyncTask.FriendsResultListener;
 import uk.co.senab.photup.tasks.MediaStoreAsyncTask;
 import uk.co.senab.photup.tasks.MediaStoreAsyncTask.MediaStoreResultListener;
 import android.app.Application;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
@@ -38,7 +43,8 @@ import com.facebook.android.FacebookError;
 @ReportsCrashes(formKey = Constants.ACRA_GOOGLE_DOC_ID, mode = ReportingInteractionMode.TOAST, resToastText = R.string.crash_toast)
 public class PhotupApplication extends Application implements FriendsResultListener, AlbumsResultListener,
 		MediaStoreResultListener {
-
+	
+	static final String LOG_TAG = "PhotupApplication";
 	public static final String THREAD_FILTERS = "filters_thread";
 
 	static final int EXECUTOR_CORE_POOL_SIZE_PER_CORE = 1;
@@ -114,6 +120,9 @@ public class PhotupApplication extends Application implements FriendsResultListe
 		}
 
 		super.onCreate();
+		
+		checkInstantUploadReceiverState();
+		
 		mFriends = new ArrayList<FbUser>();
 		mAlbums = new ArrayList<Album>();
 
@@ -213,6 +222,38 @@ public class PhotupApplication extends Application implements FriendsResultListe
 		Intent intent = new Intent(this, MainActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivity(intent);
+	}
+
+	public void checkInstantUploadReceiverState() {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		final boolean enabled = prefs.getBoolean(PreferenceConstants.PREF_INSTANT_UPLOAD_ENABLED, false);
+
+		final ComponentName component = new ComponentName(this, PhotoWatcherReceiver.class);
+		final PackageManager pkgMgr = getPackageManager();
+
+		switch (pkgMgr.getComponentEnabledSetting(component)) {
+			case PackageManager.COMPONENT_ENABLED_STATE_DISABLED:
+				if (enabled) {
+					pkgMgr.setComponentEnabledSetting(component, PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+							PackageManager.DONT_KILL_APP);
+					if (Constants.DEBUG) {
+						Log.d(LOG_TAG, "Enabled Instant Upload Receiver");
+					}
+				}
+				break;
+
+			case PackageManager.COMPONENT_ENABLED_STATE_DEFAULT:
+			case PackageManager.COMPONENT_ENABLED_STATE_ENABLED:
+				if (!enabled) {
+					pkgMgr.setComponentEnabledSetting(component, PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+							PackageManager.DONT_KILL_APP);
+					if (Constants.DEBUG) {
+						Log.d(LOG_TAG, "Disabled Instant Upload Receiver");
+					}
+				}
+				break;
+		}
+
 	}
 
 }
