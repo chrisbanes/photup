@@ -5,8 +5,12 @@ import uk.co.senab.photup.fragments.UploadsFragment;
 import uk.co.senab.photup.fragments.UserPhotosFragment;
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
 import uk.co.senab.photup.model.PhotoSelection;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.widget.Toast;
@@ -69,6 +73,12 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 		}
 
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		showInstantUploadDialog();
 	}
 
 	@Override
@@ -159,6 +169,38 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 	public void onUploadsCleared() {
 		getSupportActionBar().setSelectedNavigationItem(0);
 		getSupportActionBar().removeTabAt(2);
+	}
+
+	private void showInstantUploadDialog() {
+		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+		if (prefs.getBoolean(PreferenceConstants.PREF_SHOWN_INSTANT_UPLOAD_DIALOG, false)) {
+			// Already seen dialog
+			return;
+		}
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setIcon(R.drawable.ic_launcher);
+		builder.setTitle(R.string.pref_instant_upload_title);
+		builder.setMessage(R.string.dialog_instant_upload);
+
+		final DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+
+			public void onClick(DialogInterface dialog, int which) {
+				switch (which) {
+					case AlertDialog.BUTTON_POSITIVE:
+						startActivity(new Intent(PhotoSelectionActivity.this, SettingsActivity.class));
+						break;
+				}
+
+				dialog.dismiss();
+				prefs.edit().putBoolean(PreferenceConstants.PREF_SHOWN_INSTANT_UPLOAD_DIALOG, true).commit();
+			}
+		};
+
+		builder.setPositiveButton(R.string.settings, listener);
+		builder.setNegativeButton(android.R.string.cancel, listener);
+		builder.show();
 	}
 
 }

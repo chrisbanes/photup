@@ -38,5 +38,6 @@
 	<string name="pref_instant_upload_quality_title">Quality</string>
 	<string name="pref_instant_upload_filter_title">Effect</string>
 	<string name="pref_instant_upload_filter_summary">Select an effect to be applied automatically</string>
+	<string name="dialog_instant_upload">photup now has Instant Upload! This means that whenever you take a photo, photup can automatically upload it to Facebook.\n\nJust enable it in Settings and we\'ll do the rest!</string>
 
 </resources>
