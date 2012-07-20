@@ -182,7 +182,11 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 			do {
 				try {
 					InputStream is = new ProgressInputStream(new FileInputStream(temporaryFile), temporaryFile.length());
-					response = facebook.request(mUpload.getAlbumId() + "/photos", bundle, "POST", is, "source");
+
+					String albumId = mUpload.getAlbumId();
+					String graphPath = null != albumId ? albumId : "me";
+
+					response = facebook.request(graphPath + "/photos", bundle, "POST", is, "source");
 					if (Constants.DEBUG) {
 						Log.d(LOG_TAG, response);
 					}
