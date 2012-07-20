@@ -6,6 +6,12 @@
         <item>ALL_FRIENDS</item>
         <item>SELF</item>
     </string-array>
+    
+    <string-array name="quality_settings_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
 
     <string name="twitter_handle">\@photup</string>
     <string name="twitter_address">http://twitter.com/photup</string>

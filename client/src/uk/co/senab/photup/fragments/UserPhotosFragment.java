@@ -250,13 +250,17 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 
 	public void onScanCompleted(String path, Uri uri) {
 		if (null != uri) {
+
 			PhotupApplication.getApplication(getActivity()).addScannedCameraUri(uri);
-			
-			getActivity().runOnUiThread(new Runnable() {	
+
+			getActivity().runOnUiThread(new Runnable() {
 				public void run() {
 					mPhotoAdapter.refresh();
 				}
 			});
+
+			// Send Photo Taken Intent
+			//getActivity().sendBroadcast(new Intent(Constants.INTENT_PHOTO_TAKEN, uri));
 		}
 	}
 }

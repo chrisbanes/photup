@@ -56,12 +56,24 @@
 		<activity
 			android:name=".LicencesActivity"
 			android:label="@string/libraries" />
+		<activity
+			android:name=".SettingsActivity"
+			android:label="@string/settings" />
 
 		<receiver
-			android:name=".receivers.BootReceiver" >
+			android:name=".receivers.PhotoWatcherReceiver" >
 			<intent-filter>
 				<action
-					android:name="android.intent.action.BOOT_COMPLETED" />
+					android:name="com.android.camera.NEW_PICTURE" />
+				<action
+					android:name="android.hardware.action.NEW_PICTURE" />
+
+				<data
+					android:mimeType="image/*" />
+			</intent-filter>
+			<intent-filter>
+				<action
+					android:name="photup.intent.action.PHOTO_TAKEN" />
 			</intent-filter>
 		</receiver>
 
@@ -71,9 +83,6 @@
 				<action
 					android:name="photup.intent.action.UPLOAD_ALL" />
 			</intent-filter>
-		</service>
-		<service
-			android:name=".service.InstantUploadService" >
 		</service>
 	</application>
 

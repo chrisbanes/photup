@@ -32,4 +32,18 @@ public enum UploadQuality {
 				return UploadQuality.HIGH;
 		}
 	}
+
+	public static UploadQuality mapFromPreference(String value) {
+		UploadQuality returnValue = MEDIUM;
+
+		if ("0".equals(value)) {
+			returnValue = LOW;
+		} else if ("1".equals(value)) {
+			returnValue = MEDIUM;
+		} else if ("2".equals(value)) {
+			returnValue = HIGH;
+		}
+
+		return returnValue;
+	}
 }

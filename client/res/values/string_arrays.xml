@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string-array name="privacy_settings">
-        <item>Public</item>
-        <item>Friends</item>
-        <item>Me</item>
-    </string-array>
+	<string-array name="privacy_settings">
+		<item>Public</item>
+		<item>Friends</item>
+		<item>Me</item>
+	</string-array>
+	<string-array name="quality_settings">
+		<item>@string/upload_quality_low</item>
+		<item>@string/upload_quality_medium</item>
+		<item>@string/upload_quality_high</item>
+	</string-array>
 
 </resources>

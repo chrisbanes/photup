@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+	<PreferenceCategory
+		android:title="@string/pref_instant_upload_title" >
+		<CheckBoxPreference
+			android:key="pref_instant_upload_enabled"
+			android:title="@string/pref_instant_upload_title" />
+
+		<ListPreference
+			android:dependency="pref_instant_upload_enabled"
+			android:enabled="false"
+			android:key="pref_instant_upload_album"
+			android:title="@string/pref_instant_upload_album_title" />
+		<ListPreference
+			android:dependency="pref_instant_upload_enabled"
+			android:entries="@array/quality_settings"
+			android:entryValues="@array/quality_settings_values"
+			android:key="pref_instant_upload_quality"
+			android:title="@string/pref_instant_upload_quality_title" />
+	</PreferenceCategory>
+
+</PreferenceScreen>

@@ -20,7 +20,6 @@ public class MainActivity extends Activity {
 		if (null == session) {
 			launchLoginActivity();
 		} else {
-			Utils.startInstantUploadService(this);
 			launchSelectionActivity(session);
 		}
 	}

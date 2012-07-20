@@ -22,7 +22,6 @@ public class PhotoUpload {
 
 	private WeakReference<OnUploadStateChanged> mStateListener;
 
-	private String mAlbumName;
 	private String mAlbumId;
 	private UploadQuality mQuality;
 
@@ -37,10 +36,6 @@ public class PhotoUpload {
 		return mState;
 	}
 
-	public String getAlbumName() {
-		return mAlbumName;
-	}
-
 	public String getAlbumId() {
 		return mAlbumId;
 	}
@@ -49,9 +44,8 @@ public class PhotoUpload {
 		return null != mQuality ? mQuality : UploadQuality.MEDIUM;
 	}
 
-	public void setUploadParams(String albumId, String albumName, UploadQuality quality) {
+	public void setUploadParams(String albumId, UploadQuality quality) {
 		mAlbumId = albumId;
-		mAlbumName = albumName;
 		mQuality = quality;
 	}
 

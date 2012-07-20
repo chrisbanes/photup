@@ -31,7 +31,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
 	private Facebook mFacebook;
 
-	private Button mLoginBtn, mLogoutBtn, mLibrariesBtn;
+	private Button mLoginBtn, mLogoutBtn, mLibrariesBtn, mSettingsBtn;
 	private View mFacebookBtn, mTwitterBtn;
 	private TextView mMessageTv;
 
@@ -46,6 +46,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 			startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.twitter_address))));
 		} else if (v == mLibrariesBtn) {
 			startActivity(new Intent(this, LicencesActivity.class));
+		} else if (v == mSettingsBtn) {
+			startActivity(new Intent(this, SettingsActivity.class));
 		}
 	}
 
@@ -74,6 +76,9 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
 		mLibrariesBtn = (Button) findViewById(R.id.btn_libraries);
 		mLibrariesBtn.setOnClickListener(this);
+		
+		mSettingsBtn = (Button) findViewById(R.id.btn_settings);
+		mSettingsBtn.setOnClickListener(this);
 
 		mMessageTv = (TextView) findViewById(R.id.tv_login_message);
 	}
@@ -126,12 +131,14 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 			mLogoutBtn.setText(getString(R.string.logout, session.getName()));
 			mLogoutBtn.setVisibility(View.VISIBLE);
 			mLibrariesBtn.setVisibility(View.VISIBLE);
+			mSettingsBtn.setVisibility(View.VISIBLE);
 		} else {
 			mMessageTv.setText(R.string.welcome_message);
 			mMessageTv.setVisibility(View.VISIBLE);
 			mLoginBtn.setVisibility(View.VISIBLE);
 			mLogoutBtn.setVisibility(View.GONE);
 			mLibrariesBtn.setVisibility(View.GONE);
+			mSettingsBtn.setVisibility(View.GONE);
 		}
 	}
 

@@ -66,22 +66,29 @@
 				android:background="@drawable/btn_blue"
 				android:text="@string/libraries"
 				android:visibility="gone" />
+
+			<Button
+				android:id="@+id/btn_settings"
+				style="@style/StyledButton"
+				android:background="@drawable/btn_blue"
+				android:text="@string/settings"
+				android:visibility="gone" />
 		</LinearLayout>
 	</ScrollView>
 
 	<View
 		android:layout_width="fill_parent"
 		android:layout_height="1dp"
-		android:background="@color/translucent_grey"
 		android:layout_marginLeft="@dimen/double_spacing"
-		android:layout_marginRight="@dimen/double_spacing" />
+		android:layout_marginRight="@dimen/double_spacing"
+		android:background="@color/translucent_grey" />
 
 	<LinearLayout
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:gravity="center"
-		android:paddingTop="@dimen/spacing" 
-		android:paddingBottom="@dimen/spacing" >
+		android:paddingBottom="@dimen/spacing"
+		android:paddingTop="@dimen/spacing" >
 
 		<TextView
 			android:id="@+id/tv_social_fb"

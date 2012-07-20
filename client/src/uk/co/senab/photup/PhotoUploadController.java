@@ -89,14 +89,17 @@ public class PhotoUploadController {
 		return !mUploadingList.isEmpty();
 	}
 
-	public void addPhotoToUploads(PhotoSelection upload) {
-		if (null != upload) {
+	public boolean addPhotoToUploads(PhotoSelection upload) {
+		if (null != upload && !mUploadingList.contains(upload)) {
 			mUploadingList.add(upload);
-		}
 
-		for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
-			l.onSelectionsAddedToUploads();
+			for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
+				l.onSelectionsAddedToUploads();
+			}
+			
+			return true;
 		}
+		return false;
 	}
 
 	public void moveSelectedPhotosToUploads(Album album, UploadQuality quality) {
@@ -104,7 +107,7 @@ public class PhotoUploadController {
 		mSelectedPhotoList.clear();
 
 		for (PhotoUpload upload : mUploadingList) {
-			upload.setUploadParams(album.getId(), album.getName(), quality);
+			upload.setUploadParams(album.getId(), quality);
 		}
 
 		for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
