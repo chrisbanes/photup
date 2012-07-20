@@ -41,4 +41,15 @@ public class Filter {
 		return mLabelId;
 	}
 
+	public static Filter mapFromPref(String preference) {
+		int id;
+		try {
+			id = Integer.parseInt(preference);
+		} catch (Exception e) {
+			id = FILTER_ORIGINAL;
+		}
+
+		return FILTERS[id];
+	}
+
 }

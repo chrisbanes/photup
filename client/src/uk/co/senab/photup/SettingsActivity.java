@@ -3,6 +3,7 @@ package uk.co.senab.photup;
 import java.util.List;
 
 import uk.co.senab.photup.model.Album;
+import uk.co.senab.photup.model.Filter;
 import uk.co.senab.photup.tasks.AlbumsAsyncTask.AlbumsResultListener;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -19,6 +20,8 @@ public class SettingsActivity extends SherlockPreferenceActivity implements Albu
 		addPreferencesFromResource(R.xml.main_prefs);
 
 		PhotupApplication.getApplication(this).getAlbums(this, false);
+
+		populateFiltersPref();
 	}
 
 	public void onFacebookError(FacebookError e) {
@@ -40,6 +43,23 @@ public class SettingsActivity extends SherlockPreferenceActivity implements Albu
 		albumsPref.setEntries(entries);
 		albumsPref.setEntryValues(entryValues);
 		albumsPref.setEnabled(true);
+	}
+
+	private void populateFiltersPref() {
+		ListPreference filtersPref = (ListPreference) findPreference(PreferenceConstants.PREF_INSTANT_UPLOAD_FILTER);
+		Filter[] filters = Filter.FILTERS;
+		
+		String[] entries = new String[filters.length];
+		String[] entryValues = new String[filters.length];
+
+		for (int i = 0, z = filters.length; i < z; i++) {
+			Filter filter = filters[i];
+			entries[i] = getString(filter.getLabelId());
+			entryValues[i] = String.valueOf(filter.getId());
+		}
+
+		filtersPref.setEntries(entries);
+		filtersPref.setEntryValues(entryValues);
 	}
 
 	@Override

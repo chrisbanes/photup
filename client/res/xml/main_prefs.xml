@@ -11,6 +11,7 @@
 			android:dependency="pref_instant_upload_enabled"
 			android:enabled="false"
 			android:key="pref_instant_upload_album"
+			android:summary="@string/pref_instant_upload_album_summary"
 			android:title="@string/pref_instant_upload_album_title" />
 		<ListPreference
 			android:dependency="pref_instant_upload_enabled"
@@ -18,6 +19,12 @@
 			android:entryValues="@array/quality_settings_values"
 			android:key="pref_instant_upload_quality"
 			android:title="@string/pref_instant_upload_quality_title" />
+		<ListPreference
+			android:defaultValue="0"
+			android:dependency="pref_instant_upload_enabled"
+			android:key="pref_instant_upload_filter"
+			android:summary="@string/pref_instant_upload_filter_summary"
+			android:title="@string/pref_instant_upload_filter_title" />
 	</PreferenceCategory>
 
 </PreferenceScreen>

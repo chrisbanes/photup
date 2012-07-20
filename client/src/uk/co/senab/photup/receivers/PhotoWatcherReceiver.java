@@ -3,6 +3,7 @@ package uk.co.senab.photup.receivers;
 import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PreferenceConstants;
+import uk.co.senab.photup.model.Filter;
 import uk.co.senab.photup.model.MediaStorePhotoUpload;
 import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.model.UploadQuality;
@@ -45,8 +46,10 @@ public class PhotoWatcherReceiver extends BroadcastReceiver {
 
 			final PhotoSelection upload = new MediaStorePhotoUpload(uri);
 			final String qualityId = prefs.getString(PreferenceConstants.PREF_INSTANT_UPLOAD_QUALITY, null);
+			final String filterId = prefs.getString(PreferenceConstants.PREF_INSTANT_UPLOAD_FILTER, "0");
 			
 			upload.setUploadParams(albumId, UploadQuality.mapFromPreference(qualityId));
+			upload.setFilterUsed(Filter.mapFromPref(filterId));
 
 			PhotoUploadController controller = PhotoUploadController.getFromContext(context);
 
