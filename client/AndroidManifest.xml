@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	package="uk.co.senab.photup"
 	android:installLocation="auto"
-	android:versionCode="1001"
-	android:versionName="1.0.0.1" >
+	android:versionCode="1100"
+	android:versionName="1.1" >
 
 	<uses-sdk
 		android:minSdkVersion="8"
