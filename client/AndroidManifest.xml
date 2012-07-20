@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	package="uk.co.senab.photup"
 	android:installLocation="auto"
-	android:versionCode="1100"
+	android:versionCode="1101"
 	android:versionName="1.1" >
 
 	<uses-sdk
