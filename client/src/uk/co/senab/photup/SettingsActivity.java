@@ -6,12 +6,12 @@ import uk.co.senab.photup.model.Album;
 import uk.co.senab.photup.tasks.AlbumsAsyncTask.AlbumsResultListener;
 import android.os.Bundle;
 import android.preference.ListPreference;
-import android.preference.PreferenceActivity;
 
+import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.facebook.android.FacebookError;
 
 @SuppressWarnings("deprecation")
-public class SettingsActivity extends PreferenceActivity implements AlbumsResultListener {
+public class SettingsActivity extends SherlockPreferenceActivity implements AlbumsResultListener {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +41,7 @@ public class SettingsActivity extends PreferenceActivity implements AlbumsResult
 		albumsPref.setEntryValues(entryValues);
 		albumsPref.setEnabled(true);
 	}
-	
+
 	@Override
 	protected void onStop() {
 		super.onStop();
