@@ -85,6 +85,15 @@ public class PhotoUploadController {
 		return count;
 	}
 
+	public boolean hasWaitingUploads() {
+		for (PhotoSelection upload : mUploadingList) {
+			if (upload.getState() == PhotoUpload.STATE_WAITING) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public boolean hasUploads() {
 		return !mUploadingList.isEmpty();
 	}
@@ -96,7 +105,7 @@ public class PhotoUploadController {
 			for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
 				l.onSelectionsAddedToUploads();
 			}
-			
+
 			return true;
 		}
 		return false;

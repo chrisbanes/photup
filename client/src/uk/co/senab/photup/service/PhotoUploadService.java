@@ -25,6 +25,7 @@ import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.model.PhotoTag;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.model.UploadQuality;
+import uk.co.senab.photup.receivers.ConnectivityReceiver;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -322,10 +323,15 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	}
 
 	public void uploadAll() {
-		PhotoSelection nextUpload = mController.getNextPhotoToUpload();
-		if (null != nextUpload) {
-			startForeground();
-			startUpload(nextUpload);
+		if (ConnectivityReceiver.isConnected(this)) {
+			PhotoSelection nextUpload = mController.getNextPhotoToUpload();
+			if (null != nextUpload) {
+				startForeground();
+				startUpload(nextUpload);
+			}
+		} else {
+			// No need to keep us running
+			stopSelf();
 		}
 	}
 

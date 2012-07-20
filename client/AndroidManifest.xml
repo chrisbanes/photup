@@ -76,6 +76,13 @@
 					android:name="photup.intent.action.PHOTO_TAKEN" />
 			</intent-filter>
 		</receiver>
+		<receiver
+			android:name=".receivers.ConnectivityReceiver" >
+			<intent-filter>
+				<action
+					android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+			</intent-filter>
+		</receiver>
 
 		<service
 			android:name=".service.PhotoUploadService" >
