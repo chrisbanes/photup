@@ -33,6 +33,19 @@
                 android:padding="@dimen/spacing"
                 android:src="@drawable/ic_menu_add" />
         </LinearLayout>
+        
+        <TextView
+            style="?android:attr/listSeparatorTextViewStyle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/double_spacing"
+            android:text="@string/place" />
+
+        <Button
+        	android:id="@+id/btn_place"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
+        	android:text="@string/place" />
 
         <TextView
             style="?android:attr/listSeparatorTextViewStyle"

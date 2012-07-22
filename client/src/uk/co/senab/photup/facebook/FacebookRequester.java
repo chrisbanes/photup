@@ -11,7 +11,9 @@ import org.json.JSONObject;
 
 import uk.co.senab.photup.model.Album;
 import uk.co.senab.photup.model.FbUser;
+import uk.co.senab.photup.model.Place;
 import android.content.Context;
+import android.location.Location;
 import android.os.Bundle;
 import android.text.TextUtils;
 
@@ -34,6 +36,46 @@ public class FacebookRequester {
 
 		mSession = session;
 		mFacebook = mSession.getFb();
+	}
+
+	public List<Place> getPlaces(Location location, String searchQuery) throws FacebookError, JSONException {
+		Bundle b = new Bundle();
+		b.putString("date_format", "U");
+		b.putString("limit", "75");
+		b.putString("type", "place");
+		b.putString("fields", Place.GRAPH_FIELDS);
+		b.putString("center", location.getLatitude() + "," + location.getLongitude());
+
+		if (!TextUtils.isEmpty(searchQuery)) {
+			b.putString("q", searchQuery);
+		}
+
+		String response = null;
+		try {
+			response = mFacebook.request("search", b);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		if (null == response) {
+			return null;
+		}
+
+		JSONObject document = Util.parseJson(response);
+		JSONArray data = document.getJSONArray("data");
+		ArrayList<Place> places = new ArrayList<Place>(data.length());
+
+		JSONObject object;
+		for (int i = 0, z = data.length(); i < z; i++) {
+			try {
+				object = data.getJSONObject(i);
+				places.add(new Place(object));
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return places;
 	}
 
 	public List<FbUser> getFriends() throws FacebookError, JSONException {

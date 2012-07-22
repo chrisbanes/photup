@@ -8,6 +8,7 @@ import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
 import uk.co.senab.photup.model.Album;
 import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.model.PhotoUpload;
+import uk.co.senab.photup.model.Place;
 import uk.co.senab.photup.model.UploadQuality;
 import android.content.Context;
 
@@ -111,12 +112,13 @@ public class PhotoUploadController {
 		return false;
 	}
 
-	public void moveSelectedPhotosToUploads(Album album, UploadQuality quality) {
+	public void moveSelectedPhotosToUploads(Album album, UploadQuality quality, Place place) {
 		mUploadingList.addAll(mSelectedPhotoList);
 		mSelectedPhotoList.clear();
 
 		for (PhotoUpload upload : mUploadingList) {
 			upload.setUploadParams(album.getId(), quality);
+			upload.setPlace(place);
 		}
 
 		for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {

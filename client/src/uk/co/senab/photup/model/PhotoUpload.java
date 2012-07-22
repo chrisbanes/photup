@@ -24,6 +24,7 @@ public class PhotoUpload {
 
 	private String mAlbumId;
 	private UploadQuality mQuality;
+	private Place mPlace;
 
 	private int mState;
 	private int mProgress;
@@ -47,6 +48,14 @@ public class PhotoUpload {
 	public void setUploadParams(String albumId, UploadQuality quality) {
 		mAlbumId = albumId;
 		mQuality = quality;
+	}
+	
+	public void setPlace(Place place) {
+		mPlace = place;
+	}
+	
+	public Place getPlace() {
+		return mPlace;
 	}
 
 	public void setState(int state) {

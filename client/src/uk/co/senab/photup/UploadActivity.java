@@ -5,7 +5,10 @@ import java.util.List;
 
 import uk.co.senab.photup.fragments.NewAlbumFragment;
 import uk.co.senab.photup.fragments.NewAlbumFragment.OnAlbumCreatedListener;
+import uk.co.senab.photup.fragments.PlacesListFragment;
+import uk.co.senab.photup.listeners.OnPlacePickedListener;
 import uk.co.senab.photup.model.Album;
+import uk.co.senab.photup.model.Place;
 import uk.co.senab.photup.model.UploadQuality;
 import uk.co.senab.photup.service.PhotoUploadService;
 import uk.co.senab.photup.service.PhotoUploadService.ServiceBinder;
@@ -22,6 +25,7 @@ import android.telephony.TelephonyManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -35,7 +39,7 @@ import com.facebook.android.FacebookError;
 import com.lightbox.android.photoprocessing.R;
 
 public class UploadActivity extends SherlockFragmentActivity implements ServiceConnection, AlbumsResultListener,
-		OnClickListener, OnAlbumCreatedListener {
+		OnClickListener, OnAlbumCreatedListener, OnPlacePickedListener {
 
 	private final ArrayList<Album> mAlbums = new ArrayList<Album>();
 
@@ -44,6 +48,8 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 	private RadioGroup mQualityRadioGroup;
 	private Spinner mAlbumSpinner;
 	private ImageButton mNewAlbumButton;
+	private Button mPlacesButton;
+	private Place mPlace;
 
 	private ArrayAdapter<Album> mAlbumAdapter;
 
@@ -66,6 +72,9 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		mAlbumAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mAlbumSpinner.setAdapter(mAlbumAdapter);
 
+		mPlacesButton = (Button) findViewById(R.id.btn_place);
+		mPlacesButton.setOnClickListener(this);
+
 		bindService(new Intent(this, PhotoUploadService.class), this, Context.BIND_AUTO_CREATE);
 
 		PhotupApplication.getApplication(this).getAlbums(this, false);
@@ -75,7 +84,7 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		UploadQuality quality = UploadQuality.mapFromButtonId(mQualityRadioGroup.getCheckedRadioButtonId());
 		Album album = (Album) mAlbumSpinner.getSelectedItem();
 
-		PhotupApplication.getApplication(this).getPhotoUploadController().moveSelectedPhotosToUploads(album, quality);
+		PhotupApplication.getApplication(this).getPhotoUploadController().moveSelectedPhotosToUploads(album, quality, mPlace);
 
 		if (null != album) {
 			mBinder.getService().uploadAll();
@@ -162,8 +171,14 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 	}
 
 	public void onClick(View v) {
-		NewAlbumFragment fragment = new NewAlbumFragment();
-		fragment.show(getSupportFragmentManager(), "new_album");
+		if (v == mNewAlbumButton) {
+			NewAlbumFragment fragment = new NewAlbumFragment();
+			fragment.show(getSupportFragmentManager(), "new_album");
+		} else if (v == mPlacesButton) {
+			PlacesListFragment fragment = new PlacesListFragment();
+			fragment.setOnPlacePickedListener(this);
+			fragment.show(getSupportFragmentManager(), "places");
+		}
 	}
 
 	public void onAlbumCreated() {
@@ -172,6 +187,11 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 
 	public void onFacebookError(FacebookError e) {
 		// NO-OP
+	}
+
+	public void onPlacePicked(Place place) {
+		mPlace = place;
+		mPlacesButton.setText(place.getName());
 	}
 
 }
