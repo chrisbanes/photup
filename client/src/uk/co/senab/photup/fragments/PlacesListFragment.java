@@ -69,7 +69,7 @@ public class PlacesListFragment extends SherlockDialogFragment implements Places
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		mAdapter = new ArrayAdapter<Place>(getActivity(), android.R.layout.simple_list_item_1, mPlaces);
 		mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
@@ -79,13 +79,22 @@ public class PlacesListFragment extends SherlockDialogFragment implements Places
 		if (mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
 			mNetworkListener = new LocationListenerImpl();
 		}
+
+		mLastLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+		if (null == mLastLocation) {
+			mLastLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		}
+
+		if (null != mLastLocation) {
+			refreshPlaces(null);
+		}
 	}
-	
+
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
-	    Dialog dialog = super.onCreateDialog(savedInstanceState);
-	    dialog.setTitle(R.string.place);
-	    return dialog;
+		Dialog dialog = super.onCreateDialog(savedInstanceState);
+		dialog.setTitle(R.string.place);
+		return dialog;
 	}
 
 	@Override
@@ -159,7 +168,11 @@ public class PlacesListFragment extends SherlockDialogFragment implements Places
 	}
 
 	private void refreshPlaces() {
-		new PlacesAsyncTask(getActivity(), this, mLastLocation, mFilterEditText.getText().toString()).execute();
+		refreshPlaces(mFilterEditText.getText().toString());
+	}
+
+	private void refreshPlaces(String query) {
+		new PlacesAsyncTask(getActivity(), this, mLastLocation, query).execute();
 	}
 
 }
