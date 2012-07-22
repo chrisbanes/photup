@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uk.co.senab.photup.R;
+import uk.co.senab.photup.adapters.PlacesAdapter;
 import uk.co.senab.photup.listeners.OnPlacePickedListener;
 import uk.co.senab.photup.model.Place;
 import uk.co.senab.photup.tasks.PlacesAsyncTask;
 import uk.co.senab.photup.tasks.PlacesAsyncTask.PlacesResultListener;
+import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.Context;
 import android.location.Location;
@@ -21,7 +23,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -56,7 +57,7 @@ public class PlacesListFragment extends SherlockDialogFragment implements Places
 
 	private ListView mListView;
 	private EditText mFilterEditText;
-	private ArrayAdapter<Place> mAdapter;
+	private PlacesAdapter mAdapter;
 
 	private OnPlacePickedListener mPickedPlaceListener;
 	private LocationManager mLocationManager;
@@ -70,7 +71,7 @@ public class PlacesListFragment extends SherlockDialogFragment implements Places
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		mAdapter = new ArrayAdapter<Place>(getActivity(), android.R.layout.simple_list_item_1, mPlaces);
+		mAdapter = new PlacesAdapter(getActivity(), mPlaces);
 		mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
 		if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
@@ -172,6 +173,7 @@ public class PlacesListFragment extends SherlockDialogFragment implements Places
 	}
 
 	private void refreshPlaces(String query) {
+		mAdapter.setLocation(mLastLocation);
 		new PlacesAsyncTask(getActivity(), this, mLastLocation, query).execute();
 	}
 

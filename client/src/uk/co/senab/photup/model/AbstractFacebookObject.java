@@ -30,4 +30,8 @@ abstract class AbstractFacebookObject {
 	public String getName() {
 		return mName;
 	}
+	
+	public String getAvatarUrl() {
+		return new StringBuffer("http://graph.facebook.com/").append(mId).append("/picture").toString();
+	}
 }

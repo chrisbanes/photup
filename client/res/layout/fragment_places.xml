@@ -11,7 +11,8 @@
 		android:layout_height="wrap_content"
 		android:layout_margin="@dimen/spacing"
 		android:inputType="textNoSuggestions"
-		android:imeOptions="actionSearch" />
+		android:imeOptions="actionSearch"
+		android:hint="@string/places_search_hint" />
 
 	<ListView
 		android:id="@+id/lv_places"
