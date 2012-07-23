@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uk.co.senab.photup.R;
+import uk.co.senab.photup.Utils;
 import uk.co.senab.photup.adapters.PlacesAdapter;
 import uk.co.senab.photup.listeners.OnPlacePickedListener;
 import uk.co.senab.photup.model.Place;
 import uk.co.senab.photup.tasks.PlacesAsyncTask;
 import uk.co.senab.photup.tasks.PlacesAsyncTask.PlacesResultListener;
-import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.Context;
 import android.location.Location;
@@ -25,6 +25,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockDialogFragment;
@@ -34,9 +35,16 @@ public class PlacesListFragment extends SherlockDialogFragment implements Places
 
 	private class LocationListenerImpl implements LocationListener {
 
+		static final int TIME_THRESHOLD = 3 * 60 * 1000; // 3 minutes
+		static final int DISTANCE_THRESHOLD = 150; // 150m
+
 		public void onLocationChanged(Location location) {
 			mLastLocation = location;
 			refreshPlaces();
+
+			if (Utils.newerThan(location.getTime(), TIME_THRESHOLD) && location.getAccuracy() <= DISTANCE_THRESHOLD) {
+				stopLocationListeners();
+			}
 		}
 
 		public void onProviderDisabled(String provider) {
@@ -57,6 +65,8 @@ public class PlacesListFragment extends SherlockDialogFragment implements Places
 
 	private ListView mListView;
 	private EditText mFilterEditText;
+	private ProgressBar mProgressBar;
+
 	private PlacesAdapter mAdapter;
 
 	private OnPlacePickedListener mPickedPlaceListener;
@@ -70,6 +80,8 @@ public class PlacesListFragment extends SherlockDialogFragment implements Places
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		setStyle(STYLE_NORMAL, R.style.Theme_Photup);
 
 		mAdapter = new PlacesAdapter(getActivity(), mPlaces);
 		mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
@@ -101,6 +113,8 @@ public class PlacesListFragment extends SherlockDialogFragment implements Places
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_places, container, false);
+
+		mProgressBar = (ProgressBar) view.findViewById(R.id.pb_loading);
 
 		mListView = (ListView) view.findViewById(R.id.lv_places);
 		mListView.setOnItemClickListener(this);
@@ -135,13 +149,7 @@ public class PlacesListFragment extends SherlockDialogFragment implements Places
 	@Override
 	public void onPause() {
 		super.onPause();
-
-		if (null != mGpsListener) {
-			mLocationManager.removeUpdates(mGpsListener);
-		}
-		if (null != mNetworkListener) {
-			mLocationManager.removeUpdates(mNetworkListener);
-		}
+		stopLocationListeners();
 	}
 
 	public void setOnPlacePickedListener(OnPlacePickedListener listener) {
@@ -163,6 +171,8 @@ public class PlacesListFragment extends SherlockDialogFragment implements Places
 	}
 
 	public void onPlacesLoaded(List<Place> places) {
+		mProgressBar.setVisibility(View.GONE);
+
 		mPlaces.clear();
 		mPlaces.addAll(places);
 		mAdapter.notifyDataSetChanged();
@@ -174,7 +184,21 @@ public class PlacesListFragment extends SherlockDialogFragment implements Places
 
 	private void refreshPlaces(String query) {
 		mAdapter.setLocation(mLastLocation);
+		if (null != mProgressBar) {
+			mProgressBar.setVisibility(View.VISIBLE);
+		}
 		new PlacesAsyncTask(getActivity(), this, mLastLocation, query).execute();
+	}
+
+	private void stopLocationListeners() {
+		if (null != mGpsListener) {
+			mLocationManager.removeUpdates(mGpsListener);
+			mGpsListener = null;
+		}
+		if (null != mNetworkListener) {
+			mLocationManager.removeUpdates(mNetworkListener);
+			mNetworkListener = null;
+		}
 	}
 
 }

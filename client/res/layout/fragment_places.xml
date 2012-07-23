@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:id="@+id/fl_root"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
@@ -10,14 +10,22 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_margin="@dimen/spacing"
-		android:inputType="textNoSuggestions"
+		android:hint="@string/places_search_hint"
 		android:imeOptions="actionSearch"
-		android:hint="@string/places_search_hint" />
+		android:inputType="textNoSuggestions" />
 
 	<ListView
 		android:id="@+id/lv_places"
 		android:layout_width="fill_parent"
 		android:layout_height="0px"
-		android:layout_weight="1" />
+		android:layout_alignParentBottom="true"
+		android:layout_below="@+id/et_places_filter" />
 
-</LinearLayout>
+	<ProgressBar
+		android:id="@+id/pb_loading"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:indeterminate="true"
+		android:layout_centerInParent="true" />
+
+</RelativeLayout>

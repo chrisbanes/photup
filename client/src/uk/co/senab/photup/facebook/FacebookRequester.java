@@ -43,6 +43,7 @@ public class FacebookRequester {
 		b.putString("date_format", "U");
 		b.putString("limit", "75");
 		b.putString("type", "place");
+		b.putString("distance", "2000");
 		b.putString("center", location.getLatitude() + "," + location.getLongitude());
 
 		if (!TextUtils.isEmpty(searchQuery)) {
