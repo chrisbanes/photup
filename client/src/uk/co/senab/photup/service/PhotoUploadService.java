@@ -164,12 +164,21 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 				temporaryFile.delete();
 			}
 
+			OutputStream os = null;
 			try {
 				temporaryFile.createNewFile();
-				OutputStream os = new BufferedOutputStream(new FileOutputStream(temporaryFile));
+				os = new BufferedOutputStream(new FileOutputStream(temporaryFile));
 				bitmap.compress(CompressFormat.JPEG, quality.getJpegQuality(), os);
 			} catch (IOException e) {
 				e.printStackTrace();
+			} finally {
+				if (null != os) {
+					try {
+						os.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
 			}
 			bitmap.recycle();
 
