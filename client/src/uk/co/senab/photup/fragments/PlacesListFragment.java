@@ -21,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
@@ -178,11 +179,19 @@ public class PlacesListFragment extends SherlockDialogFragment implements Places
 		mAdapter.notifyDataSetChanged();
 	}
 
+	private void hideIme() {
+		if (null != mFilterEditText) {
+			InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+			imm.hideSoftInputFromWindow(mFilterEditText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+		}
+	}
+
 	private void refreshPlaces() {
 		refreshPlaces(mFilterEditText.getText().toString());
 	}
 
 	private void refreshPlaces(String query) {
+		hideIme();
 		if (null != mProgressBar) {
 			mProgressBar.setVisibility(View.VISIBLE);
 		}
