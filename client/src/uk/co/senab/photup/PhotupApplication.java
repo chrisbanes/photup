@@ -15,11 +15,14 @@ import org.acra.annotation.ReportsCrashes;
 
 import uk.co.senab.bitmapcache.BitmapLruCache;
 import uk.co.senab.photup.facebook.Session;
+import uk.co.senab.photup.model.Account;
 import uk.co.senab.photup.model.Album;
 import uk.co.senab.photup.model.FbUser;
 import uk.co.senab.photup.model.MediaStorePhotoUpload;
 import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.receivers.PhotoWatcherReceiver;
+import uk.co.senab.photup.tasks.AccountsAsyncTask;
+import uk.co.senab.photup.tasks.AccountsAsyncTask.AccountsResultListener;
 import uk.co.senab.photup.tasks.AlbumsAsyncTask;
 import uk.co.senab.photup.tasks.AlbumsAsyncTask.AlbumsResultListener;
 import uk.co.senab.photup.tasks.FriendsAsyncTask;
@@ -42,8 +45,8 @@ import com.facebook.android.FacebookError;
 
 @ReportsCrashes(formKey = Constants.ACRA_GOOGLE_DOC_ID, mode = ReportingInteractionMode.TOAST, resToastText = R.string.crash_toast)
 public class PhotupApplication extends Application implements FriendsResultListener, AlbumsResultListener,
-		MediaStoreResultListener {
-	
+		MediaStoreResultListener, AccountsResultListener {
+
 	static final String LOG_TAG = "PhotupApplication";
 	public static final String THREAD_FILTERS = "filters_thread";
 
@@ -58,6 +61,9 @@ public class PhotupApplication extends Application implements FriendsResultListe
 
 	private AlbumsResultListener mAlbumsListener;
 	private ArrayList<Album> mAlbums;
+
+	private AccountsResultListener mAccountsListener;
+	private ArrayList<Account> mAccounts;
 
 	private MediaStoreAsyncTask mMediaStoreAsyncTask;
 	private MediaStoreResultListener mMediaStoreListener;
@@ -120,15 +126,17 @@ public class PhotupApplication extends Application implements FriendsResultListe
 		}
 
 		super.onCreate();
-		
+
 		checkInstantUploadReceiverState();
-		
+
 		mFriends = new ArrayList<FbUser>();
 		mAlbums = new ArrayList<Album>();
+		mAccounts = new ArrayList<Account>();
 
 		// TODO Need to check for Facebook login
 		Session session = Session.restore(this);
 		if (null != session) {
+			getAccounts(null);
 			getFriends(null);
 			getAlbums(null, false);
 		}
@@ -149,6 +157,15 @@ public class PhotupApplication extends Application implements FriendsResultListe
 			new FriendsAsyncTask(this, this).execute();
 		} else {
 			listener.onFriendsLoaded(mFriends);
+		}
+	}
+
+	public void getAccounts(AccountsResultListener listener) {
+		if (mAccounts.isEmpty()) {
+			mAccountsListener = listener;
+			new AccountsAsyncTask(this, this).execute();
+		} else {
+			listener.onAccountsLoaded(mAccounts);
 		}
 	}
 
@@ -183,6 +200,18 @@ public class PhotupApplication extends Application implements FriendsResultListe
 			if (null != mAlbumsListener && mAlbumsListener != this) {
 				mAlbumsListener.onAlbumsLoaded(mAlbums);
 				mAlbumsListener = null;
+			}
+		}
+	}
+
+	public void onAccountsLoaded(List<Account> accounts) {
+		mAccounts.clear();
+
+		if (null != mAccounts) {
+			mAccounts.addAll(accounts);
+			if (null != mAccountsListener && mAccountsListener != this) {
+				mAccountsListener.onAccountsLoaded(mAccounts);
+				mAccountsListener = null;
 			}
 		}
 	}
@@ -253,7 +282,6 @@ public class PhotupApplication extends Application implements FriendsResultListe
 				}
 				break;
 		}
-
 	}
 
 }

@@ -100,14 +100,12 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 		private final WeakReference<Context> mContextRef;
 		private final Handler mHandler;
-		private final Session mSession;
 		private final PhotoSelection mUpload;
 
 		public UploadPhotoRunnable(Context context, Handler handler, PhotoSelection upload, Session session) {
 			mContextRef = new WeakReference<Context>(context);
 			mHandler = handler;
 			mUpload = upload;
-			mSession = session;
 		}
 
 		public void run() {
@@ -118,7 +116,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 			mUpload.setState(PhotoUpload.STATE_UPLOAD_IN_PROGRESS);
 
-			Facebook facebook = mSession.getFb();
+			Facebook facebook = mUpload.getAccount().getFacebook();
 			Bundle bundle = new Bundle();
 
 			String caption = mUpload.getCaption();

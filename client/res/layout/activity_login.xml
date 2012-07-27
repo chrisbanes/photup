@@ -12,7 +12,8 @@
 		android:background="@color/translucent_dk_grey"
 		android:gravity="center"
 		android:paddingBottom="@dimen/double_spacing"
-		android:paddingTop="@dimen/double_spacing" >
+		android:paddingTop="@dimen/double_spacing"
+		android:animateLayoutChanges="true" >
 
 		<ImageView
 			android:layout_width="wrap_content"

@@ -7,11 +7,13 @@ import uk.co.senab.photup.fragments.NewAlbumFragment;
 import uk.co.senab.photup.fragments.NewAlbumFragment.OnAlbumCreatedListener;
 import uk.co.senab.photup.fragments.PlacesListFragment;
 import uk.co.senab.photup.listeners.OnPlacePickedListener;
+import uk.co.senab.photup.model.Account;
 import uk.co.senab.photup.model.Album;
 import uk.co.senab.photup.model.Place;
 import uk.co.senab.photup.model.UploadQuality;
 import uk.co.senab.photup.service.PhotoUploadService;
 import uk.co.senab.photup.service.PhotoUploadService.ServiceBinder;
+import uk.co.senab.photup.tasks.AccountsAsyncTask.AccountsResultListener;
 import uk.co.senab.photup.tasks.AlbumsAsyncTask.AlbumsResultListener;
 import android.content.ComponentName;
 import android.content.Context;
@@ -24,6 +26,8 @@ import android.os.IBinder;
 import android.telephony.TelephonyManager;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -39,19 +43,24 @@ import com.facebook.android.FacebookError;
 import com.lightbox.android.photoprocessing.R;
 
 public class UploadActivity extends SherlockFragmentActivity implements ServiceConnection, AlbumsResultListener,
-		OnClickListener, OnAlbumCreatedListener, OnPlacePickedListener {
+		AccountsResultListener, OnClickListener, OnAlbumCreatedListener, OnPlacePickedListener, OnItemSelectedListener {
 
 	private final ArrayList<Album> mAlbums = new ArrayList<Album>();
+	private final ArrayList<Account> mAccounts = new ArrayList<Account>();
 
 	private ServiceBinder<PhotoUploadService> mBinder;
 
 	private RadioGroup mQualityRadioGroup;
-	private Spinner mAlbumSpinner;
+	private Spinner mAlbumSpinner, mAccountsSpinner;
 	private ImageButton mNewAlbumButton;
 	private Button mPlacesButton;
+
+	private View mAlbumSpinnerLayout, mAlbumTitleTv;
+
 	private Place mPlace;
 
 	private ArrayAdapter<Album> mAlbumAdapter;
+	private ArrayAdapter<Account> mAccountsAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +74,10 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		mAlbumSpinner = (Spinner) findViewById(R.id.sp_upload_album);
 		mAlbumSpinner.setEnabled(false);
 
+		mAccountsSpinner = (Spinner) findViewById(R.id.sp_upload_account);
+		mAccountsSpinner.setEnabled(false);
+		mAccountsSpinner.setOnItemSelectedListener(this);
+
 		mNewAlbumButton = (ImageButton) findViewById(R.id.btn_new_album);
 		mNewAlbumButton.setOnClickListener(this);
 
@@ -72,21 +85,35 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		mAlbumAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mAlbumSpinner.setAdapter(mAlbumAdapter);
 
+		mAccountsAdapter = new ArrayAdapter<Account>(this, android.R.layout.simple_spinner_item, mAccounts);
+		mAccountsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		mAccountsSpinner.setAdapter(mAccountsAdapter);
+
 		mPlacesButton = (Button) findViewById(R.id.btn_place);
 		mPlacesButton.setOnClickListener(this);
 
+		mAlbumSpinnerLayout = findViewById(R.id.ll_album_spinner);
+		mAlbumTitleTv = findViewById(R.id.tv_album_title);
+
 		bindService(new Intent(this, PhotoUploadService.class), this, Context.BIND_AUTO_CREATE);
 
-		PhotupApplication.getApplication(this).getAlbums(this, false);
+		PhotupApplication app = PhotupApplication.getApplication(this);
+		app.getAlbums(this, false);
+		app.getAccounts(this);
 	}
 
 	private void upload() {
 		UploadQuality quality = UploadQuality.mapFromButtonId(mQualityRadioGroup.getCheckedRadioButtonId());
-		Album album = (Album) mAlbumSpinner.getSelectedItem();
+		Account account = (Account) mAccountsSpinner.getSelectedItem();
+		Album album = null;
+		if (mAccountsSpinner.getSelectedItemPosition() == 0) {
+			album = (Album) mAlbumSpinner.getSelectedItem();
+		}
 
-		PhotupApplication.getApplication(this).getPhotoUploadController().moveSelectedPhotosToUploads(album, quality, mPlace);
+		if (null != album || mAccountsSpinner.getSelectedItemPosition() > 0) {
+			PhotupApplication.getApplication(this).getPhotoUploadController()
+					.moveSelectedPhotosToUploads(account, album, quality, mPlace);
 
-		if (null != album) {
 			mBinder.getService().uploadAll();
 			finish();
 		} else {
@@ -192,6 +219,28 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 	public void onPlacePicked(Place place) {
 		mPlace = place;
 		mPlacesButton.setText(place.getName());
+	}
+
+	public void onAccountsLoaded(List<Account> accounts) {
+		mAccounts.clear();
+		mAccounts.addAll(accounts);
+		mAccountsAdapter.notifyDataSetChanged();
+		mAccountsSpinner.setEnabled(true);
+	}
+
+	public void onItemSelected(AdapterView<?> spinner, View view, int position, long id) {
+		if (position == 0) {
+			mAlbumTitleTv.setVisibility(View.VISIBLE);
+			mAlbumSpinnerLayout.setVisibility(View.VISIBLE);
+		} else {
+			mAlbumTitleTv.setVisibility(View.GONE);
+			mAlbumSpinnerLayout.setVisibility(View.GONE);
+		}
+	}
+
+	public void onNothingSelected(AdapterView<?> spinner) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

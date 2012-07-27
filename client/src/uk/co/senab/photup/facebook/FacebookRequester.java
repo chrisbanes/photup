@@ -9,6 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import uk.co.senab.photup.model.Account;
 import uk.co.senab.photup.model.Album;
 import uk.co.senab.photup.model.FbUser;
 import uk.co.senab.photup.model.Place;
@@ -114,6 +115,46 @@ public class FacebookRequester {
 		Collections.sort(friends, FbUser.getComparator());
 
 		return friends;
+
+	}
+
+	public List<Account> getAccounts() throws FacebookError, JSONException {
+		Bundle b = new Bundle();
+		b.putString("date_format", "U");
+		b.putString("limit", "3000");
+
+		String response = null;
+		try {
+			response = mFacebook.request("me/accounts", b);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		if (null == response) {
+			return null;
+		}
+
+		JSONObject document = Util.parseJson(response);
+
+		JSONArray data = document.getJSONArray("data");
+		ArrayList<Account> accounts = new ArrayList<Account>(data.length() * 2);
+		accounts.add(Account.getMeFromSession(mSession));
+
+		JSONObject object;
+		Account account;
+		for (int i = 0, z = data.length(); i < z; i++) {
+			try {
+				object = data.getJSONObject(i);
+				account = new Account(object);
+				if (account.hasAccessToken()) {
+					accounts.add(account);
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return accounts;
 
 	}
 

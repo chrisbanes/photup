@@ -13,7 +13,7 @@ public class Constants {
 
 	public static final String FACEBOOK_APP_ID = "134669876670695";
 
-	public static final String[] FACEBOOK_PERMISSIONS = { "publish_stream", "user_photos" };
+	public static final String[] FACEBOOK_PERMISSIONS = { "publish_stream", "user_photos", "manage_pages" };
 
 	public static final int FACE_DETECTOR_MAX_FACES = 8;
 
