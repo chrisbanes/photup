@@ -209,8 +209,16 @@ public class Utils {
 			throw new IllegalStateException("PhotoProcessing should be done on corrent thread!");
 		}
 	}
-	
+
 	public static boolean newerThan(long compareTime, int threshold) {
 		return compareTime > (System.currentTimeMillis() - threshold);
+	}
+
+	public static String formatDistance(final int distance) {
+		if (distance < 1000) {
+			return distance + "m";
+		} else {
+			return String.format("%.2fkm", distance / 1000f);
+		}
 	}
 }

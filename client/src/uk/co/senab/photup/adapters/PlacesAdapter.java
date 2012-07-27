@@ -5,6 +5,7 @@ import java.util.List;
 import uk.co.senab.bitmapcache.BitmapLruCache;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
+import uk.co.senab.photup.Utils;
 import uk.co.senab.photup.model.Place;
 import uk.co.senab.photup.views.NetworkedCacheableImageView;
 import android.content.Context;
@@ -62,7 +63,7 @@ public class PlacesAdapter extends BaseAdapter {
 
 		TextView mDescription = (TextView) view.findViewById(R.id.tv_place_description);
 		if (null != mCurrentLocation) {
-			mDescription.setText(place.distanceFrom(mCurrentLocation) + "m");
+			mDescription.setText(Utils.formatDistance(place.distanceFrom(mCurrentLocation)));
 		}
 
 		return view;
