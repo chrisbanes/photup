@@ -24,9 +24,11 @@ import com.actionbarsherlock.view.MenuItem;
 
 public class PhotoSelectionActivity extends SherlockFragmentActivity implements OnPhotoSelectionChangedListener,
 		TabListener {
+	
+	public static final String EXTRA_DEFAULT_TAB = "extra_tab";
 
-	static final int TAB_PHOTOS = 0;
-	static final int TAB_SELECTED = 1;
+	public static final int TAB_PHOTOS = 0;
+	public static final int TAB_SELECTED = 1;
 	static final int TAB_UPLOADS = 2;
 
 	private PhotoUploadController mPhotoController;
@@ -46,6 +48,12 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 		ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		ab.addTab(ab.newTab().setText(R.string.tab_photos).setTag(TAB_PHOTOS).setTabListener(this));
 		ab.addTab(ab.newTab().setText(getSelectedTabTitle()).setTag(TAB_SELECTED).setTabListener(this));
+		
+		Intent intent = getIntent();
+		int defaultTab = intent.getIntExtra(EXTRA_DEFAULT_TAB, -1);
+		if (defaultTab != -1) {
+			ab.setSelectedNavigationItem(defaultTab);
+		}
 	}
 
 	@Override

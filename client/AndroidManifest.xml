@@ -70,6 +70,23 @@
 		<activity
 			android:name=".SettingsActivity"
 			android:label="@string/settings" />
+		<activity
+			android:name=".ActionSendActivity"
+			android:label="@string/app_name"
+			android:theme="@android:style/Theme.NoDisplay" >
+			<intent-filter>
+				<action
+					android:name="android.intent.action.SEND" />
+				<action
+					android:name="android.intent.action.SEND_MULTIPLE" />
+
+				<category
+					android:name="android.intent.category.DEFAULT" />
+
+				<data
+					android:mimeType="image/*" />
+			</intent-filter>
+		</activity>
 
 		<receiver
 			android:name=".receivers.PhotoWatcherReceiver" >
