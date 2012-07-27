@@ -26,13 +26,13 @@
 			style="?android:attr/listSeparatorTextViewStyle"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
+			android:layout_marginTop="@dimen/double_spacing"
 			android:text="@string/upload_album_title" />
 
 		<LinearLayout
 			android:id="@+id/ll_album_spinner"
 			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginTop="@dimen/double_spacing" >
+			android:layout_height="wrap_content" >
 
 			<Spinner
 				android:id="@+id/sp_upload_album"
