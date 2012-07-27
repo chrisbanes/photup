@@ -22,7 +22,7 @@
     android:shareInterpolator="false" >
 
     <scale
-        android:duration="@android:integer/config_mediumAnimTime"
+        android:duration="@android:integer/config_shortAnimTime"
         android:fromXScale="0.6"
         android:fromYScale="0.6"
         android:interpolator="@android:anim/overshoot_interpolator"
@@ -32,7 +32,7 @@
         android:toYScale="1.0" />
 
     <alpha
-        android:duration="@android:integer/config_mediumAnimTime"
+        android:duration="@android:integer/config_shortAnimTime"
         android:fromAlpha="0.0"
         android:interpolator="@android:anim/decelerate_interpolator"
         android:toAlpha="1.0" />
