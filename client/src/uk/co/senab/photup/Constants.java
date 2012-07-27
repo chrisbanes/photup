@@ -21,5 +21,6 @@ public class Constants {
 
 	public static final String INTENT_SERVICE_UPLOAD_ALL = "photup.intent.action.UPLOAD_ALL";
 	public static final String INTENT_PHOTO_TAKEN = "photup.intent.action.PHOTO_TAKEN";
+	public static final String INTENT_NEW_PERMISSIONS = "photup.intent.action.NEW_PERMISSIONS";
 
 }

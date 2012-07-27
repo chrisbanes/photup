@@ -56,6 +56,13 @@
 		<activity
 			android:name=".LoginActivity"
 			android:theme="@style/Theme.Sherlock.NoActionBar" >
+			<intent-filter>
+				<action
+					android:name="photup.intent.action.NEW_PERMISSIONS" />
+
+				<category
+					android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
 		</activity>
 		<activity
 			android:name=".LicencesActivity"

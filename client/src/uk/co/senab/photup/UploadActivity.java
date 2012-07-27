@@ -15,8 +15,10 @@ import uk.co.senab.photup.service.PhotoUploadService;
 import uk.co.senab.photup.service.PhotoUploadService.ServiceBinder;
 import uk.co.senab.photup.tasks.AccountsAsyncTask.AccountsResultListener;
 import uk.co.senab.photup.tasks.AlbumsAsyncTask.AlbumsResultListener;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.ConnectivityManager;
@@ -44,6 +46,8 @@ import com.lightbox.android.photoprocessing.R;
 
 public class UploadActivity extends SherlockFragmentActivity implements ServiceConnection, AlbumsResultListener,
 		AccountsResultListener, OnClickListener, OnAlbumCreatedListener, OnPlacePickedListener, OnItemSelectedListener {
+	
+	static final int REQUEST_FACEBOOK_LOGIN = 99;
 
 	private final ArrayList<Album> mAlbums = new ArrayList<Album>();
 	private final ArrayList<Account> mAccounts = new ArrayList<Account>();
@@ -99,7 +103,7 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 
 		PhotupApplication app = PhotupApplication.getApplication(this);
 		app.getAlbums(this, false);
-		app.getAccounts(this);
+		app.getAccounts(this, false);
 	}
 
 	private void upload() {
@@ -147,6 +151,19 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 			RadioButton button = (RadioButton) mQualityRadioGroup.findViewById(checkedId);
 			button.setChecked(true);
 		}
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (requestCode) {
+			case REQUEST_FACEBOOK_LOGIN:
+				if (resultCode == RESULT_OK) {
+					PhotupApplication.getApplication(this).getAccounts(this, true);
+				}
+				return;
+		}
+
+		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 	@Override
@@ -226,6 +243,11 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		mAccounts.addAll(accounts);
 		mAccountsAdapter.notifyDataSetChanged();
 		mAccountsSpinner.setEnabled(true);
+
+		// Means we just have one item, the current session
+		if (mAccounts.size() == 1) {
+			showNoPagesDialog();
+		}
 	}
 
 	public void onItemSelected(AdapterView<?> spinner, View view, int position, long id) {
@@ -239,8 +261,31 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 	}
 
 	public void onNothingSelected(AdapterView<?> spinner) {
-		// TODO Auto-generated method stub
+		// NO-OP
+	}
 
+	private void showNoPagesDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setIcon(R.drawable.ic_launcher);
+		builder.setTitle(R.string.dialog_missing_pages_title);
+		builder.setMessage(R.string.dialog_missing_pages_text);
+
+		final DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+
+			public void onClick(DialogInterface dialog, int which) {
+				switch (which) {
+					case AlertDialog.BUTTON_POSITIVE:
+						startActivityForResult(new Intent(Constants.INTENT_NEW_PERMISSIONS), REQUEST_FACEBOOK_LOGIN);
+						break;
+				}
+
+				dialog.dismiss();
+			}
+		};
+
+		builder.setPositiveButton(android.R.string.ok, listener);
+		builder.setNegativeButton(android.R.string.cancel, listener);
+		builder.show();
 	}
 
 }

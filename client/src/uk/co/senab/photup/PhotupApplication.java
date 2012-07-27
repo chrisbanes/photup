@@ -136,7 +136,7 @@ public class PhotupApplication extends Application implements FriendsResultListe
 		// TODO Need to check for Facebook login
 		Session session = Session.restore(this);
 		if (null != session) {
-			getAccounts(null);
+			getAccounts(null, false);
 			getFriends(null);
 			getAlbums(null, false);
 		}
@@ -160,8 +160,8 @@ public class PhotupApplication extends Application implements FriendsResultListe
 		}
 	}
 
-	public void getAccounts(AccountsResultListener listener) {
-		if (mAccounts.isEmpty()) {
+	public void getAccounts(AccountsResultListener listener, boolean forceRefresh) {
+		if (forceRefresh || mAccounts.isEmpty()) {
 			mAccountsListener = listener;
 			new AccountsAsyncTask(this, this).execute();
 		} else {

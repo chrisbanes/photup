@@ -59,7 +59,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 		mFacebook.authorizeCallback(requestCode, resultCode, data);
 		super.onActivityResult(requestCode, resultCode, data);
 	}
-	
+
 	@Override
 	public void onBackPressed() {
 		super.onBackPressed();
@@ -70,7 +70,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
-		
+
 		mAboutLogo = findViewById(R.id.ll_about_logo);
 		mAboutForward = findViewById(R.id.iv_about_forward);
 
@@ -88,11 +88,15 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
 		mLibrariesBtn = (Button) findViewById(R.id.btn_libraries);
 		mLibrariesBtn.setOnClickListener(this);
-		
+
 		mSettingsBtn = (Button) findViewById(R.id.btn_settings);
 		mSettingsBtn.setOnClickListener(this);
 
 		mMessageTv = (TextView) findViewById(R.id.tv_login_message);
+
+		if (Constants.INTENT_NEW_PERMISSIONS.equals(getIntent().getAction())) {
+			loginToFacebook();
+		}
 	}
 
 	@Override
