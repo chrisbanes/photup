@@ -14,6 +14,7 @@ import java.util.concurrent.ExecutorService;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.PhotoSelectionActivity;
@@ -206,7 +207,9 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 			if (null != response) {
 				try {
-					Util.parseJson(response);
+					JSONObject object = Util.parseJson(response);
+					mUpload.setResultPostId(object.optString("post_id", null));
+					
 					// If we get here, we've successfully uploaded the photos
 					mHandler.sendMessage(mHandler.obtainMessage(MSG_UPLOAD_COMPLETE, mUpload));
 					return;

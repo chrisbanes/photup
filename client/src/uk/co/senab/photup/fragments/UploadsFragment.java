@@ -5,7 +5,10 @@ import uk.co.senab.photup.adapters.UploadsListBaseAdapter;
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
 import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.model.PhotoUpload;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
@@ -47,6 +50,42 @@ public class UploadsFragment extends SherlockListFragment implements OnPhotoSele
 	}
 
 	public void onPhotoSelectionChanged(PhotoSelection upload, boolean added) {
+	}
+
+	@Override
+	public void onListItemClick(ListView l, View v, int position, long id) {
+		PhotoUpload upload = (PhotoUpload) l.getItemAtPosition(position);
+		if (null != upload && upload.getState() == PhotoUpload.STATE_UPLOAD_COMPLETED) {
+
+			String postId = upload.getResultPostId();
+			if (null != postId) {
+				final Intent intent = new Intent(Intent.ACTION_VIEW);
+
+				try {
+					intent.setData(Uri.parse("fb://post/" + postId));
+					startActivity(intent);
+					return;
+				} catch (Exception e) {
+					// Facebook not installed
+				}
+
+				try {
+					intent.setData(Uri.parse("fplusfree://post?id=" + postId));
+					startActivity(intent);
+					return;
+				} catch (Exception e) {
+					// Friendcaster Free not installed
+				}
+
+				try {
+					intent.setData(Uri.parse("fplus://post?id=" + postId));
+					startActivity(intent);
+					return;
+				} catch (Exception e) {
+					// Friendcaster Pro not installed
+				}
+			}
+		}
 	}
 
 	public void onSelectionsAddedToUploads() {
