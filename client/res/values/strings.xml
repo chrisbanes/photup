@@ -44,6 +44,6 @@
 	<string name="dialog_instant_upload">photup now has Instant Upload! This means that whenever you take a photo, photup can automatically upload it to Facebook.\n\nJust enable it in Settings and we\'ll do the rest!</string>
 	
 	<string name="dialog_missing_pages_title">Missing Accounts?</string>
-	<string name="dialog_missing_pages_text">Are your Accounts missing from this list? If so then we need to request an extra permission from Facebook. Click the button below to continue.</string>
+	<string name="dialog_missing_pages_text">Are any of your Pages or Accounts missing from this list? If so then we need to request an extra permission from Facebook. Click the button below to continue.</string>
 
 </resources>

@@ -58,6 +58,7 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 	private Spinner mAlbumSpinner, mAccountsSpinner;
 	private ImageButton mNewAlbumButton;
 	private Button mPlacesButton;
+	private ImageButton mAccountHelpBtn;
 
 	private View mAlbumSpinnerLayout, mAlbumTitleTv;
 
@@ -95,6 +96,9 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 
 		mPlacesButton = (Button) findViewById(R.id.btn_place);
 		mPlacesButton.setOnClickListener(this);
+		
+		mAccountHelpBtn = (ImageButton) findViewById(R.id.btn_account_help);
+		mAccountHelpBtn.setOnClickListener(this);
 
 		mAlbumSpinnerLayout = findViewById(R.id.ll_album_spinner);
 		mAlbumTitleTv = findViewById(R.id.tv_album_title);
@@ -222,6 +226,8 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 			PlacesListFragment fragment = new PlacesListFragment();
 			fragment.setOnPlacePickedListener(this);
 			fragment.show(getSupportFragmentManager(), "places");
+		} else if (v == mAccountHelpBtn) {
+			showMissingPagesDialog();
 		}
 	}
 
@@ -243,11 +249,6 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		mAccounts.addAll(accounts);
 		mAccountsAdapter.notifyDataSetChanged();
 		mAccountsSpinner.setEnabled(true);
-
-		// Means we just have one item, the current session
-		if (mAccounts.size() == 1) {
-			showNoPagesDialog();
-		}
 	}
 
 	public void onItemSelected(AdapterView<?> spinner, View view, int position, long id) {
@@ -264,14 +265,13 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		// NO-OP
 	}
 
-	private void showNoPagesDialog() {
+	private void showMissingPagesDialog() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setIcon(R.drawable.ic_launcher);
 		builder.setTitle(R.string.dialog_missing_pages_title);
 		builder.setMessage(R.string.dialog_missing_pages_text);
 
 		final DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
-
 			public void onClick(DialogInterface dialog, int which) {
 				switch (which) {
 					case AlertDialog.BUTTON_POSITIVE:

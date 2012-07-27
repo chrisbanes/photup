@@ -16,10 +16,24 @@
 			android:layout_height="wrap_content"
 			android:text="@string/upload_account" />
 
-		<Spinner
-			android:id="@+id/sp_upload_account"
+		<LinearLayout
 			android:layout_width="fill_parent"
-			android:layout_height="@dimen/form_item_height" />
+			android:layout_height="wrap_content" >
+
+			<Spinner
+				android:id="@+id/sp_upload_account"
+				android:layout_width="0px"
+				android:layout_height="@dimen/form_item_height"
+				android:layout_weight="1" />
+
+			<ImageButton
+				android:id="@+id/btn_account_help"
+				android:layout_width="@dimen/form_item_height"
+				android:layout_height="@dimen/form_item_height"
+				android:background="?attr/actionBarItemBackground"
+				android:padding="@dimen/spacing"
+				android:src="@drawable/ic_menu_help" />
+		</LinearLayout>
 
 		<TextView
 			android:id="@+id/tv_album_title"
