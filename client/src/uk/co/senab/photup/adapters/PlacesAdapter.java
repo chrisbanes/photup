@@ -61,10 +61,15 @@ public class PlacesAdapter extends BaseAdapter {
 		TextView mTitle = (TextView) view.findViewById(R.id.tv_place_name);
 		mTitle.setText(place.getName());
 
-		TextView mDescription = (TextView) view.findViewById(R.id.tv_place_description);
+		StringBuffer sb = new StringBuffer();
 		if (null != mCurrentLocation) {
-			mDescription.setText(Utils.formatDistance(place.distanceFrom(mCurrentLocation)));
+			sb.append(Utils.formatDistance(place.distanceFrom(mCurrentLocation)));
+			sb.append(" - ");
 		}
+		sb.append(place.getCategory());
+
+		TextView mDescription = (TextView) view.findViewById(R.id.tv_place_description);
+		mDescription.setText(sb);
 
 		return view;
 	}

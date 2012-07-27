@@ -10,13 +10,19 @@ public class Place extends AbstractFacebookObject {
 	static final double EARTH_RADIUS_KM = 6371;
 
 	private final double mLatitude, mLongitude;
+	private final String mCategory;
 
 	public Place(JSONObject object) throws JSONException {
 		super(object);
+		mCategory = object.getString("category");
 
 		JSONObject location = object.getJSONObject("location");
 		mLatitude = location.getDouble("latitude");
 		mLongitude = location.getDouble("longitude");
+	}
+	
+	public String getCategory() {
+		return mCategory;
 	}
 
 	public int distanceFrom(Location location) {
