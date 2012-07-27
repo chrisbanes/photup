@@ -70,11 +70,29 @@
 			android:layout_marginTop="@dimen/double_spacing"
 			android:text="@string/place" />
 
-		<Button
-			android:id="@+id/btn_place"
+		<LinearLayout
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
-			android:text="@string/place" />
+			android:gravity="center_vertical" >
+
+			<uk.co.senab.photup.views.NetworkedCacheableImageView
+				android:id="@+id/iv_place_photo"
+				android:layout_width="@dimen/listview_sml_item_dimension"
+				android:layout_height="@dimen/listview_sml_item_dimension"
+				android:scaleType="centerCrop" />
+
+			<TextView
+				android:id="@+id/btn_place"
+				style="?android:attr/textAppearanceMedium"
+				android:layout_width="0px"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:background="?attr/actionBarItemBackground"
+				android:gravity="center_vertical"
+				android:minHeight="@dimen/listview_sml_item_dimension"
+				android:padding="@dimen/spacing"
+				android:text="@string/place" />
+		</LinearLayout>
 
 		<TextView
 			style="?android:attr/listSeparatorTextViewStyle"

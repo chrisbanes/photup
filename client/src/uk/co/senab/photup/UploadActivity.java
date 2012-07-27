@@ -15,6 +15,7 @@ import uk.co.senab.photup.service.PhotoUploadService;
 import uk.co.senab.photup.service.PhotoUploadService.ServiceBinder;
 import uk.co.senab.photup.tasks.AccountsAsyncTask.AccountsResultListener;
 import uk.co.senab.photup.tasks.AlbumsAsyncTask.AlbumsResultListener;
+import uk.co.senab.photup.views.NetworkedCacheableImageView;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -31,11 +32,11 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -57,7 +58,9 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 	private RadioGroup mQualityRadioGroup;
 	private Spinner mAlbumSpinner, mAccountsSpinner;
 	private ImageButton mNewAlbumButton;
-	private Button mPlacesButton;
+	private TextView mPlacesButton;
+	private NetworkedCacheableImageView mPlacesIcon;
+	
 	private ImageButton mAccountHelpBtn;
 
 	private View mAlbumSpinnerLayout, mAlbumTitleTv;
@@ -94,7 +97,8 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		mAccountsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mAccountsSpinner.setAdapter(mAccountsAdapter);
 
-		mPlacesButton = (Button) findViewById(R.id.btn_place);
+		mPlacesIcon = (NetworkedCacheableImageView) findViewById(R.id.iv_place_photo);
+		mPlacesButton = (TextView) findViewById(R.id.btn_place);
 		mPlacesButton.setOnClickListener(this);
 		
 		mAccountHelpBtn = (ImageButton) findViewById(R.id.btn_account_help);
@@ -242,6 +246,7 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 	public void onPlacePicked(Place place) {
 		mPlace = place;
 		mPlacesButton.setText(place.getName());
+		mPlacesIcon.loadImage(PhotupApplication.getApplication(getApplicationContext()).getImageCache(), place.getAvatarUrl());
 	}
 
 	public void onAccountsLoaded(List<Account> accounts) {
