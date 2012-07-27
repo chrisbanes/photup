@@ -60,6 +60,7 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 	private ImageButton mNewAlbumButton;
 	private TextView mPlacesButton;
 	private NetworkedCacheableImageView mPlacesIcon;
+	private View mPlacesLayout;
 	
 	private ImageButton mAccountHelpBtn;
 
@@ -99,7 +100,8 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 
 		mPlacesIcon = (NetworkedCacheableImageView) findViewById(R.id.iv_place_photo);
 		mPlacesButton = (TextView) findViewById(R.id.btn_place);
-		mPlacesButton.setOnClickListener(this);
+		mPlacesLayout = findViewById(R.id.ll_place);
+		mPlacesLayout.setOnClickListener(this);
 		
 		mAccountHelpBtn = (ImageButton) findViewById(R.id.btn_account_help);
 		mAccountHelpBtn.setOnClickListener(this);
@@ -226,7 +228,7 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		if (v == mNewAlbumButton) {
 			NewAlbumFragment fragment = new NewAlbumFragment();
 			fragment.show(getSupportFragmentManager(), "new_album");
-		} else if (v == mPlacesButton) {
+		} else if (v == mPlacesLayout) {
 			PlacesListFragment fragment = new PlacesListFragment();
 			fragment.setOnPlacePickedListener(this);
 			fragment.show(getSupportFragmentManager(), "places");

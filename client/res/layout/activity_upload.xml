@@ -71,15 +71,18 @@
 			android:text="@string/place" />
 
 		<LinearLayout
+			android:id="@+id/ll_place"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
+			android:background="?attr/actionBarItemBackground"
 			android:gravity="center_vertical" >
 
 			<uk.co.senab.photup.views.NetworkedCacheableImageView
 				android:id="@+id/iv_place_photo"
 				android:layout_width="@dimen/listview_sml_item_dimension"
 				android:layout_height="@dimen/listview_sml_item_dimension"
-				android:scaleType="centerCrop" />
+				android:scaleType="centerInside"
+				android:src="@drawable/ic_menu_myplaces" />
 
 			<TextView
 				android:id="@+id/btn_place"
@@ -87,7 +90,6 @@
 				android:layout_width="0px"
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
-				android:background="?attr/actionBarItemBackground"
 				android:gravity="center_vertical"
 				android:minHeight="@dimen/listview_sml_item_dimension"
 				android:padding="@dimen/spacing"

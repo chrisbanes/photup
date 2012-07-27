@@ -77,6 +77,8 @@ public class NetworkedCacheableImageView extends CacheableImageView {
 		protected void onPostExecute(CacheableBitmapWrapper result) {
 			super.onPostExecute(result);
 
+			setScaleType(ScaleType.CENTER_CROP);
+			
 			// Display the image
 			setImageCachedBitmap(result);
 
