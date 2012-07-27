@@ -1,5 +1,7 @@
 package uk.co.senab.photup.model;
 
+import java.util.Comparator;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -11,6 +13,8 @@ public class Place extends AbstractFacebookObject {
 
 	private final double mLatitude, mLongitude;
 	private final String mCategory;
+	
+	private int mDistanceFromLocation;
 
 	public Place(JSONObject object) throws JSONException {
 		super(object);
@@ -25,10 +29,22 @@ public class Place extends AbstractFacebookObject {
 		return mCategory;
 	}
 
-	public int distanceFrom(Location location) {
+	public void calculateDistanceFrom(Location location) {
 		float[] results = new float[1];
 		Location.distanceBetween(mLatitude, mLongitude, location.getLatitude(), location.getLongitude(), results);
-		return Math.round(results[0]);
+		mDistanceFromLocation = Math.round(results[0]);
+	}
+	
+	public int getDistanceFromLocation() {
+		return mDistanceFromLocation;
+	}
+
+	public static Comparator<Place> getComparator() {
+		return new Comparator<Place>() {
+			public int compare(Place lhs, Place rhs) {
+				return lhs.mDistanceFromLocation - rhs.mDistanceFromLocation;
+			}
+		};
 	}
 
 }

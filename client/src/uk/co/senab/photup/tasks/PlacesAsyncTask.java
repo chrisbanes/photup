@@ -1,6 +1,7 @@
 package uk.co.senab.photup.tasks;
 
 import java.lang.ref.WeakReference;
+import java.util.Collections;
 import java.util.List;
 
 import org.json.JSONException;
@@ -40,7 +41,12 @@ public class PlacesAsyncTask extends AsyncTask<Void, Void, List<Place>> {
 		if (null != context) {
 			FacebookRequester requester = new FacebookRequester(context);
 			try {
-				return requester.getPlaces(mLocation, mSearchQuery);
+				List<Place> places = requester.getPlaces(mLocation, mSearchQuery);
+				for (Place place : places) {
+					place.calculateDistanceFrom(mLocation);
+				}
+				Collections.sort(places, Place.getComparator());
+				return places;
 			} catch (FacebookError e) {
 				PlacesResultListener listener = mListener.get();
 				if (null != listener) {

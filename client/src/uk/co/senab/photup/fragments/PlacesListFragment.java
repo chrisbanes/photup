@@ -183,7 +183,6 @@ public class PlacesListFragment extends SherlockDialogFragment implements Places
 	}
 
 	private void refreshPlaces(String query) {
-		mAdapter.setLocation(mLastLocation);
 		if (null != mProgressBar) {
 			mProgressBar.setVisibility(View.VISIBLE);
 		}

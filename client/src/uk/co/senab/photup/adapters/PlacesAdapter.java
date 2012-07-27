@@ -9,7 +9,6 @@ import uk.co.senab.photup.Utils;
 import uk.co.senab.photup.model.Place;
 import uk.co.senab.photup.views.NetworkedCacheableImageView;
 import android.content.Context;
-import android.location.Location;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,8 +21,6 @@ public class PlacesAdapter extends BaseAdapter {
 	private final Context mContext;
 	private final LayoutInflater mLayoutInflater;
 	private final BitmapLruCache mCache;
-
-	private Location mCurrentLocation;
 
 	public PlacesAdapter(Context context, List<Place> items) {
 		mItems = items;
@@ -44,10 +41,6 @@ public class PlacesAdapter extends BaseAdapter {
 		return mItems.get(position);
 	}
 
-	public void setLocation(Location location) {
-		mCurrentLocation = location;
-	}
-
 	public View getView(int position, View view, ViewGroup parent) {
 		if (null == view) {
 			view = mLayoutInflater.inflate(R.layout.item_list_places, parent, false);
@@ -62,10 +55,8 @@ public class PlacesAdapter extends BaseAdapter {
 		mTitle.setText(place.getName());
 
 		StringBuffer sb = new StringBuffer();
-		if (null != mCurrentLocation) {
-			sb.append(Utils.formatDistance(place.distanceFrom(mCurrentLocation)));
-			sb.append(" - ");
-		}
+		sb.append(Utils.formatDistance(place.getDistanceFromLocation()));
+		sb.append(" - ");
 		sb.append(place.getCategory());
 
 		TextView mDescription = (TextView) view.findViewById(R.id.tv_place_description);
