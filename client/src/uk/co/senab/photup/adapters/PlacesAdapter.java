@@ -55,8 +55,11 @@ public class PlacesAdapter extends BaseAdapter {
 		mTitle.setText(place.getName());
 
 		StringBuffer sb = new StringBuffer();
-		sb.append(Utils.formatDistance(place.getDistanceFromLocation()));
-		sb.append(" - ");
+		final int distance = place.getDistanceFromLocation();
+		if (distance > 0) {
+			sb.append(Utils.formatDistance(distance));
+			sb.append(" - ");
+		}
 		sb.append(place.getCategory());
 
 		TextView mDescription = (TextView) view.findViewById(R.id.tv_place_description);

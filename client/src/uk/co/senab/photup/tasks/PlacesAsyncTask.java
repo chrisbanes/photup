@@ -42,10 +42,15 @@ public class PlacesAsyncTask extends AsyncTask<Void, Void, List<Place>> {
 			FacebookRequester requester = new FacebookRequester(context);
 			try {
 				List<Place> places = requester.getPlaces(mLocation, mSearchQuery);
-				for (Place place : places) {
-					place.calculateDistanceFrom(mLocation);
+
+				// If we have a location, sort using it
+				if (null != mLocation) {
+					for (Place place : places) {
+						place.calculateDistanceFrom(mLocation);
+					}
+					Collections.sort(places, Place.getComparator());
 				}
-				Collections.sort(places, Place.getComparator());
+				
 				return places;
 			} catch (FacebookError e) {
 				PlacesResultListener listener = mListener.get();
