@@ -54,8 +54,9 @@ public class MainActivity extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (requestCode) {
 			case REQUEST_FACEBOOK_LOGIN:
-				if (resultCode == RESULT_OK) {
-					launchSelectionActivity(Session.restore(this));
+				Session session = Session.restore(this);
+				if (resultCode == RESULT_OK && null != session) {
+					launchSelectionActivity(session);
 				} else {
 					finish();
 				}
