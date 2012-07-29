@@ -50,15 +50,18 @@ public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 			Utils.checkPhotoProcessingThread();
 
 			Bitmap bitmap = mUpload.getThumbnailImage(mContext);
-			final Bitmap filteredBitmap = PhotoProcessing.filterPhoto(bitmap, mFilter.getId());
-			bitmap.recycle();
+			if (mFilter.getId() != Filter.FILTER_ORIGINAL) {
+				Bitmap filteredBitmap = PhotoProcessing.filterPhoto(bitmap, mFilter.getId());
+				bitmap.recycle();
+				bitmap = filteredBitmap;
+			}
 
 			if (Thread.currentThread().isInterrupted()) {
-				filteredBitmap.recycle();
+				bitmap.recycle();
 				return;
 			}
 
-			final Drawable background = createDrawable(mContext.getResources(), filteredBitmap);
+			final Drawable background = createDrawable(mContext.getResources(), bitmap);
 
 			mButton.post(new Runnable() {
 				@SuppressWarnings("deprecation")
