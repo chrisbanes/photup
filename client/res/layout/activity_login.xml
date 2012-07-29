@@ -25,12 +25,6 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:src="@drawable/ic_logo" />
-
-		<ImageView
-			android:id="@+id/iv_about_forward"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:src="@drawable/ic_menu_forward" />
 	</LinearLayout>
 
 	<ScrollView

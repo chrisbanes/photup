@@ -31,7 +31,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
 	private Facebook mFacebook;
 
-	private View mAboutLogo, mAboutForward;
+	private View mAboutLogo;
 	private Button mLoginBtn, mLogoutBtn, mLibrariesBtn, mSettingsBtn;
 	private View mFacebookBtn, mTwitterBtn;
 	private TextView mMessageTv;
@@ -63,7 +63,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 	@Override
 	public void onBackPressed() {
 		super.onBackPressed();
-		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+		overridePendingTransition(R.anim.slide_in_bottom, R.anim.slide_out_top);
 	}
 
 	@Override
@@ -72,7 +72,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 		setContentView(R.layout.activity_login);
 
 		mAboutLogo = findViewById(R.id.ll_about_logo);
-		mAboutForward = findViewById(R.id.iv_about_forward);
 
 		mLoginBtn = (Button) findViewById(R.id.btn_login);
 		mLoginBtn.setOnClickListener(this);
@@ -148,7 +147,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 			mLibrariesBtn.setVisibility(View.VISIBLE);
 			mSettingsBtn.setVisibility(View.VISIBLE);
 			mAboutLogo.setOnClickListener(this);
-			mAboutForward.setVisibility(View.VISIBLE);
 		} else {
 			mMessageTv.setText(R.string.welcome_message);
 			mMessageTv.setVisibility(View.VISIBLE);
@@ -157,7 +155,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 			mLibrariesBtn.setVisibility(View.GONE);
 			mSettingsBtn.setVisibility(View.GONE);
 			mAboutLogo.setOnClickListener(null);
-			mAboutForward.setVisibility(View.GONE);
 		}
 	}
 

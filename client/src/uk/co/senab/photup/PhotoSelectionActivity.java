@@ -44,7 +44,6 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 
 		ActionBar ab = getSupportActionBar();
 		ab.setDisplayShowTitleEnabled(false);
-		ab.setDisplayHomeAsUpEnabled(true);
 		ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		ab.addTab(ab.newTab().setText(R.string.tab_photos).setTag(TAB_PHOTOS).setTabListener(this));
 		ab.addTab(ab.newTab().setText(getSelectedTabTitle()).setTag(TAB_SELECTED).setTabListener(this));
@@ -71,7 +70,7 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 		switch (item.getItemId()) {
 			case android.R.id.home:
 				startActivity(new Intent(this, LoginActivity.class));
-				overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+				overridePendingTransition(R.anim.slide_in_top, R.anim.slide_out_bottom);
 				return true;
 			case R.id.menu_upload:
 				if (mPhotoController.getSelectedPhotoUploadsSize() == 0) {
