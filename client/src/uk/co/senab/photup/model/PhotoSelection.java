@@ -9,6 +9,7 @@ import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.Utils;
 import uk.co.senab.photup.listeners.OnFaceDetectionListener;
 import uk.co.senab.photup.listeners.OnPhotoTagsChangedListener;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
@@ -211,5 +212,12 @@ public abstract class PhotoSelection extends PhotoUpload {
 		}
 		return false;
 	}
-
+	
+	public static PhotoSelection fromUri(Uri uri) {
+		if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
+			return new MediaStorePhotoUpload(uri);
+		} else {
+			return new FilePhotoUpload(uri);
+		}
+	}
 }
