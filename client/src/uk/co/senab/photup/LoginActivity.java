@@ -107,8 +107,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
 	private void loginToFacebook() {
 		mFacebook = new Facebook(Constants.FACEBOOK_APP_ID);
-		mFacebook.authorize(this, Constants.FACEBOOK_PERMISSIONS, BuildConfig.DEBUG ? Facebook.FORCE_DIALOG_AUTH
-				: REQUEST_FACEBOOK_SSO, new DialogListener() {
+		mFacebook.authorize(this, Constants.FACEBOOK_PERMISSIONS, Facebook.FORCE_DIALOG_AUTH, new DialogListener() {
 
 			public void onCancel() {
 			}
