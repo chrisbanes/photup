@@ -9,6 +9,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
@@ -217,6 +218,11 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 				resetScalePan();
 			}
 		}
+	}
+
+	public void setRotation(int rotation) {
+		mSuppMatrix.postRotate(rotation, getWidth() / 2, getHeight() / 2);
+		centerAndDisplayMatrix();
 	}
 
 	public void setMatrixChangeListener(OnMatrixChangedListener listener) {

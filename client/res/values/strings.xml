@@ -5,6 +5,7 @@
 	<string name="tab_selected_photos">Selected (%1$d)</string>
 	<string name="photo_effects">Effects</string>
 	<string name="photo_caption">Caption</string>
+	<string name="photo_rotate">Rotate</string>
 	<string name="tag_no_name">Who\'s this?</string>
 	<string name="tab_uploads">Uploads</string>
 	<string name="upload_title">Upload</string>

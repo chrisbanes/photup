@@ -30,12 +30,15 @@ public abstract class PhotoSelection extends PhotoUpload {
 	private final HashSet<PhotoTag> mTags;
 	private boolean mCompletedDetection;
 
+	private int mUserRotation;
+
 	private WeakReference<OnFaceDetectionListener> mFaceDetectListener;
 	private WeakReference<OnPhotoTagsChangedListener> mTagChangedListener;
 
 	public PhotoSelection() {
 		mTags = new HashSet<PhotoTag>();
 		mCompletedDetection = false;
+		mUserRotation = 0;
 	}
 
 	public abstract Uri getOriginalPhotoUri();
@@ -50,7 +53,18 @@ public abstract class PhotoSelection extends PhotoUpload {
 		Utils.checkPhotoProcessingThread();
 
 		if (requiresProcessing()) {
-			return PhotoProcessing.filterPhoto(bitmap, mFilter.getId(), modifyOriginal);
+			Bitmap filteredBitmap = bitmap;
+			
+			if (null != mFilter) {
+				filteredBitmap = PhotoProcessing.filterPhoto(filteredBitmap, mFilter.getId(), modifyOriginal);
+			}
+			
+			final int userRotation = getUserRotation();
+			if (userRotation != 0) {
+				filteredBitmap = Utils.rotate(filteredBitmap, userRotation);
+			}
+			
+			return filteredBitmap;
 		} else {
 			return bitmap;
 		}
@@ -86,8 +100,16 @@ public abstract class PhotoSelection extends PhotoUpload {
 		return friends;
 	}
 
+	public int getUserRotation() {
+		return mUserRotation % 360;
+	}
+
+	public void rotateClockwise() {
+		mUserRotation += 90;
+	}
+
 	public boolean requiresProcessing() {
-		return null != mFilter && mFilter.getId() != Filter.FILTER_ORIGINAL;
+		return (null != mFilter && mFilter.getId() != Filter.FILTER_ORIGINAL) || getUserRotation() != 0;
 	}
 
 	public String getCaption() {
@@ -212,7 +234,7 @@ public abstract class PhotoSelection extends PhotoUpload {
 		}
 		return false;
 	}
-	
+
 	public static PhotoSelection fromUri(Uri uri) {
 		if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
 			return new MediaStorePhotoUpload(uri);
