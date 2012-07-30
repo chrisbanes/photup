@@ -2,9 +2,9 @@
 <resources>
 
 	<string-array name="privacy_settings">
-		<item>Public</item>
-		<item>Friends</item>
-		<item>Me</item>
+		<item>@string/privacy_public</item>
+		<item>@string/privacy_friends</item>
+		<item>@string/privacy_me</item>
 	</string-array>
 	<string-array name="quality_settings">
 		<item>@string/upload_quality_low</item>

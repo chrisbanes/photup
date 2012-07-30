@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-	<string name="app_name">photup</string>
 	<string name="tab_photos">Photos</string>
 	<string name="tab_selected_photos">Selected (%1$d)</string>
 	<string name="photo_effects">Effects</string>
@@ -42,8 +41,10 @@
 	<string name="pref_instant_upload_filter_title">Effect</string>
 	<string name="pref_instant_upload_filter_summary">Select an effect to be applied automatically</string>
 	<string name="dialog_instant_upload">photup now has Instant Upload! This means that whenever you take a photo, photup can automatically upload it to Facebook.\n\nJust enable it in Settings and we\'ll do the rest!</string>
-	
 	<string name="dialog_missing_pages_title">Missing Accounts?</string>
 	<string name="dialog_missing_pages_text">Are any of your Pages or Accounts missing from this list? If so then we need to request an extra permission from Facebook. Click the button below to continue.</string>
+	<string name="privacy_public">Public</string>
+	<string name="privacy_friends">Friends</string>
+	<string name="privacy_me">Me</string>
 
 </resources>
