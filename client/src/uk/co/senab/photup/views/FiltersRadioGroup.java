@@ -55,6 +55,11 @@ public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 				bitmap.recycle();
 				bitmap = filteredBitmap;
 			}
+			
+			final int userRotation = mUpload.getUserRotation();
+			if (userRotation != 0) {
+				bitmap = Utils.rotate(bitmap, userRotation);
+			}
 
 			if (Thread.currentThread().isInterrupted()) {
 				bitmap.recycle();

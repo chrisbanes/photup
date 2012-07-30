@@ -9,7 +9,6 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
@@ -65,8 +64,8 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 	private VersionedGestureDetector mScaleDetector;
 
 	private final Matrix mBaseMatrix = new Matrix();
-	private final Matrix mDrawMatrix = new Matrix();
 	private final Matrix mSuppMatrix = new Matrix();
+	private final Matrix mDrawMatrix = new Matrix();
 
 	private final float[] mMatrixValues = new float[9];
 
@@ -221,7 +220,12 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 	}
 
 	public void setRotation(int rotation) {
-		mSuppMatrix.postRotate(rotation, getWidth() / 2, getHeight() / 2);
+		mSuppMatrix.postRotate((float) rotation, getWidth() / 2, getHeight() / 2);
+		centerAndDisplayMatrix();
+	}
+
+	public void rotateClockwise() {
+		mSuppMatrix.postRotate(90f, getWidth() / 2, getHeight() / 2);
 		centerAndDisplayMatrix();
 	}
 
