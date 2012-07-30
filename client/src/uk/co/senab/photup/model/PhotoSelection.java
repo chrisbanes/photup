@@ -48,23 +48,44 @@ public abstract class PhotoSelection extends PhotoUpload {
 	public abstract Bitmap getDisplayImage(Context context);
 
 	public abstract Bitmap getUploadImage(Context context, UploadQuality quality);
+	
+	public abstract int getExifRotation(Context context);
+	
+	public int getTotalRotation(Context context) {
+		return (getExifRotation(context) + getUserRotation()) % 360;
+	}
 
-	public Bitmap processBitmap(Bitmap bitmap, final boolean modifyOriginal) {
+	public Bitmap processBitmapUsingFilter(final Bitmap bitmap, final Filter filter, final boolean modifyOriginal) {
 		Utils.checkPhotoProcessingThread();
 
+		PhotoProcessing.sendBitmapToNative(bitmap);
+		if (modifyOriginal) {
+			bitmap.recycle();
+		}
+
+		if (null != filter) {
+			PhotoProcessing.filterPhoto(filter.getId());
+		}
+
+		switch (getUserRotation()) {
+			case 90:
+				PhotoProcessing.nativeRotate90();
+				break;
+			case 180:
+				PhotoProcessing.nativeRotate180();
+				break;
+			case 270:
+				PhotoProcessing.nativeRotate180();
+				PhotoProcessing.nativeRotate90();
+				break;
+		}
+
+		return PhotoProcessing.getBitmapFromNative(null);
+	}
+
+	public Bitmap processBitmap(Bitmap bitmap, final boolean modifyOriginal) {
 		if (requiresProcessing()) {
-			Bitmap filteredBitmap = bitmap;
-			
-			if (null != mFilter) {
-				filteredBitmap = PhotoProcessing.filterPhoto(filteredBitmap, mFilter.getId(), modifyOriginal);
-			}
-			
-			final int userRotation = getUserRotation();
-			if (userRotation != 0) {
-				filteredBitmap = Utils.rotate(filteredBitmap, userRotation);
-			}
-			
-			return filteredBitmap;
+			return processBitmapUsingFilter(bitmap, mFilter, modifyOriginal);
 		} else {
 			return bitmap;
 		}

@@ -1,6 +1,5 @@
 package uk.co.senab.photup.model;
 
-import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.Utils;
 import android.content.ContentResolver;
@@ -10,7 +9,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore.Images.Thumbnails;
-import android.util.Log;
 
 public class MediaStorePhotoUpload extends FilePhotoUpload {
 
@@ -40,15 +38,7 @@ public class MediaStorePhotoUpload extends FilePhotoUpload {
 		try {
 			ContentResolver cr = context.getContentResolver();
 			Bitmap bitmap = Thumbnails.getThumbnail(cr, mId, kind, opts);
-
-			final int orientation = Utils.getOrientationFromContentUri(cr, getOriginalPhotoUri());
-			if (orientation != 0) {
-				if (Constants.DEBUG) {
-					Log.d(LOG_TAG, "Orientation: " + orientation);
-				}
-				bitmap = Utils.rotate(bitmap, orientation);
-			}
-
+			bitmap = Utils.rotate(bitmap, getExifRotation(context));
 			return bitmap;
 		} catch (Exception e) {
 			e.printStackTrace();

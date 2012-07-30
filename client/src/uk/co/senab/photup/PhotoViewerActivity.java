@@ -106,7 +106,8 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 
 		PhotoSelection upload = getCurrentUpload();
 		upload.rotateClockwise();
-		imageView.rotateClockwise();
+		
+		imageView.requestFullSize(upload, true);
 	}
 
 	public void onCheckedChanged(RadioGroup group, int checkedId) {

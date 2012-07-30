@@ -3,7 +3,6 @@ package uk.co.senab.photup.views;
 import java.util.concurrent.ExecutorService;
 
 import uk.co.senab.photup.PhotupApplication;
-import uk.co.senab.photup.Utils;
 import uk.co.senab.photup.model.Filter;
 import uk.co.senab.photup.model.PhotoSelection;
 import android.content.Context;
@@ -25,7 +24,6 @@ import android.widget.HorizontalScrollView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-import com.lightbox.android.photoprocessing.PhotoProcessing;
 import com.lightbox.android.photoprocessing.R;
 
 public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
@@ -47,19 +45,7 @@ public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 		}
 
 		public void run() {
-			Utils.checkPhotoProcessingThread();
-
-			Bitmap bitmap = mUpload.getThumbnailImage(mContext);
-			if (mFilter.getId() != Filter.FILTER_ORIGINAL) {
-				Bitmap filteredBitmap = PhotoProcessing.filterPhoto(bitmap, mFilter.getId());
-				bitmap.recycle();
-				bitmap = filteredBitmap;
-			}
-			
-			final int userRotation = mUpload.getUserRotation();
-			if (userRotation != 0) {
-				bitmap = Utils.rotate(bitmap, userRotation);
-			}
+			Bitmap bitmap = mUpload.processBitmapUsingFilter(mUpload.getThumbnailImage(mContext), mFilter, true);
 
 			if (Thread.currentThread().isInterrupted()) {
 				bitmap.recycle();
