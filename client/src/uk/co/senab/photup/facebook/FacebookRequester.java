@@ -25,18 +25,16 @@ import com.facebook.android.Util;
 public class FacebookRequester {
 
 	// private final Context mContext;
-	private final Session mSession;
+	private final Account mAccount;
 	private final Facebook mFacebook;
 
-	public FacebookRequester(Context context) {
-		this(context, Session.restore(context));
+	public FacebookRequester(Account account) {
+		mAccount = account;
+		mFacebook = mAccount.getFacebook();
 	}
-
-	public FacebookRequester(Context context, Session session) {
-		// mContext = context;
-
-		mSession = session;
-		mFacebook = mSession.getFb();
+	
+	public FacebookRequester(Context context) {
+		this(Account.getAccountFromSession(context));
 	}
 
 	public List<Place> getPlaces(Location location, String searchQuery) throws FacebookError, JSONException {
@@ -103,7 +101,7 @@ public class FacebookRequester {
 
 		JSONArray data = document.getJSONArray("data");
 		ArrayList<FbUser> friends = new ArrayList<FbUser>(data.length() * 2);
-		friends.add(FbUser.getMeFromSession(mSession));
+		friends.add(FbUser.getMeFromAccount(mAccount));
 
 		JSONObject object;
 		for (int i = 0, z = data.length(); i < z; i++) {
@@ -141,7 +139,7 @@ public class FacebookRequester {
 
 		JSONArray data = document.getJSONArray("data");
 		ArrayList<Account> accounts = new ArrayList<Account>(data.length() * 2);
-		accounts.add(Account.getMeFromSession(mSession));
+		accounts.add(mAccount);
 
 		JSONObject object;
 		Account account;

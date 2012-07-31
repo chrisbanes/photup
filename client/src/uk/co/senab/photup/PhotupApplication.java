@@ -16,15 +16,12 @@ import org.acra.annotation.ReportsCrashes;
 import uk.co.senab.bitmapcache.BitmapLruCache;
 import uk.co.senab.photup.facebook.Session;
 import uk.co.senab.photup.model.Account;
-import uk.co.senab.photup.model.Album;
 import uk.co.senab.photup.model.FbUser;
 import uk.co.senab.photup.model.MediaStorePhotoUpload;
 import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.receivers.PhotoWatcherReceiver;
 import uk.co.senab.photup.tasks.AccountsAsyncTask;
 import uk.co.senab.photup.tasks.AccountsAsyncTask.AccountsResultListener;
-import uk.co.senab.photup.tasks.AlbumsAsyncTask;
-import uk.co.senab.photup.tasks.AlbumsAsyncTask.AlbumsResultListener;
 import uk.co.senab.photup.tasks.FriendsAsyncTask;
 import uk.co.senab.photup.tasks.FriendsAsyncTask.FriendsResultListener;
 import uk.co.senab.photup.tasks.MediaStoreAsyncTask;
@@ -44,8 +41,8 @@ import android.view.WindowManager;
 import com.facebook.android.FacebookError;
 
 @ReportsCrashes(formKey = Constants.ACRA_GOOGLE_DOC_ID, mode = ReportingInteractionMode.TOAST, resToastText = R.string.crash_toast)
-public class PhotupApplication extends Application implements FriendsResultListener, AlbumsResultListener,
-		MediaStoreResultListener, AccountsResultListener {
+public class PhotupApplication extends Application implements FriendsResultListener, MediaStoreResultListener,
+		AccountsResultListener {
 
 	static final String LOG_TAG = "PhotupApplication";
 	public static final String THREAD_FILTERS = "filters_thread";
@@ -58,9 +55,6 @@ public class PhotupApplication extends Application implements FriendsResultListe
 
 	private FriendsResultListener mFriendsListener;
 	private ArrayList<FbUser> mFriends;
-
-	private AlbumsResultListener mAlbumsListener;
-	private ArrayList<Album> mAlbums;
 
 	private AccountsResultListener mAccountsListener;
 	private ArrayList<Account> mAccounts;
@@ -130,7 +124,6 @@ public class PhotupApplication extends Application implements FriendsResultListe
 		checkInstantUploadReceiverState();
 
 		mFriends = new ArrayList<FbUser>();
-		mAlbums = new ArrayList<Album>();
 		mAccounts = new ArrayList<Account>();
 
 		// TODO Need to check for Facebook login
@@ -138,16 +131,6 @@ public class PhotupApplication extends Application implements FriendsResultListe
 		if (null != session) {
 			getAccounts(null, false);
 			getFriends(null);
-			getAlbums(null, false);
-		}
-	}
-
-	public void getAlbums(AlbumsResultListener listener, boolean forceRefresh) {
-		if (forceRefresh || mAlbums.isEmpty()) {
-			mAlbumsListener = listener;
-			new AlbumsAsyncTask(this, this).execute();
-		} else {
-			listener.onAlbumsLoaded(mAlbums);
 		}
 	}
 
@@ -187,19 +170,6 @@ public class PhotupApplication extends Application implements FriendsResultListe
 			if (null != mFriendsListener && mFriendsListener != this) {
 				mFriendsListener.onFriendsLoaded(mFriends);
 				mFriendsListener = null;
-			}
-		}
-	}
-
-	public void onAlbumsLoaded(List<Album> albums) {
-		mAlbums.clear();
-
-		if (null != albums) {
-			mAlbums.addAll(albums);
-
-			if (null != mAlbumsListener && mAlbumsListener != this) {
-				mAlbumsListener.onAlbumsLoaded(mAlbums);
-				mAlbumsListener = null;
 			}
 		}
 	}

@@ -5,8 +5,6 @@ import java.util.Comparator;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import uk.co.senab.photup.facebook.Session;
-
 public class FbUser extends AbstractFacebookObject {
 
 	public static final String GRAPH_FIELDS = "id,name";
@@ -27,8 +25,8 @@ public class FbUser extends AbstractFacebookObject {
 		};
 	}
 
-	public static FbUser getMeFromSession(Session session) {
-		return new FbUser(session.getUid(), session.getName());
+	public static FbUser getMeFromAccount(Account account) {
+		return new FbUser(account.getId(), account.getName());
 	}
 
 }

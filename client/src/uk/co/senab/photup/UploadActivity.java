@@ -64,8 +64,6 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 	
 	private ImageButton mAccountHelpBtn;
 
-	private View mAlbumSpinnerLayout, mAlbumTitleTv;
-
 	private Place mPlace;
 
 	private ArrayAdapter<Album> mAlbumAdapter;
@@ -106,13 +104,9 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		mAccountHelpBtn = (ImageButton) findViewById(R.id.btn_account_help);
 		mAccountHelpBtn.setOnClickListener(this);
 
-		mAlbumSpinnerLayout = findViewById(R.id.ll_album_spinner);
-		mAlbumTitleTv = findViewById(R.id.tv_album_title);
-
 		bindService(new Intent(this, PhotoUploadService.class), this, Context.BIND_AUTO_CREATE);
 
 		PhotupApplication app = PhotupApplication.getApplication(this);
-		app.getAlbums(this, false);
 		app.getAccounts(this, false);
 	}
 
@@ -226,7 +220,7 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 
 	public void onClick(View v) {
 		if (v == mNewAlbumButton) {
-			NewAlbumFragment fragment = new NewAlbumFragment();
+			NewAlbumFragment fragment = new NewAlbumFragment((Account) mAccountsSpinner.getSelectedItem());
 			fragment.show(getSupportFragmentManager(), "new_album");
 		} else if (v == mPlacesLayout) {
 			PlacesListFragment fragment = new PlacesListFragment();
@@ -238,7 +232,8 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 	}
 
 	public void onAlbumCreated() {
-		PhotupApplication.getApplication(this).getAlbums(this, true);
+		Account account = (Account) mAccountsSpinner.getSelectedItem();
+		account.getAlbums(this, true);
 	}
 
 	public void onFacebookError(FacebookError e) {
@@ -259,13 +254,8 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 	}
 
 	public void onItemSelected(AdapterView<?> spinner, View view, int position, long id) {
-		if (position == 0) {
-			mAlbumTitleTv.setVisibility(View.VISIBLE);
-			mAlbumSpinnerLayout.setVisibility(View.VISIBLE);
-		} else {
-			mAlbumTitleTv.setVisibility(View.GONE);
-			mAlbumSpinnerLayout.setVisibility(View.GONE);
-		}
+		Account account = (Account) spinner.getItemAtPosition(position);
+		account.getAlbums(this, false);
 	}
 
 	public void onNothingSelected(AdapterView<?> spinner) {

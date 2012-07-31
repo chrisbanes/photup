@@ -1,8 +1,10 @@
 package uk.co.senab.photup.fragments;
 
 import uk.co.senab.photup.R;
+import uk.co.senab.photup.model.Account;
 import uk.co.senab.photup.tasks.NewAlbumAsyncTask;
 import uk.co.senab.photup.tasks.NewAlbumAsyncTask.NewAlbumResultListener;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,6 +17,7 @@ import android.widget.Spinner;
 
 import com.actionbarsherlock.app.SherlockDialogFragment;
 
+@SuppressLint("ValidFragment")
 public class NewAlbumFragment extends SherlockDialogFragment implements View.OnClickListener, NewAlbumResultListener {
 
 	public static interface OnAlbumCreatedListener {
@@ -29,6 +32,12 @@ public class NewAlbumFragment extends SherlockDialogFragment implements View.OnC
 	private OnAlbumCreatedListener mAlbumCreated;
 
 	private String[] mPrivacyValues;
+	
+	private final Account mAccount;
+	
+	public NewAlbumFragment(Account account) {
+		mAccount = account;
+	}
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -73,7 +82,7 @@ public class NewAlbumFragment extends SherlockDialogFragment implements View.OnC
 		v.setVisibility(View.GONE);
 		mLoadingProgressBar.setVisibility(View.VISIBLE);
 
-		new NewAlbumAsyncTask(getActivity(), this).execute(albumName, description, privacyValue);
+		new NewAlbumAsyncTask(mAccount, this).execute(albumName, description, privacyValue);
 	}
 
 	public void onNewAlbumCreated(String albumId) {

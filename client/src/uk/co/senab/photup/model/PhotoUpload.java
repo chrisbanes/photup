@@ -19,7 +19,7 @@ public class PhotoUpload {
 	public static final int STATE_WAITING = 0;
 
 	private Account mAccount;
-	private String mAlbumId;
+	private String mTargetId;
 	private Bitmap mBigPictureNotificationBmp;
 	private Place mPlace;
 	private int mProgress;
@@ -37,8 +37,8 @@ public class PhotoUpload {
 		return mAccount;
 	}
 
-	public String getAlbumId() {
-		return mAlbumId;
+	public String getTargetId() {
+		return mTargetId;
 	}
 
 	public Bitmap getBigPictureNotificationBmp() {
@@ -105,9 +105,9 @@ public class PhotoUpload {
 		}
 	}
 
-	public void setUploadParams(Account account, String albumId, UploadQuality quality) {
+	public void setUploadParams(Account account, String targetId, UploadQuality quality) {
 		mAccount = account;
-		mAlbumId = albumId;
+		mTargetId = targetId;
 		mQuality = quality;
 	}
 

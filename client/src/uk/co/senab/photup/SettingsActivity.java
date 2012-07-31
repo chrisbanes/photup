@@ -2,6 +2,7 @@ package uk.co.senab.photup;
 
 import java.util.List;
 
+import uk.co.senab.photup.model.Account;
 import uk.co.senab.photup.model.Album;
 import uk.co.senab.photup.model.Filter;
 import uk.co.senab.photup.tasks.AlbumsAsyncTask.AlbumsResultListener;
@@ -19,7 +20,8 @@ public class SettingsActivity extends SherlockPreferenceActivity implements Albu
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.main_prefs);
 
-		PhotupApplication.getApplication(this).getAlbums(this, false);
+		// TODO Don't instantiate from Prefs again
+		Account.getAccountFromSession(getApplicationContext()).getAlbums(this, false);
 
 		populateFiltersPref();
 	}
@@ -48,7 +50,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements Albu
 	private void populateFiltersPref() {
 		ListPreference filtersPref = (ListPreference) findPreference(PreferenceConstants.PREF_INSTANT_UPLOAD_FILTER);
 		Filter[] filters = Filter.FILTERS;
-		
+
 		String[] entries = new String[filters.length];
 		String[] entryValues = new String[filters.length];
 
