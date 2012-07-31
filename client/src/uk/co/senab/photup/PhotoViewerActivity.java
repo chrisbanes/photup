@@ -93,7 +93,7 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 
 	@Override
 	public void onBackPressed() {
-		if (null != mFilterGroup && mFilterGroup.getVisibility() == View.VISIBLE) {
+		if (null != mFilterGroup && mFilterGroup.isShowing()) {
 			hideFiltersView();
 		} else {
 			super.onBackPressed();

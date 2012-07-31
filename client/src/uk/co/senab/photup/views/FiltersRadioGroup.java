@@ -149,6 +149,10 @@ public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 			startAnimation(mSlideOutBottomAnim);
 		}
 	}
+	
+	public boolean isShowing() {
+		return getVisibility() == View.VISIBLE && getAnimation() != mSlideOutBottomAnim;
+	}
 
 	public void onAnimationEnd(Animation animation) {
 		if (animation == mSlideOutBottomAnim) {
