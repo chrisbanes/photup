@@ -99,6 +99,16 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 			super.onBackPressed();
 		}
 	}
+	
+	private void rotateCurrentPhoto() {
+		PhotoTagItemLayout currentView = (PhotoTagItemLayout) getCurrentView();
+		MultiTouchImageView imageView = currentView.getImageView();
+
+		PhotoSelection upload = getCurrentUpload();
+		upload.rotateClockwise();
+		
+		imageView.requestFullSize(upload, true);
+	}
 
 	public void onCheckedChanged(RadioGroup group, int checkedId) {
 		if (!mIgnoreFilterCheckCallback) {
@@ -131,6 +141,9 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 				return true;
 			case R.id.menu_caption:
 				showCaptionDialog();
+				return true;
+			case R.id.menu_rotate:
+				rotateCurrentPhoto();
 				return true;
 		}
 

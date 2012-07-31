@@ -67,6 +67,7 @@ public class SelectedPhotosViewPagerAdapter extends PagerAdapter {
 		MultiTouchImageView imageView = view.getImageView();
 		imageView.requestFullSize(upload, true);
 		imageView.setSingleTapListener(mTapListener);
+		imageView.setRotation(upload.getUserRotation());
 
 		view.setTag(upload);
 		((ViewPager) container).addView(view);

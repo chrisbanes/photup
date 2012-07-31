@@ -64,8 +64,8 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 	private VersionedGestureDetector mScaleDetector;
 
 	private final Matrix mBaseMatrix = new Matrix();
-	private final Matrix mDrawMatrix = new Matrix();
 	private final Matrix mSuppMatrix = new Matrix();
+	private final Matrix mDrawMatrix = new Matrix();
 
 	private final float[] mMatrixValues = new float[9];
 
@@ -217,6 +217,16 @@ public class MultiTouchImageView extends PhotupImageView implements VersionedGes
 				resetScalePan();
 			}
 		}
+	}
+
+	public void setRotation(int rotation) {
+		mSuppMatrix.postRotate((float) rotation, getWidth() / 2, getHeight() / 2);
+		centerAndDisplayMatrix();
+	}
+
+	public void rotateClockwise() {
+		mSuppMatrix.postRotate(90f, getWidth() / 2, getHeight() / 2);
+		centerAndDisplayMatrix();
 	}
 
 	public void setMatrixChangeListener(OnMatrixChangedListener listener) {

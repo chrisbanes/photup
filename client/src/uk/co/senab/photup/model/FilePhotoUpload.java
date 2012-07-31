@@ -43,7 +43,9 @@ public class FilePhotoUpload extends PhotoSelection {
 		}
 
 		try {
-			return Utils.decodeImage(context.getContentResolver(), getOriginalPhotoUri(), size, true);
+			Bitmap bitmap = Utils.decodeImage(context.getContentResolver(), getOriginalPhotoUri(), size);
+			bitmap = Utils.rotate(bitmap, getExifRotation(context));
+			return bitmap;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			return null;
@@ -54,11 +56,18 @@ public class FilePhotoUpload extends PhotoSelection {
 	public Bitmap getDisplayImage(Context context) {
 		try {
 			final int size = PhotupApplication.getApplication(context).getSmallestScreenDimension();
-			return Utils.decodeImage(context.getContentResolver(), getOriginalPhotoUri(), size, true);
+			Bitmap bitmap = Utils.decodeImage(context.getContentResolver(), getOriginalPhotoUri(), size);
+			bitmap = Utils.rotate(bitmap, getExifRotation(context));
+			return bitmap;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	@Override
+	public int getExifRotation(Context context) {
+		return Utils.getOrientationFromContentUri(context.getContentResolver(), getOriginalPhotoUri());
 	}
 
 	@Override
@@ -106,7 +115,7 @@ public class FilePhotoUpload extends PhotoSelection {
 
 					// Decode in Android and send to native
 					Bitmap bitmap = Utils.decodeImage(context.getContentResolver(), getOriginalPhotoUri(),
-							quality.getMaxDimension(), false);
+							quality.getMaxDimension());
 					PhotoProcessing.sendBitmapToNative(bitmap);
 					bitmap.recycle();
 
@@ -127,24 +136,21 @@ public class FilePhotoUpload extends PhotoSelection {
 				/**
 				 * Rotate if needed
 				 */
-				final int orientation = Utils.getOrientationFromContentUri(context.getContentResolver(),
-						getOriginalPhotoUri());
-				if (orientation != 0) {
-					switch (orientation) {
-						case 90:
-							PhotoProcessing.nativeRotate90();
-							break;
-						case 180:
-							PhotoProcessing.nativeRotate180();
-							break;
-						case 270:
-							PhotoProcessing.nativeRotate180();
-							PhotoProcessing.nativeRotate90();
-							break;
-					}
-					if (Constants.DEBUG) {
-						Log.d("MediaStorePhotoUpload", "getUploadImage. " + orientation + " degree rotation complete!");
-					}
+				final int rotation = getTotalRotation(context);
+				switch (rotation) {
+					case 90:
+						PhotoProcessing.nativeRotate90();
+						break;
+					case 180:
+						PhotoProcessing.nativeRotate180();
+						break;
+					case 270:
+						PhotoProcessing.nativeRotate180();
+						PhotoProcessing.nativeRotate90();
+						break;
+				}
+				if (Constants.DEBUG) {
+					Log.d("MediaStorePhotoUpload", "getUploadImage. " + rotation + " degree rotation complete!");
 				}
 
 				if (Constants.DEBUG) {
