@@ -25,18 +25,25 @@ public class PhotupImageView extends CacheableImageView {
 
 	static final int FACE_DETECTION_DELAY = 800;
 
+	public static interface OnPhotoLoadListener {
+		void onPhotoLoadStatusChanged(boolean finished);
+	}
+
 	private static class PhotoTask extends AsyncTask<Void, Void, CacheableBitmapWrapper> {
 
 		private final WeakReference<PhotupImageView> mImageView;
 		private final BitmapLruCache mCache;
 		private final boolean mFetchFullSize;
 		private final PhotoSelection mUpload;
+		private final OnPhotoLoadListener mListener;
 
-		public PhotoTask(PhotupImageView imageView, PhotoSelection upload, BitmapLruCache cache, boolean fullSize) {
+		public PhotoTask(PhotupImageView imageView, PhotoSelection upload, BitmapLruCache cache, boolean fullSize,
+				final OnPhotoLoadListener listener) {
 			mImageView = new WeakReference<PhotupImageView>(imageView);
 			mCache = cache;
 			mFetchFullSize = fullSize;
 			mUpload = upload;
+			mListener = listener;
 		}
 
 		@Override
@@ -67,6 +74,10 @@ public class PhotupImageView extends CacheableImageView {
 					iv.setImageCachedBitmap(result);
 				}
 
+				if (null != mListener) {
+					mListener.onPhotoLoadStatusChanged(true);
+				}
+
 				mCache.put(result);
 			}
 		}
@@ -94,13 +105,16 @@ public class PhotupImageView extends CacheableImageView {
 		private final PhotoSelection mUpload;
 		private final boolean mFullSize;
 		private final BitmapLruCache mCache;
+		private final OnPhotoLoadListener mListener;
 
-		public FilterRunnable(PhotupImageView imageView, PhotoSelection upload, final boolean fullSize) {
+		public FilterRunnable(PhotupImageView imageView, PhotoSelection upload, final boolean fullSize,
+				final OnPhotoLoadListener listener) {
 			mContext = imageView.getContext();
 			mImageView = imageView;
 			mUpload = upload;
 			mFullSize = fullSize;
 			mCache = PhotupApplication.getApplication(mContext).getImageCache();
+			mListener = listener;
 		}
 
 		public void run() {
@@ -124,6 +138,9 @@ public class PhotupImageView extends CacheableImageView {
 			mImageView.post(new Runnable() {
 				public void run() {
 					mImageView.setImageBitmap(filteredBitmap);
+					if (null != mListener) {
+						mListener.onPhotoLoadStatusChanged(true);
+					}
 				}
 			});
 		}
@@ -188,18 +205,19 @@ public class PhotupImageView extends CacheableImageView {
 
 	public void requestThumbnail(final PhotoSelection upload, final boolean honourFilter) {
 		if (upload.requiresProcessing() && honourFilter) {
-			requestFiltered(upload, false);
+			requestFiltered(upload, false, null);
 		} else {
 			// Clear Drawable
 			setImageDrawable(null);
 
-			requestImage(upload, false);
+			requestImage(upload, false, null);
 		}
 	}
 
-	public void requestFullSize(final PhotoSelection upload, final boolean honourFilter) {
+	public void requestFullSize(final PhotoSelection upload, final boolean honourFilter,
+			final OnPhotoLoadListener listener) {
 		if (upload.requiresProcessing() && honourFilter) {
-			requestFiltered(upload, true);
+			requestFiltered(upload, true, listener);
 		} else {
 			// Show thumbnail if it's in the cache
 			BitmapLruCache cache = PhotupApplication.getApplication(getContext()).getImageCache();
@@ -213,13 +231,16 @@ public class PhotupImageView extends CacheableImageView {
 				setImageDrawable(null);
 			}
 
-			requestImage(upload, true);
+			requestImage(upload, true, listener);
 		}
 	}
 
-	void requestFiltered(final PhotoSelection upload, boolean fullSize) {
+	void requestFiltered(final PhotoSelection upload, boolean fullSize, final OnPhotoLoadListener listener) {
+		if (null != listener) {
+			listener.onPhotoLoadStatusChanged(false);
+		}
 		PhotupApplication app = PhotupApplication.getApplication(getContext());
-		app.getSingleThreadExecutorService().submit(new FilterRunnable(this, upload, fullSize));
+		app.getSingleThreadExecutorService().submit(new FilterRunnable(this, upload, fullSize, listener));
 	}
 
 	void requestFaceDetection(final PhotoSelection upload) {
@@ -232,7 +253,7 @@ public class PhotupImageView extends CacheableImageView {
 		}
 	}
 
-	void requestImage(final PhotoSelection upload, final boolean fullSize) {
+	void requestImage(final PhotoSelection upload, final boolean fullSize, final OnPhotoLoadListener listener) {
 		if (null != mCurrentTask) {
 			mCurrentTask.cancel(false);
 		}
@@ -249,7 +270,10 @@ public class PhotupImageView extends CacheableImageView {
 				cache.remove(key);
 			}
 
-			mCurrentTask = new PhotoTask(this, upload, cache, fullSize);
+			mCurrentTask = new PhotoTask(this, upload, cache, fullSize, listener);
+			if (null != listener) {
+				listener.onPhotoLoadStatusChanged(false);
+			}
 
 			if (VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB) {
 				PhotupApplication app = PhotupApplication.getApplication(getContext());

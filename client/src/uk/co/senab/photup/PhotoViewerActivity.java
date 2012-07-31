@@ -15,6 +15,7 @@ import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.views.FiltersRadioGroup;
 import uk.co.senab.photup.views.MultiTouchImageView;
 import uk.co.senab.photup.views.PhotoTagItemLayout;
+import uk.co.senab.photup.views.PhotupImageView.OnPhotoLoadListener;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -37,9 +38,10 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.Window;
 
 public class PhotoViewerActivity extends SherlockFragmentActivity implements OnPhotoSelectionChangedListener,
-		OnSingleTapListener, OnCheckedChangeListener, OnPageChangeListener, OnPickFriendRequestListener {
+		OnSingleTapListener, OnCheckedChangeListener, OnPageChangeListener, OnPickFriendRequestListener, OnPhotoLoadListener {
 
 	public static final String EXTRA_POSITION = "extra_position";
 	public static final String EXTRA_MODE = "extra_mode";
@@ -99,15 +101,15 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 			super.onBackPressed();
 		}
 	}
-	
+
 	private void rotateCurrentPhoto() {
 		PhotoTagItemLayout currentView = (PhotoTagItemLayout) getCurrentView();
 		MultiTouchImageView imageView = currentView.getImageView();
 
 		PhotoSelection upload = getCurrentUpload();
 		upload.rotateClockwise();
-		
-		imageView.requestFullSize(upload, true);
+
+		imageView.requestFullSize(upload, true, this);
 	}
 
 	public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -119,7 +121,7 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 			PhotoSelection upload = getCurrentUpload();
 			upload.setFilterUsed(filter);
 
-			imageView.requestFullSize(upload, true);
+			imageView.requestFullSize(upload, true, this);
 		}
 	}
 
@@ -162,7 +164,7 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 
 	public void onPageSelected(int position) {
 		PhotoSelection upload = mAdapter.getItem(position);
-		
+
 		if (null != upload) {
 			String caption = upload.getCaption();
 			if (null == caption) {
@@ -201,6 +203,8 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
 		setContentView(R.layout.activity_photo_viewer);
 		mContentView = (ViewGroup) findViewById(R.id.fl_root);
@@ -356,5 +360,9 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 
 	public void onUploadsCleared() {
 		// NO-OP
+	}
+
+	public void onPhotoLoadStatusChanged(boolean finished) {
+		setProgressBarIndeterminateVisibility(!finished);
 	}
 }
