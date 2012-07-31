@@ -41,7 +41,8 @@ import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 
 public class PhotoViewerActivity extends SherlockFragmentActivity implements OnPhotoSelectionChangedListener,
-		OnSingleTapListener, OnCheckedChangeListener, OnPageChangeListener, OnPickFriendRequestListener, OnPhotoLoadListener {
+		OnSingleTapListener, OnCheckedChangeListener, OnPageChangeListener, OnPickFriendRequestListener,
+		OnPhotoLoadListener {
 
 	public static final String EXTRA_POSITION = "extra_position";
 	public static final String EXTRA_MODE = "extra_mode";
@@ -95,8 +96,8 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 
 	@Override
 	public void onBackPressed() {
-		if (null != mFilterGroup && mFilterGroup.isShowing()) {
-			hideFiltersView();
+		if (hideFiltersView()) {
+			return;
 		} else {
 			super.onBackPressed();
 		}
@@ -203,7 +204,7 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
 		setContentView(R.layout.activity_photo_viewer);
@@ -322,7 +323,7 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 	}
 
 	private boolean hideFiltersView() {
-		if (null != mFilterGroup && mFilterGroup.getVisibility() == View.VISIBLE) {
+		if (null != mFilterGroup && mFilterGroup.isShowing()) {
 			mFilterGroup.hide();
 			getSupportActionBar().show();
 			return true;
