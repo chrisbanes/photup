@@ -74,7 +74,7 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 
 	private RadioGroup mTargetRadioGroup;
 
-	private ImageButton mAccountHelpBtn, mTargetHelpBtn;
+	private ImageButton mAccountHelpBtn, mTargetHelpBtn, mPlaceRemoveBtn;
 
 	private Place mPlace;
 
@@ -116,6 +116,9 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		mPlacesButton = (TextView) findViewById(R.id.btn_place);
 		mPlacesLayout = findViewById(R.id.ll_place);
 		mPlacesLayout.setOnClickListener(this);
+
+		mPlaceRemoveBtn = (ImageButton) findViewById(R.id.btn_place_remove);
+		mPlaceRemoveBtn.setOnClickListener(this);
 
 		mAccountHelpBtn = (ImageButton) findViewById(R.id.btn_account_help);
 		mAccountHelpBtn.setOnClickListener(this);
@@ -264,6 +267,8 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 			showMissingItemsDialog(true);
 		} else if (v == mTargetHelpBtn) {
 			showMissingItemsDialog(false);
+		} else if (v == mPlaceRemoveBtn) {
+			onPlacePicked(null);
 		}
 	}
 
@@ -278,9 +283,14 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 
 	public void onPlacePicked(Place place) {
 		mPlace = place;
-		mPlacesButton.setText(place.getName());
-		mPlacesIcon.loadImage(PhotupApplication.getApplication(getApplicationContext()).getImageCache(),
-				place.getAvatarUrl());
+		if (null != place) {
+			mPlacesButton.setText(place.getName());
+			mPlacesIcon.loadImage(PhotupApplication.getApplication(getApplicationContext()).getImageCache(),
+					place.getAvatarUrl());
+		} else {
+			mPlacesButton.setText(R.string.place);
+			mPlacesIcon.setImageResource(R.drawable.ic_menu_myplaces);
+		}
 	}
 
 	public void onAccountsLoaded(List<Account> accounts) {
