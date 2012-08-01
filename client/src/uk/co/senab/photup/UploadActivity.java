@@ -32,6 +32,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -128,15 +129,30 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 	private void upload() {
 		UploadQuality quality = UploadQuality.mapFromButtonId(mQualityRadioGroup.getCheckedRadioButtonId());
 		Account account = (Account) mAccountsSpinner.getSelectedItem();
-		Album album = null;
-		if (mAccountsSpinner.getSelectedItemPosition() == 0) {
-			album = (Album) mTargetSpinner.getSelectedItem();
+
+		boolean validTarget = false;
+		String targetId = null;
+
+		switch (mTargetRadioGroup.getCheckedRadioButtonId()) {
+			case R.id.rb_target_wall:
+				validTarget = true;
+				break;
+
+			case R.id.rb_target_album:
+			case R.id.rb_target_group:
+			case R.id.rb_target_event:
+			default:
+				AbstractFacebookObject object = (AbstractFacebookObject) mTargetSpinner.getSelectedItem();
+				if (null != object) {
+					targetId = object.getId();
+					validTarget = !TextUtils.isEmpty(targetId);
+				}
+				break;
 		}
 
-		if (null != album || mAccountsSpinner.getSelectedItemPosition() > 0) {
+		if (validTarget) {
 			PhotupApplication.getApplication(this).getPhotoUploadController()
-					.moveSelectedPhotosToUploads(account, album, quality, mPlace);
-
+					.moveSelectedPhotosToUploads(account, targetId, quality, mPlace);
 			mBinder.getService().uploadAll();
 			finish();
 		} else {

@@ -6,7 +6,6 @@ import java.util.List;
 
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
 import uk.co.senab.photup.model.Account;
-import uk.co.senab.photup.model.Album;
 import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.model.Place;
@@ -113,14 +112,12 @@ public class PhotoUploadController {
 		return false;
 	}
 
-	public void moveSelectedPhotosToUploads(Account account, Album album, UploadQuality quality, Place place) {
+	public void moveSelectedPhotosToUploads(Account account, String targetId, UploadQuality quality, Place place) {
 		mUploadingList.addAll(mSelectedPhotoList);
 		mSelectedPhotoList.clear();
-		
-		final String albumId = null != album ? album.getId() : null;
 
 		for (PhotoUpload upload : mUploadingList) {
-			upload.setUploadParams(account, albumId, quality);
+			upload.setUploadParams(account, targetId, quality);
 			upload.setPlace(place);
 		}
 
