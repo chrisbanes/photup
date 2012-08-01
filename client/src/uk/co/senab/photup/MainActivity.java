@@ -56,6 +56,10 @@ public class MainActivity extends Activity {
 			case REQUEST_FACEBOOK_LOGIN:
 				Session session = Session.restore(this);
 				if (resultCode == RESULT_OK && null != session) {
+					// Refresh Accounts
+					PhotupApplication.getApplication(getApplicationContext()).getAccounts(null, true);
+
+					// Start Selection Activity
 					launchSelectionActivity(session);
 				} else {
 					finish();
