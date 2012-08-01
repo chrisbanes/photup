@@ -20,6 +20,7 @@ public class Account extends AbstractFacebookObject implements AlbumsResultListe
 
 	private final String mAccessToken;
 	private final long mAccessExpires;
+	private final boolean mIsMainAccount;
 
 	private AlbumsResultListener mAlbumsListener;
 	private ArrayList<Album> mAlbums;
@@ -28,16 +29,22 @@ public class Account extends AbstractFacebookObject implements AlbumsResultListe
 		super(id, name);
 		mAccessToken = accessToken;
 		mAccessExpires = accessExpires;
+		mIsMainAccount = true;
 	}
 
 	public Account(JSONObject object) throws JSONException {
 		super(object);
 		mAccessToken = object.optString("access_token", null);
 		mAccessExpires = 0;
+		mIsMainAccount = false;
 	}
 
 	public String getAccessToken() {
 		return mAccessToken;
+	}
+	
+	public boolean isMainAccount() {
+		return mIsMainAccount;
 	}
 
 	public void getAlbums(AlbumsResultListener listener, boolean forceRefresh) {

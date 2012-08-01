@@ -35,6 +35,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,8 +47,10 @@ import com.facebook.android.FacebookError;
 import com.lightbox.android.photoprocessing.R;
 
 public class UploadActivity extends SherlockFragmentActivity implements ServiceConnection, AlbumsResultListener,
-		AccountsResultListener, OnClickListener, OnAlbumCreatedListener, OnPlacePickedListener, OnItemSelectedListener {
-	
+		AccountsResultListener, OnClickListener, OnAlbumCreatedListener, OnPlacePickedListener, OnItemSelectedListener,
+		OnCheckedChangeListener {
+
+	static final int DEFAULT_UPLOAD_TARGET_ID = R.id.rb_target_album;
 	static final int REQUEST_FACEBOOK_LOGIN = 99;
 
 	private final ArrayList<Album> mAlbums = new ArrayList<Album>();
@@ -56,12 +59,15 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 	private ServiceBinder<PhotoUploadService> mBinder;
 
 	private RadioGroup mQualityRadioGroup;
-	private Spinner mAlbumSpinner, mAccountsSpinner;
+	private Spinner mTargetSpinner, mAccountsSpinner;
 	private ImageButton mNewAlbumButton;
 	private TextView mPlacesButton;
 	private NetworkedCacheableImageView mPlacesIcon;
-	private View mPlacesLayout;
-	
+
+	private View mPlacesLayout, mTargetLayout;
+
+	private RadioGroup mTargetRadioGroup;
+
 	private ImageButton mAccountHelpBtn;
 
 	private Place mPlace;
@@ -78,8 +84,12 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		mQualityRadioGroup = (RadioGroup) findViewById(R.id.rg_upload_quality);
-		mAlbumSpinner = (Spinner) findViewById(R.id.sp_upload_album);
-		mAlbumSpinner.setEnabled(false);
+		mTargetRadioGroup = (RadioGroup) findViewById(R.id.rg_upload_target);
+		mTargetRadioGroup.setOnCheckedChangeListener(this);
+
+		mTargetLayout = findViewById(R.id.ll_upload_target);
+		mTargetSpinner = (Spinner) findViewById(R.id.sp_upload_target);
+		mTargetSpinner.setEnabled(false);
 
 		mAccountsSpinner = (Spinner) findViewById(R.id.sp_upload_account);
 		mAccountsSpinner.setEnabled(false);
@@ -90,7 +100,7 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 
 		mAlbumAdapter = new ArrayAdapter<Album>(this, android.R.layout.simple_spinner_item, mAlbums);
 		mAlbumAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		mAlbumSpinner.setAdapter(mAlbumAdapter);
+		mTargetSpinner.setAdapter(mAlbumAdapter);
 
 		mAccountsAdapter = new ArrayAdapter<Account>(this, android.R.layout.simple_spinner_item, mAccounts);
 		mAccountsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -100,7 +110,7 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		mPlacesButton = (TextView) findViewById(R.id.btn_place);
 		mPlacesLayout = findViewById(R.id.ll_place);
 		mPlacesLayout.setOnClickListener(this);
-		
+
 		mAccountHelpBtn = (ImageButton) findViewById(R.id.btn_account_help);
 		mAccountHelpBtn.setOnClickListener(this);
 
@@ -115,7 +125,7 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		Account account = (Account) mAccountsSpinner.getSelectedItem();
 		Album album = null;
 		if (mAccountsSpinner.getSelectedItemPosition() == 0) {
-			album = (Album) mAlbumSpinner.getSelectedItem();
+			album = (Album) mTargetSpinner.getSelectedItem();
 		}
 
 		if (null != album || mAccountsSpinner.getSelectedItemPosition() > 0) {
@@ -156,7 +166,7 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 			button.setChecked(true);
 		}
 	}
-	
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (requestCode) {
@@ -215,7 +225,7 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		mAlbums.clear();
 		mAlbums.addAll(albums);
 		mAlbumAdapter.notifyDataSetChanged();
-		mAlbumSpinner.setEnabled(true);
+		mTargetSpinner.setEnabled(true);
 	}
 
 	public void onClick(View v) {
@@ -243,7 +253,8 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 	public void onPlacePicked(Place place) {
 		mPlace = place;
 		mPlacesButton.setText(place.getName());
-		mPlacesIcon.loadImage(PhotupApplication.getApplication(getApplicationContext()).getImageCache(), place.getAvatarUrl());
+		mPlacesIcon.loadImage(PhotupApplication.getApplication(getApplicationContext()).getImageCache(),
+				place.getAvatarUrl());
 	}
 
 	public void onAccountsLoaded(List<Account> accounts) {
@@ -254,8 +265,18 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 	}
 
 	public void onItemSelected(AdapterView<?> spinner, View view, int position, long id) {
-		Account account = (Account) spinner.getItemAtPosition(position);
-		account.getAlbums(this, false);
+		final Account account = (Account) mAccountsSpinner.getSelectedItem();
+
+		View eventRb = findViewById(R.id.rb_target_event), groupRb = findViewById(R.id.rb_target_group);
+		final int visibility = account.isMainAccount() ? View.VISIBLE : View.GONE;
+		eventRb.setVisibility(visibility);
+		groupRb.setVisibility(visibility);
+
+		if (mTargetRadioGroup.getCheckedRadioButtonId() == DEFAULT_UPLOAD_TARGET_ID) {
+			onCheckedChanged(mTargetRadioGroup, DEFAULT_UPLOAD_TARGET_ID);
+		} else {
+			mTargetRadioGroup.check(DEFAULT_UPLOAD_TARGET_ID);
+		}
 	}
 
 	public void onNothingSelected(AdapterView<?> spinner) {
@@ -283,6 +304,29 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		builder.setPositiveButton(android.R.string.ok, listener);
 		builder.setNegativeButton(android.R.string.cancel, listener);
 		builder.show();
+	}
+
+	public void onCheckedChanged(RadioGroup group, final int checkedId) {
+		final Account account = (Account) mAccountsSpinner.getSelectedItem();
+
+		switch (checkedId) {
+			case R.id.rb_target_album:
+				account.getAlbums(this, false);
+				mNewAlbumButton.setVisibility(View.VISIBLE);
+				mTargetLayout.setVisibility(View.VISIBLE);
+				break;
+			case R.id.rb_target_event:
+				mNewAlbumButton.setVisibility(View.GONE);
+				mTargetLayout.setVisibility(View.VISIBLE);
+				break;
+			case R.id.rb_target_group:
+				mNewAlbumButton.setVisibility(View.GONE);
+				mTargetLayout.setVisibility(View.VISIBLE);
+				break;
+			case R.id.rb_target_wall:
+				mTargetLayout.setVisibility(View.GONE);
+				break;
+		}
 	}
 
 }

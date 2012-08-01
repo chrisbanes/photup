@@ -41,15 +41,47 @@
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
 			android:layout_marginTop="@dimen/double_spacing"
-			android:text="@string/upload_album_title" />
+			android:text="@string/upload_target_title" />
+
+		<RadioGroup
+			android:id="@+id/rg_upload_target"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:animateLayoutChanges="true"
+			android:divider="?attr/actionBarDivider"
+			android:dividerPadding="12dp"
+			android:orientation="horizontal"
+			android:showDividers="middle" >
+
+			<RadioButton
+				android:id="@+id/rb_target_album"
+				style="@style/TabRadioButton"
+				android:text="@string/upload_target_album" />
+
+			<RadioButton
+				android:id="@+id/rb_target_wall"
+				style="@style/TabRadioButton"
+				android:text="@string/upload_target_wall" />
+
+			<RadioButton
+				android:id="@+id/rb_target_group"
+				style="@style/TabRadioButton"
+				android:text="@string/upload_target_group" />
+
+			<RadioButton
+				android:id="@+id/rb_target_event"
+				style="@style/TabRadioButton"
+				android:text="@string/upload_target_event" />
+		</RadioGroup>
 
 		<LinearLayout
-			android:id="@+id/ll_album_spinner"
+			android:id="@+id/ll_upload_target"
 			android:layout_width="fill_parent"
-			android:layout_height="wrap_content" >
+			android:layout_height="wrap_content"
+			android:animateLayoutChanges="true" >
 
 			<Spinner
-				android:id="@+id/sp_upload_album"
+				android:id="@+id/sp_upload_target"
 				android:layout_width="0px"
 				android:layout_height="@dimen/form_item_height"
 				android:layout_weight="1" />

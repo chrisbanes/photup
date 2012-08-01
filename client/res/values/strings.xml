@@ -13,7 +13,11 @@
 	<string name="upload_quality_low">Low (640px)</string>
 	<string name="upload_quality_medium">Medium (1024px)</string>
 	<string name="upload_quality_high">High (2048px)</string>
-	<string name="upload_album_title">Album</string>
+	<string name="upload_target_title">Upload to</string>
+	<string name="upload_target_album">ALBUM</string>
+	<string name="upload_target_wall">WALL</string>
+	<string name="upload_target_group">GROUP</string>
+	<string name="upload_target_event">EVENT</string>
 	<string name="upload_new_album_hint">New album name</string>
 	<string name="upload_new_album_desc_hint">Description</string>
 	<string name="upload_new_album">New Album</string>

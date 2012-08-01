@@ -21,4 +21,18 @@
 		<item name="android:shadowRadius">2</item>
 	</style>
 
+	<style name="TabRadioButton" parent="Widget.Sherlock.ActionBar.TabView">
+		<item name="android:background">@drawable/radiobutton_tab_background</item>
+		<item name="android:padding">12dp</item>
+		<item name="android:button">@null</item>
+		<item name="android:layout_width">0px</item>
+		<item name="android:layout_weight">1</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:textColor">?attr/textColorPrimary</item>
+		<item name="android:textSize">11sp</item>
+		<item name="android:textStyle">bold</item>
+		<item name="android:textAllCaps">true</item>
+		<item name="android:ellipsize">marquee</item>
+	</style>
+
 </resources>
