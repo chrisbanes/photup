@@ -78,12 +78,14 @@ public class NetworkedCacheableImageView extends CacheableImageView {
 			super.onPostExecute(result);
 
 			setScaleType(ScaleType.CENTER_CROP);
-			
+
 			// Display the image
 			setImageCachedBitmap(result);
 
 			// Add to cache
-			mCache.put(result);
+			if (null != result) {
+				mCache.put(result);
+			}
 		}
 	}
 
