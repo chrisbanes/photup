@@ -11,7 +11,9 @@ import org.json.JSONObject;
 
 import uk.co.senab.photup.model.Account;
 import uk.co.senab.photup.model.Album;
+import uk.co.senab.photup.model.Event;
 import uk.co.senab.photup.model.FbUser;
+import uk.co.senab.photup.model.Group;
 import uk.co.senab.photup.model.Place;
 import android.content.Context;
 import android.location.Location;
@@ -32,7 +34,7 @@ public class FacebookRequester {
 		mAccount = account;
 		mFacebook = mAccount.getFacebook();
 	}
-	
+
 	public FacebookRequester(Context context) {
 		this(Account.getAccountFromSession(context));
 	}
@@ -42,7 +44,7 @@ public class FacebookRequester {
 		b.putString("date_format", "U");
 		b.putString("limit", "75");
 		b.putString("type", "place");
-		
+
 		if (null != location) {
 			b.putString("center", location.getLatitude() + "," + location.getLongitude());
 		}
@@ -116,7 +118,74 @@ public class FacebookRequester {
 		Collections.sort(friends, FbUser.getComparator());
 
 		return friends;
+	}
 
+	public List<Group> getGroups() throws FacebookError, JSONException {
+		Bundle b = new Bundle();
+		b.putString("date_format", "U");
+		b.putString("limit", "3000");
+		b.putString("fields", Group.GRAPH_FIELDS);
+
+		String response = null;
+		try {
+			response = mFacebook.request("me/groups", b);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		if (null == response) {
+			return null;
+		}
+
+		JSONObject document = Util.parseJson(response);
+		JSONArray data = document.getJSONArray("data");
+		ArrayList<Group> groups = new ArrayList<Group>(data.length() * 2);
+
+		JSONObject object;
+		for (int i = 0, z = data.length(); i < z; i++) {
+			try {
+				object = data.getJSONObject(i);
+				groups.add(new Group(object));
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return groups;
+	}
+
+	public List<Event> getEvents() throws FacebookError, JSONException {
+		Bundle b = new Bundle();
+		b.putString("date_format", "U");
+		b.putString("limit", "3000");
+		b.putString("fields", Event.GRAPH_FIELDS);
+
+		String response = null;
+		try {
+			response = mFacebook.request("me/events", b);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		if (null == response) {
+			return null;
+		}
+
+		JSONObject document = Util.parseJson(response);
+		JSONArray data = document.getJSONArray("data");
+		ArrayList<Event> events = new ArrayList<Event>(data.length() * 2);
+
+		JSONObject object;
+		for (int i = 0, z = data.length(); i < z; i++) {
+			try {
+				object = data.getJSONObject(i);
+				events.add(new Event(object));
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return events;
 	}
 
 	public List<Account> getAccounts() throws FacebookError, JSONException {

@@ -78,7 +78,7 @@
 			android:id="@+id/ll_upload_target"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
-			android:animateLayoutChanges="true" >
+			android:visibility="gone" >
 
 			<Spinner
 				android:id="@+id/sp_upload_target"

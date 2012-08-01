@@ -7,14 +7,19 @@ import uk.co.senab.photup.fragments.NewAlbumFragment;
 import uk.co.senab.photup.fragments.NewAlbumFragment.OnAlbumCreatedListener;
 import uk.co.senab.photup.fragments.PlacesListFragment;
 import uk.co.senab.photup.listeners.OnPlacePickedListener;
+import uk.co.senab.photup.model.AbstractFacebookObject;
 import uk.co.senab.photup.model.Account;
 import uk.co.senab.photup.model.Album;
+import uk.co.senab.photup.model.Event;
+import uk.co.senab.photup.model.Group;
 import uk.co.senab.photup.model.Place;
 import uk.co.senab.photup.model.UploadQuality;
 import uk.co.senab.photup.service.PhotoUploadService;
 import uk.co.senab.photup.service.PhotoUploadService.ServiceBinder;
 import uk.co.senab.photup.tasks.AccountsAsyncTask.AccountsResultListener;
 import uk.co.senab.photup.tasks.AlbumsAsyncTask.AlbumsResultListener;
+import uk.co.senab.photup.tasks.EventsAsyncTask.EventsResultListener;
+import uk.co.senab.photup.tasks.GroupsAsyncTask.GroupsResultListener;
 import uk.co.senab.photup.views.NetworkedCacheableImageView;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -47,13 +52,13 @@ import com.facebook.android.FacebookError;
 import com.lightbox.android.photoprocessing.R;
 
 public class UploadActivity extends SherlockFragmentActivity implements ServiceConnection, AlbumsResultListener,
-		AccountsResultListener, OnClickListener, OnAlbumCreatedListener, OnPlacePickedListener, OnItemSelectedListener,
-		OnCheckedChangeListener {
+		AccountsResultListener, GroupsResultListener, EventsResultListener, OnClickListener, OnAlbumCreatedListener,
+		OnPlacePickedListener, OnItemSelectedListener, OnCheckedChangeListener {
 
 	static final int DEFAULT_UPLOAD_TARGET_ID = R.id.rb_target_album;
 	static final int REQUEST_FACEBOOK_LOGIN = 99;
 
-	private final ArrayList<Album> mAlbums = new ArrayList<Album>();
+	private final ArrayList<AbstractFacebookObject> mFacebookObjects = new ArrayList<AbstractFacebookObject>();
 	private final ArrayList<Account> mAccounts = new ArrayList<Account>();
 
 	private ServiceBinder<PhotoUploadService> mBinder;
@@ -72,7 +77,7 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 
 	private Place mPlace;
 
-	private ArrayAdapter<Album> mAlbumAdapter;
+	private ArrayAdapter<AbstractFacebookObject> mTargetAdapter;
 	private ArrayAdapter<Account> mAccountsAdapter;
 
 	@Override
@@ -89,18 +94,18 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 
 		mTargetLayout = findViewById(R.id.ll_upload_target);
 		mTargetSpinner = (Spinner) findViewById(R.id.sp_upload_target);
-		mTargetSpinner.setEnabled(false);
 
 		mAccountsSpinner = (Spinner) findViewById(R.id.sp_upload_account);
-		mAccountsSpinner.setEnabled(false);
 		mAccountsSpinner.setOnItemSelectedListener(this);
+		mAccountsSpinner.setEnabled(false);
 
 		mNewAlbumButton = (ImageButton) findViewById(R.id.btn_new_album);
 		mNewAlbumButton.setOnClickListener(this);
 
-		mAlbumAdapter = new ArrayAdapter<Album>(this, android.R.layout.simple_spinner_item, mAlbums);
-		mAlbumAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		mTargetSpinner.setAdapter(mAlbumAdapter);
+		mTargetAdapter = new ArrayAdapter<AbstractFacebookObject>(this, android.R.layout.simple_spinner_item,
+				mFacebookObjects);
+		mTargetAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		mTargetSpinner.setAdapter(mTargetAdapter);
 
 		mAccountsAdapter = new ArrayAdapter<Account>(this, android.R.layout.simple_spinner_item, mAccounts);
 		mAccountsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -222,10 +227,10 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 	}
 
 	public void onAlbumsLoaded(List<Album> albums) {
-		mAlbums.clear();
-		mAlbums.addAll(albums);
-		mAlbumAdapter.notifyDataSetChanged();
-		mTargetSpinner.setEnabled(true);
+		mFacebookObjects.clear();
+		mFacebookObjects.addAll(albums);
+		mTargetAdapter.notifyDataSetChanged();
+		mTargetLayout.setVisibility(View.VISIBLE);
 	}
 
 	public void onClick(View v) {
@@ -262,6 +267,20 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		mAccounts.addAll(accounts);
 		mAccountsAdapter.notifyDataSetChanged();
 		mAccountsSpinner.setEnabled(true);
+	}
+
+	public void onEventsLoaded(List<Event> events) {
+		mFacebookObjects.clear();
+		mFacebookObjects.addAll(events);
+		mTargetAdapter.notifyDataSetChanged();
+		mTargetLayout.setVisibility(View.VISIBLE);
+	}
+
+	public void onGroupsLoaded(List<Group> groups) {
+		mFacebookObjects.clear();
+		mFacebookObjects.addAll(groups);
+		mTargetAdapter.notifyDataSetChanged();
+		mTargetLayout.setVisibility(View.VISIBLE);
 	}
 
 	public void onItemSelected(AdapterView<?> spinner, View view, int position, long id) {
@@ -308,23 +327,22 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 
 	public void onCheckedChanged(RadioGroup group, final int checkedId) {
 		final Account account = (Account) mAccountsSpinner.getSelectedItem();
+		mTargetLayout.setVisibility(View.GONE);
 
 		switch (checkedId) {
 			case R.id.rb_target_album:
 				account.getAlbums(this, false);
 				mNewAlbumButton.setVisibility(View.VISIBLE);
-				mTargetLayout.setVisibility(View.VISIBLE);
 				break;
 			case R.id.rb_target_event:
+				account.getEvents(this, false);
 				mNewAlbumButton.setVisibility(View.GONE);
-				mTargetLayout.setVisibility(View.VISIBLE);
 				break;
 			case R.id.rb_target_group:
+				account.getGroups(this, false);
 				mNewAlbumButton.setVisibility(View.GONE);
-				mTargetLayout.setVisibility(View.VISIBLE);
 				break;
 			case R.id.rb_target_wall:
-				mTargetLayout.setVisibility(View.GONE);
 				break;
 		}
 	}

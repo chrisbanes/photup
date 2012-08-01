@@ -3,7 +3,7 @@ package uk.co.senab.photup.model;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-abstract class AbstractFacebookObject {
+public abstract class AbstractFacebookObject {
 
 	private final String mId;
 	private final String mName;
