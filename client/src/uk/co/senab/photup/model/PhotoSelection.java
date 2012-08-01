@@ -48,9 +48,9 @@ public abstract class PhotoSelection extends PhotoUpload {
 	public abstract Bitmap getDisplayImage(Context context);
 
 	public abstract Bitmap getUploadImage(Context context, UploadQuality quality);
-	
+
 	public abstract int getExifRotation(Context context);
-	
+
 	public int getTotalRotation(Context context) {
 		return (getExifRotation(context) + getUserRotation()) % 360;
 	}
@@ -254,6 +254,22 @@ public abstract class PhotoSelection extends PhotoUpload {
 			return getOriginalPhotoUri().equals(((MediaStorePhotoUpload) obj).getOriginalPhotoUri());
 		}
 		return false;
+	}
+
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		String caption = getCaption();
+		if (null != caption) {
+			sb.append(caption).append(" ");
+		}
+		
+		Place place = getPlace();
+		if (null != place) {
+			sb.append("(").append(place.getName()).append(")");	
+		}
+		
+		return sb.toString();
 	}
 
 	public static PhotoSelection fromUri(Uri uri) {

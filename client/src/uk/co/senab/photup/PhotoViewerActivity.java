@@ -5,13 +5,17 @@ import java.util.Set;
 import uk.co.senab.photup.adapters.SelectedPhotosViewPagerAdapter;
 import uk.co.senab.photup.adapters.UserPhotosViewPagerAdapter;
 import uk.co.senab.photup.fragments.FriendsListFragment;
+import uk.co.senab.photup.fragments.PlacesListFragment;
 import uk.co.senab.photup.listeners.OnFriendPickedListener;
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
 import uk.co.senab.photup.listeners.OnPickFriendRequestListener;
+import uk.co.senab.photup.listeners.OnPlacePickedListener;
 import uk.co.senab.photup.listeners.OnSingleTapListener;
 import uk.co.senab.photup.model.FbUser;
 import uk.co.senab.photup.model.Filter;
 import uk.co.senab.photup.model.PhotoSelection;
+import uk.co.senab.photup.model.PhotoUpload;
+import uk.co.senab.photup.model.Place;
 import uk.co.senab.photup.views.FiltersRadioGroup;
 import uk.co.senab.photup.views.MultiTouchImageView;
 import uk.co.senab.photup.views.PhotoTagItemLayout;
@@ -42,7 +46,7 @@ import com.actionbarsherlock.view.Window;
 
 public class PhotoViewerActivity extends SherlockFragmentActivity implements OnPhotoSelectionChangedListener,
 		OnSingleTapListener, OnCheckedChangeListener, OnPageChangeListener, OnPickFriendRequestListener,
-		OnPhotoLoadListener {
+		OnPhotoLoadListener, OnPlacePickedListener {
 
 	public static final String EXTRA_POSITION = "extra_position";
 	public static final String EXTRA_MODE = "extra_mode";
@@ -148,6 +152,9 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 			case R.id.menu_rotate:
 				rotateCurrentPhoto();
 				return true;
+			case R.id.menu_place:
+				startPlaceFragment();
+				return true;
 		}
 
 		return super.onOptionsItemSelected(item);
@@ -167,11 +174,7 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 		PhotoSelection upload = mAdapter.getItem(position);
 
 		if (null != upload) {
-			String caption = upload.getCaption();
-			if (null == caption) {
-				caption = "";
-			}
-			getSupportActionBar().setTitle(caption);
+			getSupportActionBar().setTitle(upload.toString());
 
 			// Request Face Detection
 			PhotoTagItemLayout currentView = (PhotoTagItemLayout) getCurrentView();
@@ -306,7 +309,7 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 				switch (whichButton) {
 					case AlertDialog.BUTTON_POSITIVE:
 						currentUpload.setCaption(input.getText().toString());
-						getSupportActionBar().setTitle(currentUpload.getCaption());
+						getSupportActionBar().setTitle(currentUpload.toString());
 						break;
 
 					case AlertDialog.BUTTON_NEGATIVE:
@@ -329,6 +332,12 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 			return true;
 		}
 		return false;
+	}
+
+	private void startPlaceFragment() {
+		PlacesListFragment fragment = new PlacesListFragment();
+		fragment.setOnPlacePickedListener(this);
+		fragment.show(getSupportFragmentManager(), "places");
 	}
 
 	private void showFiltersView() {
@@ -365,5 +374,13 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 
 	public void onPhotoLoadStatusChanged(boolean finished) {
 		setProgressBarIndeterminateVisibility(!finished);
+	}
+
+	public void onPlacePicked(Place place) {
+		PhotoUpload upload = getCurrentUpload();
+		if (null != upload) {
+			upload.setPlace(place);
+			getSupportActionBar().setTitle(upload.toString());
+		}
 	}
 }

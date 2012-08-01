@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <item
-        android:id="@+id/menu_caption"
-        android:showAsAction="always"
-        android:title="@string/photo_caption"/>
-    <item
-        android:id="@+id/menu_filters"
-        android:showAsAction="always"
-        android:title="@string/photo_effects"/>
-    
-    <item
-        android:id="@+id/menu_rotate"
-        android:showAsAction="always"
-        android:title="@string/photo_rotate"/>
+	<item
+		android:id="@+id/menu_caption"
+		android:showAsAction="always"
+		android:title="@string/photo_caption"/>
+	<item
+		android:id="@+id/menu_filters"
+		android:showAsAction="always"
+		android:title="@string/photo_effects"/>
+	<item
+		android:id="@+id/menu_rotate"
+		android:showAsAction="always"
+		android:title="@string/photo_rotate"/>
+	<item
+		android:id="@+id/menu_place"
+		android:showAsAction="ifRoom"
+		android:title="@string/place"/>
 
 </menu>
