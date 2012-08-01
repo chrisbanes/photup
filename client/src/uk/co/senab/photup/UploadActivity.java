@@ -297,7 +297,7 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 					place.getAvatarUrl());
 		} else {
 			mPlacesButton.setText(R.string.place);
-			mPlacesIcon.setImageResource(R.drawable.ic_menu_myplaces);
+			mPlacesIcon.setImageResource(R.drawable.ic_action_place);
 		}
 	}
 

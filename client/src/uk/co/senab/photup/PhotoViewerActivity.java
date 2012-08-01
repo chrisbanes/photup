@@ -290,6 +290,7 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle(R.string.photo_caption);
+		builder.setIcon(R.drawable.ic_action_caption);
 
 		// Set an EditText view to get user input
 		final FrameLayout layout = new FrameLayout(this);
