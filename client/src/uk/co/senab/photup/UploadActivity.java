@@ -350,24 +350,26 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		final Account account = (Account) mAccountsSpinner.getSelectedItem();
 		mTargetLayout.setVisibility(View.GONE);
 
-		switch (checkedId) {
-			case R.id.rb_target_album:
-				account.getAlbums(this, false);
-				mTargetHelpBtn.setVisibility(View.GONE);
-				mNewAlbumButton.setVisibility(View.VISIBLE);
-				break;
-			case R.id.rb_target_event:
-				account.getEvents(this, false);
-				mTargetHelpBtn.setVisibility(View.VISIBLE);
-				mNewAlbumButton.setVisibility(View.GONE);
-				break;
-			case R.id.rb_target_group:
-				account.getGroups(this, false);
-				mTargetHelpBtn.setVisibility(View.VISIBLE);
-				mNewAlbumButton.setVisibility(View.GONE);
-				break;
-			case R.id.rb_target_wall:
-				break;
+		if (null != account) {
+			switch (checkedId) {
+				case R.id.rb_target_album:
+					account.getAlbums(this, false);
+					mTargetHelpBtn.setVisibility(View.GONE);
+					mNewAlbumButton.setVisibility(View.VISIBLE);
+					break;
+				case R.id.rb_target_event:
+					account.getEvents(this, false);
+					mTargetHelpBtn.setVisibility(View.VISIBLE);
+					mNewAlbumButton.setVisibility(View.GONE);
+					break;
+				case R.id.rb_target_group:
+					account.getGroups(this, false);
+					mTargetHelpBtn.setVisibility(View.VISIBLE);
+					mNewAlbumButton.setVisibility(View.GONE);
+					break;
+				case R.id.rb_target_wall:
+					break;
+			}
 		}
 	}
 
