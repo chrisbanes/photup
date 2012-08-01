@@ -180,8 +180,9 @@ public class PlacesListFragment extends SherlockDialogFragment implements Places
 	}
 
 	private void hideIme() {
-		if (null != mFilterEditText) {
-			InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+		Context activity = getActivity();
+		if (null != mFilterEditText && null != activity) {
+			InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
 			imm.hideSoftInputFromWindow(mFilterEditText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 		}
 	}
