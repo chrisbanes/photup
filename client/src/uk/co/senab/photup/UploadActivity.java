@@ -74,7 +74,7 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 
 	private RadioGroup mTargetRadioGroup;
 
-	private ImageButton mAccountHelpBtn;
+	private ImageButton mAccountHelpBtn, mTargetHelpBtn;
 
 	private Place mPlace;
 
@@ -119,6 +119,9 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 
 		mAccountHelpBtn = (ImageButton) findViewById(R.id.btn_account_help);
 		mAccountHelpBtn.setOnClickListener(this);
+
+		mTargetHelpBtn = (ImageButton) findViewById(R.id.btn_target_help);
+		mTargetHelpBtn.setOnClickListener(this);
 
 		bindService(new Intent(this, PhotoUploadService.class), this, Context.BIND_AUTO_CREATE);
 
@@ -258,7 +261,9 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 			fragment.setOnPlacePickedListener(this);
 			fragment.show(getSupportFragmentManager(), "places");
 		} else if (v == mAccountHelpBtn) {
-			showMissingPagesDialog();
+			showMissingItemsDialog(true);
+		} else if (v == mTargetHelpBtn) {
+			showMissingItemsDialog(false);
 		}
 	}
 
@@ -318,11 +323,11 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		// NO-OP
 	}
 
-	private void showMissingPagesDialog() {
+	private void showMissingItemsDialog(final boolean pages) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setIcon(R.drawable.ic_launcher);
-		builder.setTitle(R.string.dialog_missing_pages_title);
-		builder.setMessage(R.string.dialog_missing_pages_text);
+		builder.setTitle(pages ? R.string.dialog_missing_pages_title : R.string.dialog_missing_items_title);
+		builder.setMessage(R.string.dialog_missing_items_text);
 
 		final DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
@@ -348,14 +353,17 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		switch (checkedId) {
 			case R.id.rb_target_album:
 				account.getAlbums(this, false);
+				mTargetHelpBtn.setVisibility(View.GONE);
 				mNewAlbumButton.setVisibility(View.VISIBLE);
 				break;
 			case R.id.rb_target_event:
 				account.getEvents(this, false);
+				mTargetHelpBtn.setVisibility(View.VISIBLE);
 				mNewAlbumButton.setVisibility(View.GONE);
 				break;
 			case R.id.rb_target_group:
 				account.getGroups(this, false);
+				mTargetHelpBtn.setVisibility(View.VISIBLE);
 				mNewAlbumButton.setVisibility(View.GONE);
 				break;
 			case R.id.rb_target_wall:

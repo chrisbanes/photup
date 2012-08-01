@@ -93,6 +93,14 @@
 				android:background="?attr/actionBarItemBackground"
 				android:padding="@dimen/spacing"
 				android:src="@drawable/ic_menu_add" />
+
+			<ImageButton
+				android:id="@+id/btn_target_help"
+				android:layout_width="@dimen/form_item_height"
+				android:layout_height="@dimen/form_item_height"
+				android:background="?attr/actionBarItemBackground"
+				android:padding="@dimen/spacing"
+				android:src="@drawable/ic_menu_help" />
 		</LinearLayout>
 
 		<TextView
