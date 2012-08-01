@@ -118,7 +118,9 @@ public class PhotoUploadController {
 
 		for (PhotoUpload upload : mUploadingList) {
 			upload.setUploadParams(account, targetId, quality);
-			upload.setPlace(place);
+			if (null != place) {
+				upload.setPlace(place);
+			}
 		}
 
 		for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
