@@ -132,7 +132,18 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		app.getAccounts(this, false);
 	}
 
-	private void upload() {
+	private void upload(final boolean force) {
+		final PhotoUploadController controller = PhotoUploadController.getFromContext(this);
+
+		// If we're not being forced, do checks and show prompts
+		if (!force) {
+			// Show Place Overwrite dialog
+			if (null != mPlace && controller.hasSelectionsWithPlace()) {
+				showPlaceOverwriteDialog();
+				return;
+			}
+		}
+
 		UploadQuality quality = UploadQuality.mapFromButtonId(mQualityRadioGroup.getCheckedRadioButtonId());
 		Account account = (Account) mAccountsSpinner.getSelectedItem();
 
@@ -157,8 +168,7 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		}
 
 		if (validTarget) {
-			PhotupApplication.getApplication(this).getPhotoUploadController()
-					.moveSelectedPhotosToUploads(account, targetId, quality, mPlace);
+			controller.moveSelectedPhotosToUploads(account, targetId, quality, mPlace);
 			mBinder.getService().uploadAll();
 			finish();
 		} else {
@@ -220,7 +230,7 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 				finish();
 				return true;
 			case R.id.menu_upload:
-				upload();
+				upload(false);
 				return true;
 		}
 
@@ -260,9 +270,7 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 			NewAlbumFragment fragment = new NewAlbumFragment((Account) mAccountsSpinner.getSelectedItem());
 			fragment.show(getSupportFragmentManager(), "new_album");
 		} else if (v == mPlacesLayout) {
-			PlacesListFragment fragment = new PlacesListFragment();
-			fragment.setOnPlacePickedListener(this);
-			fragment.show(getSupportFragmentManager(), "places");
+			startPlaceFragment();
 		} else if (v == mAccountHelpBtn) {
 			showMissingItemsDialog(true);
 		} else if (v == mTargetHelpBtn) {
@@ -333,6 +341,12 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 		// NO-OP
 	}
 
+	private void startPlaceFragment() {
+		PlacesListFragment fragment = new PlacesListFragment();
+		fragment.setOnPlacePickedListener(this);
+		fragment.show(getSupportFragmentManager(), "places");
+	}
+
 	private void showMissingItemsDialog(final boolean pages) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setIcon(R.drawable.ic_launcher);
@@ -347,6 +361,28 @@ public class UploadActivity extends SherlockFragmentActivity implements ServiceC
 						break;
 				}
 
+				dialog.dismiss();
+			}
+		};
+
+		builder.setPositiveButton(android.R.string.ok, listener);
+		builder.setNegativeButton(android.R.string.cancel, listener);
+		builder.show();
+	}
+
+	private void showPlaceOverwriteDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setIcon(R.drawable.ic_launcher);
+		builder.setTitle(R.string.dialog_place_overwrite_title);
+		builder.setMessage(R.string.dialog_place_overwrite_text);
+
+		final DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				switch (which) {
+					case AlertDialog.BUTTON_POSITIVE:
+						upload(true);
+						break;
+				}
 				dialog.dismiss();
 			}
 		};

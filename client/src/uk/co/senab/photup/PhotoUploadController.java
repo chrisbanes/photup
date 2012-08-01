@@ -95,6 +95,15 @@ public class PhotoUploadController {
 		return false;
 	}
 
+	public boolean hasSelectionsWithPlace() {
+		for (PhotoSelection selection : mSelectedPhotoList) {
+			if (selection.hasPlace()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public boolean hasUploads() {
 		return !mUploadingList.isEmpty();
 	}
@@ -112,7 +121,8 @@ public class PhotoUploadController {
 		return false;
 	}
 
-	public void moveSelectedPhotosToUploads(Account account, String targetId, UploadQuality quality, Place place) {
+	public void moveSelectedPhotosToUploads(final Account account, final String targetId, final UploadQuality quality,
+			final Place place) {
 		mUploadingList.addAll(mSelectedPhotoList);
 		mSelectedPhotoList.clear();
 

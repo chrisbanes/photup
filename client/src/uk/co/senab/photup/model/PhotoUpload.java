@@ -48,6 +48,10 @@ public class PhotoUpload {
 	public Place getPlace() {
 		return mPlace;
 	}
+	
+	public boolean hasPlace() {
+		return null != mPlace;
+	}
 
 	public UploadQuality getQuality() {
 		return null != mQuality ? mQuality : UploadQuality.MEDIUM;
