@@ -45,13 +45,10 @@
 
 		<RadioGroup
 			android:id="@+id/rg_upload_target"
+			style="@style/TabRadioGroup"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
-			android:animateLayoutChanges="true"
-			android:divider="?attr/actionBarDivider"
-			android:dividerPadding="12dp"
-			android:orientation="horizontal"
-			android:showDividers="middle" >
+			android:animateLayoutChanges="true" >
 
 			<RadioButton
 				android:id="@+id/rb_target_album"
@@ -154,27 +151,24 @@
 
 		<RadioGroup
 			android:id="@+id/rg_upload_quality"
+			style="@style/TabRadioGroup"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content" >
 
 			<RadioButton
-				android:id="@+id/rb_quality_high"
-				android:layout_width="fill_parent"
-				android:layout_height="@dimen/form_item_height"
-				android:checked="true"
-				android:text="@string/upload_quality_high" />
+				android:id="@+id/rb_quality_low"
+				style="@style/TabRadioButton"
+				android:text="@string/upload_quality_low" />
 
 			<RadioButton
 				android:id="@+id/rb_quality_medium"
-				android:layout_width="fill_parent"
-				android:layout_height="@dimen/form_item_height"
+				style="@style/TabRadioButton"
 				android:text="@string/upload_quality_medium" />
 
 			<RadioButton
-				android:id="@+id/rb_quality_low"
-				android:layout_width="fill_parent"
-				android:layout_height="@dimen/form_item_height"
-				android:text="@string/upload_quality_low" />
+				android:id="@+id/rb_quality_high"
+				style="@style/TabRadioButton"
+				android:text="@string/upload_quality_high" />
 		</RadioGroup>
 	</LinearLayout>
 

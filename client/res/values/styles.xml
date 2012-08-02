@@ -23,16 +23,27 @@
 
 	<style name="TabRadioButton" parent="Widget.Sherlock.ActionBar.TabView">
 		<item name="android:background">@drawable/radiobutton_tab_background</item>
-		<item name="android:padding">12dp</item>
+		<item name="android:paddingLeft">4dp</item>
+		<item name="android:paddingTop">12dp</item>
+		<item name="android:paddingBottom">12dp</item>
+		<item name="android:paddingRight">4dp</item>
 		<item name="android:button">@null</item>
 		<item name="android:layout_width">0px</item>
 		<item name="android:layout_weight">1</item>
-		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_height">fill_parent</item>
 		<item name="android:textColor">?attr/textColorPrimary</item>
 		<item name="android:textSize">11sp</item>
 		<item name="android:textStyle">bold</item>
 		<item name="android:textAllCaps">true</item>
 		<item name="android:ellipsize">marquee</item>
+		<item name="android:gravity">center</item>
+	</style>
+
+	<style name="TabRadioGroup">
+		<item name="android:divider">?attr/actionBarDivider</item>
+		<item name="android:dividerPadding">12dp</item>
+		<item name="android:orientation">horizontal</item>
+		<item name="android:showDividers">middle</item>
 	</style>
 
 </resources>
