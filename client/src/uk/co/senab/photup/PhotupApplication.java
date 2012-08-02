@@ -177,11 +177,22 @@ public class PhotupApplication extends Application implements FriendsResultListe
 	public void onAccountsLoaded(List<Account> accounts) {
 		mAccounts.clear();
 
-		if (null != mAccounts) {
+		if (null != accounts) {
 			mAccounts.addAll(accounts);
 			if (null != mAccountsListener && mAccountsListener != this) {
 				mAccountsListener.onAccountsLoaded(mAccounts);
 				mAccountsListener = null;
+
+			} else if (!mAccounts.isEmpty()) {
+				// PRELOAD Main Account's Data
+				for (Account account : mAccounts) {
+					if (account.isMainAccount()) {
+						account.getAlbums(null, false);
+						account.getGroups(null, false);
+						account.getEvents(null, false);
+						break;
+					}
+				}
 			}
 		}
 	}

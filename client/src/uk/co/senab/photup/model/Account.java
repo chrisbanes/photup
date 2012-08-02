@@ -34,7 +34,7 @@ public class Account extends AbstractFacebookObject implements AlbumsResultListe
 	private ArrayList<Event> mEvents;
 	private ArrayList<Group> mGroups;
 
-	public Account(String id, String name, String accessToken, long accessExpires) {
+	private Account(String id, String name, String accessToken, long accessExpires) {
 		super(id, name);
 		mAccessToken = accessToken;
 		mAccessExpires = accessExpires;
