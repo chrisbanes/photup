@@ -20,6 +20,10 @@
 	<uses-permission
 		android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
+	<!-- Required permission to use Google Play Store donations -->
+	<uses-permission
+		android:name="com.android.vending.BILLING" />
+
 	<application
 		android:name=".PhotupApplication"
 		android:hardwareAccelerated="true"
@@ -119,6 +123,30 @@
 					android:name="photup.intent.action.UPLOAD_ALL" />
 			</intent-filter>
 		</service>
+
+		<!-- DONATION LIB -->
+		<activity
+			android:name="org.donations.DonationsActivity"
+			android:excludeFromRecents="true"
+			android:label="Donations"
+			android:launchMode="singleTask"
+			android:theme="@style/Theme.Sherlock.Dialog" />
+
+		<!-- - Google Play Store donations -->
+		<service
+			android:name="org.donations.google.BillingService" />
+
+		<receiver
+			android:name="org.donations.google.BillingReceiver" >
+			<intent-filter>
+				<action
+					android:name="com.android.vending.billing.IN_APP_NOTIFY" />
+				<action
+					android:name="com.android.vending.billing.RESPONSE_CODE" />
+				<action
+					android:name="com.android.vending.billing.PURCHASE_STATE_CHANGED" />
+			</intent-filter>
+		</receiver>
 	</application>
 
 </manifest>

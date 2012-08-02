@@ -9,11 +9,11 @@
 		android:id="@+id/ll_about_logo"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
+		android:animateLayoutChanges="true"
 		android:background="@color/translucent_dk_grey"
 		android:gravity="center"
 		android:paddingBottom="@dimen/double_spacing"
-		android:paddingTop="@dimen/double_spacing"
-		android:animateLayoutChanges="true" >
+		android:paddingTop="@dimen/double_spacing" >
 
 		<ImageView
 			android:layout_width="wrap_content"
@@ -75,6 +75,13 @@
 				android:background="@drawable/btn_blue"
 				android:text="@string/settings"
 				android:visibility="gone" />
+
+			<Button
+				android:id="@+id/btn_donate"
+				style="@style/StyledButton"
+				android:background="@drawable/btn_green"
+				android:text="@string/donate_title"
+				android:textStyle="bold" />
 		</LinearLayout>
 	</ScrollView>
 
