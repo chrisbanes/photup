@@ -20,6 +20,8 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -82,7 +84,7 @@ public class PlacesListFragment extends SherlockDialogFragment implements Places
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setStyle(STYLE_NORMAL, R.style.Theme_Photup);
+		setStyle(STYLE_NORMAL, R.style.Theme_Sherlock_Dialog);
 
 		mAdapter = new PlacesAdapter(getActivity(), mPlaces);
 		mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
@@ -108,6 +110,10 @@ public class PlacesListFragment extends SherlockDialogFragment implements Places
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		Dialog dialog = super.onCreateDialog(savedInstanceState);
 		dialog.setTitle(R.string.place);
+
+		Window window = dialog.getWindow();
+		window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+
 		return dialog;
 	}
 
