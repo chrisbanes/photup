@@ -128,7 +128,7 @@
 		<activity
 			android:name="org.donations.DonationsActivity"
 			android:excludeFromRecents="true"
-			android:label="Donations"
+			android:label="@string/donate_title"
 			android:launchMode="singleTask"
 			android:theme="@style/Theme.Sherlock.Dialog" />
 
