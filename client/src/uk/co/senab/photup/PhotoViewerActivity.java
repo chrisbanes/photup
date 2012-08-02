@@ -374,7 +374,7 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 	}
 
 	public void onPhotoLoadStatusChanged(boolean finished) {
-		setProgressBarIndeterminateVisibility(!finished);
+		// TODO Fix this setProgressBarIndeterminateVisibility(!finished);
 	}
 
 	public void onPlacePicked(Place place) {
