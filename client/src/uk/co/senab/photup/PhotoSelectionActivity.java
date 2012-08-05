@@ -24,7 +24,7 @@ import com.actionbarsherlock.view.MenuItem;
 
 public class PhotoSelectionActivity extends SherlockFragmentActivity implements OnPhotoSelectionChangedListener,
 		TabListener {
-	
+
 	public static final String EXTRA_DEFAULT_TAB = "extra_tab";
 
 	public static final int TAB_PHOTOS = 0;
@@ -47,7 +47,7 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 		ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		ab.addTab(ab.newTab().setText(R.string.tab_photos).setTag(TAB_PHOTOS).setTabListener(this));
 		ab.addTab(ab.newTab().setText(getSelectedTabTitle()).setTag(TAB_SELECTED).setTabListener(this));
-		
+
 		Intent intent = getIntent();
 		int defaultTab = intent.getIntExtra(EXTRA_DEFAULT_TAB, -1);
 		if (defaultTab != -1) {
@@ -98,11 +98,26 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 			addUploadTab();
 		}
 
-		if (mPhotoController.getActiveUploadsSize() > 0) {
-			getSupportActionBar().setSelectedNavigationItem(2);
-		} else if (mPhotoController.getSelectedPhotoUploadsSize() == 0) {
-			getSupportActionBar().setSelectedNavigationItem(0);
+		try {
+			if (mPhotoController.getActiveUploadsSize() > 0) {
+				// Load Uploads Tab if we need to
+				getSupportActionBar().setSelectedNavigationItem(2);
+			} else if (mPhotoController.getSelectedPhotoUploadsSize() == 0) {
+				// Else just show Media Lib tab
+				getSupportActionBar().setSelectedNavigationItem(0);
+			}
+		} catch (IllegalStateException e) {
+			// Getting FCs. Not core function so just hide it if it happens
+			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		// first saving my state, so the bundle wont be empty.
+		// http://code.google.com/p/android/issues/detail?id=19917
+		outState.putString("WORKAROUND_FOR_BUG_19917_KEY", "WORKAROUND_FOR_BUG_19917_VALUE");
+		super.onSaveInstanceState(outState);
 	}
 
 	public void onSelectionsAddedToUploads() {
