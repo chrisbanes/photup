@@ -101,7 +101,13 @@ public class UploadsFragment extends SherlockListFragment implements OnPhotoSele
 	}
 
 	public boolean canDismiss(ListView listView, int position) {
-		return ((PhotoUpload) listView.getItemAtPosition(position)).getState() == PhotoUpload.STATE_UPLOAD_COMPLETED;
+		PhotoUpload upload = (PhotoUpload) listView.getItemAtPosition(position);
+		switch (upload.getState()) {
+			case PhotoUpload.STATE_UPLOAD_COMPLETED:
+			case PhotoUpload.STATE_UPLOAD_ERROR:
+				return true;
+		}
+		return false;
 	}
 
 	public void onUploadsCleared() {
