@@ -26,7 +26,7 @@ import com.facebook.android.Facebook;
 import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
 
-public class LoginActivity extends Activity implements View.OnClickListener {
+public class LoginActivity extends Activity implements View.OnClickListener, DialogListener {
 
 	static final int REQUEST_FACEBOOK_SSO = 100;
 
@@ -59,6 +59,10 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (null == mFacebook) {
+			mFacebook = new Facebook(Constants.FACEBOOK_APP_ID);
+			mFacebook.setAuthorizeParams(this, REQUEST_FACEBOOK_SSO);
+		}
 		mFacebook.authorizeCallback(requestCode, resultCode, data);
 		super.onActivityResult(requestCode, resultCode, data);
 	}
@@ -93,7 +97,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
 		mSettingsBtn = (Button) findViewById(R.id.btn_settings);
 		mSettingsBtn.setOnClickListener(this);
-		
+
 		mDonateBtn = (Button) findViewById(R.id.btn_donate);
 		mDonateBtn.setOnClickListener(this);
 
@@ -112,23 +116,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
 	private void loginToFacebook() {
 		mFacebook = new Facebook(Constants.FACEBOOK_APP_ID);
-		mFacebook.authorize(this, Constants.FACEBOOK_PERMISSIONS, Facebook.FORCE_DIALOG_AUTH, new DialogListener() {
-
-			public void onCancel() {
-			}
-
-			public void onComplete(Bundle values) {
-				saveFacebookSession();
-			}
-
-			public void onError(DialogError e) {
-				e.printStackTrace();
-			}
-
-			public void onFacebookError(FacebookError e) {
-				e.printStackTrace();
-			}
-		});
+		mFacebook.authorize(this, Constants.FACEBOOK_PERMISSIONS, BuildConfig.DEBUG ? Facebook.FORCE_DIALOG_AUTH
+				: REQUEST_FACEBOOK_SSO, this);
 	}
 
 	private void logoutOfFacebook() {
@@ -216,6 +205,21 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 		builder.setNegativeButton(android.R.string.cancel, null);
 
 		builder.show();
+	}
+
+	public void onCancel() {
+	}
+
+	public void onComplete(Bundle values) {
+		saveFacebookSession();
+	}
+
+	public void onError(DialogError e) {
+		e.printStackTrace();
+	}
+
+	public void onFacebookError(FacebookError e) {
+		e.printStackTrace();
 	}
 
 }
