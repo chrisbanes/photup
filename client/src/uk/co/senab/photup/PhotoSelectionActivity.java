@@ -7,6 +7,7 @@ import uk.co.senab.photup.fragments.UploadsFragment;
 import uk.co.senab.photup.fragments.UserPhotosFragment;
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
 import uk.co.senab.photup.model.PhotoSelection;
+import uk.co.senab.photup.views.UploadActionBarView;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,6 +16,8 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -25,13 +28,15 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
 public class PhotoSelectionActivity extends SherlockFragmentActivity implements OnPhotoSelectionChangedListener,
-		TabListener {
+		TabListener, OnClickListener {
 
 	public static final String EXTRA_DEFAULT_TAB = "extra_tab";
 
 	public static final int TAB_PHOTOS = 0;
 	public static final int TAB_SELECTED = 1;
 	static final int TAB_UPLOADS = 2;
+
+	private UploadActionBarView mUploadActionView;
 
 	private PhotoUploadController mPhotoController;
 
@@ -63,6 +68,10 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 			getSupportMenuInflater().inflate(R.menu.menu_photo_grid, menu);
 		}
 
+		MenuItem item = menu.findItem(R.id.menu_upload);
+		mUploadActionView = (UploadActionBarView) item.getActionView();
+		mUploadActionView.setOnClickListener(this);
+
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -73,14 +82,6 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 			case android.R.id.home:
 				startActivity(new Intent(this, LoginActivity.class));
 				overridePendingTransition(R.anim.slide_in_top, R.anim.slide_out_bottom);
-				return true;
-
-			case R.id.menu_upload:
-				if (mPhotoController.getSelectedPhotoUploadsSize() == 0) {
-					Toast.makeText(this, R.string.error_select_photos, Toast.LENGTH_SHORT).show();
-				} else {
-					startActivity(new Intent(this, UploadActivity.class));
-				}
 				return true;
 
 			case R.id.menu_settings:
@@ -139,10 +140,12 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 	public void onSelectionsAddedToUploads() {
 		addUploadTab();
 		refreshSelectedTabTitle();
+		refreshUploadActionBarView();
 	}
 
 	public void onPhotoSelectionChanged(PhotoSelection upload, boolean added) {
 		refreshSelectedTabTitle();
+		refreshUploadActionBarView();
 	}
 
 	@Override
@@ -187,6 +190,14 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 
 	public void onTabReselected(Tab tab, FragmentTransaction ft) {
 		// NO-OP
+	}
+	
+	private void refreshUploadActionBarView() {
+		if (mPhotoController.getSelectedPhotoUploadsSize() > 0) {
+			mUploadActionView.animateBackground();
+		} else {
+			mUploadActionView.stopAnimatingBackground();
+		}
 	}
 
 	private void refreshSelectedTabTitle() {
@@ -241,6 +252,14 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 		builder.setPositiveButton(R.string.settings, listener);
 		builder.setNegativeButton(android.R.string.cancel, listener);
 		builder.show();
+	}
+
+	public void onClick(View v) {
+		if (mPhotoController.getSelectedPhotoUploadsSize() == 0) {
+			Toast.makeText(this, R.string.error_select_photos, Toast.LENGTH_SHORT).show();
+		} else {
+			startActivity(new Intent(this, UploadActivity.class));
+		}
 	}
 
 }

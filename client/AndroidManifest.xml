@@ -48,8 +48,7 @@
 		</activity>
 		<activity
 			android:name=".UploadActivity"
-			android:label="@string/upload_title"
-			android:uiOptions="splitActionBarWhenNarrow" >
+			android:label="@string/upload_title" >
 		</activity>
 		<activity
 			android:name=".PhotoViewerActivity"
