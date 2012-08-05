@@ -1,9 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <item
-        android:id="@+id/menu_upload"
-        android:icon="@drawable/ic_menu_send"
-        android:showAsAction="always"/>
+	<item
+		android:id="@+id/menu_upload"
+		android:icon="@drawable/ic_action_upload"
+		android:showAsAction="always"
+		android:title="@string/upload_title"/>
+	<item
+		android:id="@+id/menu_settings"
+		android:showAsAction="never"
+		android:title="@string/settings"/>
+	<item
+		android:id="@+id/menu_donate"
+		android:showAsAction="never"
+		android:title="@string/donate_title"/>
+	<item
+		android:id="@+id/menu_logout"
+		android:showAsAction="never"
+		android:title="@string/logout_static"/>
 
 </menu>

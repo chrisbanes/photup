@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/menu_upload"
-        android:icon="@drawable/ic_menu_send"
+        android:icon="@drawable/ic_action_upload"
         android:showAsAction="always"/>
 
 </menu>

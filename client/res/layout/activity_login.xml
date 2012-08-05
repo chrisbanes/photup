@@ -70,13 +70,6 @@
 				android:visibility="gone" />
 
 			<Button
-				android:id="@+id/btn_settings"
-				style="@style/StyledButton"
-				android:background="@drawable/btn_blue"
-				android:text="@string/settings"
-				android:visibility="gone" />
-
-			<Button
 				android:id="@+id/btn_donate"
 				style="@style/StyledButton"
 				android:background="@drawable/btn_green"

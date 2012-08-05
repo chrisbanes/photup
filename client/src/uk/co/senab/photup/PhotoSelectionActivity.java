@@ -1,5 +1,7 @@
 package uk.co.senab.photup;
 
+import org.donations.DonationsActivity;
+
 import uk.co.senab.photup.fragments.SelectedPhotosFragment;
 import uk.co.senab.photup.fragments.UploadsFragment;
 import uk.co.senab.photup.fragments.UserPhotosFragment;
@@ -72,12 +74,26 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 				startActivity(new Intent(this, LoginActivity.class));
 				overridePendingTransition(R.anim.slide_in_top, R.anim.slide_out_bottom);
 				return true;
+
 			case R.id.menu_upload:
 				if (mPhotoController.getSelectedPhotoUploadsSize() == 0) {
 					Toast.makeText(this, R.string.error_select_photos, Toast.LENGTH_SHORT).show();
 				} else {
 					startActivity(new Intent(this, UploadActivity.class));
 				}
+				return true;
+
+			case R.id.menu_settings:
+				startActivity(new Intent(this, SettingsActivity.class));
+				return true;
+
+			case R.id.menu_donate:
+				startActivity(new Intent(this, DonationsActivity.class));
+				return true;
+
+			case R.id.menu_logout:
+				startActivity(new Intent(Constants.INTENT_LOGOUT));
+				finish();
 				return true;
 		}
 

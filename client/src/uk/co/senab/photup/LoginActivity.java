@@ -33,7 +33,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Dia
 	private Facebook mFacebook;
 
 	private View mAboutLogo;
-	private Button mLoginBtn, mLogoutBtn, mLibrariesBtn, mSettingsBtn, mDonateBtn;
+	private Button mLoginBtn, mLogoutBtn, mLibrariesBtn, mDonateBtn;
 	private View mFacebookBtn, mTwitterBtn;
 	private TextView mMessageTv;
 
@@ -48,8 +48,6 @@ public class LoginActivity extends Activity implements View.OnClickListener, Dia
 			startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.twitter_address))));
 		} else if (v == mLibrariesBtn) {
 			startActivity(new Intent(this, LicencesActivity.class));
-		} else if (v == mSettingsBtn) {
-			startActivity(new Intent(this, SettingsActivity.class));
 		} else if (v == mAboutLogo) {
 			onBackPressed();
 		} else if (v == mDonateBtn) {
@@ -95,16 +93,16 @@ public class LoginActivity extends Activity implements View.OnClickListener, Dia
 		mLibrariesBtn = (Button) findViewById(R.id.btn_libraries);
 		mLibrariesBtn.setOnClickListener(this);
 
-		mSettingsBtn = (Button) findViewById(R.id.btn_settings);
-		mSettingsBtn.setOnClickListener(this);
-
 		mDonateBtn = (Button) findViewById(R.id.btn_donate);
 		mDonateBtn.setOnClickListener(this);
 
 		mMessageTv = (TextView) findViewById(R.id.tv_login_message);
 
-		if (Constants.INTENT_NEW_PERMISSIONS.equals(getIntent().getAction())) {
+		final String action = getIntent().getAction();
+		if (Constants.INTENT_NEW_PERMISSIONS.equals(action)) {
 			loginToFacebook();
+		} else if (Constants.INTENT_LOGOUT.equals(action)) {
+			logoutOfFacebook();
 		}
 	}
 
@@ -140,7 +138,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Dia
 			mLogoutBtn.setText(getString(R.string.logout, session.getName()));
 			mLogoutBtn.setVisibility(View.VISIBLE);
 			mLibrariesBtn.setVisibility(View.VISIBLE);
-			mSettingsBtn.setVisibility(View.VISIBLE);
+
 			mAboutLogo.setOnClickListener(this);
 		} else {
 			mMessageTv.setText(R.string.welcome_message);
@@ -148,7 +146,6 @@ public class LoginActivity extends Activity implements View.OnClickListener, Dia
 			mLoginBtn.setVisibility(View.VISIBLE);
 			mLogoutBtn.setVisibility(View.GONE);
 			mLibrariesBtn.setVisibility(View.GONE);
-			mSettingsBtn.setVisibility(View.GONE);
 			mAboutLogo.setOnClickListener(null);
 		}
 	}
