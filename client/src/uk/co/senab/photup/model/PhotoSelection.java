@@ -25,7 +25,7 @@ public abstract class PhotoSelection extends PhotoUpload {
 
 	static final String LOG_TAG = "PhotoUpload";
 
-	static final float CROP_THRESHOLD = 0.02f; // 2%
+	static final float CROP_THRESHOLD = 0.01f; // 1%
 
 	public static PhotoSelection fromUri(Uri uri) {
 		if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
@@ -260,10 +260,16 @@ public abstract class PhotoSelection extends PhotoUpload {
 	}
 
 	public void setCropValues(RectF cropValues) {
-		if (cropValues.left > CROP_THRESHOLD || cropValues.right < (1f - CROP_THRESHOLD)
-				|| cropValues.top > CROP_THRESHOLD || cropValues.bottom < (1f - CROP_THRESHOLD)) {
+		if (cropValues.left >= CROP_THRESHOLD || cropValues.right <= (1f - CROP_THRESHOLD)
+				|| cropValues.top >= CROP_THRESHOLD || cropValues.bottom <= (1f - CROP_THRESHOLD)) {
 			mCropValues = cropValues;
+			if (Constants.DEBUG) {
+				Log.d(LOG_TAG, "Valid Crop Values: " + cropValues.toString());
+			}
 		} else {
+			if (Constants.DEBUG) {
+				Log.d(LOG_TAG, "Invalid Crop Values: " + cropValues.toString());
+			}
 			mCropValues = null;
 		}
 	}

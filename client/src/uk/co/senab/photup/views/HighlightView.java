@@ -59,6 +59,10 @@ public class HighlightView {
 
 	private final Paint mFocusPaint = new Paint();
 	private final Paint mOutlinePaint = new Paint();
+	
+	private float mTouchHystersis;
+
+	private final Path mOutlinePath = new Path();
 
 	public HighlightView(View ctx) {
 		mContext = ctx;
@@ -76,8 +80,8 @@ public class HighlightView {
 	// Determines which edges are hit by touching at (x, y).
 	public int getHit(float x, float y) {
 		Rect r = computeLayout();
-		final float hysteresis = 20F;
 		int retval = GROW_NONE;
+		final float hysteresis = mTouchHystersis;
 
 		// verticalCheck makes sure the position is between the top and
 		// the bottom edge (with some tolerance). Similar for horizCheck.
@@ -245,54 +249,49 @@ public class HighlightView {
 	}
 
 	protected void draw(Canvas canvas) {
-
 		canvas.save();
-		Path path = new Path();
 
-		Rect viewDrawingRect = new Rect();
-		mContext.getDrawingRect(viewDrawingRect);
+		mOutlinePath.reset();
+		mOutlinePath.addRect(mDrawRect.left, mDrawRect.top, mDrawRect.right, mDrawRect.bottom, Path.Direction.CW);
 
-		path.addRect(new RectF(mDrawRect), Path.Direction.CW);
-
-		canvas.clipPath(path, Region.Op.DIFFERENCE);
-		canvas.drawRect(viewDrawingRect, mFocusPaint);
+		canvas.clipPath(mOutlinePath, Region.Op.DIFFERENCE);
+		canvas.drawPaint(mFocusPaint);
 
 		canvas.restore();
 
-		canvas.drawPath(path, mOutlinePaint);
+		canvas.drawPath(mOutlinePath, mOutlinePaint);
 
-		if (mMode == ModifyMode.Grow) {
+		/**
+		 * Draw Handle Drawables
+		 */
+		int left = mDrawRect.left + 1;
+		int right = mDrawRect.right + 1;
+		int top = mDrawRect.top + 4;
+		int bottom = mDrawRect.bottom + 3;
 
-			int left = mDrawRect.left + 1;
-			int right = mDrawRect.right + 1;
-			int top = mDrawRect.top + 4;
-			int bottom = mDrawRect.bottom + 3;
+		int widthWidth = mResizeDrawableWidth.getIntrinsicWidth() / 2;
+		int widthHeight = mResizeDrawableWidth.getIntrinsicHeight() / 2;
+		int heightHeight = mResizeDrawableHeight.getIntrinsicHeight() / 2;
+		int heightWidth = mResizeDrawableHeight.getIntrinsicWidth() / 2;
 
-			int widthWidth = mResizeDrawableWidth.getIntrinsicWidth() / 2;
-			int widthHeight = mResizeDrawableWidth.getIntrinsicHeight() / 2;
-			int heightHeight = mResizeDrawableHeight.getIntrinsicHeight() / 2;
-			int heightWidth = mResizeDrawableHeight.getIntrinsicWidth() / 2;
+		int xMiddle = mDrawRect.left + ((mDrawRect.right - mDrawRect.left) / 2);
+		int yMiddle = mDrawRect.top + ((mDrawRect.bottom - mDrawRect.top) / 2);
 
-			int xMiddle = mDrawRect.left + ((mDrawRect.right - mDrawRect.left) / 2);
-			int yMiddle = mDrawRect.top + ((mDrawRect.bottom - mDrawRect.top) / 2);
+		mResizeDrawableWidth.setBounds(left - widthWidth, yMiddle - widthHeight, left + widthWidth, yMiddle
+				+ widthHeight);
+		mResizeDrawableWidth.draw(canvas);
 
-			mResizeDrawableWidth.setBounds(left - widthWidth, yMiddle - widthHeight, left + widthWidth, yMiddle
-					+ widthHeight);
-			mResizeDrawableWidth.draw(canvas);
+		mResizeDrawableWidth.setBounds(right - widthWidth, yMiddle - widthHeight, right + widthWidth, yMiddle
+				+ widthHeight);
+		mResizeDrawableWidth.draw(canvas);
 
-			mResizeDrawableWidth.setBounds(right - widthWidth, yMiddle - widthHeight, right + widthWidth, yMiddle
-					+ widthHeight);
-			mResizeDrawableWidth.draw(canvas);
+		mResizeDrawableHeight.setBounds(xMiddle - heightWidth, top - heightHeight, xMiddle + heightWidth, top
+				+ heightHeight);
+		mResizeDrawableHeight.draw(canvas);
 
-			mResizeDrawableHeight.setBounds(xMiddle - heightWidth, top - heightHeight, xMiddle + heightWidth, top
-					+ heightHeight);
-			mResizeDrawableHeight.draw(canvas);
-
-			mResizeDrawableHeight.setBounds(xMiddle - heightWidth, bottom - heightHeight, xMiddle + heightWidth, bottom
-					+ heightHeight);
-			mResizeDrawableHeight.draw(canvas);
-
-		}
+		mResizeDrawableHeight.setBounds(xMiddle - heightWidth, bottom - heightHeight, xMiddle + heightWidth, bottom
+				+ heightHeight);
+		mResizeDrawableHeight.draw(canvas);
 	}
 
 	// Maps the cropping rectangle from image space to screen space.
@@ -306,5 +305,6 @@ public class HighlightView {
 		android.content.res.Resources resources = mContext.getResources();
 		mResizeDrawableWidth = resources.getDrawable(R.drawable.crop_handle_x);
 		mResizeDrawableHeight = resources.getDrawable(R.drawable.crop_handle_y);
+		mTouchHystersis = resources.getDimensionPixelSize(R.dimen.crop_hysteresis);
 	}
 }
