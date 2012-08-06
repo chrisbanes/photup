@@ -76,8 +76,10 @@
 			android:label="@string/settings" />
 		<activity
 			android:name=".CropImageActivity"
+			android:configChanges="keyboard|keyboardHidden|orientation"
+			android:hardwareAccelerated="false"
 			android:label="@string/photo_crop"
-			android:hardwareAccelerated="false" />
+			android:theme="@style/Theme.Fullscreen" />
 		<activity
 			android:name=".ActionSendActivity"
 			android:label="@string/app_name"
