@@ -13,6 +13,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
+import android.graphics.RectF;
 import android.media.FaceDetector;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -23,14 +24,24 @@ import com.lightbox.android.photoprocessing.PhotoProcessing;
 public abstract class PhotoSelection extends PhotoUpload {
 
 	static final String LOG_TAG = "PhotoUpload";
+	static final float CROP_THRESHOLD = 1.0f;
 
-	private Filter mFilter;
+	public static PhotoSelection fromUri(Uri uri) {
+		if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
+			return new MediaStorePhotoUpload(uri);
+		} else {
+			return new FilePhotoUpload(uri);
+		}
+	}
+
 	private String mCaption;
-
 	private final HashSet<PhotoTag> mTags;
+
 	private boolean mCompletedDetection;
 
 	private int mUserRotation;
+	private RectF mCropValues;
+	private Filter mFilter;
 
 	private WeakReference<OnFaceDetectionListener> mFaceDetectListener;
 	private WeakReference<OnPhotoTagsChangedListener> mTagChangedListener;
@@ -41,119 +52,9 @@ public abstract class PhotoSelection extends PhotoUpload {
 		mUserRotation = 0;
 	}
 
-	public abstract Uri getOriginalPhotoUri();
-
-	public abstract Bitmap getThumbnailImage(Context context);
-
-	public abstract Bitmap getDisplayImage(Context context);
-
-	public abstract Bitmap getUploadImage(Context context, UploadQuality quality);
-
-	public abstract int getExifRotation(Context context);
-
-	public int getTotalRotation(Context context) {
-		return (getExifRotation(context) + getUserRotation()) % 360;
-	}
-
-	public Bitmap processBitmapUsingFilter(final Bitmap bitmap, final Filter filter, final boolean modifyOriginal) {
-		Utils.checkPhotoProcessingThread();
-
-		PhotoProcessing.sendBitmapToNative(bitmap);
-		if (modifyOriginal) {
-			bitmap.recycle();
-		}
-
-		if (null != filter) {
-			PhotoProcessing.filterPhoto(filter.getId());
-		}
-
-		switch (getUserRotation()) {
-			case 90:
-				PhotoProcessing.nativeRotate90();
-				break;
-			case 180:
-				PhotoProcessing.nativeRotate180();
-				break;
-			case 270:
-				PhotoProcessing.nativeRotate180();
-				PhotoProcessing.nativeRotate90();
-				break;
-		}
-
-		return PhotoProcessing.getBitmapFromNative(null);
-	}
-
-	public Bitmap processBitmap(Bitmap bitmap, final boolean modifyOriginal) {
-		if (requiresProcessing()) {
-			return processBitmapUsingFilter(bitmap, mFilter, modifyOriginal);
-		} else {
-			return bitmap;
-		}
-	}
-
-	public String getThumbnailImageKey() {
-		return "thumb_" + getOriginalPhotoUri();
-	}
-
-	public String getDisplayImageKey() {
-		return "dsply_" + getOriginalPhotoUri();
-	}
-
-	public void setFilterUsed(Filter filter) {
-		mFilter = filter;
-	}
-
-	public Filter getFilterUsed() {
-		return mFilter;
-	}
-
-	public HashSet<FbUser> getTaggedFriends() {
-		HashSet<FbUser> friends = new HashSet<FbUser>();
-
-		FbUser friend;
-		for (PhotoTag tag : mTags) {
-			friend = tag.getFriend();
-			if (null != friend) {
-				friends.add(friend);
-			}
-		}
-
-		return friends;
-	}
-
-	public int getUserRotation() {
-		return mUserRotation % 360;
-	}
-
-	public void rotateClockwise() {
-		mUserRotation += 90;
-	}
-
-	public boolean requiresProcessing() {
-		return (null != mFilter && mFilter.getId() != Filter.FILTER_ORIGINAL) || getUserRotation() != 0;
-	}
-
-	public String getCaption() {
-		return mCaption;
-	}
-
-	public void setCaption(String caption) {
-		if (TextUtils.isEmpty(caption)) {
-			mCaption = null;
-		} else {
-			mCaption = caption;
-		}
-	}
-
-	public boolean requiresFaceDetectPass() {
-		return !mCompletedDetection;
-	}
-
-	public void setFaceDetectionListener(OnFaceDetectionListener listener) {
-		// No point keeping listener if we've already done a pass
-		if (!mCompletedDetection) {
-			mFaceDetectListener = new WeakReference<OnFaceDetectionListener>(listener);
-		}
+	public void addPhotoTag(PhotoTag tag) {
+		mTags.add(tag);
+		notifyTagListener(tag, true);
 	}
 
 	public void detectPhotoTags(final Bitmap originalBitmap) {
@@ -212,28 +113,35 @@ public abstract class PhotoSelection extends PhotoUpload {
 		mCompletedDetection = true;
 	}
 
-	public void addPhotoTag(PhotoTag tag) {
-		mTags.add(tag);
-		notifyTagListener(tag, true);
-	}
-
-	public void removePhotoTag(PhotoTag tag) {
-		mTags.remove(tag);
-		notifyTagListener(tag, false);
-	}
-
-	private void notifyTagListener(PhotoTag tag, boolean added) {
-		if (null != mTagChangedListener) {
-			OnPhotoTagsChangedListener listener = mTagChangedListener.get();
-			if (null != listener) {
-				listener.onPhotoTagsChanged(tag, added);
-			}
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof MediaStorePhotoUpload) {
+			return getOriginalPhotoUri().equals(((MediaStorePhotoUpload) obj).getOriginalPhotoUri());
 		}
+		return false;
 	}
 
-	public void setTagChangedListener(OnPhotoTagsChangedListener tagChangedListener) {
-		mTagChangedListener = new WeakReference<OnPhotoTagsChangedListener>(tagChangedListener);
+	public String getCaption() {
+		return mCaption;
 	}
+
+	public RectF getCropValues() {
+		return mCropValues;
+	}
+
+	public abstract Bitmap getDisplayImage(Context context);
+
+	public String getDisplayImageKey() {
+		return "dsply_" + getOriginalPhotoUri();
+	}
+
+	public abstract int getExifRotation(Context context);
+
+	public Filter getFilterUsed() {
+		return mFilter;
+	}
+
+	public abstract Uri getOriginalPhotoUri();
 
 	public List<PhotoTag> getPhotoTags() {
 		return new ArrayList<PhotoTag>(mTags);
@@ -243,17 +151,121 @@ public abstract class PhotoSelection extends PhotoUpload {
 		return mTags.size();
 	}
 
+	public HashSet<FbUser> getTaggedFriends() {
+		HashSet<FbUser> friends = new HashSet<FbUser>();
+
+		FbUser friend;
+		for (PhotoTag tag : mTags) {
+			friend = tag.getFriend();
+			if (null != friend) {
+				friends.add(friend);
+			}
+		}
+
+		return friends;
+	}
+
+	public abstract Bitmap getThumbnailImage(Context context);
+
+	public String getThumbnailImageKey() {
+		return "thumb_" + getOriginalPhotoUri();
+	}
+
+	public int getTotalRotation(Context context) {
+		return (getExifRotation(context) + getUserRotation()) % 360;
+	}
+
+	public abstract Bitmap getUploadImage(Context context, UploadQuality quality);
+
+	public int getUserRotation() {
+		return mUserRotation % 360;
+	}
+
 	@Override
 	public int hashCode() {
 		return getOriginalPhotoUri().hashCode();
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof MediaStorePhotoUpload) {
-			return getOriginalPhotoUri().equals(((MediaStorePhotoUpload) obj).getOriginalPhotoUri());
+	public Bitmap processBitmap(Bitmap bitmap, final boolean fullSize, final boolean modifyOriginal) {
+		if (requiresProcessing(fullSize)) {
+			return processBitmapUsingFilter(bitmap, mFilter, fullSize, modifyOriginal);
+		} else {
+			return bitmap;
 		}
-		return false;
+	}
+
+	public Bitmap processBitmapUsingFilter(final Bitmap bitmap, final Filter filter, final boolean fullSize,
+			final boolean modifyOriginal) {
+		Utils.checkPhotoProcessingThread();
+
+		PhotoProcessing.sendBitmapToNative(bitmap);
+		if (modifyOriginal) {
+			bitmap.recycle();
+		}
+
+		if (fullSize && beenCropped()) {
+			RectF rect = getCropValues();
+			PhotoProcessing.nativeCrop(rect.left, rect.top, rect.right, rect.bottom);
+		}
+
+		if (null != filter) {
+			PhotoProcessing.filterPhoto(filter.getId());
+		}
+
+		switch (getUserRotation()) {
+			case 90:
+				PhotoProcessing.nativeRotate90();
+				break;
+			case 180:
+				PhotoProcessing.nativeRotate180();
+				break;
+			case 270:
+				PhotoProcessing.nativeRotate180();
+				PhotoProcessing.nativeRotate90();
+				break;
+		}
+
+		return PhotoProcessing.getBitmapFromNative(null);
+	}
+
+	public void removePhotoTag(PhotoTag tag) {
+		mTags.remove(tag);
+		notifyTagListener(tag, false);
+	}
+
+	public boolean requiresFaceDetectPass() {
+		return !mCompletedDetection;
+	}
+
+	public boolean requiresProcessing(final boolean fullSize) {
+		return getUserRotation() != 0 || beenFiltered() || (fullSize && beenCropped());
+	}
+
+	public void rotateClockwise() {
+		mUserRotation += 90;
+	}
+
+	public void setCaption(String caption) {
+		if (TextUtils.isEmpty(caption)) {
+			mCaption = null;
+		} else {
+			mCaption = caption;
+		}
+	}
+
+	public void setFaceDetectionListener(OnFaceDetectionListener listener) {
+		// No point keeping listener if we've already done a pass
+		if (!mCompletedDetection) {
+			mFaceDetectListener = new WeakReference<OnFaceDetectionListener>(listener);
+		}
+	}
+
+	public void setFilterUsed(Filter filter) {
+		mFilter = filter;
+	}
+
+	public void setTagChangedListener(OnPhotoTagsChangedListener tagChangedListener) {
+		mTagChangedListener = new WeakReference<OnPhotoTagsChangedListener>(tagChangedListener);
 	}
 
 	@Override
@@ -263,20 +275,33 @@ public abstract class PhotoSelection extends PhotoUpload {
 		if (null != caption) {
 			sb.append(caption).append(" ");
 		}
-		
+
 		Place place = getPlace();
 		if (null != place) {
-			sb.append("(").append(place.getName()).append(")");	
+			sb.append("(").append(place.getName()).append(")");
 		}
-		
+
 		return sb.toString();
 	}
 
-	public static PhotoSelection fromUri(Uri uri) {
-		if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
-			return new MediaStorePhotoUpload(uri);
-		} else {
-			return new FilePhotoUpload(uri);
+	protected boolean beenCropped() {
+		if (null != mCropValues) {
+			return mCropValues.left >= CROP_THRESHOLD || mCropValues.right >= CROP_THRESHOLD
+					|| mCropValues.top >= CROP_THRESHOLD || mCropValues.bottom >= CROP_THRESHOLD;
+		}
+		return false;
+	}
+
+	protected boolean beenFiltered() {
+		return null != mFilter && mFilter.getId() != Filter.FILTER_ORIGINAL;
+	}
+
+	private void notifyTagListener(PhotoTag tag, boolean added) {
+		if (null != mTagChangedListener) {
+			OnPhotoTagsChangedListener listener = mTagChangedListener.get();
+			if (null != listener) {
+				listener.onPhotoTagsChanged(tag, added);
+			}
 		}
 	}
 }

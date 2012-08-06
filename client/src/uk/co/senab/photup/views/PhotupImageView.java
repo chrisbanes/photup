@@ -132,7 +132,7 @@ public class PhotupImageView extends CacheableImageView {
 				wrapper.setBeingUsed(true);
 			}
 
-			filteredBitmap = mUpload.processBitmap(wrapper.getBitmap(), false);
+			filteredBitmap = mUpload.processBitmap(wrapper.getBitmap(), mFullSize, false);
 			wrapper.setBeingUsed(false);
 
 			mImageView.post(new Runnable() {
@@ -204,7 +204,7 @@ public class PhotupImageView extends CacheableImageView {
 	}
 
 	public void requestThumbnail(final PhotoSelection upload, final boolean honourFilter) {
-		if (upload.requiresProcessing() && honourFilter) {
+		if (upload.requiresProcessing(false) && honourFilter) {
 			requestFiltered(upload, false, null);
 		} else {
 			// Clear Drawable
@@ -216,7 +216,7 @@ public class PhotupImageView extends CacheableImageView {
 
 	public void requestFullSize(final PhotoSelection upload, final boolean honourFilter,
 			final OnPhotoLoadListener listener) {
-		if (upload.requiresProcessing() && honourFilter) {
+		if (upload.requiresProcessing(true) && honourFilter) {
 			requestFiltered(upload, true, listener);
 		} else {
 			// Show thumbnail if it's in the cache

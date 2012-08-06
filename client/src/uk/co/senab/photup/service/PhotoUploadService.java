@@ -89,7 +89,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 		public void run() {
 			mSelection.setBigPictureNotificationBmp(PhotoUploadService.this,
-					mSelection.processBitmap(mSelection.getThumbnailImage(PhotoUploadService.this), true));
+					mSelection.processBitmap(mSelection.getThumbnailImage(PhotoUploadService.this), false, true));
 			updateNotification(mSelection);
 		}
 

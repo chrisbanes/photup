@@ -11,6 +11,7 @@ import uk.co.senab.photup.Utils;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.RectF;
 import android.net.Uri;
 import android.util.Log;
 
@@ -122,11 +123,19 @@ public class FilePhotoUpload extends PhotoSelection {
 					// Do resize
 					PhotoProcessing.nativeResizeBitmap(size.width, size.height);
 				}
+				
+				/**
+				 * Apply crop if needed
+				 */
+				if (beenCropped()) {
+					RectF rect = getCropValues();
+					PhotoProcessing.nativeCrop(rect.left, rect.top, rect.right, rect.bottom);
+				}
 
 				/**
 				 * Apply filter if needed
 				 */
-				if (requiresProcessing()) {
+				if (beenFiltered()) {
 					PhotoProcessing.filterPhoto(getFilterUsed().getId());
 					if (Constants.DEBUG) {
 						Log.d("MediaStorePhotoUpload", "getUploadImage. Native filter complete!");
