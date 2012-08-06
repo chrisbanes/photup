@@ -12,7 +12,7 @@
 		android:layout_alignLeft="@+id/iv_action_upload"
 		android:layout_alignRight="@+id/iv_action_upload"
 		android:layout_alignTop="@+id/iv_action_upload"
-		android:background="@color/item_bg_dark"
+		android:background="@color/pressed_photup"
 		android:visibility="gone" />
 
 	<ImageView

@@ -52,7 +52,7 @@
 		</activity>
 		<activity
 			android:name=".PhotoViewerActivity"
-			android:theme="@style/Theme.Photup.FullscreenOverlay"
+			android:theme="@style/Theme.FullscreenOverlay"
 			android:uiOptions="splitActionBarWhenNarrow" >
 		</activity>
 		<activity
