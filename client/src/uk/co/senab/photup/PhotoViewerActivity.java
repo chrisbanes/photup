@@ -19,7 +19,6 @@ import uk.co.senab.photup.model.Place;
 import uk.co.senab.photup.views.FiltersRadioGroup;
 import uk.co.senab.photup.views.MultiTouchImageView;
 import uk.co.senab.photup.views.PhotoTagItemLayout;
-import uk.co.senab.photup.views.PhotupImageView.OnPhotoLoadListener;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -46,13 +45,15 @@ import com.actionbarsherlock.view.Window;
 
 public class PhotoViewerActivity extends SherlockFragmentActivity implements OnPhotoSelectionChangedListener,
 		OnSingleTapListener, OnCheckedChangeListener, OnPageChangeListener, OnPickFriendRequestListener,
-		OnPhotoLoadListener, OnPlacePickedListener {
+		OnPlacePickedListener {
 
 	public static final String EXTRA_POSITION = "extra_position";
 	public static final String EXTRA_MODE = "extra_mode";
 
 	public static int MODE_ALL_VALUE = 100;
 	public static int MODE_SELECTED_VALUE = 101;
+
+	static final int REQUEST_CROP_PHOTO = 200;
 
 	class PhotoRemoveAnimListener implements AnimationListener {
 		private final View mView;
@@ -114,7 +115,7 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 		PhotoSelection upload = getCurrentUpload();
 		upload.rotateClockwise();
 
-		imageView.requestFullSize(upload, true, this);
+		imageView.requestFullSize(upload, true, null);
 	}
 
 	public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -126,7 +127,7 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 			PhotoSelection upload = getCurrentUpload();
 			upload.setFilterUsed(filter);
 
-			imageView.requestFullSize(upload, true, this);
+			imageView.requestFullSize(upload, true, null);
 		}
 	}
 
@@ -156,7 +157,8 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 				startPlaceFragment();
 				return true;
 			case R.id.menu_crop:
-				startActivity(new Intent(this, CropImageActivity.class));
+				CropImageActivity.CROP_SELECTION = getCurrentUpload();
+				startActivityForResult(new Intent(this, CropImageActivity.class), REQUEST_CROP_PHOTO);
 				return true;
 		}
 
@@ -204,6 +206,20 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 			View view = getCurrentView();
 			mFadeOutAnimation.setAnimationListener(new PhotoRemoveAnimListener(view));
 			view.startAnimation(mFadeOutAnimation);
+		}
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (requestCode) {
+			case REQUEST_CROP_PHOTO:
+				if (resultCode == RESULT_OK) {
+					PhotoTagItemLayout currentView = (PhotoTagItemLayout) getCurrentView();
+					MultiTouchImageView imageView = currentView.getImageView();
+					PhotoSelection upload = getCurrentUpload();
+					imageView.requestFullSize(upload, true, null);
+				}
+				break;
 		}
 	}
 

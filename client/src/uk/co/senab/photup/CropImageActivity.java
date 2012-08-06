@@ -1,18 +1,26 @@
 package uk.co.senab.photup;
 
+import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.views.CropImageView;
 import uk.co.senab.photup.views.HighlightView;
-import android.app.Activity;
+import uk.co.senab.photup.views.PhotupImageView.OnPhotoLoadListener;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Bundle;
 
-public class CropImageActivity extends Activity {
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+
+public class CropImageActivity extends SherlockActivity implements OnPhotoLoadListener {
+
+	static PhotoSelection CROP_SELECTION;
 
 	private CropImageView mCropImageView;
-	private Bitmap mBitmap;
+	private HighlightView mHighlightView;
+
+	private PhotoSelection mPhotoUpload;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -21,25 +29,63 @@ public class CropImageActivity extends Activity {
 		mCropImageView = new CropImageView(this, null);
 		setContentView(mCropImageView);
 
-		mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
-		mCropImageView.setImageBitmap(mBitmap);
+		// FIXME Hack
+		mPhotoUpload = CROP_SELECTION;
+		CROP_SELECTION = null;
 
-		makeHighlight();
+		mCropImageView.requestFullSize(mPhotoUpload, false, this);
 	}
 
-	private void makeHighlight() {
-		HighlightView hv = new HighlightView(mCropImageView);
-		int width = mBitmap.getWidth();
-		int height = mBitmap.getHeight();
-		Rect imageRect = new Rect(0, 0, width, height);
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getSupportMenuInflater().inflate(R.menu.menu_photo_crop, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
 
-		// make the default size about 4/5 of the width or height
-		int cropWidth = Math.min(width, height) * 4 / 5;
-		int cropHeight = cropWidth;
-		int x = (width - cropWidth) / 2;
-		int y = (height - cropHeight) / 2;
-		RectF cropRect = new RectF(x, y, x + cropWidth, y + cropHeight);
-		hv.setup(mCropImageView.getImageMatrix(), imageRect, cropRect, false);
-		mCropImageView.setHighlight(hv);
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.menu_save:
+				mPhotoUpload.setCropValues(mHighlightView.getCropRect());
+				setResult(RESULT_OK);
+				finish();
+				return true;
+		}
+
+		return super.onOptionsItemSelected(item);
+	}
+
+	private void makeHighlight(final Bitmap bitmap) {
+		final int width = bitmap.getWidth();
+		final int height = bitmap.getHeight();
+		final Rect imageRect = new Rect(0, 0, width, height);
+
+		RectF cropRect;
+		if (mPhotoUpload.beenCropped()) {
+			cropRect = mPhotoUpload.getCropValues(width, height);
+		} else {
+			cropRect = getDefaultCropRect(width, height);
+		}
+
+		mHighlightView = new HighlightView(mCropImageView);
+		mHighlightView.setup(mCropImageView.getImageMatrix(), imageRect, cropRect, false);
+
+		mCropImageView.setHighlight(mHighlightView);
+	}
+
+	@Override
+	public void onBackPressed() {
+		setResult(RESULT_CANCELED);
+		finish();
+	}
+
+	public void onPhotoLoadFinished(Bitmap bitmap) {
+		if (null != bitmap) {
+			makeHighlight(bitmap);
+		}
+	}
+
+	static RectF getDefaultCropRect(final int width, final int height) {
+		return new RectF(width * 0.1f, height * 0.1f, width * 0.9f, height * 0.9f);
 	}
 }

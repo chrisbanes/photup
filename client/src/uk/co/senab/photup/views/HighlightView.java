@@ -65,8 +65,12 @@ public class HighlightView {
 	}
 
 	// Returns the cropping rectangle in image space.
-	public Rect getCropRect() {
-		return new Rect((int) mCropRect.left, (int) mCropRect.top, (int) mCropRect.right, (int) mCropRect.bottom);
+	public RectF getCropRect() {
+		final float width = mImageRect.width();
+		final float height = mImageRect.height();
+
+		return new RectF(mCropRect.left / width, mCropRect.top / height, mCropRect.right / width, mCropRect.bottom
+				/ height);
 	}
 
 	// Determines which edges are hit by touching at (x, y).

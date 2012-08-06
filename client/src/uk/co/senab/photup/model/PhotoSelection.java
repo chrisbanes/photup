@@ -24,7 +24,8 @@ import com.lightbox.android.photoprocessing.PhotoProcessing;
 public abstract class PhotoSelection extends PhotoUpload {
 
 	static final String LOG_TAG = "PhotoUpload";
-	static final float CROP_THRESHOLD = 1.0f;
+
+	static final float CROP_THRESHOLD = 0.02f; // 2%
 
 	public static PhotoSelection fromUri(Uri uri) {
 		if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
@@ -127,6 +128,11 @@ public abstract class PhotoSelection extends PhotoUpload {
 
 	public RectF getCropValues() {
 		return mCropValues;
+	}
+
+	public RectF getCropValues(final int width, final int height) {
+		return new RectF(mCropValues.left * width, mCropValues.top * height, mCropValues.right * width,
+				mCropValues.bottom * height);
 	}
 
 	public abstract Bitmap getDisplayImage(Context context);
@@ -253,6 +259,15 @@ public abstract class PhotoSelection extends PhotoUpload {
 		}
 	}
 
+	public void setCropValues(RectF cropValues) {
+		if (cropValues.left > CROP_THRESHOLD || cropValues.right < (1f - CROP_THRESHOLD)
+				|| cropValues.top > CROP_THRESHOLD || cropValues.bottom < (1f - CROP_THRESHOLD)) {
+			mCropValues = cropValues;
+		} else {
+			mCropValues = null;
+		}
+	}
+
 	public void setFaceDetectionListener(OnFaceDetectionListener listener) {
 		// No point keeping listener if we've already done a pass
 		if (!mCompletedDetection) {
@@ -284,15 +299,11 @@ public abstract class PhotoSelection extends PhotoUpload {
 		return sb.toString();
 	}
 
-	protected boolean beenCropped() {
-		if (null != mCropValues) {
-			return mCropValues.left >= CROP_THRESHOLD || mCropValues.right >= CROP_THRESHOLD
-					|| mCropValues.top >= CROP_THRESHOLD || mCropValues.bottom >= CROP_THRESHOLD;
-		}
-		return false;
+	public boolean beenCropped() {
+		return null != mCropValues;
 	}
 
-	protected boolean beenFiltered() {
+	public boolean beenFiltered() {
 		return null != mFilter && mFilter.getId() != Filter.FILTER_ORIGINAL;
 	}
 

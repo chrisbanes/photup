@@ -74,9 +74,9 @@
 		<activity
 			android:name=".SettingsActivity"
 			android:label="@string/settings" />
-		
 		<activity
-			android:name=".CropImageActivity" />
+			android:name=".CropImageActivity"
+			android:label="@string/photo_crop" />
 		<activity
 			android:name=".ActionSendActivity"
 			android:label="@string/app_name"

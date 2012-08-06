@@ -26,7 +26,7 @@ public class PhotupImageView extends CacheableImageView {
 	static final int FACE_DETECTION_DELAY = 800;
 
 	public static interface OnPhotoLoadListener {
-		void onPhotoLoadStatusChanged(boolean finished);
+		void onPhotoLoadFinished(Bitmap bitmap);
 	}
 
 	private static class PhotoTask extends AsyncTask<Void, Void, CacheableBitmapWrapper> {
@@ -75,7 +75,7 @@ public class PhotupImageView extends CacheableImageView {
 				}
 
 				if (null != mListener) {
-					mListener.onPhotoLoadStatusChanged(true);
+					mListener.onPhotoLoadFinished(result.getBitmap());
 				}
 
 				mCache.put(result);
@@ -139,7 +139,7 @@ public class PhotupImageView extends CacheableImageView {
 				public void run() {
 					mImageView.setImageBitmap(filteredBitmap);
 					if (null != mListener) {
-						mListener.onPhotoLoadStatusChanged(true);
+						mListener.onPhotoLoadFinished(filteredBitmap);
 					}
 				}
 			});
@@ -236,9 +236,6 @@ public class PhotupImageView extends CacheableImageView {
 	}
 
 	void requestFiltered(final PhotoSelection upload, boolean fullSize, final OnPhotoLoadListener listener) {
-		if (null != listener) {
-			listener.onPhotoLoadStatusChanged(false);
-		}
 		PhotupApplication app = PhotupApplication.getApplication(getContext());
 		app.getSingleThreadExecutorService().submit(new FilterRunnable(this, upload, fullSize, listener));
 	}
@@ -264,6 +261,9 @@ public class PhotupImageView extends CacheableImageView {
 
 		if (null != cached && cached.hasValidBitmap()) {
 			setImageCachedBitmap(cached);
+			if (null != listener) {
+				listener.onPhotoLoadFinished(cached.getBitmap());
+			}
 		} else {
 			// Means we have an object with an invalid bitmap so remove it
 			if (null != cached) {
@@ -271,9 +271,6 @@ public class PhotupImageView extends CacheableImageView {
 			}
 
 			mCurrentTask = new PhotoTask(this, upload, cache, fullSize, listener);
-			if (null != listener) {
-				listener.onPhotoLoadStatusChanged(false);
-			}
 
 			if (VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB) {
 				PhotupApplication app = PhotupApplication.getApplication(getContext());
