@@ -17,14 +17,14 @@
 		android:showAsAction="ifRoom"
 		android:title="@string/photo_rotate"/>
 	<item
-		android:id="@+id/menu_place"
-		android:icon="@drawable/ic_action_place"
-		android:showAsAction="ifRoom"
-		android:title="@string/place"/>
-	<item
 		android:id="@+id/menu_crop"
 		android:icon="@drawable/ic_action_crop"
 		android:showAsAction="ifRoom"
 		android:title="@string/photo_crop"/>
+	<item
+		android:id="@+id/menu_place"
+		android:icon="@drawable/ic_action_place"
+		android:showAsAction="ifRoom"
+		android:title="@string/place"/>
 
 </menu>

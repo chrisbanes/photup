@@ -41,7 +41,6 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.Window;
 
 public class PhotoViewerActivity extends SherlockFragmentActivity implements OnPhotoSelectionChangedListener,
 		OnSingleTapListener, OnCheckedChangeListener, OnPageChangeListener, OnPickFriendRequestListener,
@@ -227,7 +226,7 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+		//requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
 		setContentView(R.layout.activity_photo_viewer);
 		mContentView = (ViewGroup) findViewById(R.id.fl_root);
@@ -250,8 +249,10 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 		}
 		mViewPager.setAdapter(mAdapter);
 
-		final int requestedPosition = intent.getIntExtra(EXTRA_POSITION, 0);
-		mViewPager.setCurrentItem(requestedPosition);
+		if (intent.hasExtra(EXTRA_POSITION)) {
+			final int requestedPosition = intent.getIntExtra(EXTRA_POSITION, 0);
+			mViewPager.setCurrentItem(requestedPosition);
+		}
 
 		mFadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.photo_fade_out);
 		mFriendsFragment = new FriendsListFragment();

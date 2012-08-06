@@ -262,6 +262,9 @@ public abstract class PhotoSelection extends PhotoUpload {
 	public void setCropValues(RectF cropValues) {
 		if (cropValues.left >= CROP_THRESHOLD || cropValues.right <= (1f - CROP_THRESHOLD)
 				|| cropValues.top >= CROP_THRESHOLD || cropValues.bottom <= (1f - CROP_THRESHOLD)) {
+
+			// TODO Remap Photo Tags using new crop values
+
 			mCropValues = cropValues;
 			if (Constants.DEBUG) {
 				Log.d(LOG_TAG, "Valid Crop Values: " + cropValues.toString());

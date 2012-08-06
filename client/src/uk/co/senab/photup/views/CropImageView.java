@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.View;
 
 public class CropImageView extends MultiTouchImageView {
 
@@ -16,7 +15,6 @@ public class CropImageView extends MultiTouchImageView {
 
 	public CropImageView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 		setZoomable(true);
 	}
 
