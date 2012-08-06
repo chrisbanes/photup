@@ -3,8 +3,8 @@
 
 	<item
 		android:id="@+id/menu_upload"
-		android:showAsAction="always"
 		android:actionLayout="@layout/layout_action_upload"
+		android:showAsAction="always"
 		android:title="@string/upload_title"/>
 	<item
 		android:id="@+id/menu_settings"
