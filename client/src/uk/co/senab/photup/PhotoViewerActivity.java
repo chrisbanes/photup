@@ -155,6 +155,9 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 			case R.id.menu_place:
 				startPlaceFragment();
 				return true;
+			case R.id.menu_crop:
+				startActivity(new Intent(this, CropImageActivity.class));
+				return true;
 		}
 
 		return super.onOptionsItemSelected(item);
