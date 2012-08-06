@@ -66,11 +66,12 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 	public boolean onCreateOptionsMenu(Menu menu) {
 		if (getSupportActionBar().getSelectedNavigationIndex() < 2) {
 			getSupportMenuInflater().inflate(R.menu.menu_photo_grid, menu);
-		}
 
-		MenuItem item = menu.findItem(R.id.menu_upload);
-		mUploadActionView = (UploadActionBarView) item.getActionView();
-		mUploadActionView.setOnClickListener(this);
+			MenuItem item = menu.findItem(R.id.menu_upload);
+			mUploadActionView = (UploadActionBarView) item.getActionView();
+			mUploadActionView.setOnClickListener(this);
+			refreshUploadActionBarView();
+		}
 
 		return super.onCreateOptionsMenu(menu);
 	}
@@ -191,7 +192,7 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 	public void onTabReselected(Tab tab, FragmentTransaction ft) {
 		// NO-OP
 	}
-	
+
 	private void refreshUploadActionBarView() {
 		if (mPhotoController.getSelectedPhotoUploadsSize() > 0) {
 			mUploadActionView.animateBackground();
