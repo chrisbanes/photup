@@ -64,13 +64,16 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		if (getSupportActionBar().getSelectedNavigationIndex() < 2) {
-			getSupportMenuInflater().inflate(R.menu.menu_photo_grid, menu);
+		getSupportMenuInflater().inflate(R.menu.menu_photo_grid, menu);
 
+		if (getSupportActionBar().getSelectedNavigationIndex() < 2) {
 			MenuItem item = menu.findItem(R.id.menu_upload);
 			mUploadActionView = (UploadActionBarView) item.getActionView();
 			mUploadActionView.setOnClickListener(this);
 			refreshUploadActionBarView();
+		} else {
+			menu.removeItem(R.id.menu_upload);
+			mUploadActionView = null;
 		}
 
 		return super.onCreateOptionsMenu(menu);
@@ -194,10 +197,12 @@ public class PhotoSelectionActivity extends SherlockFragmentActivity implements 
 	}
 
 	private void refreshUploadActionBarView() {
-		if (mPhotoController.getSelectedPhotoUploadsSize() > 0) {
-			mUploadActionView.animateBackground();
-		} else {
-			mUploadActionView.stopAnimatingBackground();
+		if (null != mUploadActionView) {
+			if (mPhotoController.getSelectedPhotoUploadsSize() > 0) {
+				mUploadActionView.animateBackground();
+			} else {
+				mUploadActionView.stopAnimatingBackground();
+			}
 		}
 	}
 
