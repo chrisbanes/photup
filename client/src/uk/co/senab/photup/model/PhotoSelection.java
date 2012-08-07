@@ -36,8 +36,8 @@ public abstract class PhotoSelection extends PhotoUpload {
 	}
 
 	private String mCaption;
+	
 	private final HashSet<PhotoTag> mTags;
-
 	private boolean mCompletedDetection;
 
 	private int mUserRotation;
@@ -49,8 +49,7 @@ public abstract class PhotoSelection extends PhotoUpload {
 
 	public PhotoSelection() {
 		mTags = new HashSet<PhotoTag>();
-		mCompletedDetection = false;
-		mUserRotation = 0;
+		reset();
 	}
 
 	public void addPhotoTag(PhotoTag tag) {
@@ -237,6 +236,15 @@ public abstract class PhotoSelection extends PhotoUpload {
 	public void removePhotoTag(PhotoTag tag) {
 		mTags.remove(tag);
 		notifyTagListener(tag, false);
+	}
+	
+	public void reset() {
+		mUserRotation = 0;
+		mCaption = null;
+		mCropValues = null;
+		mFilter = null;
+		mTags.clear();
+		mCompletedDetection = false;
 	}
 
 	public boolean requiresFaceDetectPass() {

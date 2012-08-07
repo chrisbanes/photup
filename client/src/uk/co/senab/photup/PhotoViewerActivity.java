@@ -108,25 +108,26 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 	}
 
 	private void rotateCurrentPhoto() {
-		PhotoTagItemLayout currentView = (PhotoTagItemLayout) getCurrentView();
-		MultiTouchImageView imageView = currentView.getImageView();
-
 		PhotoSelection upload = getCurrentUpload();
 		upload.rotateClockwise();
 
-		imageView.requestFullSize(upload, true, null);
+		reloadCurrentView(upload);
+	}
+	
+	private void resetCurrentPhoto() {
+		PhotoSelection upload = getCurrentUpload();
+		upload.reset();
+		
+		reloadCurrentView(upload);
 	}
 
 	public void onCheckedChanged(RadioGroup group, int checkedId) {
 		if (!mIgnoreFilterCheckCallback) {
-			PhotoTagItemLayout currentView = (PhotoTagItemLayout) getCurrentView();
-			MultiTouchImageView imageView = currentView.getImageView();
-
 			Filter filter = checkedId != -1 ? Filter.FILTERS[checkedId] : null;
 			PhotoSelection upload = getCurrentUpload();
 			upload.setFilterUsed(filter);
 
-			imageView.requestFullSize(upload, true, null);
+			reloadCurrentView(upload);
 		}
 	}
 
@@ -163,6 +164,10 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 				Analytics.logEvent(Analytics.EVENT_PHOTO_CROP);
 				CropImageActivity.CROP_SELECTION = getCurrentUpload();
 				startActivityForResult(new Intent(this, CropImageActivity.class), REQUEST_CROP_PHOTO);
+				return true;
+			case R.id.menu_reset:
+				Analytics.logEvent(Analytics.EVENT_PHOTO_RESET);
+				resetCurrentPhoto();
 				return true;
 		}
 
@@ -218,14 +223,7 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 		switch (requestCode) {
 			case REQUEST_CROP_PHOTO:
 				if (resultCode == RESULT_OK) {
-					PhotoTagItemLayout currentView = (PhotoTagItemLayout) getCurrentView();
-					if (null != currentView) {
-						MultiTouchImageView imageView = currentView.getImageView();
-						PhotoSelection upload = getCurrentUpload();
-						imageView.requestFullSize(upload, true, null);
-					}
-					// Else the ViewPager is being reset so will load the
-					// correct image anyway
+					reloadCurrentView(getCurrentUpload());
 				}
 				break;
 		}
@@ -284,7 +282,7 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 
 	@Override
 	protected void onDestroy() {
-		super.onDestroy();		
+		super.onDestroy();
 		mController.removePhotoSelectionListener(this);
 	}
 
@@ -303,6 +301,14 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 		}
 
 		return null;
+	}
+
+	private void reloadCurrentView(PhotoSelection selection) {
+		PhotoTagItemLayout currentView = (PhotoTagItemLayout) getCurrentView();
+		if (null != currentView) {
+			MultiTouchImageView imageView = currentView.getImageView();
+			imageView.requestFullSize(selection, true, null);
+		}
 	}
 
 	private void clearFaceDetectionPasses() {

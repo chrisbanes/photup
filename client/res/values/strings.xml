@@ -7,6 +7,7 @@
 	<string name="photo_caption">Caption</string>
 	<string name="photo_rotate">Rotate</string>
 	<string name="photo_crop">Crop</string>
+	<string name="photo_reset">Reset</string>
 	<string name="tag_no_name">Who\'s this?</string>
 	<string name="tab_uploads">Uploads</string>
 	<string name="upload_title">Upload</string>

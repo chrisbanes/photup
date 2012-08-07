@@ -8,6 +8,7 @@ public class Analytics {
 
 	static final String FLURRY_API_KEY = "6RCVY5ZZ347B6R99QM7J";
 	
+	public static final String EVENT_PHOTO_RESET = "photo_viewer_reset";
 	public static final String EVENT_PHOTO_FILTERS = "photo_viewer_filters";
 	public static final String EVENT_PHOTO_CROP = "photo_viewer_crop";
 	public static final String EVENT_PHOTO_ROTATE = "photo_viewer_rotate";
