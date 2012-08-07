@@ -1,6 +1,7 @@
 package uk.co.senab.photup.fragments;
 
 import uk.co.senab.photup.PhotoUploadController;
+import uk.co.senab.photup.R;
 import uk.co.senab.photup.adapters.UploadsListBaseAdapter;
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
 import uk.co.senab.photup.model.PhotoSelection;
@@ -38,6 +39,7 @@ public class UploadsFragment extends SherlockListFragment implements OnPhotoSele
 		SwipeDismissListViewTouchListener swipeListener = new SwipeDismissListViewTouchListener(listView, this);
 		listView.setOnTouchListener(swipeListener);
 		listView.setOnScrollListener(swipeListener.makeScrollListener());
+		listView.setSelector(R.drawable.selectable_background_photup);
 
 		listView.setAdapter(mAdapter);
 		setListShown(true);

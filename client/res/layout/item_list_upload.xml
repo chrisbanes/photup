@@ -1,53 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <uk.co.senab.photup.views.UploadItemLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal" >
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:orientation="horizontal"
+	android:padding="4dp" >
 
-    <uk.co.senab.photup.views.PhotupImageView
-        android:id="@+id/iv_photo"
-        android:layout_width="@dimen/listview_item_dimension"
-        android:layout_height="fill_parent"
-        android:scaleType="centerCrop" />
+	<uk.co.senab.photup.views.PhotupImageView
+		android:id="@+id/iv_photo"
+		android:layout_width="@dimen/listview_item_dimension"
+		android:layout_height="@dimen/listview_item_dimension"
+		android:scaleType="centerCrop" />
 
-    <LinearLayout
-        android:layout_width="0px"
-        android:layout_height="fill_parent"
-        android:layout_margin="@dimen/spacing"
-        android:layout_weight="1"
-        android:gravity="center_vertical"
-        android:orientation="vertical"
-        android:padding="@dimen/spacing" >
+	<LinearLayout
+		android:layout_width="0px"
+		android:layout_height="fill_parent"
+		android:layout_margin="@dimen/spacing"
+		android:layout_weight="1"
+		android:gravity="center_vertical"
+		android:orientation="vertical"
+		android:padding="@dimen/spacing" >
 
-        <TextView
-            android:id="@+id/tv_photo_caption"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+		<TextView
+			android:id="@+id/tv_photo_caption"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center_vertical"
+			android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <TextView
-            android:id="@+id/tv_photo_tags"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing"
-            android:singleLine="true"
-            android:visibility="gone" />
+		<TextView
+			android:id="@+id/tv_photo_tags"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="@dimen/spacing"
+			android:singleLine="true"
+			android:visibility="gone" />
 
-        <ProgressBar
-            android:id="@+id/pb_upload_progress"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing"
-            android:max="100" />
-    </LinearLayout>
+		<ProgressBar
+			android:id="@+id/pb_upload_progress"
+			style="?android:attr/progressBarStyleHorizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="@dimen/spacing"
+			android:max="100" />
+	</LinearLayout>
 
-    <ImageView
-        android:id="@+id/iv_upload_result"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:paddingRight="@dimen/spacing"
-        android:visibility="gone" />
+	<ImageView
+		android:id="@+id/iv_upload_result"
+		android:layout_width="wrap_content"
+		android:layout_height="fill_parent"
+		android:paddingRight="@dimen/spacing"
+		android:visibility="gone" />
 
 </uk.co.senab.photup.views.UploadItemLayout>
