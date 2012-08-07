@@ -16,7 +16,7 @@ public class Analytics {
 	public static final String EVENT_PHOTO_PLACE = "photo_viewer_place";
 
 	static {
-		FlurryAgent.setLogEnabled(BuildConfig.DEBUG);
+		FlurryAgent.setLogEnabled(Constants.DEBUG);
 		FlurryAgent.setCaptureUncaughtExceptions(false);
 		FlurryAgent.setReportLocation(false);
 	}
