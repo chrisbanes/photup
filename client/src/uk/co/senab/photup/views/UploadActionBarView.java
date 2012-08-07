@@ -5,16 +5,18 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
 
-public class UploadActionBarView extends RelativeLayout {
+public class UploadActionBarView extends RelativeLayout implements AnimationListener {
 
 	private final Animation mCycleFadeAnimation;
 
 	public UploadActionBarView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		mCycleFadeAnimation = AnimationUtils.loadAnimation(context, R.anim.cycle_fade);
+		mCycleFadeAnimation.setAnimationListener(this);
 	}
 
 	public void animateBackground() {
@@ -35,6 +37,21 @@ public class UploadActionBarView extends RelativeLayout {
 
 	private View getAnimationBackgroundView() {
 		return findViewById(R.id.v_action_upload_bg);
+	}
+
+	public void onAnimationEnd(Animation animation) {
+		View animationBackground = getAnimationBackgroundView();
+		if (null != animationBackground) {
+			animationBackground.startAnimation(animation);
+		}
+	}
+
+	public void onAnimationRepeat(Animation animation) {
+		// NO-OP
+	}
+
+	public void onAnimationStart(Animation animation) {
+		// NO-OP
 	}
 
 }

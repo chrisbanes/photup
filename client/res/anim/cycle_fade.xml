@@ -1,8 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<alpha xmlns:android="http://schemas.android.com/apk/res/android"
-	android:duration="2000"
-	android:fromAlpha="0"
-	android:interpolator="@android:anim/cycle_interpolator"
-	android:repeatCount="infinite"
-	android:repeatMode="restart"
-	android:toAlpha="1.0" />
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+	android:fillAfter="true"
+	android:fillBefore="true"
+	android:interpolator="@android:anim/accelerate_decelerate_interpolator"
+	android:shareInterpolator="true" >
+
+	<alpha
+		android:duration="@integer/fade_animation_length"
+		android:fromAlpha="0.0"
+		android:toAlpha="1.0" />
+	<alpha
+		android:duration="@integer/fade_animation_length"
+		android:fromAlpha="1.0"
+		android:startOffset="@integer/fade_animation_length"
+		android:toAlpha="0.0" />
+
+</set>
