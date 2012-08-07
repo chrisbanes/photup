@@ -4,6 +4,7 @@ import java.util.Set;
 
 import uk.co.senab.photup.adapters.SelectedPhotosViewPagerAdapter;
 import uk.co.senab.photup.adapters.UserPhotosViewPagerAdapter;
+import uk.co.senab.photup.base.PhotupFragmentActivity;
 import uk.co.senab.photup.fragments.FriendsListFragment;
 import uk.co.senab.photup.fragments.PlacesListFragment;
 import uk.co.senab.photup.listeners.OnFriendPickedListener;
@@ -38,11 +39,10 @@ import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-public class PhotoViewerActivity extends SherlockFragmentActivity implements OnPhotoSelectionChangedListener,
+public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPhotoSelectionChangedListener,
 		OnSingleTapListener, OnCheckedChangeListener, OnPageChangeListener, OnPickFriendRequestListener,
 		OnPlacePickedListener {
 
@@ -145,17 +145,22 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 				return true;
 			case R.id.menu_filters:
 				showFiltersView();
+				Analytics.logEvent(Analytics.EVENT_PHOTO_FILTERS);
 				return true;
 			case R.id.menu_caption:
+				Analytics.logEvent(Analytics.EVENT_PHOTO_CAPTION);
 				showCaptionDialog();
 				return true;
 			case R.id.menu_rotate:
+				Analytics.logEvent(Analytics.EVENT_PHOTO_ROTATE);
 				rotateCurrentPhoto();
 				return true;
 			case R.id.menu_place:
+				Analytics.logEvent(Analytics.EVENT_PHOTO_PLACE);
 				startPlaceFragment();
 				return true;
 			case R.id.menu_crop:
+				Analytics.logEvent(Analytics.EVENT_PHOTO_CROP);
 				CropImageActivity.CROP_SELECTION = getCurrentUpload();
 				startActivityForResult(new Intent(this, CropImageActivity.class), REQUEST_CROP_PHOTO);
 				return true;

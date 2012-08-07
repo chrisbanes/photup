@@ -1,5 +1,6 @@
 package uk.co.senab.photup;
 
+import uk.co.senab.photup.base.PhotupActivity;
 import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.views.CropImageView;
 import uk.co.senab.photup.views.HighlightView;
@@ -9,11 +10,10 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Bundle;
 
-import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-public class CropImageActivity extends SherlockActivity implements OnPhotoLoadListener {
+public class CropImageActivity extends PhotupActivity implements OnPhotoLoadListener {
 
 	static PhotoSelection CROP_SELECTION;
 

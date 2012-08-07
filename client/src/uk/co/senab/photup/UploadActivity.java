@@ -3,6 +3,7 @@ package uk.co.senab.photup;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.co.senab.photup.base.PhotupFragmentActivity;
 import uk.co.senab.photup.fragments.NewAlbumFragment;
 import uk.co.senab.photup.fragments.NewAlbumFragment.OnAlbumCreatedListener;
 import uk.co.senab.photup.fragments.PlacesListFragment;
@@ -46,13 +47,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.facebook.android.FacebookError;
 import com.lightbox.android.photoprocessing.R;
 
-public class UploadActivity extends SherlockFragmentActivity implements ServiceConnection, AlbumsResultListener,
+public class UploadActivity extends PhotupFragmentActivity implements ServiceConnection, AlbumsResultListener,
 		AccountsResultListener, GroupsResultListener, EventsResultListener, OnClickListener, OnAlbumCreatedListener,
 		OnPlacePickedListener, OnItemSelectedListener, OnCheckedChangeListener {
 

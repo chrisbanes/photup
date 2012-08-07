@@ -2,6 +2,7 @@ package uk.co.senab.photup;
 
 import org.donations.DonationsActivity;
 
+import uk.co.senab.photup.base.PhotupFragmentActivity;
 import uk.co.senab.photup.fragments.SelectedPhotosFragment;
 import uk.co.senab.photup.fragments.UploadsFragment;
 import uk.co.senab.photup.fragments.UserPhotosFragment;
@@ -23,11 +24,10 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.app.ActionBar.TabListener;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-public class PhotoSelectionActivity extends SherlockFragmentActivity implements OnPhotoSelectionChangedListener,
+public class PhotoSelectionActivity extends PhotupFragmentActivity implements OnPhotoSelectionChangedListener,
 		TabListener, OnClickListener {
 
 	public static final String EXTRA_DEFAULT_TAB = "extra_tab";
