@@ -30,8 +30,8 @@ public class UploadActionBarView extends RelativeLayout implements AnimationList
 	public void stopAnimatingBackground() {
 		View animationBackground = getAnimationBackgroundView();
 		if (null != animationBackground && animationBackground.getVisibility() == View.VISIBLE) {
-			animationBackground.clearAnimation();
 			animationBackground.setVisibility(View.GONE);
+			animationBackground.clearAnimation();
 		}
 	}
 
@@ -41,7 +41,7 @@ public class UploadActionBarView extends RelativeLayout implements AnimationList
 
 	public void onAnimationEnd(Animation animation) {
 		View animationBackground = getAnimationBackgroundView();
-		if (null != animationBackground) {
+		if (null != animationBackground && animationBackground.getVisibility() == View.VISIBLE) {
 			animationBackground.startAnimation(animation);
 		}
 	}
