@@ -214,9 +214,13 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 			case REQUEST_CROP_PHOTO:
 				if (resultCode == RESULT_OK) {
 					PhotoTagItemLayout currentView = (PhotoTagItemLayout) getCurrentView();
-					MultiTouchImageView imageView = currentView.getImageView();
-					PhotoSelection upload = getCurrentUpload();
-					imageView.requestFullSize(upload, true, null);
+					if (null != currentView) {
+						MultiTouchImageView imageView = currentView.getImageView();
+						PhotoSelection upload = getCurrentUpload();
+						imageView.requestFullSize(upload, true, null);
+					}
+					// Else the ViewPager is being reset so will load the
+					// correct image anyway
 				}
 				break;
 		}
@@ -226,7 +230,7 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		//requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+		// requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
 		setContentView(R.layout.activity_photo_viewer);
 		mContentView = (ViewGroup) findViewById(R.id.fl_root);
@@ -275,7 +279,7 @@ public class PhotoViewerActivity extends SherlockFragmentActivity implements OnP
 
 	@Override
 	protected void onDestroy() {
-		super.onDestroy();
+		super.onDestroy();		
 		mController.removePhotoSelectionListener(this);
 	}
 
