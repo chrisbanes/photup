@@ -2,9 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
 	<item
-		android:id="@+id/menu_save"
-		android:icon="@drawable/ic_action_save"
+		android:id="@+id/menu_crop_cancel"
 		android:showAsAction="always"
-		android:title="@string/photo_crop"/>
+		android:title="@android:string/cancel"/>
+	<item
+		android:id="@+id/menu_crop_ok"
+		android:showAsAction="always"
+		android:title="@android:string/ok"/>
 
 </menu>

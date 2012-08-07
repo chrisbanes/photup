@@ -45,7 +45,12 @@ public class CropImageActivity extends PhotupActivity implements OnPhotoLoadList
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case R.id.menu_save:
+			case R.id.menu_crop_cancel:
+				setResult(RESULT_CANCELED);
+				finish();
+				return true;
+				
+			case R.id.menu_crop_ok:
 				mPhotoUpload.setCropValues(mHighlightView.getCropRect());
 				setResult(RESULT_OK);
 				finish();
