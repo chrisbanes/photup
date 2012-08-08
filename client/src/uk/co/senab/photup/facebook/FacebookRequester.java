@@ -15,7 +15,6 @@ import uk.co.senab.photup.model.Event;
 import uk.co.senab.photup.model.FbUser;
 import uk.co.senab.photup.model.Group;
 import uk.co.senab.photup.model.Place;
-import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -33,10 +32,6 @@ public class FacebookRequester {
 	public FacebookRequester(Account account) {
 		mAccount = account;
 		mFacebook = mAccount.getFacebook();
-	}
-
-	public FacebookRequester(Context context) {
-		this(Account.getAccountFromSession(context));
 	}
 
 	public List<Place> getPlaces(Location location, String searchQuery) throws FacebookError, JSONException {

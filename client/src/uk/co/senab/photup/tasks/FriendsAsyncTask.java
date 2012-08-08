@@ -7,6 +7,7 @@ import org.json.JSONException;
 
 import uk.co.senab.photup.facebook.FacebookRequester;
 import uk.co.senab.photup.listeners.FacebookErrorListener;
+import uk.co.senab.photup.model.Account;
 import uk.co.senab.photup.model.FbUser;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -31,18 +32,21 @@ public class FriendsAsyncTask extends AsyncTask<Void, Void, List<FbUser>> {
 	protected List<FbUser> doInBackground(Void... params) {
 		Context context = mContext.get();
 		if (null != context) {
-			FacebookRequester requester = new FacebookRequester(context);
-			try {
-				return requester.getFriends();
-			} catch (FacebookError e) {
-				FriendsResultListener listener = mListener.get();
-				if (null != listener) {
-					listener.onFacebookError(e);
-				} else {
+			Account account = Account.getAccountFromSession(context);
+			if (null != account) {
+				try {
+					FacebookRequester requester = new FacebookRequester(account);
+					return requester.getFriends();
+				} catch (FacebookError e) {
+					FriendsResultListener listener = mListener.get();
+					if (null != listener) {
+						listener.onFacebookError(e);
+					} else {
+						e.printStackTrace();
+					}
+				} catch (JSONException e) {
 					e.printStackTrace();
 				}
-			} catch (JSONException e) {
-				e.printStackTrace();
 			}
 		}
 		return null;

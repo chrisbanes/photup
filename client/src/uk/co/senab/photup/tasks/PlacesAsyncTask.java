@@ -8,6 +8,7 @@ import org.json.JSONException;
 
 import uk.co.senab.photup.facebook.FacebookRequester;
 import uk.co.senab.photup.listeners.FacebookErrorListener;
+import uk.co.senab.photup.model.Account;
 import uk.co.senab.photup.model.Place;
 import android.content.Context;
 import android.location.Location;
@@ -39,28 +40,31 @@ public class PlacesAsyncTask extends AsyncTask<Void, Void, List<Place>> {
 	protected List<Place> doInBackground(Void... params) {
 		Context context = mContext.get();
 		if (null != context) {
-			FacebookRequester requester = new FacebookRequester(context);
-			try {
-				List<Place> places = requester.getPlaces(mLocation, mSearchQuery);
+			Account account = Account.getAccountFromSession(context);
+			if (null != account) {
+				try {
+					FacebookRequester requester = new FacebookRequester(account);
+					List<Place> places = requester.getPlaces(mLocation, mSearchQuery);
 
-				// If we have a location, sort using it
-				if (null != mLocation) {
-					for (Place place : places) {
-						place.calculateDistanceFrom(mLocation);
+					// If we have a location, sort using it
+					if (null != mLocation) {
+						for (Place place : places) {
+							place.calculateDistanceFrom(mLocation);
+						}
+						Collections.sort(places, Place.getComparator());
 					}
-					Collections.sort(places, Place.getComparator());
-				}
-				
-				return places;
-			} catch (FacebookError e) {
-				PlacesResultListener listener = mListener.get();
-				if (null != listener) {
-					listener.onFacebookError(e);
-				} else {
+
+					return places;
+				} catch (FacebookError e) {
+					PlacesResultListener listener = mListener.get();
+					if (null != listener) {
+						listener.onFacebookError(e);
+					} else {
+						e.printStackTrace();
+					}
+				} catch (JSONException e) {
 					e.printStackTrace();
 				}
-			} catch (JSONException e) {
-				e.printStackTrace();
 			}
 		}
 		return null;

@@ -31,18 +31,21 @@ public class AccountsAsyncTask extends AsyncTask<Void, Void, List<Account>> {
 	protected List<Account> doInBackground(Void... params) {
 		Context context = mContext.get();
 		if (null != context) {
-			FacebookRequester requester = new FacebookRequester(context);
-			try {
-				return requester.getAccounts();
-			} catch (FacebookError e) {
-				AccountsResultListener listener = mListener.get();
-				if (null != listener) {
-					listener.onFacebookError(e);
-				} else {
+			Account account = Account.getAccountFromSession(context);
+			if (null != account) {
+				try {
+					FacebookRequester requester = new FacebookRequester(account);
+					return requester.getAccounts();
+				} catch (FacebookError e) {
+					AccountsResultListener listener = mListener.get();
+					if (null != listener) {
+						listener.onFacebookError(e);
+					} else {
+						e.printStackTrace();
+					}
+				} catch (JSONException e) {
 					e.printStackTrace();
 				}
-			} catch (JSONException e) {
-				e.printStackTrace();
 			}
 		}
 		return null;
