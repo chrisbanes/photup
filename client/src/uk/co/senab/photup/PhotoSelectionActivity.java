@@ -64,15 +64,15 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.menu_photo_grid, menu);
+		if (getSupportActionBar().getSelectedNavigationIndex() <= TAB_SELECTED) {
+			getSupportMenuInflater().inflate(R.menu.menu_photo_grid, menu);
 
-		if (getSupportActionBar().getSelectedNavigationIndex() < 2) {
 			MenuItem item = menu.findItem(R.id.menu_upload);
 			mUploadActionView = (UploadActionBarView) item.getActionView();
 			mUploadActionView.setOnClickListener(this);
 			refreshUploadActionBarView();
 		} else {
-			menu.removeItem(R.id.menu_upload);
+			getSupportMenuInflater().inflate(R.menu.menu_photo_grid_uploads, menu);
 			mUploadActionView = null;
 		}
 
@@ -100,6 +100,12 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 				startActivity(new Intent(Constants.INTENT_LOGOUT));
 				finish();
 				return true;
+
+			case R.id.menu_retry_failed:
+				if (mPhotoController.moveFailedToSelected()) {
+					getSupportActionBar().setSelectedNavigationItem(TAB_SELECTED);
+				}
+				break;
 		}
 
 		return super.onOptionsItemSelected(item);

@@ -2,6 +2,7 @@ package uk.co.senab.photup;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
@@ -102,6 +103,38 @@ public class PhotoUploadController {
 			}
 		}
 		return false;
+	}
+
+	public boolean moveFailedToSelected() {
+		boolean result = false;
+
+		final Iterator<PhotoSelection> iterator = mUploadingList.iterator();
+		PhotoSelection upload;
+
+		while (iterator.hasNext()) {
+			upload = iterator.next();
+			
+			if (upload.getState() == PhotoUpload.STATE_UPLOAD_ERROR) {
+				// Reset State and add to selection list
+				upload.setState(PhotoUpload.STATE_WAITING);
+				addPhotoSelection(upload);
+
+				// Remove from Uploading list
+				iterator.remove();
+				result = true;
+			}
+		}
+
+		/**
+		 * Make sure we call listener if we've emptied the list
+		 */
+		if (mUploadingList.isEmpty()) {
+			for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
+				l.onUploadsCleared();
+			}
+		}
+
+		return result;
 	}
 
 	public boolean hasUploads() {

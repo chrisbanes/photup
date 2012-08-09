@@ -11,6 +11,7 @@
 	<string name="tag_no_name">Who\'s this?</string>
 	<string name="tab_uploads">Uploads</string>
 	<string name="upload_title">Upload</string>
+	<string name="upload_retry">Retry Failed</string>
 	<string name="upload_quality_title">Quality</string>
 	<string name="upload_quality_low">Low (640px)</string>
 	<string name="upload_quality_medium">Medium (1024px)</string>
