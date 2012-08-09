@@ -230,8 +230,18 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 	}
 
 	public void onUploadsCleared() {
-		getSupportActionBar().setSelectedNavigationItem(0);
-		getSupportActionBar().removeTabAt(2);
+		ActionBar ab = getSupportActionBar();
+
+		// If we have 3 tabs...
+		if (ab.getTabCount() == 3) {
+			// If we're currently showing the tab, move to the first tab
+			if (ab.getSelectedNavigationIndex() == TAB_UPLOADS) {
+				ab.setSelectedNavigationItem(TAB_PHOTOS);
+			}
+
+			// Remove the tab
+			ab.removeTabAt(TAB_UPLOADS);
+		}
 	}
 
 	private void showInstantUploadDialog() {
