@@ -2,6 +2,7 @@
 <uk.co.senab.photup.views.UploadItemLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent"
 	android:layout_height="wrap_content"
+	android:gravity="center_vertical"
 	android:orientation="horizontal"
 	android:padding="4dp" >
 
@@ -13,12 +14,12 @@
 
 	<LinearLayout
 		android:layout_width="0px"
-		android:layout_height="fill_parent"
+		android:layout_height="wrap_content"
 		android:layout_margin="@dimen/spacing"
 		android:layout_weight="1"
 		android:gravity="center_vertical"
 		android:orientation="vertical"
-		android:padding="@dimen/spacing" >
+		android:padding="@dimen/half_spacing" >
 
 		<TextView
 			android:id="@+id/tv_photo_caption"
@@ -31,7 +32,7 @@
 			android:id="@+id/tv_photo_tags"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
-			android:layout_marginTop="@dimen/spacing"
+			android:layout_marginTop="@dimen/half_spacing"
 			android:singleLine="true"
 			android:visibility="gone" />
 
@@ -40,14 +41,14 @@
 			style="?android:attr/progressBarStyleHorizontal"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
-			android:layout_marginTop="@dimen/spacing"
+			android:layout_marginTop="@dimen/half_spacing"
 			android:max="100" />
 	</LinearLayout>
 
 	<ImageView
 		android:id="@+id/iv_upload_result"
 		android:layout_width="wrap_content"
-		android:layout_height="fill_parent"
+		android:layout_height="wrap_content"
 		android:paddingRight="@dimen/spacing"
 		android:visibility="gone" />
 
