@@ -47,8 +47,8 @@ public class PhotupApplication extends Application implements FriendsResultListe
 	static final String LOG_TAG = "PhotupApplication";
 	public static final String THREAD_FILTERS = "filters_thread";
 
-	static final int EXECUTOR_CORE_POOL_SIZE_PER_CORE = 1;
-	static final int EXECUTOR_MAX_POOL_SIZE_PER_CORE = 4;
+	static final int EXECUTOR_CORE_POOL_SIZE_PER_CORE = 2;
+	static final int EXECUTOR_MAX_POOL_SIZE_PER_CORE = 5;
 
 	private ExecutorService mMultiThreadExecutor, mSingleThreadExecutor;
 	private BitmapLruCache mImageCache;

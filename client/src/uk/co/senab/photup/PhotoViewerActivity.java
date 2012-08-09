@@ -113,11 +113,11 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 
 		reloadCurrentView(upload);
 	}
-	
+
 	private void resetCurrentPhoto() {
 		PhotoSelection upload = getCurrentUpload();
 		upload.reset();
-		
+
 		reloadCurrentView(upload);
 	}
 
@@ -307,7 +307,7 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 		PhotoTagItemLayout currentView = (PhotoTagItemLayout) getCurrentView();
 		if (null != currentView) {
 			MultiTouchImageView imageView = currentView.getImageView();
-			imageView.requestFullSize(selection, true, null);
+			imageView.requestFullSize(selection, true, false, null);
 		}
 	}
 

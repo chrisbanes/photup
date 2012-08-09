@@ -1,6 +1,7 @@
 package uk.co.senab.photup.views;
 
 import java.lang.ref.WeakReference;
+import java.util.concurrent.Future;
 
 import uk.co.senab.bitmapcache.BitmapLruCache;
 import uk.co.senab.bitmapcache.CacheableBitmapWrapper;
@@ -8,6 +9,7 @@ import uk.co.senab.bitmapcache.CacheableImageView;
 import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.model.PhotoSelection;
+import uk.co.senab.photup.tasks.PhotupThreadRunnable;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -15,136 +17,15 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
-import android.os.AsyncTask;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
+import android.os.Process;
 import android.util.AttributeSet;
 import android.util.Log;
 
 public class PhotupImageView extends CacheableImageView {
 
-	static final int FACE_DETECTION_DELAY = 800;
-
 	public static interface OnPhotoLoadListener {
 		void onPhotoLoadFinished(Bitmap bitmap);
 	}
-
-	private static class PhotoTask extends AsyncTask<Void, Void, CacheableBitmapWrapper> {
-
-		private final WeakReference<PhotupImageView> mImageView;
-		private final BitmapLruCache mCache;
-		private final boolean mFetchFullSize;
-		private final PhotoSelection mUpload;
-		private final OnPhotoLoadListener mListener;
-
-		public PhotoTask(PhotupImageView imageView, PhotoSelection upload, BitmapLruCache cache, boolean fullSize,
-				final OnPhotoLoadListener listener) {
-			mImageView = new WeakReference<PhotupImageView>(imageView);
-			mCache = cache;
-			mFetchFullSize = fullSize;
-			mUpload = upload;
-			mListener = listener;
-		}
-
-		@Override
-		protected CacheableBitmapWrapper doInBackground(Void... params) {
-			CacheableBitmapWrapper wrapper = null;
-
-			PhotupImageView iv = mImageView.get();
-			if (null != iv) {
-				Bitmap bitmap = mFetchFullSize ? mUpload.getDisplayImage(iv.getContext()) : mUpload
-						.getThumbnailImage(iv.getContext());
-
-				if (null != bitmap) {
-					final String key = mFetchFullSize ? mUpload.getDisplayImageKey() : mUpload.getThumbnailImageKey();
-					wrapper = new CacheableBitmapWrapper(key, bitmap);
-				}
-			}
-
-			return wrapper;
-		}
-
-		@Override
-		protected void onPostExecute(CacheableBitmapWrapper result) {
-			super.onPostExecute(result);
-
-			if (null != result) {
-				PhotupImageView iv = mImageView.get();
-				if (null != iv) {
-					iv.setImageCachedBitmap(result);
-				}
-
-				if (null != mListener) {
-					mListener.onPhotoLoadFinished(result.getBitmap());
-				}
-
-				mCache.put(result);
-			}
-		}
-	}
-
-	static class RequestFaceDetectionPassRunnable implements Runnable {
-
-		private final PhotupImageView mImageView;
-		private final PhotoSelection mSelection;
-
-		public RequestFaceDetectionPassRunnable(PhotupImageView imageView, PhotoSelection selection) {
-			mImageView = imageView;
-			mSelection = selection;
-		}
-
-		public void run() {
-			mImageView.requestFaceDetection(mSelection);
-		}
-	}
-
-	static final class FilterRunnable implements Runnable {
-
-		private final Context mContext;
-		private final PhotupImageView mImageView;
-		private final PhotoSelection mUpload;
-		private final boolean mFullSize;
-		private final BitmapLruCache mCache;
-		private final OnPhotoLoadListener mListener;
-
-		public FilterRunnable(PhotupImageView imageView, PhotoSelection upload, final boolean fullSize,
-				final OnPhotoLoadListener listener) {
-			mContext = imageView.getContext();
-			mImageView = imageView;
-			mUpload = upload;
-			mFullSize = fullSize;
-			mCache = PhotupApplication.getApplication(mContext).getImageCache();
-			mListener = listener;
-		}
-
-		public void run() {
-			final Bitmap filteredBitmap;
-
-			final String key = mFullSize ? mUpload.getDisplayImageKey() : mUpload.getThumbnailImageKey();
-			CacheableBitmapWrapper wrapper = mCache.get(key);
-
-			if (null == wrapper || !wrapper.hasValidBitmap()) {
-				Bitmap bitmap = mFullSize ? mUpload.getDisplayImage(mContext) : mUpload.getThumbnailImage(mContext);
-				wrapper = new CacheableBitmapWrapper(key, bitmap);
-				wrapper.setBeingUsed(true);
-				mCache.put(wrapper);
-			} else {
-				wrapper.setBeingUsed(true);
-			}
-
-			filteredBitmap = mUpload.processBitmap(wrapper.getBitmap(), mFullSize, false);
-			wrapper.setBeingUsed(false);
-
-			mImageView.post(new Runnable() {
-				public void run() {
-					mImageView.setImageBitmap(filteredBitmap);
-					if (null != mListener) {
-						mListener.onPhotoLoadFinished(filteredBitmap);
-					}
-				}
-			});
-		}
-	};
 
 	static final class FaceDetectionRunnable implements Runnable {
 
@@ -162,24 +43,157 @@ public class PhotupImageView extends CacheableImageView {
 			}
 			mBitmapWrapper.setBeingUsed(false);
 		}
+	}
+
+	static final class PhotoFilterRunnable extends PhotupThreadRunnable {
+
+		private final WeakReference<PhotupImageView> mImageView;
+		private final PhotoSelection mUpload;
+		private final boolean mFullSize;
+		private final BitmapLruCache mCache;
+		private final OnPhotoLoadListener mListener;
+
+		public PhotoFilterRunnable(PhotupImageView imageView, PhotoSelection upload, BitmapLruCache cache,
+				final boolean fullSize, final OnPhotoLoadListener listener) {
+			mImageView = new WeakReference<PhotupImageView>(imageView);
+			mUpload = upload;
+			mFullSize = fullSize;
+			mCache = cache;
+			mListener = listener;
+		}
+
+		public void run() {
+			Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+
+			final PhotupImageView imageView = mImageView.get();
+			if (null == imageView) {
+				return;
+			}
+
+			final Context context = imageView.getContext();
+			final Bitmap filteredBitmap;
+
+			final String key = mFullSize ? mUpload.getDisplayImageKey() : mUpload.getThumbnailImageKey();
+			CacheableBitmapWrapper wrapper = mCache.get(key);
+
+			if (null == wrapper || !wrapper.hasValidBitmap()) {
+				Bitmap bitmap = mFullSize ? mUpload.getDisplayImage(context) : mUpload.getThumbnailImage(context);
+				wrapper = new CacheableBitmapWrapper(key, bitmap);
+				wrapper.setBeingUsed(true);
+				mCache.put(wrapper);
+			} else {
+				wrapper.setBeingUsed(true);
+			}
+
+			// Don't process if we've been interrupted
+			if (!isInterrupted()) {
+				filteredBitmap = mUpload.processBitmap(wrapper.getBitmap(), mFullSize, false);
+			} else {
+				filteredBitmap = null;
+			}
+
+			// Make sure we release the original bitmap
+			wrapper.setBeingUsed(false);
+
+			// If we haven't been interrupted, update the view
+			if (!isInterrupted()) {
+
+				imageView.post(new Runnable() {
+					public void run() {
+						imageView.setImageBitmap(filteredBitmap);
+
+						if (null != mListener) {
+							mListener.onPhotoLoadFinished(filteredBitmap);
+						}
+					}
+				});
+			}
+		}
+	}
+
+	static final class PhotoLoadRunnable extends PhotupThreadRunnable {
+
+		private final WeakReference<PhotupImageView> mImageView;
+		private final PhotoSelection mUpload;
+		private final boolean mFullSize;
+		private final BitmapLruCache mCache;
+		private final OnPhotoLoadListener mListener;
+
+		public PhotoLoadRunnable(PhotupImageView imageView, PhotoSelection upload, BitmapLruCache cache,
+				final boolean fullSize, final OnPhotoLoadListener listener) {
+			mImageView = new WeakReference<PhotupImageView>(imageView);
+			mUpload = upload;
+			mFullSize = fullSize;
+			mCache = cache;
+			mListener = listener;
+		}
+
+		public void run() {
+			Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+
+			final PhotupImageView imageView = mImageView.get();
+			if (null == imageView) {
+				return;
+			}
+
+			final Context context = imageView.getContext();
+			final CacheableBitmapWrapper wrapper;
+
+			final Bitmap bitmap = mFullSize ? mUpload.getDisplayImage(context) : mUpload.getThumbnailImage(context);
+
+			if (null != bitmap) {
+				final String key = mFullSize ? mUpload.getDisplayImageKey() : mUpload.getThumbnailImageKey();
+				wrapper = new CacheableBitmapWrapper(key, bitmap);
+			} else {
+				wrapper = null;
+			}
+
+			// If we're interrupted, just update the cache and return
+			if (isInterrupted()) {
+				mCache.put(wrapper);
+				return;
+			}
+
+			// If we're still running, update the Views
+			if (null != wrapper) {
+				imageView.post(new Runnable() {
+					public void run() {
+						imageView.setImageCachedBitmap(wrapper);
+						mCache.put(wrapper);
+
+						if (null != mListener) {
+							mListener.onPhotoLoadFinished(wrapper.getBitmap());
+						}
+					}
+				});
+			}
+		}
 	};
 
-	private PhotoTask mCurrentTask;
+	static class RequestFaceDetectionPassRunnable implements Runnable {
+
+		private final PhotupImageView mImageView;
+		private final PhotoSelection mSelection;
+
+		public RequestFaceDetectionPassRunnable(PhotupImageView imageView, PhotoSelection selection) {
+			mImageView = imageView;
+			mSelection = selection;
+		}
+
+		public void run() {
+			mImageView.requestFaceDetection(mSelection);
+		}
+	};
+
+	static final int FACE_DETECTION_DELAY = 800;;
 
 	private boolean mFadeInDrawables = false;
 	private Drawable mFadeFromDrawable;
-	private int mFadeDuration = 200;
+	private int mFadeDuration;
 
 	private Runnable mRequestFaceDetectionRunnable;
 
-	public void setFadeInDrawables(boolean fadeIn) {
-		mFadeInDrawables = fadeIn;
-
-		if (fadeIn && null == mFadeFromDrawable) {
-			mFadeFromDrawable = new ColorDrawable(Color.TRANSPARENT);
-			mFadeDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
-		}
-	}
+	private Future<?> mCurrentRunnable;
 
 	public PhotupImageView(Context context) {
 		super(context);
@@ -189,13 +203,6 @@ public class PhotupImageView extends CacheableImageView {
 		super(context, attrs);
 	}
 
-	public void postFaceDetection(PhotoSelection selection) {
-		if (null == mRequestFaceDetectionRunnable && selection.requiresFaceDetectPass()) {
-			mRequestFaceDetectionRunnable = new RequestFaceDetectionPassRunnable(this, selection);
-			postDelayed(mRequestFaceDetectionRunnable, FACE_DETECTION_DELAY);
-		}
-	}
-
 	public void clearFaceDetection() {
 		if (null != mRequestFaceDetectionRunnable) {
 			removeCallbacks(mRequestFaceDetectionRunnable);
@@ -203,19 +210,34 @@ public class PhotupImageView extends CacheableImageView {
 		}
 	}
 
-	public void requestThumbnail(final PhotoSelection upload, final boolean honourFilter) {
-		if (upload.requiresProcessing(false) && honourFilter) {
-			requestFiltered(upload, false, null);
-		} else {
-			// Clear Drawable
-			setImageDrawable(null);
+	public Bitmap getCurrentBitmap() {
+		Drawable d = getDrawable();
+		if (d instanceof BitmapDrawable) {
+			return ((BitmapDrawable) d).getBitmap();
+		}
 
-			requestImage(upload, false, null);
+		return null;
+	}
+
+	public void postFaceDetection(PhotoSelection selection) {
+		if (null == mRequestFaceDetectionRunnable && selection.requiresFaceDetectPass()) {
+			mRequestFaceDetectionRunnable = new RequestFaceDetectionPassRunnable(this, selection);
+			postDelayed(mRequestFaceDetectionRunnable, FACE_DETECTION_DELAY);
+		}
+	}
+
+	public void recycleBitmap() {
+		Bitmap currentBitmap = getCurrentBitmap();
+		if (null != currentBitmap) {
+			setImageDrawable(null);
+			currentBitmap.recycle();
 		}
 	}
 
 	public void requestFullSize(final PhotoSelection upload, final boolean honourFilter,
-			final OnPhotoLoadListener listener) {
+			final boolean clearDrawableOnLoad, final OnPhotoLoadListener listener) {
+		resetForRequest(clearDrawableOnLoad);
+
 		if (upload.requiresProcessing(true) && honourFilter) {
 			requestFiltered(upload, true, listener);
 		} else {
@@ -235,12 +257,42 @@ public class PhotupImageView extends CacheableImageView {
 		}
 	}
 
-	void requestFiltered(final PhotoSelection upload, boolean fullSize, final OnPhotoLoadListener listener) {
-		PhotupApplication app = PhotupApplication.getApplication(getContext());
-		app.getSingleThreadExecutorService().submit(new FilterRunnable(this, upload, fullSize, listener));
+	public void requestFullSize(final PhotoSelection upload, final boolean honourFilter,
+			final OnPhotoLoadListener listener) {
+		requestFullSize(upload, honourFilter, true, listener);
 	}
 
-	void requestFaceDetection(final PhotoSelection upload) {
+	public void requestThumbnail(final PhotoSelection upload, final boolean honourFilter) {
+		resetForRequest(true);
+
+		if (upload.requiresProcessing(false) && honourFilter) {
+			requestFiltered(upload, false, null);
+		} else {
+			requestImage(upload, false, null);
+		}
+	}
+
+	public void setFadeInDrawables(boolean fadeIn) {
+		mFadeInDrawables = fadeIn;
+
+		if (fadeIn && null == mFadeFromDrawable) {
+			mFadeFromDrawable = new ColorDrawable(Color.TRANSPARENT);
+			mFadeDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
+		}
+	}
+
+	@Override
+	public void setImageDrawable(Drawable drawable) {
+		if (mFadeInDrawables && null != drawable) {
+			TransitionDrawable newDrawable = new TransitionDrawable(new Drawable[] { mFadeFromDrawable, drawable });
+			super.setImageDrawable(newDrawable);
+			newDrawable.startTransition(mFadeDuration);
+		} else {
+			super.setImageDrawable(drawable);
+		}
+	}
+
+	private void requestFaceDetection(final PhotoSelection upload) {
 		CacheableBitmapWrapper wrapper = getCachedBitmapWrapper();
 		if (null != wrapper && wrapper.hasValidBitmap()) {
 			wrapper.setBeingUsed(true);
@@ -250,11 +302,13 @@ public class PhotupImageView extends CacheableImageView {
 		}
 	}
 
-	void requestImage(final PhotoSelection upload, final boolean fullSize, final OnPhotoLoadListener listener) {
-		if (null != mCurrentTask) {
-			mCurrentTask.cancel(false);
-		}
+	private void requestFiltered(final PhotoSelection upload, boolean fullSize, final OnPhotoLoadListener listener) {
+		PhotupApplication app = PhotupApplication.getApplication(getContext());
+		mCurrentRunnable = app.getSingleThreadExecutorService().submit(
+				new PhotoFilterRunnable(this, upload, app.getImageCache(), fullSize, listener));
+	}
 
+	private void requestImage(final PhotoSelection upload, final boolean fullSize, final OnPhotoLoadListener listener) {
 		final String key = fullSize ? upload.getDisplayImageKey() : upload.getThumbnailImageKey();
 		BitmapLruCache cache = PhotupApplication.getApplication(getContext()).getImageCache();
 		final CacheableBitmapWrapper cached = cache.get(key);
@@ -270,42 +324,20 @@ public class PhotupImageView extends CacheableImageView {
 				cache.remove(key);
 			}
 
-			mCurrentTask = new PhotoTask(this, upload, cache, fullSize, listener);
-
-			if (VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB) {
-				PhotupApplication app = PhotupApplication.getApplication(getContext());
-				mCurrentTask.executeOnExecutor(app.getMultiThreadExecutorService());
-			} else {
-				mCurrentTask.execute();
-			}
+			PhotupApplication app = PhotupApplication.getApplication(getContext());
+			mCurrentRunnable = app.getMultiThreadExecutorService().submit(
+					new PhotoLoadRunnable(this, upload, cache, fullSize, listener));
 		}
 	}
 
-	public void recycleBitmap() {
-		Bitmap currentBitmap = getCurrentBitmap();
-		if (null != currentBitmap) {
+	private void resetForRequest(final boolean clearDrawable) {
+		if (null != mCurrentRunnable) {
+			mCurrentRunnable.cancel(true);
+		}
+
+		// Clear currently display bitmap
+		if (clearDrawable) {
 			setImageDrawable(null);
-			currentBitmap.recycle();
-		}
-	}
-
-	public Bitmap getCurrentBitmap() {
-		Drawable d = getDrawable();
-		if (d instanceof BitmapDrawable) {
-			return ((BitmapDrawable) d).getBitmap();
-		}
-
-		return null;
-	}
-
-	@Override
-	public void setImageDrawable(Drawable drawable) {
-		if (mFadeInDrawables && null != drawable) {
-			TransitionDrawable newDrawable = new TransitionDrawable(new Drawable[] { mFadeFromDrawable, drawable });
-			super.setImageDrawable(newDrawable);
-			newDrawable.startTransition(mFadeDuration);
-		} else {
-			super.setImageDrawable(drawable);
 		}
 	}
 
