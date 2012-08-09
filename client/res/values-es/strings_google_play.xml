@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="google_play_description">Con photup puedes compartir tus fotos en tu perfil de Facebook, más rápido que antes. Similar a \'Facebook Camera\' para iOS, pero en Android.
+-Sube cuantas fotos quieras, todoa a la vez en un lote.
+-Agrega efectos (filtros).
+-Gira fotos manualmente.
+-Crop Fotos
+-Establece el titulo de cada foto.
+-Etiqueta fácilmente a tus amigos mediante la detección de rostros.
+-Carga instantánea. Automáticamente carga la foto tan pronto sea tomada.
+-Etiqueta  la ubicación y lugar.
+-Carga a tus Grupos o Eventos.
+-Carga a tu página y álbums.
+Muy pronto:
+-Más opciones de privacidad.
+Traducciones
+Si tú quieres ayudar a traducir photup. Ve a:
+http://www.getlocalization.com/photup/</string>
+	<string name="google_play_promo_text">Comparte tus fotos con photup para Facebook.</string>
+</resources>
