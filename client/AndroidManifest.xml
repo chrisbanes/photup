@@ -77,7 +77,6 @@
 		<activity
 			android:name=".CropImageActivity"
 			android:configChanges="keyboard|keyboardHidden|orientation"
-			android:hardwareAccelerated="false"
 			android:label="@string/photo_crop"
 			android:theme="@style/Theme.Fullscreen" />
 		<activity

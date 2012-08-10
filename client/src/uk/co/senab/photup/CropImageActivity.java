@@ -2,6 +2,7 @@ package uk.co.senab.photup;
 
 import uk.co.senab.photup.base.PhotupActivity;
 import uk.co.senab.photup.model.PhotoSelection;
+import uk.co.senab.photup.platform.Platform;
 import uk.co.senab.photup.views.CropImageView;
 import uk.co.senab.photup.views.HighlightView;
 import uk.co.senab.photup.views.PhotupImageView.OnPhotoLoadListener;
@@ -27,6 +28,8 @@ public class CropImageActivity extends PhotupActivity implements OnPhotoLoadList
 		super.onCreate(savedInstanceState);
 
 		mCropImageView = new CropImageView(this, null);
+		Platform.disableHardwareAcceleration(mCropImageView);
+
 		setContentView(mCropImageView);
 
 		// FIXME Hack
@@ -49,7 +52,7 @@ public class CropImageActivity extends PhotupActivity implements OnPhotoLoadList
 				setResult(RESULT_CANCELED);
 				finish();
 				return true;
-				
+
 			case R.id.menu_crop_ok:
 				mPhotoUpload.setCropValues(mHighlightView.getCropRect());
 				setResult(RESULT_OK);

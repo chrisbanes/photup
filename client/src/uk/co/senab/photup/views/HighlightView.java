@@ -17,6 +17,7 @@
 package uk.co.senab.photup.views;
 
 import uk.co.senab.photup.R;
+import uk.co.senab.photup.platform.Platform;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -59,7 +60,7 @@ public class HighlightView {
 
 	private final Paint mFocusPaint = new Paint();
 	private final Paint mOutlinePaint = new Paint();
-	
+
 	private float mTouchHystersis;
 
 	private final Path mOutlinePath = new Path();
@@ -254,8 +255,10 @@ public class HighlightView {
 		mOutlinePath.reset();
 		mOutlinePath.addRect(mDrawRect.left, mDrawRect.top, mDrawRect.right, mDrawRect.bottom, Path.Direction.CW);
 
-		canvas.clipPath(mOutlinePath, Region.Op.DIFFERENCE);
-		canvas.drawPaint(mFocusPaint);
+		if (!Platform.isCanvasHardwareAccelerated(canvas)) {
+			canvas.clipPath(mOutlinePath, Region.Op.DIFFERENCE);
+			canvas.drawPaint(mFocusPaint);
+		}
 
 		canvas.restore();
 
