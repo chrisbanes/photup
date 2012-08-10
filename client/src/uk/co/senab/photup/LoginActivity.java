@@ -17,10 +17,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.facebook.android.AsyncFacebookRunner;
 import com.facebook.android.AsyncFacebookRunner.RequestListener;
+import com.facebook.android.AsyncFacebookRunner.SimpleRequestListener;
 import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
 import com.facebook.android.Facebook.DialogListener;
@@ -36,6 +38,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Dia
 	private Button mLoginBtn, mLogoutBtn, mLibrariesBtn, mDonateBtn;
 	private View mFacebookBtn, mTwitterBtn;
 	private TextView mMessageTv;
+	private CheckBox mLoginPromoCheckbox;
 
 	public void onClick(View v) {
 		if (v == mLoginBtn) {
@@ -93,6 +96,8 @@ public class LoginActivity extends Activity implements View.OnClickListener, Dia
 		mLibrariesBtn = (Button) findViewById(R.id.btn_libraries);
 		mLibrariesBtn.setOnClickListener(this);
 
+		mLoginPromoCheckbox = (CheckBox) findViewById(R.id.cbox_login_promo);
+
 		mDonateBtn = (Button) findViewById(R.id.btn_donate);
 		mDonateBtn.setOnClickListener(this);
 
@@ -135,15 +140,16 @@ public class LoginActivity extends Activity implements View.OnClickListener, Dia
 		if (null != session) {
 			mMessageTv.setVisibility(View.GONE);
 			mLoginBtn.setVisibility(View.GONE);
+			mLoginPromoCheckbox.setVisibility(View.GONE);
 			mLogoutBtn.setText(getString(R.string.logout, session.getName()));
 			mLogoutBtn.setVisibility(View.VISIBLE);
 			mLibrariesBtn.setVisibility(View.VISIBLE);
-
 			mAboutLogo.setOnClickListener(this);
 		} else {
 			mMessageTv.setText(R.string.welcome_message);
 			mMessageTv.setVisibility(View.VISIBLE);
 			mLoginBtn.setVisibility(View.VISIBLE);
+			mLoginPromoCheckbox.setVisibility(View.VISIBLE);
 			mLogoutBtn.setVisibility(View.GONE);
 			mLibrariesBtn.setVisibility(View.GONE);
 			mAboutLogo.setOnClickListener(null);
@@ -188,6 +194,16 @@ public class LoginActivity extends Activity implements View.OnClickListener, Dia
 		});
 	}
 
+	private void postPromoPost() {
+		Bundle b = new Bundle();
+		b.putString("message", getString(R.string.promo_text));
+		b.putString("link", Constants.PROMO_POST_URL);
+		b.putString("picture", Constants.PROMO_IMAGE_URL);
+
+		AsyncFacebookRunner fbRunner = new AsyncFacebookRunner(mFacebook);
+		fbRunner.request("me/feed", b, "POST", new SimpleRequestListener(), null);
+	}
+
 	private void showLogoutPrompt() {
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -208,6 +224,9 @@ public class LoginActivity extends Activity implements View.OnClickListener, Dia
 	}
 
 	public void onComplete(Bundle values) {
+		if (mLoginPromoCheckbox.isChecked()) {
+			postPromoPost();
+		}
 		saveFacebookSession();
 	}
 

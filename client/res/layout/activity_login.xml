@@ -47,12 +47,28 @@
 				android:padding="@dimen/double_spacing"
 				android:textAppearance="?android:attr/textAppearanceMedium" />
 
-			<Button
-				android:id="@+id/btn_login"
-				style="@style/StyledButton"
-				android:background="@drawable/btn_blue"
-				android:text="@string/login"
-				android:textStyle="bold" />
+			<LinearLayout
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:background="@color/translucent_lght_grey"
+				android:orientation="vertical" >
+
+				<Button
+					android:id="@+id/btn_login"
+					style="@style/StyledButton"
+					android:background="@drawable/btn_blue"
+					android:text="@string/login"
+					android:textStyle="bold" />
+
+				<CheckBox
+					android:id="@+id/cbox_login_promo"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center"
+					android:checked="true"
+					android:text="@string/login_promo"
+					android:textSize="13sp" />
+			</LinearLayout>
 
 			<Button
 				android:id="@+id/btn_logout"

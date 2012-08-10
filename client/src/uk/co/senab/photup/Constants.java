@@ -25,4 +25,6 @@ public class Constants {
 	public static final String INTENT_NEW_PERMISSIONS = "photup.intent.action.NEW_PERMISSIONS";
 	public static final String INTENT_LOGOUT = "photup.intent.action.LOGOUT";
 
+	public static final String PROMO_POST_URL = "https://play.google.com/store/apps/details?id=uk.co.senab.photup";
+	public static final String PROMO_IMAGE_URL = "http://www.senab.co.uk/wp-content/uploads/2012/08/photup_logo.png";
 }
