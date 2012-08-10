@@ -60,6 +60,6 @@
 	<string name="dialog_place_overwrite_title">Overwrite Place</string>
 	<string name="dialog_place_overwrite_text">You have selected a place here, but also on some of the individual photos. Do you wish to overwrite all of your Place selections?</string>
 	<string name="donate_title">Donate</string>
-	<string name="promo_text">I\'m checking out photup for Facebook, a new Facebook photo uploader for Android. Give it a try!</string>
+	<string name="promo_text">I\'m checking out photup for Facebook, a new Facebook photo sharer for Android. Give it a try!</string>
 
 </resources>
