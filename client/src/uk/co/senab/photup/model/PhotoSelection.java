@@ -36,8 +36,8 @@ public abstract class PhotoSelection extends PhotoUpload {
 	}
 
 	private String mCaption;
-	
-	private final HashSet<PhotoTag> mTags;
+
+	private HashSet<PhotoTag> mTags;
 	private boolean mCompletedDetection;
 
 	private int mUserRotation;
@@ -48,11 +48,13 @@ public abstract class PhotoSelection extends PhotoUpload {
 	private WeakReference<OnPhotoTagsChangedListener> mTagChangedListener;
 
 	public PhotoSelection() {
-		mTags = new HashSet<PhotoTag>();
 		reset();
 	}
 
 	public void addPhotoTag(PhotoTag tag) {
+		if (null == mTags) {
+			mTags = new HashSet<PhotoTag>();
+		}
 		mTags.add(tag);
 		notifyTagListener(tag, true);
 	}
@@ -149,11 +151,14 @@ public abstract class PhotoSelection extends PhotoUpload {
 	public abstract Uri getOriginalPhotoUri();
 
 	public List<PhotoTag> getPhotoTags() {
-		return new ArrayList<PhotoTag>(mTags);
+		if (null != mTags) {
+			return new ArrayList<PhotoTag>(mTags);
+		}
+		return null;
 	}
 
 	public int getPhotoTagsCount() {
-		return mTags.size();
+		return null != mTags ? mTags.size() : 0;
 	}
 
 	public HashSet<FbUser> getTaggedFriends() {
@@ -234,16 +239,22 @@ public abstract class PhotoSelection extends PhotoUpload {
 	}
 
 	public void removePhotoTag(PhotoTag tag) {
-		mTags.remove(tag);
-		notifyTagListener(tag, false);
+		if (null != mTags) {
+			mTags.remove(tag);
+			notifyTagListener(tag, false);
+			
+			if (mTags.isEmpty()) {
+				mTags = null;
+			}
+		}
 	}
-	
+
 	public void reset() {
 		mUserRotation = 0;
 		mCaption = null;
 		mCropValues = null;
 		mFilter = null;
-		mTags.clear();
+		mTags = null;
 		mCompletedDetection = false;
 	}
 
