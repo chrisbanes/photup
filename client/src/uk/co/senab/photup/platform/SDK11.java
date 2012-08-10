@@ -1,10 +1,10 @@
 package uk.co.senab.photup.platform;
 
-import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.graphics.Canvas;
 import android.view.View;
 
-@SuppressLint("NewApi")
+@TargetApi(11)
 public class SDK11 {
 
 	public static void disableHardwareAcceleration(View view) {
