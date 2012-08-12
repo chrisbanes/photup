@@ -4,29 +4,29 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 
 import uk.co.senab.photup.MediaStoreCursorHelper;
-import uk.co.senab.photup.model.PhotoSelection;
+import uk.co.senab.photup.model.MediaStoreBucket;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore.Images;
 
-public class MediaStoreAsyncTask extends AsyncTask<Void, Void, List<PhotoSelection>> {
+public class MediaStoreBucketsAsyncTask extends AsyncTask<Void, Void, List<MediaStoreBucket>> {
 
-	public static interface MediaStoreResultListener {
-		public void onPhotosLoaded(List<PhotoSelection> friends);
+	public static interface MediaStoreBucketsResultListener {
+		public void onBucketsLoaded(List<MediaStoreBucket> buckets);
 	}
 
 	private final WeakReference<Context> mContext;
-	private final WeakReference<MediaStoreResultListener> mListener;
+	private final WeakReference<MediaStoreBucketsResultListener> mListener;
 
-	public MediaStoreAsyncTask(Context context, MediaStoreResultListener listener) {
+	public MediaStoreBucketsAsyncTask(Context context, MediaStoreBucketsResultListener listener) {
 		mContext = new WeakReference<Context>(context);
-		mListener = new WeakReference<MediaStoreResultListener>(listener);
+		mListener = new WeakReference<MediaStoreBucketsResultListener>(listener);
 	}
 
 	@Override
-	protected List<PhotoSelection> doInBackground(Void... params) {
+	protected List<MediaStoreBucket> doInBackground(Void... params) {
 		Context context = mContext.get();
 		if (null != context) {
 
@@ -40,7 +40,9 @@ public class MediaStoreAsyncTask extends AsyncTask<Void, Void, List<PhotoSelecti
 				cursor = MediaStoreCursorHelper.openPhotosCursor(context, contentUri);
 			}
 
-			List<PhotoSelection> selection = MediaStoreCursorHelper.photosCursorToSelectionList(contentUri, cursor);
+			List<MediaStoreBucket> selection = MediaStoreCursorHelper.photosCursorToBucketList(cursor,
+					MediaStoreBucket.getAllPhotosBucket(context));
+
 			cursor.close();
 
 			return selection;
@@ -49,12 +51,12 @@ public class MediaStoreAsyncTask extends AsyncTask<Void, Void, List<PhotoSelecti
 	}
 
 	@Override
-	protected void onPostExecute(List<PhotoSelection> result) {
+	protected void onPostExecute(List<MediaStoreBucket> result) {
 		super.onPostExecute(result);
 
-		MediaStoreResultListener listener = mListener.get();
+		MediaStoreBucketsResultListener listener = mListener.get();
 		if (null != listener) {
-			listener.onPhotosLoaded(result);
+			listener.onBucketsLoaded(result);
 		}
 	}
 

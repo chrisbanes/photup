@@ -28,7 +28,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Display;
@@ -187,10 +186,6 @@ public class PhotupApplication extends Application implements FriendsResultListe
 				}
 			}
 		}
-	}
-
-	public void addScannedCameraUri(Uri uri) {
-		// TODO Need to do something here:
 	}
 
 	public void onFacebookError(FacebookError e) {
