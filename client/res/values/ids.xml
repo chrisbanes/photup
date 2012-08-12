@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<item name="tag_viewpager_pos" type="id"/>
+	<item name="tag_viewpager_upload" type="id"/>
+
+</resources>

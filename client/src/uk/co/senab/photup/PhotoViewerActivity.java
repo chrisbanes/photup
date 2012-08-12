@@ -18,13 +18,21 @@ import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.model.Place;
 import uk.co.senab.photup.util.Analytics;
+import uk.co.senab.photup.util.CursorPagerAdapter;
+import uk.co.senab.photup.util.MediaStoreCursorHelper;
 import uk.co.senab.photup.views.FiltersRadioGroup;
 import uk.co.senab.photup.views.MultiTouchImageView;
 import uk.co.senab.photup.views.PhotoTagItemLayout;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.provider.MediaStore.Images;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.MotionEvent;
@@ -45,10 +53,11 @@ import com.actionbarsherlock.view.MenuItem;
 
 public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPhotoSelectionChangedListener,
 		OnSingleTapListener, OnCheckedChangeListener, OnPageChangeListener, OnPickFriendRequestListener,
-		OnPlacePickedListener {
+		OnPlacePickedListener, LoaderManager.LoaderCallbacks<Cursor> {
 
 	public static final String EXTRA_POSITION = "extra_position";
 	public static final String EXTRA_MODE = "extra_mode";
+	public static final String EXTRA_BUCKET_ID = "extra_bucket_id";
 
 	public static int MODE_ALL_VALUE = 100;
 	public static int MODE_SELECTED_VALUE = 101;
@@ -72,7 +81,7 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 				View view = (View) mView.getParent();
 				view.post(new Runnable() {
 					public void run() {
-						mAdapter.refresh();
+						mAdapter.notifyDataSetChanged();
 					}
 				});
 			}
@@ -87,7 +96,7 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 	}
 
 	private ViewPager mViewPager;
-	private SelectedPhotosViewPagerAdapter mAdapter;
+	private PagerAdapter mAdapter;
 	private ViewGroup mContentView;
 	private FiltersRadioGroup mFilterGroup;
 
@@ -98,6 +107,8 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 	private boolean mIgnoreFilterCheckCallback = false;
 
 	private int mMode = MODE_SELECTED_VALUE;
+	private String mBucketId;
+	private int mRequestedPosition = -1;
 
 	@Override
 	public void onBackPressed() {
@@ -186,7 +197,7 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 	}
 
 	public void onPageSelected(int position) {
-		PhotoSelection upload = mAdapter.getItem(position);
+		PhotoSelection upload = getCurrentUpload();
 
 		if (null != upload) {
 			getSupportActionBar().setTitle(upload.toString());
@@ -208,7 +219,7 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 	}
 
 	public void onSelectionsAddedToUploads() {
-		mAdapter.refresh();
+		mAdapter.notifyDataSetChanged();
 	}
 
 	public void onPhotoSelectionChanged(PhotoSelection upload, boolean added) {
@@ -245,6 +256,10 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 		final Intent intent = getIntent();
 		mMode = intent.getIntExtra(EXTRA_MODE, MODE_ALL_VALUE);
 
+		if (mMode == MODE_ALL_VALUE) {
+			mBucketId = intent.getStringExtra(EXTRA_BUCKET_ID);
+		}
+
 		mViewPager = (ViewPager) findViewById(R.id.vp_photos);
 		mViewPager.setOffscreenPageLimit(2);
 		mViewPager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.viewpager_margin));
@@ -252,14 +267,15 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 
 		if (mMode == MODE_ALL_VALUE) {
 			mAdapter = new UserPhotosViewPagerAdapter(this, this, this);
+			getSupportLoaderManager().initLoader(0, null, this);
 		} else {
 			mAdapter = new SelectedPhotosViewPagerAdapter(this, this, this);
 		}
 		mViewPager.setAdapter(mAdapter);
 
 		if (intent.hasExtra(EXTRA_POSITION)) {
-			final int requestedPosition = intent.getIntExtra(EXTRA_POSITION, 0);
-			mViewPager.setCurrentItem(requestedPosition);
+			mRequestedPosition = intent.getIntExtra(EXTRA_POSITION, 0);
+			mViewPager.setCurrentItem(mRequestedPosition);
 		}
 
 		mFadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.photo_fade_out);
@@ -288,16 +304,23 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 	}
 
 	private PhotoSelection getCurrentUpload() {
-		return mAdapter.getItem(mViewPager.getCurrentItem());
+		View view = getCurrentView();
+		if (null != view) {
+			return (PhotoSelection) view.getTag(R.id.tag_viewpager_upload);
+		}
+		return null;
 	}
 
 	private View getCurrentView() {
-		final PhotoSelection upload = getCurrentUpload();
+		int currentPos = mViewPager.getCurrentItem();
 
 		for (int i = 0, z = mViewPager.getChildCount(); i < z; i++) {
 			View child = mViewPager.getChildAt(i);
-			if (null != child && child.getTag() == upload) {
-				return child;
+			if (null != child) {
+				Integer viewPos = (Integer) child.getTag(R.id.tag_viewpager_pos);
+				if (viewPos.intValue() == currentPos) {
+					return child;
+				}
 			}
 		}
 
@@ -395,7 +418,7 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 
 	private void updateFiltersView() {
 		mIgnoreFilterCheckCallback = true;
-		mFilterGroup.setPhotoUpload(mAdapter.getItem(mViewPager.getCurrentItem()));
+		mFilterGroup.setPhotoUpload(getCurrentUpload());
 		mIgnoreFilterCheckCallback = false;
 	}
 
@@ -419,5 +442,32 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 			upload.setPlace(place);
 			getSupportActionBar().setTitle(upload.toString());
 		}
+	}
+
+	public Loader<Cursor> onCreateLoader(int id, Bundle params) {
+		String selection = null;
+		String[] selectionArgs = null;
+		if (null != mBucketId) {
+			selection = Images.Media.BUCKET_ID + " = ?";
+			selectionArgs = new String[] { mBucketId };
+		}
+
+		return new CursorLoader(this, Images.Media.EXTERNAL_CONTENT_URI, MediaStoreCursorHelper.PHOTOS_PROJECTION,
+				selection, selectionArgs, MediaStoreCursorHelper.PHOTOS_ORDER_BY);
+	}
+
+	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+		if (mAdapter instanceof CursorPagerAdapter) {
+			((CursorPagerAdapter) mAdapter).swapCursor(cursor);
+		}
+		
+		if (mRequestedPosition != -1) {
+			mViewPager.setCurrentItem(mRequestedPosition, false);
+			mRequestedPosition = -1;
+		}
+	}
+
+	public void onLoaderReset(Loader<Cursor> loader) {
+		onLoadFinished(loader, null);
 	}
 }

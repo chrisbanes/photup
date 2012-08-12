@@ -4,6 +4,7 @@ import java.util.List;
 
 import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotupApplication;
+import uk.co.senab.photup.R;
 import uk.co.senab.photup.listeners.OnPickFriendRequestListener;
 import uk.co.senab.photup.listeners.OnSingleTapListener;
 import uk.co.senab.photup.model.PhotoSelection;
@@ -32,7 +33,7 @@ public class SelectedPhotosViewPagerAdapter extends PagerAdapter {
 		PhotupApplication app = PhotupApplication.getApplication(context);
 		mController = app.getPhotoUploadController();
 
-		refresh();
+		refreshData();
 	}
 
 	@Override
@@ -68,9 +69,12 @@ public class SelectedPhotosViewPagerAdapter extends PagerAdapter {
 		imageView.requestFullSize(upload, true, null);
 		imageView.setSingleTapListener(mTapListener);
 		imageView.setRotation(upload.getUserRotation());
+		
+		view.setTag(R.id.tag_viewpager_pos, position);
+		view.setTag(R.id.tag_viewpager_upload, upload);
 
-		view.setTag(upload);
 		((ViewPager) container).addView(view);
+		
 		return view;
 	}
 
@@ -79,17 +83,18 @@ public class SelectedPhotosViewPagerAdapter extends PagerAdapter {
 		return view == ((View) object);
 	}
 
-	public void refresh() {
-		setData(mController.getSelectedPhotoUploads());
-	}
-
-	protected void setData(List<PhotoSelection> selection) {
-		mItems = selection;
-		notifyDataSetChanged();
+	@Override
+	public void notifyDataSetChanged() {
+		refreshData();
+		super.notifyDataSetChanged();
 	}
 
 	protected Context getContext() {
 		return mContext;
+	}
+	
+	private void refreshData() {
+		mItems = mController.getSelectedPhotoUploads();
 	}
 
 }

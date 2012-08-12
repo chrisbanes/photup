@@ -214,6 +214,9 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 			intent.putExtra(PhotoViewerActivity.EXTRA_POSITION, position - 1);
 			intent.putExtra(PhotoViewerActivity.EXTRA_MODE, PhotoViewerActivity.MODE_ALL_VALUE);
 
+			MediaStoreBucket bucket = (MediaStoreBucket) mBucketSpinner.getSelectedItem();
+			intent.putExtra(PhotoViewerActivity.EXTRA_BUCKET_ID, bucket.getId());
+
 			ActivityCompat2.startActivity(getActivity(), intent, options.toBundle());
 		}
 	}
