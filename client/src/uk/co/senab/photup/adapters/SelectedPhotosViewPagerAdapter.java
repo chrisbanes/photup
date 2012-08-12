@@ -4,7 +4,6 @@ import java.util.List;
 
 import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotupApplication;
-import uk.co.senab.photup.R;
 import uk.co.senab.photup.listeners.OnPickFriendRequestListener;
 import uk.co.senab.photup.listeners.OnSingleTapListener;
 import uk.co.senab.photup.model.PhotoSelection;
@@ -62,6 +61,7 @@ public class SelectedPhotosViewPagerAdapter extends PagerAdapter {
 		PhotoSelection upload = mItems.get(position);
 
 		PhotoTagItemLayout view = new PhotoTagItemLayout(mContext, mController, upload, mFriendPickRequestListener);
+		view.setPosition(position);
 
 		upload.setFaceDetectionListener(view);
 
@@ -69,12 +69,9 @@ public class SelectedPhotosViewPagerAdapter extends PagerAdapter {
 		imageView.requestFullSize(upload, true, null);
 		imageView.setSingleTapListener(mTapListener);
 		imageView.setRotation(upload.getUserRotation());
-		
-		view.setTag(R.id.tag_viewpager_pos, position);
-		view.setTag(R.id.tag_viewpager_upload, upload);
 
 		((ViewPager) container).addView(view);
-		
+
 		return view;
 	}
 
@@ -92,7 +89,7 @@ public class SelectedPhotosViewPagerAdapter extends PagerAdapter {
 	protected Context getContext() {
 		return mContext;
 	}
-	
+
 	private void refreshData() {
 		mItems = mController.getSelectedPhotoUploads();
 	}

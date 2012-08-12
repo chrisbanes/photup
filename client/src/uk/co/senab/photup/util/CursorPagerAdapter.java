@@ -369,8 +369,6 @@ public abstract class CursorPagerAdapter extends PagerAdapter {
 	 */
 	protected void onContentChanged() {
 		if (mAutoRequery && mCursor != null && !mCursor.isClosed()) {
-			if (false)
-				Log.v("Cursor", "Auto requerying " + mCursor + " due to update");
 			mDataValid = mCursor.requery();
 		}
 	}

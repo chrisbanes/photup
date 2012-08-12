@@ -43,6 +43,7 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 	private final OnPickFriendRequestListener mPickFriendListener;
 	private final AbsoluteLayout mTagLayout;
 
+	private int mPosition;
 	private final PhotoSelection mUpload;
 	private final PhotoUploadController mController;
 	private final View mFaceDetectIndicator;
@@ -84,6 +85,18 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 
 	public MultiTouchImageView getImageView() {
 		return mImageView;
+	}
+	
+	public PhotoSelection getPhotoSelection() {
+		return mUpload;
+	}
+	
+	public int getPosition() {
+		return mPosition;
+	}
+	
+	public void setPosition(int position) {
+		mPosition = position;
 	}
 
 	public void onClick(View v) {

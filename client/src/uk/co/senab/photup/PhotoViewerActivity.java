@@ -120,26 +120,28 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 	}
 
 	private void rotateCurrentPhoto() {
-		PhotoSelection upload = getCurrentUpload();
+		PhotoTagItemLayout currentView = getCurrentView();
+		PhotoSelection upload = currentView.getPhotoSelection();
 		upload.rotateClockwise();
-
-		reloadCurrentView(upload);
+		reloadView(currentView);
 	}
 
 	private void resetCurrentPhoto() {
-		PhotoSelection upload = getCurrentUpload();
-		upload.reset();
+		PhotoTagItemLayout currentView = getCurrentView();
+		PhotoSelection upload = currentView.getPhotoSelection();
 
-		reloadCurrentView(upload);
+		upload.reset();
+		reloadView(currentView);
 	}
 
 	public void onCheckedChanged(RadioGroup group, int checkedId) {
 		if (!mIgnoreFilterCheckCallback) {
 			Filter filter = checkedId != -1 ? Filter.FILTERS[checkedId] : null;
-			PhotoSelection upload = getCurrentUpload();
-			upload.setFilterUsed(filter);
+			PhotoTagItemLayout currentView = getCurrentView();
+			PhotoSelection upload = currentView.getPhotoSelection();
 
-			reloadCurrentView(upload);
+			upload.setFilterUsed(filter);
+			reloadView(currentView);
 		}
 	}
 
@@ -197,16 +199,15 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 	}
 
 	public void onPageSelected(int position) {
-		PhotoSelection upload = getCurrentUpload();
+		PhotoTagItemLayout currentView = getCurrentView();
 
-		if (null != upload) {
+		if (null != currentView) {
+			PhotoSelection upload = currentView.getPhotoSelection();
+
 			getSupportActionBar().setTitle(upload.toString());
 
 			// Request Face Detection
-			PhotoTagItemLayout currentView = (PhotoTagItemLayout) getCurrentView();
-			if (null != currentView) {
-				currentView.getImageView().postFaceDetection(upload);
-			}
+			currentView.getImageView().postFaceDetection(upload);
 
 			if (null != mFilterGroup && mFilterGroup.getVisibility() == View.VISIBLE) {
 				updateFiltersView();
@@ -235,7 +236,7 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 		switch (requestCode) {
 			case REQUEST_CROP_PHOTO:
 				if (resultCode == RESULT_OK) {
-					reloadCurrentView(getCurrentUpload());
+					reloadView(getCurrentView());
 				}
 				break;
 		}
@@ -304,33 +305,30 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 	}
 
 	private PhotoSelection getCurrentUpload() {
-		View view = getCurrentView();
+		PhotoTagItemLayout view = getCurrentView();
 		if (null != view) {
-			return (PhotoSelection) view.getTag(R.id.tag_viewpager_upload);
+			return view.getPhotoSelection();
 		}
 		return null;
 	}
 
-	private View getCurrentView() {
-		int currentPos = mViewPager.getCurrentItem();
+	private PhotoTagItemLayout getCurrentView() {
+		final int currentPos = mViewPager.getCurrentItem();
 
 		for (int i = 0, z = mViewPager.getChildCount(); i < z; i++) {
-			View child = mViewPager.getChildAt(i);
-			if (null != child) {
-				Integer viewPos = (Integer) child.getTag(R.id.tag_viewpager_pos);
-				if (viewPos.intValue() == currentPos) {
-					return child;
-				}
+			PhotoTagItemLayout child = (PhotoTagItemLayout) mViewPager.getChildAt(i);
+			if (null != child && child.getPosition() == currentPos) {
+				return child;
 			}
 		}
 
 		return null;
 	}
 
-	private void reloadCurrentView(PhotoSelection selection) {
-		PhotoTagItemLayout currentView = (PhotoTagItemLayout) getCurrentView();
+	private void reloadView(PhotoTagItemLayout currentView) {
 		if (null != currentView) {
 			MultiTouchImageView imageView = currentView.getImageView();
+			PhotoSelection selection = currentView.getPhotoSelection();
 			imageView.requestFullSize(selection, true, false, null);
 		}
 	}
@@ -460,7 +458,7 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 		if (mAdapter instanceof CursorPagerAdapter) {
 			((CursorPagerAdapter) mAdapter).swapCursor(cursor);
 		}
-		
+
 		if (mRequestedPosition != -1) {
 			mViewPager.setCurrentItem(mRequestedPosition, false);
 			mRequestedPosition = -1;

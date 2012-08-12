@@ -2,7 +2,6 @@ package uk.co.senab.photup.adapters;
 
 import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotupApplication;
-import uk.co.senab.photup.R;
 import uk.co.senab.photup.listeners.OnPickFriendRequestListener;
 import uk.co.senab.photup.listeners.OnSingleTapListener;
 import uk.co.senab.photup.model.PhotoSelection;
@@ -47,6 +46,7 @@ public class UserPhotosViewPagerAdapter extends CursorPagerAdapter {
 				cursor);
 
 		PhotoTagItemLayout view = new PhotoTagItemLayout(mContext, mController, upload, mFriendPickRequestListener);
+		view.setPosition(cursor.getPosition());
 
 		upload.setFaceDetectionListener(view);
 
@@ -54,9 +54,6 @@ public class UserPhotosViewPagerAdapter extends CursorPagerAdapter {
 		imageView.requestFullSize(upload, true, null);
 		imageView.setSingleTapListener(mTapListener);
 		imageView.setRotation(upload.getUserRotation());
-
-		view.setTag(R.id.tag_viewpager_pos, cursor.getPosition());
-		view.setTag(R.id.tag_viewpager_upload, upload);
 
 		return view;
 	}
