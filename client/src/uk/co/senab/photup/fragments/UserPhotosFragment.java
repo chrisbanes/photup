@@ -3,24 +3,30 @@ package uk.co.senab.photup.fragments;
 import java.io.File;
 
 import uk.co.senab.photup.Constants;
+import uk.co.senab.photup.MediaStoreCursorHelper;
 import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotoViewerActivity;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.Utils;
 import uk.co.senab.photup.adapters.CameraBaseAdapter;
-import uk.co.senab.photup.adapters.UsersPhotosBaseAdapter;
+import uk.co.senab.photup.adapters.UsersPhotosCursorAdapter;
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
 import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.views.PhotoItemLayout;
 import uk.co.senab.photup.views.PhotupImageView;
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.media.MediaScannerConnection;
 import android.media.MediaScannerConnection.OnScanCompletedListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.MediaStore.Images;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,7 +43,7 @@ import com.jakewharton.activitycompat2.ActivityCompat2;
 import com.jakewharton.activitycompat2.ActivityOptionsCompat2;
 
 public class UserPhotosFragment extends SherlockFragment implements OnItemClickListener,
-		OnPhotoSelectionChangedListener, OnScanCompletedListener {
+		OnPhotoSelectionChangedListener, OnScanCompletedListener, LoaderManager.LoaderCallbacks<Cursor> {
 
 	static final int RESULT_CAMERA = 101;
 	static final String SAVE_PHOTO_URI = "camera_photo_uri";
@@ -72,10 +78,9 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 	}
 
 	static final int LOADER_USER_PHOTOS_EXTERNAL = 0x01;
-	static final int LOADER_USER_PHOTOS_INTERNAL = 0x02;
 
 	private MergeAdapter mAdapter;
-	private UsersPhotosBaseAdapter mPhotoAdapter;
+	private UsersPhotosCursorAdapter mPhotoAdapter;
 
 	private GridView mPhotoGrid;
 
@@ -127,10 +132,17 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 		mAdapter = new MergeAdapter();
 		mAdapter.addAdapter(new CameraBaseAdapter(getActivity()));
 
-		mPhotoAdapter = new UsersPhotosBaseAdapter(getActivity());
+		getLoaderManager().initLoader(LOADER_USER_PHOTOS_EXTERNAL, null, this);
+		mPhotoAdapter = new UsersPhotosCursorAdapter(getActivity(), null, true);
 		mAdapter.addAdapter(mPhotoAdapter);
 
 		mPhotoSelectionController.addPhotoSelectionListener(this);
+	}
+
+	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
+		CursorLoader cursorLoader = new CursorLoader(getActivity(), Images.Media.EXTERNAL_CONTENT_URI,
+				MediaStoreCursorHelper.PROJECTION, null, null, MediaStoreCursorHelper.ORDER_BY);
+		return cursorLoader;
 	}
 
 	@Override
@@ -164,15 +176,6 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 			intent.putExtra(PhotoViewerActivity.EXTRA_MODE, PhotoViewerActivity.MODE_ALL_VALUE);
 
 			ActivityCompat2.startActivity(getActivity(), intent, options.toBundle());
-		}
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-
-		if (mPhotoAdapter.getCount() == 0) {
-			mPhotoAdapter.refresh();
 		}
 	}
 
@@ -255,12 +258,17 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 
 			getActivity().runOnUiThread(new Runnable() {
 				public void run() {
-					mPhotoAdapter.refresh();
+					mPhotoAdapter.notifyDataSetChanged();
 				}
 			});
-
-			// Send Photo Taken Intent
-			//getActivity().sendBroadcast(new Intent(Constants.INTENT_PHOTO_TAKEN, uri));
 		}
+	}
+
+	public void onLoaderReset(Loader<Cursor> loader) {
+		mPhotoAdapter.swapCursor(null);
+	}
+
+	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+		mPhotoAdapter.swapCursor(data);
 	}
 }

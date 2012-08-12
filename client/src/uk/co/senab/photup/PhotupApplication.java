@@ -17,15 +17,11 @@ import uk.co.senab.bitmapcache.BitmapLruCache;
 import uk.co.senab.photup.facebook.Session;
 import uk.co.senab.photup.model.Account;
 import uk.co.senab.photup.model.FbUser;
-import uk.co.senab.photup.model.MediaStorePhotoUpload;
-import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.receivers.PhotoWatcherReceiver;
 import uk.co.senab.photup.tasks.AccountsAsyncTask;
 import uk.co.senab.photup.tasks.AccountsAsyncTask.AccountsResultListener;
 import uk.co.senab.photup.tasks.FriendsAsyncTask;
 import uk.co.senab.photup.tasks.FriendsAsyncTask.FriendsResultListener;
-import uk.co.senab.photup.tasks.MediaStoreAsyncTask;
-import uk.co.senab.photup.tasks.MediaStoreAsyncTask.MediaStoreResultListener;
 import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
@@ -41,7 +37,7 @@ import android.view.WindowManager;
 import com.facebook.android.FacebookError;
 
 @ReportsCrashes(formKey = Constants.ACRA_GOOGLE_DOC_ID, mode = ReportingInteractionMode.TOAST, resToastText = R.string.crash_toast)
-public class PhotupApplication extends Application implements FriendsResultListener, MediaStoreResultListener,
+public class PhotupApplication extends Application implements FriendsResultListener,
 		AccountsResultListener {
 
 	static final String LOG_TAG = "PhotupApplication";
@@ -58,10 +54,6 @@ public class PhotupApplication extends Application implements FriendsResultListe
 
 	private AccountsResultListener mAccountsListener;
 	private ArrayList<Account> mAccounts;
-
-	private MediaStoreAsyncTask mMediaStoreAsyncTask;
-	private MediaStoreResultListener mMediaStoreListener;
-	private final ArrayList<PhotoSelection> mMediaStorePhotos = new ArrayList<PhotoSelection>();
 
 	private final PhotoUploadController mPhotoController = new PhotoUploadController();
 
@@ -198,30 +190,7 @@ public class PhotupApplication extends Application implements FriendsResultListe
 	}
 
 	public void addScannedCameraUri(Uri uri) {
-		mMediaStorePhotos.add(0, new MediaStorePhotoUpload(uri));
-	}
-
-	public void getMediaStorePhotos(MediaStoreResultListener listener) {
-		if (null == mMediaStoreAsyncTask && mMediaStorePhotos.isEmpty()) {
-			mMediaStoreListener = listener;
-			mMediaStoreAsyncTask = new MediaStoreAsyncTask(this, this);
-			mMediaStoreAsyncTask.execute();
-		} else {
-			listener.onPhotosLoaded(new ArrayList<PhotoSelection>(mMediaStorePhotos));
-		}
-	}
-
-	public void onPhotosLoaded(List<PhotoSelection> friends) {
-		mMediaStorePhotos.clear();
-
-		if (null != friends) {
-			mMediaStorePhotos.addAll(friends);
-
-			if (null != mMediaStoreListener && mMediaStoreListener != this) {
-				mMediaStoreListener.onPhotosLoaded(new ArrayList<PhotoSelection>(mMediaStorePhotos));
-				mMediaStoreListener = null;
-			}
-		}
+		// TODO Need to do something here:
 	}
 
 	public void onFacebookError(FacebookError e) {

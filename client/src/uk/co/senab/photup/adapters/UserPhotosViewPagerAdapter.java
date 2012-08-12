@@ -2,10 +2,10 @@ package uk.co.senab.photup.adapters;
 
 import java.util.List;
 
-import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.listeners.OnPickFriendRequestListener;
 import uk.co.senab.photup.listeners.OnSingleTapListener;
 import uk.co.senab.photup.model.PhotoSelection;
+import uk.co.senab.photup.tasks.MediaStoreAsyncTask;
 import uk.co.senab.photup.tasks.MediaStoreAsyncTask.MediaStoreResultListener;
 import android.content.Context;
 
@@ -17,7 +17,7 @@ public class UserPhotosViewPagerAdapter extends SelectedPhotosViewPagerAdapter i
 	}
 
 	public void refresh() {
-		PhotupApplication.getApplication(getContext()).getMediaStorePhotos(this);
+		new MediaStoreAsyncTask(getContext(), this).execute();
 	}
 
 	public void onPhotosLoaded(List<PhotoSelection> friends) {
