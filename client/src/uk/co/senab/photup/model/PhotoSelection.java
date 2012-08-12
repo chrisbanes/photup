@@ -6,9 +6,9 @@ import java.util.HashSet;
 import java.util.List;
 
 import uk.co.senab.photup.Constants;
-import uk.co.senab.photup.Utils;
 import uk.co.senab.photup.listeners.OnFaceDetectionListener;
 import uk.co.senab.photup.listeners.OnPhotoTagsChangedListener;
+import uk.co.senab.photup.util.Utils;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;

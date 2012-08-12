@@ -1,10 +1,10 @@
 package uk.co.senab.photup.adapters;
 
-import uk.co.senab.photup.MediaStoreCursorHelper;
 import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.model.PhotoSelection;
+import uk.co.senab.photup.util.MediaStoreCursorHelper;
 import uk.co.senab.photup.views.PhotoItemLayout;
 import uk.co.senab.photup.views.PhotupImageView;
 import android.content.Context;

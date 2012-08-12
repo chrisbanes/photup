@@ -1,4 +1,4 @@
-package uk.co.senab.photup;
+package uk.co.senab.photup.util;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -57,21 +57,16 @@ public class MediaStoreCursorHelper {
 		ArrayList<MediaStoreBucket> items = new ArrayList<MediaStoreBucket>(cursor.getCount());
 		items.add(firstBucket);
 
-		HashSet<String> bucketIds = new HashSet<String>();
+		final HashSet<String> bucketIds = new HashSet<String>();
+		
+		final int idColumn = cursor.getColumnIndex(ImageColumns.BUCKET_ID);
+		final int nameColumn = cursor.getColumnIndex(ImageColumns.BUCKET_DISPLAY_NAME);
 
-		MediaStoreBucket item = null;
 		while (cursor.moveToNext()) {
 			try {
-				item = null;
-
-				final int idColumn = cursor.getColumnIndexOrThrow(ImageColumns.BUCKET_ID);
-				final int nameColumn = cursor.getColumnIndexOrThrow(ImageColumns.BUCKET_DISPLAY_NAME);
-
 				final String bucketId = cursor.getString(idColumn);
-
 				if (bucketIds.add(bucketId)) {
-					item = new MediaStoreBucket(bucketId, cursor.getString(nameColumn));
-					items.add(item);
+					items.add(new MediaStoreBucket(bucketId, cursor.getString(nameColumn)));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

@@ -3,8 +3,8 @@ package uk.co.senab.photup.tasks;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-import uk.co.senab.photup.MediaStoreCursorHelper;
 import uk.co.senab.photup.model.PhotoSelection;
+import uk.co.senab.photup.util.MediaStoreCursorHelper;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;

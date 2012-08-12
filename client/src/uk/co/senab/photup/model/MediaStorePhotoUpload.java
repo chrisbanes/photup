@@ -1,7 +1,7 @@
 package uk.co.senab.photup.model;
 
 import uk.co.senab.photup.R;
-import uk.co.senab.photup.Utils;
+import uk.co.senab.photup.util.Utils;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Resources;

@@ -7,7 +7,7 @@ import java.io.IOException;
 import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
-import uk.co.senab.photup.Utils;
+import uk.co.senab.photup.util.Utils;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;

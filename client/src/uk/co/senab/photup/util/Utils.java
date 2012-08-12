@@ -1,7 +1,10 @@
-package uk.co.senab.photup;
+package uk.co.senab.photup.util;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+
+import uk.co.senab.photup.Constants;
+import uk.co.senab.photup.PhotupApplication;
 
 import android.content.ContentResolver;
 import android.database.Cursor;

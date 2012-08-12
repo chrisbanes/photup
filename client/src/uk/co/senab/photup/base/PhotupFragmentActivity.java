@@ -1,6 +1,6 @@
 package uk.co.senab.photup.base;
 
-import uk.co.senab.photup.Analytics;
+import uk.co.senab.photup.util.Analytics;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 

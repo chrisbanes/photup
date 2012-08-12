@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uk.co.senab.photup.R;
-import uk.co.senab.photup.Utils;
 import uk.co.senab.photup.adapters.PlacesAdapter;
 import uk.co.senab.photup.listeners.OnPlacePickedListener;
 import uk.co.senab.photup.model.Place;
 import uk.co.senab.photup.tasks.PlacesAsyncTask;
 import uk.co.senab.photup.tasks.PlacesAsyncTask.PlacesResultListener;
+import uk.co.senab.photup.util.Utils;
 import android.app.Dialog;
 import android.content.Context;
 import android.location.Location;

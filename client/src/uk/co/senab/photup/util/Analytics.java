@@ -1,5 +1,6 @@
-package uk.co.senab.photup;
+package uk.co.senab.photup.util;
 
+import uk.co.senab.photup.Constants;
 import android.content.Context;
 
 import com.flurry.android.FlurryAgent;

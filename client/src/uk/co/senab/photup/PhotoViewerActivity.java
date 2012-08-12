@@ -17,6 +17,7 @@ import uk.co.senab.photup.model.Filter;
 import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.model.Place;
+import uk.co.senab.photup.util.Analytics;
 import uk.co.senab.photup.views.FiltersRadioGroup;
 import uk.co.senab.photup.views.MultiTouchImageView;
 import uk.co.senab.photup.views.PhotoTagItemLayout;
