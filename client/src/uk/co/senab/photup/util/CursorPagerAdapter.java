@@ -7,7 +7,6 @@ import android.database.DataSetObserver;
 import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -367,6 +366,7 @@ public abstract class CursorPagerAdapter extends PagerAdapter {
 	 * 
 	 * @see ContentObserver#onChange(boolean)
 	 */
+	@SuppressWarnings("deprecation")
 	protected void onContentChanged() {
 		if (mAutoRequery && mCursor != null && !mCursor.isClosed()) {
 			mDataValid = mCursor.requery();

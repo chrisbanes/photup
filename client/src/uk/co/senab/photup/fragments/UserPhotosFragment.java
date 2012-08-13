@@ -7,6 +7,7 @@ import java.util.List;
 import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotoViewerActivity;
+import uk.co.senab.photup.PreferenceConstants;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.adapters.CameraBaseAdapter;
 import uk.co.senab.photup.adapters.UsersPhotosCursorAdapter;
@@ -21,10 +22,12 @@ import uk.co.senab.photup.views.PhotoItemLayout;
 import uk.co.senab.photup.views.PhotupImageView;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
 import android.support.v4.app.LoaderManager;
@@ -51,10 +54,6 @@ import com.jakewharton.activitycompat2.ActivityOptionsCompat2;
 public class UserPhotosFragment extends SherlockFragment implements OnItemClickListener,
 		OnPhotoSelectionChangedListener, LoaderManager.LoaderCallbacks<Cursor>, MediaStoreBucketsResultListener,
 		OnItemSelectedListener {
-
-	static final int RESULT_CAMERA = 101;
-	static final String SAVE_PHOTO_URI = "camera_photo_uri";
-	static final String LOADER_PHOTOS_BUCKETS_PARAM = "bucket_id";
 
 	static class ScaleAnimationListener implements AnimationListener {
 
@@ -85,6 +84,10 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 		}
 	}
 
+	static final int RESULT_CAMERA = 101;
+	static final String SAVE_PHOTO_URI = "camera_photo_uri";
+
+	static final String LOADER_PHOTOS_BUCKETS_PARAM = "bucket_id";
 	static final int LOADER_USER_PHOTOS_EXTERNAL = 0x01;
 
 	private MergeAdapter mAdapter;
@@ -99,11 +102,7 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 	private PhotoUploadController mPhotoSelectionController;
 	private File mPhotoFile;
 
-	@Override
-	public void onAttach(Activity activity) {
-		mPhotoSelectionController = PhotoUploadController.getFromContext(activity);
-		super.onAttach(activity);
-	}
+	private SharedPreferences mPrefs;
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -138,8 +137,24 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 
+	@Override
+	public void onAttach(Activity activity) {
+		mPhotoSelectionController = PhotoUploadController.getFromContext(activity);
+		super.onAttach(activity);
+	}
+
+	public void onBucketsLoaded(List<MediaStoreBucket> buckets) {
+		mBuckets.clear();
+		mBuckets.addAll(buckets);
+		mBucketAdapter.notifyDataSetChanged();
+
+		setSelectedBucketFromPrefs();
+	}
+
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		mPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
 		mAdapter = new MergeAdapter();
 		mAdapter.addAdapter(new CameraBaseAdapter(getActivity()));
@@ -197,6 +212,7 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 	public void onDestroy() {
 		super.onDestroy();
 		mPhotoSelectionController.removePhotoSelectionListener(this);
+		saveSelectedBucketToPrefs();
 	}
 
 	public void onItemClick(AdapterView<?> gridView, View view, int position, long id) {
@@ -219,46 +235,11 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 		}
 	}
 
-	public void onSelectionsAddedToUploads() {
-		mPhotoAdapter.notifyDataSetChanged();
-	}
-
-	public void onPhotoSelectionChanged(PhotoSelection upload, boolean added) {
-		for (int i = 0, z = mPhotoGrid.getChildCount(); i < z; i++) {
-			View view = mPhotoGrid.getChildAt(i);
-
-			if (view instanceof PhotoItemLayout) {
-				PhotoItemLayout layout = (PhotoItemLayout) view;
-				if (upload.equals(layout.getPhotoSelection())) {
-					if (Constants.DEBUG) {
-						Log.d("UserPhotosFragment", "Found View, setChecked");
-					}
-					layout.setChecked(added);
-					break;
-				}
-			}
+	public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+		MediaStoreBucket item = (MediaStoreBucket) adapterView.getItemAtPosition(position);
+		if (null != item) {
+			loadBucketId(item.getId());
 		}
-	}
-
-	private void takePhoto() {
-		if (null == mPhotoFile) {
-			Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-			mPhotoFile = Utils.getCameraPhotoFile();
-			takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mPhotoFile));
-			startActivityForResult(takePictureIntent, RESULT_CAMERA);
-		}
-	}
-
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		if (null != mPhotoFile) {
-			outState.putString(SAVE_PHOTO_URI, mPhotoFile.getAbsolutePath());
-		}
-		super.onSaveInstanceState(outState);
-	}
-
-	public void onUploadsCleared() {
-		// NO-OP
 	}
 
 	public void onLoaderReset(Loader<Cursor> loader) {
@@ -278,18 +259,45 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 		}
 	}
 
-	public void onBucketsLoaded(List<MediaStoreBucket> buckets) {
-		mBuckets.clear();
-		mBuckets.addAll(buckets);
-		mBucketAdapter.notifyDataSetChanged();
-		mBucketSpinner.setSelection(0);
+	public void onNothingSelected(AdapterView<?> view) {
+		// NO-OP
 	}
 
-	public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-		MediaStoreBucket item = (MediaStoreBucket) adapterView.getItemAtPosition(position);
-		if (null != item) {
-			loadBucketId(item.getId());
+	public void onPhotoSelectionChanged(PhotoSelection upload, boolean added) {
+		for (int i = 0, z = mPhotoGrid.getChildCount(); i < z; i++) {
+			View view = mPhotoGrid.getChildAt(i);
+
+			if (view instanceof PhotoItemLayout) {
+				PhotoItemLayout layout = (PhotoItemLayout) view;
+				if (upload.equals(layout.getPhotoSelection())) {
+					if (Constants.DEBUG) {
+						Log.d("UserPhotosFragment", "Found View, setChecked");
+					}
+					layout.setChecked(added);
+					break;
+				}
+			}
 		}
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		if (null != mPhotoFile) {
+			outState.putString(SAVE_PHOTO_URI, mPhotoFile.getAbsolutePath());
+		}
+		super.onSaveInstanceState(outState);
+	}
+
+	public void onSelectionsAddedToUploads() {
+		mPhotoAdapter.notifyDataSetChanged();
+	}
+
+	public void onUploadsCleared() {
+		// NO-OP
+	}
+
+	private MediaStoreBucket getSelectedBucket() {
+		return (MediaStoreBucket) mBucketSpinner.getSelectedItem();
 	}
 
 	private void loadBucketId(String id) {
@@ -300,7 +308,33 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 		getLoaderManager().restartLoader(LOADER_USER_PHOTOS_EXTERNAL, bundle, this);
 	}
 
-	public void onNothingSelected(AdapterView<?> view) {
-		// NO-OP
+	private void saveSelectedBucketToPrefs() {
+		MediaStoreBucket bucket = getSelectedBucket();
+		if (null != bucket) {
+			mPrefs.edit().putString(PreferenceConstants.PREF_SELECTED_MEDIA_BUCKET_ID, bucket.getId()).commit();
+		}
+	}
+
+	private void setSelectedBucketFromPrefs() {
+		final String lastBucketId = mPrefs.getString(PreferenceConstants.PREF_SELECTED_MEDIA_BUCKET_ID, null);
+		if (null != lastBucketId) {
+			for (int i = 0, z = mBuckets.size(); i < z; i++) {
+				if (lastBucketId.equals(mBuckets.get(i).getId())) {
+					mBucketSpinner.setSelection(i);
+					break;
+				}
+			}
+		} else {
+			mBucketSpinner.setSelection(0);
+		}
+	}
+
+	private void takePhoto() {
+		if (null == mPhotoFile) {
+			Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+			mPhotoFile = Utils.getCameraPhotoFile();
+			takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mPhotoFile));
+			startActivityForResult(takePictureIntent, RESULT_CAMERA);
+		}
 	}
 }
