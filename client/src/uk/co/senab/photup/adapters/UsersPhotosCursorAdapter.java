@@ -18,8 +18,8 @@ public class UsersPhotosCursorAdapter extends ResourceCursorAdapter {
 
 	private final PhotoUploadController mController;
 
-	public UsersPhotosCursorAdapter(Context context, Cursor c, boolean autoRequery) {
-		super(context, R.layout.item_grid_photo, c, autoRequery);
+	public UsersPhotosCursorAdapter(Context context, Cursor c) {
+		super(context, R.layout.item_grid_photo, c, false);
 
 		PhotupApplication app = PhotupApplication.getApplication(context);
 		mController = app.getPhotoUploadController();

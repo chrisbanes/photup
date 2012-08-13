@@ -23,7 +23,7 @@ public class UserPhotosViewPagerAdapter extends CursorPagerAdapter {
 
 	public UserPhotosViewPagerAdapter(Context context, OnSingleTapListener tapListener,
 			OnPickFriendRequestListener friendRequestListener) {
-		super(context, null, true);
+		super(context, null, false);
 		mTapListener = tapListener;
 		mFriendPickRequestListener = friendRequestListener;
 
