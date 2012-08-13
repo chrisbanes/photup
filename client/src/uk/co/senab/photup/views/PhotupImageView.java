@@ -203,6 +203,13 @@ public class PhotupImageView extends CacheableImageView {
 		super(context, attrs);
 	}
 
+	public void cancelRequest() {
+		if (null != mCurrentRunnable) {
+			mCurrentRunnable.cancel(true);
+			mCurrentRunnable = null;
+		}
+	}
+
 	public void clearFaceDetection() {
 		if (null != mRequestFaceDetectionRunnable) {
 			removeCallbacks(mRequestFaceDetectionRunnable);
@@ -331,9 +338,7 @@ public class PhotupImageView extends CacheableImageView {
 	}
 
 	private void resetForRequest(final boolean clearDrawable) {
-		if (null != mCurrentRunnable) {
-			mCurrentRunnable.cancel(true);
-		}
+		cancelRequest();
 
 		// Clear currently display bitmap
 		if (clearDrawable) {

@@ -12,6 +12,7 @@ import uk.co.senab.photup.views.PhotoTagItemLayout;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore.Images;
+import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -53,7 +54,6 @@ public class UserPhotosViewPagerAdapter extends CursorPagerAdapter {
 		MultiTouchImageView imageView = view.getImageView();
 		imageView.requestFullSize(upload, true, null);
 		imageView.setSingleTapListener(mTapListener);
-		imageView.setRotation(upload.getUserRotation());
 
 		return view;
 	}
@@ -61,6 +61,16 @@ public class UserPhotosViewPagerAdapter extends CursorPagerAdapter {
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {
 		// NO-OP
+	}
+
+	@Override
+	public void destroyItem(View container, int position, Object object) {
+		PhotoTagItemLayout view = (PhotoTagItemLayout) object;
+
+		MultiTouchImageView imageView = view.getImageView();
+		imageView.cancelRequest();
+
+		((ViewPager) container).removeView(view);
 	}
 
 }

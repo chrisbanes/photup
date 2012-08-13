@@ -15,11 +15,13 @@ public abstract class CursorPagerAdapter extends PagerAdapter {
 	/**
 	 * This field should be made private, so it is hidden from the SDK. {@hide
 	 * 
+	 * 
 	 * }
 	 */
 	protected boolean mDataValid;
 	/**
 	 * This field should be made private, so it is hidden from the SDK. {@hide
+	 * 
 	 * 
 	 * }
 	 */
@@ -27,11 +29,13 @@ public abstract class CursorPagerAdapter extends PagerAdapter {
 	/**
 	 * This field should be made private, so it is hidden from the SDK. {@hide
 	 * 
+	 * 
 	 * }
 	 */
 	protected Cursor mCursor;
 	/**
 	 * This field should be made private, so it is hidden from the SDK. {@hide
+	 * 
 	 * 
 	 * }
 	 */
@@ -39,17 +43,20 @@ public abstract class CursorPagerAdapter extends PagerAdapter {
 	/**
 	 * This field should be made private, so it is hidden from the SDK. {@hide
 	 * 
+	 * 
 	 * }
 	 */
 	protected int mRowIDColumn;
 	/**
 	 * This field should be made private, so it is hidden from the SDK. {@hide
 	 * 
+	 * 
 	 * }
 	 */
 	protected ChangeObserver mChangeObserver;
 	/**
 	 * This field should be made private, so it is hidden from the SDK. {@hide
+	 * 
 	 * 
 	 * }
 	 */
@@ -193,33 +200,6 @@ public abstract class CursorPagerAdapter extends PagerAdapter {
 	}
 
 	/**
-	 * @see android.widget.ListAdapter#getItem(int)
-	 */
-	public Object getItem(int position) {
-		if (mDataValid && mCursor != null) {
-			mCursor.moveToPosition(position);
-			return mCursor;
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * @see android.widget.ListAdapter#getItemId(int)
-	 */
-	public long getItemId(int position) {
-		if (mDataValid && mCursor != null) {
-			if (mCursor.moveToPosition(position)) {
-				return mCursor.getLong(mRowIDColumn);
-			} else {
-				return 0;
-			}
-		} else {
-			return 0;
-		}
-	}
-
-	/**
 	 * @see android.widget.ListAdapter#getView(int, View, ViewGroup)
 	 */
 
@@ -260,22 +240,6 @@ public abstract class CursorPagerAdapter extends PagerAdapter {
 	public abstract View newView(Context context, Cursor cursor, ViewGroup parent);
 
 	/**
-	 * Makes a new drop down view to hold the data pointed to by cursor.
-	 * 
-	 * @param context
-	 *            Interface to application's global information
-	 * @param cursor
-	 *            The cursor from which to get the data. The cursor is already
-	 *            moved to the correct position.
-	 * @param parent
-	 *            The parent to which the new view is attached to
-	 * @return the newly created view.
-	 */
-	public View newDropDownView(Context context, Cursor cursor, ViewGroup parent) {
-		return newView(context, cursor, parent);
-	}
-
-	/**
 	 * Bind an existing view to the data pointed to by cursor
 	 * 
 	 * @param view
@@ -309,7 +273,7 @@ public abstract class CursorPagerAdapter extends PagerAdapter {
 	 * 
 	 * @param newCursor
 	 *            The new cursor to be used.
-	 * @return Returns the previously set Cursor, or null if there wasa not one.
+	 * @return Returns the previously set Cursor, or null if there was not one.
 	 *         If the given new Cursor is the same instance is the previously
 	 *         set Cursor, null is also returned.
 	 */

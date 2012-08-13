@@ -37,7 +37,12 @@ public class SelectedPhotosViewPagerAdapter extends PagerAdapter {
 
 	@Override
 	public void destroyItem(View container, int position, Object object) {
-		((ViewPager) container).removeView((View) object);
+		PhotoTagItemLayout view = (PhotoTagItemLayout) object;
+
+		MultiTouchImageView imageView = view.getImageView();
+		imageView.cancelRequest();
+		
+		((ViewPager) container).removeView(view);
 	}
 
 	@Override
@@ -68,7 +73,6 @@ public class SelectedPhotosViewPagerAdapter extends PagerAdapter {
 		MultiTouchImageView imageView = view.getImageView();
 		imageView.requestFullSize(upload, true, null);
 		imageView.setSingleTapListener(mTapListener);
-		imageView.setRotation(upload.getUserRotation());
 
 		((ViewPager) container).addView(view);
 
