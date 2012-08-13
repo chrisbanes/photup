@@ -133,6 +133,15 @@ public class PhotupApplication extends Application implements FriendsResultListe
 			listener.onFriendsLoaded(mFriends);
 		}
 	}
+	
+	public Account getMainAccount() {
+		for (Account account : mAccounts) {
+			if (account.isMainAccount()) {
+				return account;
+			}
+		}
+		return null;
+	}
 
 	public void getAccounts(AccountsResultListener listener, boolean forceRefresh) {
 		if (forceRefresh || mAccounts.isEmpty()) {

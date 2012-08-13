@@ -20,8 +20,10 @@ public class SettingsActivity extends SherlockPreferenceActivity implements Albu
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.main_prefs);
 
-		// TODO Don't instantiate from Prefs again
-		Account.getAccountFromSession(getApplicationContext()).getAlbums(this, false);
+		Account mainAccount = PhotupApplication.getApplication(this).getMainAccount();
+		if (null != mainAccount) {
+			mainAccount.getAlbums(this, false);
+		}
 
 		populateFiltersPref();
 	}
