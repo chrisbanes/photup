@@ -23,7 +23,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.MediaScannerConnection;
-import android.media.MediaScannerConnection.OnScanCompletedListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -50,8 +49,8 @@ import com.jakewharton.activitycompat2.ActivityCompat2;
 import com.jakewharton.activitycompat2.ActivityOptionsCompat2;
 
 public class UserPhotosFragment extends SherlockFragment implements OnItemClickListener,
-		OnPhotoSelectionChangedListener, OnScanCompletedListener, LoaderManager.LoaderCallbacks<Cursor>,
-		MediaStoreBucketsResultListener, OnItemSelectedListener {
+		OnPhotoSelectionChangedListener, LoaderManager.LoaderCallbacks<Cursor>, MediaStoreBucketsResultListener,
+		OnItemSelectedListener {
 
 	static final int RESULT_CAMERA = 101;
 	static final String SAVE_PHOTO_URI = "camera_photo_uri";
@@ -124,7 +123,7 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 				if (null != mPhotoFile) {
 					if (resultCode == Activity.RESULT_OK) {
 						MediaScannerConnection.scanFile(getActivity(), new String[] { mPhotoFile.getAbsolutePath() },
-								new String[] { "image/jpg" }, this);
+								new String[] { "image/jpg" }, null);
 					} else {
 						if (Constants.DEBUG) {
 							Log.d("UserPhotosFragment", "Deleting Photo File");
@@ -260,16 +259,6 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 
 	public void onUploadsCleared() {
 		// NO-OP
-	}
-
-	public void onScanCompleted(String path, Uri uri) {
-		if (null != uri) {
-			getActivity().runOnUiThread(new Runnable() {
-				public void run() {
-					mPhotoAdapter.notifyDataSetChanged();
-				}
-			});
-		}
 	}
 
 	public void onLoaderReset(Loader<Cursor> loader) {

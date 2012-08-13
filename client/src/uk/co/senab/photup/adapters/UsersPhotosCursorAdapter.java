@@ -19,7 +19,7 @@ public class UsersPhotosCursorAdapter extends ResourceCursorAdapter {
 	private final PhotoUploadController mController;
 
 	public UsersPhotosCursorAdapter(Context context, Cursor c) {
-		super(context, R.layout.item_grid_photo, c, false);
+		super(context, R.layout.item_grid_photo, c, 0);
 
 		PhotupApplication app = PhotupApplication.getApplication(context);
 		mController = app.getPhotoUploadController();
@@ -30,17 +30,18 @@ public class UsersPhotosCursorAdapter extends ResourceCursorAdapter {
 		PhotoItemLayout layout = (PhotoItemLayout) view;
 		PhotupImageView iv = layout.getImageView();
 
-		final PhotoSelection upload = MediaStoreCursorHelper.photosCursorToSelection(Images.Media.EXTERNAL_CONTENT_URI, cursor);
+		final PhotoSelection upload = MediaStoreCursorHelper.photosCursorToSelection(Images.Media.EXTERNAL_CONTENT_URI,
+				cursor);
 
-		iv.setFadeInDrawables(true);
-		iv.requestThumbnail(upload, false);
-		layout.setPhotoSelection(upload);
+		if (null != upload) {
+			iv.setFadeInDrawables(true);
+			iv.requestThumbnail(upload, false);
+			layout.setPhotoSelection(upload);
 
-		if (null != mController) {
-			((Checkable) view).setChecked(mController.isPhotoUploadSelected(upload));
+			if (null != mController) {
+				((Checkable) view).setChecked(mController.isPhotoUploadSelected(upload));
+			}
 		}
 	}
-
-	
 
 }
