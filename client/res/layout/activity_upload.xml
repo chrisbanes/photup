@@ -22,6 +22,7 @@
 
 			<Spinner
 				android:id="@+id/sp_upload_account"
+				style="@style/PhotupSpinner"
 				android:layout_width="0px"
 				android:layout_height="@dimen/form_item_height"
 				android:layout_weight="1" />
@@ -80,6 +81,7 @@
 
 			<Spinner
 				android:id="@+id/sp_upload_target"
+				style="@style/PhotupSpinner"
 				android:layout_width="0px"
 				android:layout_height="@dimen/form_item_height"
 				android:layout_weight="1" />

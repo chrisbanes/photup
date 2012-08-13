@@ -21,6 +21,7 @@ import uk.co.senab.photup.tasks.AccountsAsyncTask.AccountsResultListener;
 import uk.co.senab.photup.tasks.AlbumsAsyncTask.AlbumsResultListener;
 import uk.co.senab.photup.tasks.EventsAsyncTask.EventsResultListener;
 import uk.co.senab.photup.tasks.GroupsAsyncTask.GroupsResultListener;
+import uk.co.senab.photup.util.Utils;
 import uk.co.senab.photup.views.NetworkedCacheableImageView;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -103,12 +104,11 @@ public class UploadActivity extends PhotupFragmentActivity implements ServiceCon
 		mNewAlbumButton = (ImageButton) findViewById(R.id.btn_new_album);
 		mNewAlbumButton.setOnClickListener(this);
 
-		mTargetAdapter = new ArrayAdapter<AbstractFacebookObject>(this, android.R.layout.simple_spinner_item,
-				mFacebookObjects);
+		mTargetAdapter = new ArrayAdapter<AbstractFacebookObject>(this, Utils.getSpinnerItemResId(), mFacebookObjects);
 		mTargetAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mTargetSpinner.setAdapter(mTargetAdapter);
 
-		mAccountsAdapter = new ArrayAdapter<Account>(this, android.R.layout.simple_spinner_item, mAccounts);
+		mAccountsAdapter = new ArrayAdapter<Account>(this, Utils.getSpinnerItemResId(), mAccounts);
 		mAccountsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mAccountsSpinner.setAdapter(mAccountsAdapter);
 
