@@ -45,5 +45,9 @@
 		<item name="android:orientation">horizontal</item>
 		<item name="android:showDividers">middle</item>
 	</style>
+	
+	<style name="PhotupSpinner">
+		<item name="android:background">@drawable/abs__spinner_ab_holo_dark</item>
+	</style>
 
 </resources>

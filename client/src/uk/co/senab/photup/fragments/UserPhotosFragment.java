@@ -145,11 +145,10 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 		mAdapter = new MergeAdapter();
 		mAdapter.addAdapter(new CameraBaseAdapter(getActivity()));
 
-		mPhotoAdapter = new UsersPhotosCursorAdapter(getActivity(), null, true);
+		mPhotoAdapter = new UsersPhotosCursorAdapter(getActivity(), null);
 		mAdapter.addAdapter(mPhotoAdapter);
 
-		mBucketAdapter = new ArrayAdapter<MediaStoreBucket>(getActivity(), android.R.layout.simple_spinner_item,
-				mBuckets);
+		mBucketAdapter = new ArrayAdapter<MediaStoreBucket>(getActivity(), Utils.getSpinnerItemResId(), mBuckets);
 		mBucketAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		new MediaStoreBucketsAsyncTask(getActivity(), this).execute();
 

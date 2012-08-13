@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 
 import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.PhotupApplication;
+import uk.co.senab.photup.R;
 
 import android.content.ContentResolver;
 import android.database.Cursor;
@@ -13,6 +14,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.net.Uri;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.FloatMath;
@@ -215,6 +218,14 @@ public class Utils {
 			return distance + "m";
 		} else {
 			return String.format("%.2fkm", distance / 1000f);
+		}
+	}
+	
+	public static int getSpinnerItemResId() {
+		if (VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB) {
+			return android.R.layout.simple_spinner_item;
+		} else {
+			return R.layout.layout_spinner_item;
 		}
 	}
 }
