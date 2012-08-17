@@ -10,6 +10,7 @@
 	<string name="tag_no_name">Ini siapa?</string>
 	<string name="tab_uploads">Unggah</string>
 	<string name="upload_title">Unggah</string>
+	<string name="upload_retry">Retry Failed</string>
 	<string name="upload_quality_title">Kualitas</string>
 	<string name="upload_quality_low">Rendah(640px)</string>
 	<string name="upload_quality_medium">Sedang(1024px)</string>
@@ -35,6 +36,7 @@
 	<string name="empty_selected_photos">Anda belum memilih foto apapun</string>
 	<string name="welcome_message">Selamat datang di photup. Untuk memulai silahkan tekan tombol berikut untuk login ke Facebook</string>
 	<string name="login">Masuk</string>
+	<string name="login_promo">Tell your friends about photup?</string>
 	<string name="logout_static">Keluar</string>
 	<string name="logout">Keluar %1$s</string>
 	<string name="logout_prompt_title">Anda yakin?</string>
@@ -57,4 +59,5 @@
 	<string name="dialog_place_overwrite_title">Timpa Lokasi</string>
 	<string name="dialog_place_overwrite_text">Kamu telah memilih lokasi disini, tapi dapat juga hanya pada beberapa foto tersendiri. Kamu yakin akan menimpa semua lokasi pilihanmu?</string>
 	<string name="donate_title">Sumbangan</string>
+	<string name="promo_text">I\'m checking out photup for Facebook, a new Facebook photo sharer for Android. Give it a try!</string>
 </resources>

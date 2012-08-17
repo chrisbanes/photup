@@ -1,24 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="google_play_description">With photup you can share your photos to your Facebook profile, quicker than ever before. Think of it as \'Facebook Camera\' for iOS, but on Android.
-
-- Upload as many photos as you want, all at once in a batch
-- Add Effects (Filters)
-- Manually Rotate photos
-- Crop Photos
-- Set the caption of each photo
-- Easily Tag your Friends with Face Detection
-- Instant Upload.  Automatically upload as soon you take a photo
-- Tag the location and place
-- Upload to your Groups or Events
-- Upload to your Page and it\'s albums
-
-
-Coming soon:
-- More Privacy Options
-
-Translations
-If you want to help translate photup. Go to:
-http://www.getlocalization.com/photup/</string>
-	<string name="google_play_promo_text">Share your photos with photup for Facebook</string>
+	<string name="google_play_description">Met photup kunt u sneller dan ooit foto\'s uploaden naar uw Facebook profiel. Zie het als \'Facebook Camera\' voor iOS, maar nu op Android.
+-Upload zo veel foto\'s als u zelf wilt, in één keer
+-Voeg Effecten toe (Filters)
+-Roteer Foto\'s handmatig
+-Snijd foto\'s bij
+-Voeg een bijschrijft bij iedere foto
+-Tag uw Vrienden eenvoudig met Gezichtsdetectie
+-Snelle upoload. Upload automatisch wanneer u een nieuwe foto neemt
+-Tag de locatie en plaats
+-Upload naar uw Groepen of Evenementen
+-Upload naar uw Pagina en haar albums</string>
+	<string name="google_play_promo_text">Deel uw foto\'s met photup voor Facebook</string>
 </resources>

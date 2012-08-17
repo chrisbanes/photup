@@ -10,6 +10,7 @@
 	<string name="tag_no_name">Кто это?</string>
 	<string name="tab_uploads">Загрузки</string>
 	<string name="upload_title">Загрузить</string>
+	<string name="upload_retry">Попытка не удалась</string>
 	<string name="upload_quality_title">Качество</string>
 	<string name="upload_quality_low">Низкое (640px)</string>
 	<string name="upload_quality_medium">Среднее (1024px)</string>
@@ -35,6 +36,7 @@
 	<string name="empty_selected_photos">Вы пока еще не выбрали ни одной фотографии</string>
 	<string name="welcome_message">Добро пожаловать в photup. Для продолжения нажмите кнопку ниже для входа в Facebook.</string>
 	<string name="login">Войти</string>
+	<string name="login_promo">Рассказать друзьям о photup?</string>
 	<string name="logout_static">Выйти</string>
 	<string name="logout">Выйти %1$s</string>
 	<string name="logout_prompt_title">Вы уверены?</string>
@@ -57,4 +59,5 @@
 	<string name="dialog_place_overwrite_title">Заменить место</string>
 	<string name="dialog_place_overwrite_text">Вы выбрали место здесь и еще на нескольких фотографиях. Хотите заменить все выбранные отметки мест?</string>
 	<string name="donate_title">Пожертвовать</string>
+	<string name="promo_text">Я пользуюсь photup для Facebook — новый загрузчик фотографий в Facebook для Android. Попробуйте!</string>
 </resources>

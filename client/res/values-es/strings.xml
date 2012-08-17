@@ -10,6 +10,7 @@
 	<string name="tag_no_name">Quién es?</string>
 	<string name="tab_uploads">Mis Subidas</string>
 	<string name="upload_title">Subir/Cargar</string>
+	<string name="upload_retry">Reintento fallido</string>
 	<string name="upload_quality_title">Calidad</string>
 	<string name="upload_quality_low">Baja (640 px)</string>
 	<string name="upload_quality_medium">Media (1024 px)</string>
@@ -35,6 +36,7 @@
 	<string name="empty_selected_photos">Aún no has seleccionado ninguna foto</string>
 	<string name="welcome_message">Bienvenido a photup. Para continuar presiona el botón de abajo para iniciar sesión en Facebook.</string>
 	<string name="login">Iniciar sesión</string>
+	<string name="login_promo">Decir a tus amigos sobre photup?</string>
 	<string name="logout_static">Cerrar sesión.</string>
 	<string name="logout">Cerrar sesión %1$s</string>
 	<string name="logout_prompt_title">Estás seguro?</string>
@@ -57,4 +59,5 @@
 	<string name="dialog_place_overwrite_title">Sobreescribir Lugar</string>
 	<string name="dialog_place_overwrite_text">Has seleccionado un lugar aquí, pero también en algunas fotos individuales. Deseas sobreescribir todo las selecciones de Lugar?</string>
 	<string name="donate_title">Donar</string>
+	<string name="promo_text">Estoy probando photup para Facebook, un nuevo compartidor de fotos en Facebook para android. Pruebalo!</string>
 </resources>
