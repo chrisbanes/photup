@@ -9,6 +9,8 @@ import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.util.Utils;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -83,14 +85,18 @@ public class SelectedPhotosFragment extends SherlockFragment implements OnPhotoS
 	}
 
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		ActivityOptionsCompat2 options = ActivityOptionsCompat2.makeThumbnailScaleUpAnimation(view,
-				Utils.drawViewOntoBitmap(view), 0, 0);
+		Bundle b = null;
+		if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) {
+			ActivityOptionsCompat2 options = ActivityOptionsCompat2.makeThumbnailScaleUpAnimation(view,
+					Utils.drawViewOntoBitmap(view), 0, 0);
+			b = options.toBundle();
+		}
 
 		Intent intent = new Intent(getActivity(), PhotoViewerActivity.class);
 		intent.putExtra(PhotoViewerActivity.EXTRA_POSITION, position);
 		intent.putExtra(PhotoViewerActivity.EXTRA_MODE, PhotoViewerActivity.MODE_SELECTED_VALUE);
 
-		ActivityCompat2.startActivity(getActivity(), intent, options.toBundle());
+		ActivityCompat2.startActivity(getActivity(), intent, b);
 	}
 
 	public void onUploadsCleared() {

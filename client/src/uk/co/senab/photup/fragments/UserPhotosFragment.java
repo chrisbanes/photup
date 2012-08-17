@@ -27,6 +27,8 @@ import android.database.Cursor;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
@@ -219,8 +221,12 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 		if (view.getId() == R.id.iv_camera_button) {
 			takePhoto();
 		} else {
-			ActivityOptionsCompat2 options = ActivityOptionsCompat2.makeThumbnailScaleUpAnimation(view,
-					Utils.drawViewOntoBitmap(view), 0, 0);
+			Bundle b = null;
+			if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) {
+				ActivityOptionsCompat2 options = ActivityOptionsCompat2.makeThumbnailScaleUpAnimation(view,
+						Utils.drawViewOntoBitmap(view), 0, 0);
+				b = options.toBundle();
+			}
 
 			Intent intent = new Intent(getActivity(), PhotoViewerActivity.class);
 
@@ -231,7 +237,7 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 			MediaStoreBucket bucket = (MediaStoreBucket) mBucketSpinner.getSelectedItem();
 			intent.putExtra(PhotoViewerActivity.EXTRA_BUCKET_ID, bucket.getId());
 
-			ActivityCompat2.startActivity(getActivity(), intent, options.toBundle());
+			ActivityCompat2.startActivity(getActivity(), intent, b);
 		}
 	}
 
