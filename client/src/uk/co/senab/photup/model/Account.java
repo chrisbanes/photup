@@ -20,7 +20,8 @@ import android.text.TextUtils;
 import com.facebook.android.Facebook;
 import com.facebook.android.FacebookError;
 
-public class Account extends AbstractFacebookObject implements AlbumsResultListener, EventsResultListener, GroupsResultListener {
+public class Account extends AbstractFacebookObject implements AlbumsResultListener, EventsResultListener,
+		GroupsResultListener {
 
 	private final String mAccessToken;
 	private final long mAccessExpires;
@@ -29,7 +30,7 @@ public class Account extends AbstractFacebookObject implements AlbumsResultListe
 	private AlbumsResultListener mAlbumsListener;
 	private GroupsResultListener mGroupsListener;
 	private EventsResultListener mEventsListener;
-	
+
 	private ArrayList<Album> mAlbums;
 	private ArrayList<Event> mEvents;
 	private ArrayList<Group> mGroups;
@@ -51,7 +52,7 @@ public class Account extends AbstractFacebookObject implements AlbumsResultListe
 	public String getAccessToken() {
 		return mAccessToken;
 	}
-	
+
 	public boolean isMainAccount() {
 		return mIsMainAccount;
 	}
@@ -60,7 +61,7 @@ public class Account extends AbstractFacebookObject implements AlbumsResultListe
 		if (null == mAlbums) {
 			mAlbums = new ArrayList<Album>();
 		}
-		
+
 		if (forceRefresh || mAlbums.isEmpty()) {
 			mAlbumsListener = listener;
 			new AlbumsAsyncTask(this, this).execute();
@@ -68,12 +69,12 @@ public class Account extends AbstractFacebookObject implements AlbumsResultListe
 			listener.onAlbumsLoaded(mAlbums);
 		}
 	}
-	
+
 	public void getGroups(GroupsResultListener listener, boolean forceRefresh) {
 		if (null == mGroups) {
 			mGroups = new ArrayList<Group>();
 		}
-		
+
 		if (forceRefresh || mGroups.isEmpty()) {
 			mGroupsListener = listener;
 			new GroupsAsyncTask(this, this).execute();
@@ -81,12 +82,12 @@ public class Account extends AbstractFacebookObject implements AlbumsResultListe
 			listener.onGroupsLoaded(mGroups);
 		}
 	}
-	
+
 	public void getEvents(EventsResultListener listener, boolean forceRefresh) {
 		if (null == mEvents) {
 			mEvents = new ArrayList<Event>();
 		}
-		
+
 		if (forceRefresh || mEvents.isEmpty()) {
 			mEventsListener = listener;
 			new EventsAsyncTask(this, this).execute();
@@ -100,8 +101,11 @@ public class Account extends AbstractFacebookObject implements AlbumsResultListe
 	}
 
 	public static Account getMeFromSession(Session session) {
-		final Facebook fb = session.getFb();
-		return new Account(session.getUid(), session.getName(), fb.getAccessToken(), fb.getAccessExpires());
+		if (null != session) {
+			final Facebook fb = session.getFb();
+			return new Account(session.getUid(), session.getName(), fb.getAccessToken(), fb.getAccessExpires());
+		}
+		return null;
 	}
 
 	public static Account getAccountFromSession(Context context) {
@@ -140,7 +144,7 @@ public class Account extends AbstractFacebookObject implements AlbumsResultListe
 				mGroupsListener.onGroupsLoaded(mGroups);
 				mGroupsListener = null;
 			}
-		}		
+		}
 	}
 
 	public void onEventsLoaded(List<Event> events) {
@@ -152,7 +156,7 @@ public class Account extends AbstractFacebookObject implements AlbumsResultListe
 				mEventsListener.onEventsLoaded(mEvents);
 				mEventsListener = null;
 			}
-		}		
+		}
 	}
 
 }
