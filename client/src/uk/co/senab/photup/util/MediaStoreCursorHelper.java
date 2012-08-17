@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import uk.co.senab.photup.model.MediaStoreBucket;
-import uk.co.senab.photup.model.MediaStorePhotoUpload;
 import uk.co.senab.photup.model.PhotoSelection;
 import android.content.Context;
 import android.database.Cursor;
@@ -43,7 +42,7 @@ public class MediaStoreCursorHelper {
 		try {
 			File file = new File(cursor.getString(cursor.getColumnIndexOrThrow(ImageColumns.DATA)));
 			if (file.exists()) {
-				item = new MediaStorePhotoUpload(contentUri, cursor.getInt(cursor
+				item = new PhotoSelection(contentUri, cursor.getInt(cursor
 						.getColumnIndexOrThrow(ImageColumns._ID)));
 			}
 		} catch (Exception e) {

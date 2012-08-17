@@ -5,7 +5,6 @@ import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PreferenceConstants;
 import uk.co.senab.photup.model.Account;
 import uk.co.senab.photup.model.Filter;
-import uk.co.senab.photup.model.MediaStorePhotoUpload;
 import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.model.UploadQuality;
 import android.content.BroadcastReceiver;
@@ -45,7 +44,7 @@ public class PhotoWatcherReceiver extends BroadcastReceiver {
 				return;
 			}
 
-			final PhotoSelection upload = new MediaStorePhotoUpload(uri);
+			final PhotoSelection upload = new PhotoSelection(uri);
 			final String qualityId = prefs.getString(PreferenceConstants.PREF_INSTANT_UPLOAD_QUALITY, null);
 			final String filterId = prefs.getString(PreferenceConstants.PREF_INSTANT_UPLOAD_FILTER, "0");
 
