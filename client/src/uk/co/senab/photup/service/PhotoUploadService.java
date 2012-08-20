@@ -49,7 +49,6 @@ import com.facebook.android.Facebook;
 import com.facebook.android.FacebookError;
 import com.facebook.android.Util;
 import com.jakewharton.notificationcompat2.NotificationCompat2;
-import com.jakewharton.notificationcompat2.NotificationCompat2.BigPictureStyle;
 
 public class PhotoUploadService extends Service implements Handler.Callback {
 
@@ -218,7 +217,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 				try {
 					JSONObject object = Util.parseJson(response);
 					mUpload.setResultPostId(object.optString("post_id", null));
-					
+
 					// If we get here, we've successfully uploaded the photos
 					mHandler.sendMessage(mHandler.obtainMessage(MSG_UPLOAD_COMPLETE, mUpload));
 					return;
@@ -287,7 +286,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 	private NotificationManager mNotificationMgr;
 	private NotificationCompat2.Builder mNotificationBuilder;
-	private BigPictureStyle mBigPicStyle;
+	private NotificationCompat2.BigPictureStyle mBigPicStyle;
 
 	private String mNotificationSubtitle;
 
@@ -396,7 +395,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		}
 
 		if (null == mBigPicStyle) {
-			mBigPicStyle = new BigPictureStyle(mNotificationBuilder);
+			mBigPicStyle = new NotificationCompat2.BigPictureStyle(mNotificationBuilder);
 		}
 
 		startForeground(NOTIFICATION_ID, mNotificationBuilder.build());
@@ -426,9 +425,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 				text = getString(R.string.notification_uploading_photo_progress, mNumberUploaded + 1,
 						upload.getUploadProgress());
 				mNotificationBuilder.setContentTitle(text);
-
-				// TODO Fix ordering when Jake updates lib
-				mNotificationBuilder.setProgress(upload.getUploadProgress(), 100, false);
+				mNotificationBuilder.setProgress(100, upload.getUploadProgress(), false);
 				break;
 		}
 
