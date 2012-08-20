@@ -54,9 +54,11 @@ public class CropImageActivity extends PhotupActivity implements OnPhotoLoadList
 				return true;
 
 			case R.id.menu_crop_ok:
-				mPhotoUpload.setCropValues(mHighlightView.getCropRect());
-				setResult(RESULT_OK);
-				finish();
+				if (null != mHighlightView) {
+					mPhotoUpload.setCropValues(mHighlightView.getCropRect());
+					setResult(RESULT_OK);
+					finish();
+				}
 				return true;
 		}
 
