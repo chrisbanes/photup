@@ -13,6 +13,7 @@ import android.os.Bundle;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.Window;
 
 public class CropImageActivity extends PhotupActivity implements OnPhotoLoadListener {
 
@@ -27,6 +28,8 @@ public class CropImageActivity extends PhotupActivity implements OnPhotoLoadList
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+
 		mCropImageView = new CropImageView(this, null);
 		Platform.disableHardwareAcceleration(mCropImageView);
 
@@ -36,12 +39,19 @@ public class CropImageActivity extends PhotupActivity implements OnPhotoLoadList
 		mPhotoUpload = CROP_SELECTION;
 		CROP_SELECTION = null;
 
+		setProgressBarIndeterminateVisibility(true);
 		mCropImageView.requestFullSize(mPhotoUpload, false, this);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getSupportMenuInflater().inflate(R.menu.menu_photo_crop, menu);
+
+		// Remove OK Menu Item if we're not loaded yet
+		if (null == mHighlightView) {
+			menu.removeItem(R.id.menu_crop_ok);
+		}
+
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -81,6 +91,9 @@ public class CropImageActivity extends PhotupActivity implements OnPhotoLoadList
 		mHighlightView.setup(mCropImageView.getImageMatrix(), imageRect, cropRect, false);
 
 		mCropImageView.setHighlight(mHighlightView);
+
+		// Refresh Menu so we have the OK item
+		supportInvalidateOptionsMenu();
 	}
 
 	@Override
@@ -90,6 +103,8 @@ public class CropImageActivity extends PhotupActivity implements OnPhotoLoadList
 	}
 
 	public void onPhotoLoadFinished(Bitmap bitmap) {
+		setProgressBarIndeterminateVisibility(false);
+
 		if (null != bitmap) {
 			makeHighlight(bitmap);
 		}
