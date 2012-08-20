@@ -7,7 +7,6 @@ import uk.co.senab.photup.model.MediaStoreBucket;
 import uk.co.senab.photup.util.MediaStoreCursorHelper;
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore.Images;
 
@@ -27,27 +26,22 @@ public class MediaStoreBucketsAsyncTask extends AsyncTask<Void, Void, List<Media
 
 	@Override
 	protected List<MediaStoreBucket> doInBackground(Void... params) {
+		List<MediaStoreBucket> result = null;
 		Context context = mContext.get();
+		
 		if (null != context) {
+			Cursor cursor = MediaStoreCursorHelper.openPhotosCursor(context, Images.Media.EXTERNAL_CONTENT_URI);
 
-			Uri contentUri = Images.Media.EXTERNAL_CONTENT_URI;
-
-			Cursor cursor = MediaStoreCursorHelper.openPhotosCursor(context, contentUri);
-			if (cursor.getCount() == 0) {
+			if (null != cursor) {
+				if (cursor.getCount() > 0) {
+					result = MediaStoreCursorHelper.photosCursorToBucketList(cursor,
+							MediaStoreBucket.getAllPhotosBucket(context));
+				}
 				cursor.close();
-
-				contentUri = Images.Media.INTERNAL_CONTENT_URI;
-				cursor = MediaStoreCursorHelper.openPhotosCursor(context, contentUri);
 			}
-
-			List<MediaStoreBucket> selection = MediaStoreCursorHelper.photosCursorToBucketList(cursor,
-					MediaStoreBucket.getAllPhotosBucket(context));
-
-			cursor.close();
-
-			return selection;
 		}
-		return null;
+
+		return result;
 	}
 
 	@Override
