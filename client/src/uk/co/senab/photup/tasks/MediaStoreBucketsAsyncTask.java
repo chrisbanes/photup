@@ -1,6 +1,7 @@
 package uk.co.senab.photup.tasks;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 
 import uk.co.senab.photup.model.MediaStoreBucket;
@@ -25,17 +26,19 @@ public class MediaStoreBucketsAsyncTask extends AsyncTask<Void, Void, List<Media
 
 	@Override
 	protected List<MediaStoreBucket> doInBackground(Void... params) {
-		List<MediaStoreBucket> result = null;
+		ArrayList<MediaStoreBucket> result = null;
 		Context context = mContext.get();
-		
+
 		if (null != context) {
-			Cursor cursor = MediaStoreCursorHelper.openPhotosCursor(context, MediaStoreCursorHelper.MEDIA_STORE_CONTENT_URI);
+			// Add 'All Photos' item
+			result = new ArrayList<MediaStoreBucket>();
+			result.add(MediaStoreBucket.getAllPhotosBucket(context));
+
+			Cursor cursor = MediaStoreCursorHelper.openPhotosCursor(context,
+					MediaStoreCursorHelper.MEDIA_STORE_CONTENT_URI);
 
 			if (null != cursor) {
-				if (cursor.getCount() > 0) {
-					result = MediaStoreCursorHelper.photosCursorToBucketList(cursor,
-							MediaStoreBucket.getAllPhotosBucket(context));
-				}
+				MediaStoreCursorHelper.photosCursorToBucketList(cursor, result);
 				cursor.close();
 			}
 		}

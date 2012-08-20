@@ -145,12 +145,13 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 		super.onAttach(activity);
 	}
 
-	public void onBucketsLoaded(List<MediaStoreBucket> buckets) {
-		mBuckets.clear();
-		mBuckets.addAll(buckets);
-		mBucketAdapter.notifyDataSetChanged();
-
-		setSelectedBucketFromPrefs();
+	public void onBucketsLoaded(final List<MediaStoreBucket> buckets) {
+		if (null != buckets && !buckets.isEmpty()) {
+			mBuckets.clear();
+			mBuckets.addAll(buckets);
+			mBucketAdapter.notifyDataSetChanged();
+			setSelectedBucketFromPrefs();
+		}
 	}
 
 	public void onCreate(Bundle savedInstanceState) {
