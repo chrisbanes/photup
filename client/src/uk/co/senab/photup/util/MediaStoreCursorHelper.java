@@ -22,17 +22,19 @@ public class MediaStoreCursorHelper {
 
 	public static ArrayList<PhotoSelection> photosCursorToSelectionList(Uri contentUri, Cursor cursor) {
 		ArrayList<PhotoSelection> items = new ArrayList<PhotoSelection>(cursor.getCount());
-
 		PhotoSelection item;
-		while (cursor.moveToNext()) {
-			try {
-				item = photosCursorToSelection(contentUri, cursor);
-				if (null != item) {
-					items.add(item);
+
+		if (cursor.moveToFirst()) {
+			do {
+				try {
+					item = photosCursorToSelection(contentUri, cursor);
+					if (null != item) {
+						items.add(item);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			} while (cursor.moveToNext());
 		}
 
 		return items;
@@ -59,15 +61,17 @@ public class MediaStoreCursorHelper {
 		final int idColumn = cursor.getColumnIndex(ImageColumns.BUCKET_ID);
 		final int nameColumn = cursor.getColumnIndex(ImageColumns.BUCKET_DISPLAY_NAME);
 
-		while (cursor.moveToNext()) {
-			try {
-				final String bucketId = cursor.getString(idColumn);
-				if (bucketIds.add(bucketId)) {
-					items.add(new MediaStoreBucket(bucketId, cursor.getString(nameColumn)));
+		if (cursor.moveToFirst()) {
+			do {
+				try {
+					final String bucketId = cursor.getString(idColumn);
+					if (bucketIds.add(bucketId)) {
+						items.add(new MediaStoreBucket(bucketId, cursor.getString(nameColumn)));
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			} while (cursor.moveToNext());
 		}
 	}
 
