@@ -46,7 +46,8 @@ public class MediaStoreCursorHelper {
 		try {
 			File file = new File(cursor.getString(cursor.getColumnIndexOrThrow(ImageColumns.DATA)));
 			if (file.exists()) {
-				item = new PhotoSelection(contentUri, cursor.getInt(cursor.getColumnIndexOrThrow(ImageColumns._ID)));
+				item = PhotoSelection.getSelection(contentUri,
+						cursor.getInt(cursor.getColumnIndexOrThrow(ImageColumns._ID)));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

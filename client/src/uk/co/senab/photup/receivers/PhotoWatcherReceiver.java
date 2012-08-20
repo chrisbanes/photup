@@ -44,7 +44,7 @@ public class PhotoWatcherReceiver extends BroadcastReceiver {
 				return;
 			}
 
-			final PhotoSelection upload = new PhotoSelection(uri);
+			final PhotoSelection upload = PhotoSelection.getSelection(uri);
 			final String qualityId = prefs.getString(PreferenceConstants.PREF_INSTANT_UPLOAD_QUALITY, null);
 			final String filterId = prefs.getString(PreferenceConstants.PREF_INSTANT_UPLOAD_FILTER, "0");
 

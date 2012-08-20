@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -34,6 +35,8 @@ import com.lightbox.android.photoprocessing.utils.FileUtils;
 
 public class PhotoSelection extends PhotoUpload {
 
+	private static final HashMap<Uri, PhotoSelection> SELECTION_CACHE = new HashMap<Uri, PhotoSelection>();
+
 	public static final int STATE_UPLOAD_COMPLETED = 2;
 	public static final int STATE_UPLOAD_ERROR = 3;
 	public static final int STATE_UPLOAD_IN_PROGRESS = 1;
@@ -58,13 +61,25 @@ public class PhotoSelection extends PhotoUpload {
 
 	private final Uri mFullUri;
 
-	public PhotoSelection(Uri uri) {
-		mFullUri = uri;
-		reset();
+	public static PhotoSelection getSelection(Uri uri) {
+		// Check whether we've already got a Selection cached
+		PhotoSelection item = SELECTION_CACHE.get(uri);
+
+		if (null == item) {
+			item = new PhotoSelection(uri);
+			SELECTION_CACHE.put(uri, item);
+		}
+
+		return item;
 	}
 
-	public PhotoSelection(Uri baseUri, long id) {
-		this(Uri.withAppendedPath(baseUri, String.valueOf(id)));
+	public static PhotoSelection getSelection(Uri baseUri, long id) {
+		return getSelection(Uri.withAppendedPath(baseUri, String.valueOf(id)));
+	}
+
+	private PhotoSelection(Uri uri) {
+		mFullUri = uri;
+		reset();
 	}
 
 	public void addPhotoTag(PhotoTag tag) {
