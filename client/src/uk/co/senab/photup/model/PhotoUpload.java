@@ -26,7 +26,7 @@ public class PhotoUpload {
 	private UploadQuality mQuality;
 	private String mResultPostId;
 	private int mState;
-	
+
 	private WeakReference<OnUploadStateChanged> mStateListener;
 
 	public PhotoUpload() {
@@ -44,11 +44,11 @@ public class PhotoUpload {
 	public Bitmap getBigPictureNotificationBmp() {
 		return mBigPictureNotificationBmp;
 	}
-	
+
 	public Place getPlace() {
 		return mPlace;
 	}
-	
+
 	public boolean hasPlace() {
 		return null != mPlace;
 	}
@@ -64,11 +64,11 @@ public class PhotoUpload {
 	public int getState() {
 		return mState;
 	}
-	
+
 	public int getUploadProgress() {
 		return mProgress;
 	}
-	
+
 	public void removeUploadStateChangedListener() {
 		mStateListener = null;
 	}
@@ -96,10 +96,8 @@ public class PhotoUpload {
 			switch (state) {
 				case STATE_UPLOAD_ERROR:
 				case STATE_UPLOAD_COMPLETED:
-					if (null != mBigPictureNotificationBmp) {
-						mBigPictureNotificationBmp.recycle();
-						mBigPictureNotificationBmp = null;
-					}
+					mBigPictureNotificationBmp = null;
+					break;
 				case STATE_WAITING:
 					mProgress = -1;
 					break;
