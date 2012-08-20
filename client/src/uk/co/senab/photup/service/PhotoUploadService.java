@@ -408,8 +408,13 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	void updateNotification(final PhotoSelection upload) {
 		String text;
 
-		if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN && null == upload.getBigPictureNotificationBmp()) {
-			mExecutor.submit(new UpdateBigPictureStyleRunnable(upload));
+		if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) {
+			final Bitmap uploadBigPic = upload.getBigPictureNotificationBmp();
+			
+			if (null == uploadBigPic) {
+				mExecutor.submit(new UpdateBigPictureStyleRunnable(upload));
+			}
+			mBigPicStyle.bigPicture(uploadBigPic);
 		}
 
 		switch (upload.getState()) {
@@ -429,7 +434,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 				break;
 		}
 
-		mBigPicStyle.setSummaryText(mNotificationSubtitle).bigPicture(upload.getBigPictureNotificationBmp());
+		mBigPicStyle.setSummaryText(mNotificationSubtitle);
 
 		mNotificationMgr.notify(NOTIFICATION_ID, mBigPicStyle.build());
 	}
