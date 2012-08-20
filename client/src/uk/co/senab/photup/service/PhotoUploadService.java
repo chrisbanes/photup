@@ -42,13 +42,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.facebook.android.Facebook;
 import com.facebook.android.FacebookError;
 import com.facebook.android.Util;
+import com.jakewharton.notificationcompat2.NotificationCompat2;
+import com.jakewharton.notificationcompat2.NotificationCompat2.BigPictureStyle;
 
 public class PhotoUploadService extends Service implements Handler.Callback {
 
@@ -217,7 +218,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 				try {
 					JSONObject object = Util.parseJson(response);
 					mUpload.setResultPostId(object.optString("post_id", null));
-
+					
 					// If we get here, we've successfully uploaded the photos
 					mHandler.sendMessage(mHandler.obtainMessage(MSG_UPLOAD_COMPLETE, mUpload));
 					return;
@@ -285,8 +286,8 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	private int mNumberUploaded = 0;
 
 	private NotificationManager mNotificationMgr;
-	private NotificationCompat.Builder mNotificationBuilder;
-	private NotificationCompat.BigPictureStyle mBigPicStyle;
+	private NotificationCompat2.Builder mNotificationBuilder;
+	private BigPictureStyle mBigPicStyle;
 
 	private String mNotificationSubtitle;
 
@@ -383,7 +384,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 	private void startForeground() {
 		if (null == mNotificationBuilder) {
-			mNotificationBuilder = new NotificationCompat.Builder(this);
+			mNotificationBuilder = new NotificationCompat2.Builder(this);
 			mNotificationBuilder.setSmallIcon(R.drawable.ic_stat_upload);
 			mNotificationBuilder.setContentTitle(getString(R.string.app_name));
 			mNotificationBuilder.setOngoing(true);
@@ -395,7 +396,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		}
 
 		if (null == mBigPicStyle) {
-			mBigPicStyle = new NotificationCompat.BigPictureStyle(mNotificationBuilder);
+			mBigPicStyle = new BigPictureStyle(mNotificationBuilder);
 		}
 
 		startForeground(NOTIFICATION_ID, mNotificationBuilder.build());
@@ -425,7 +426,9 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 				text = getString(R.string.notification_uploading_photo_progress, mNumberUploaded + 1,
 						upload.getUploadProgress());
 				mNotificationBuilder.setContentTitle(text);
-				mNotificationBuilder.setProgress(100, upload.getUploadProgress(), false);
+
+				// TODO Fix ordering when Jake updates lib
+				mNotificationBuilder.setProgress(upload.getUploadProgress(), 100, false);
 				break;
 		}
 
