@@ -47,6 +47,13 @@ public class PhotoUploadController {
 			}
 		}
 	}
+	
+	public void addPhotoSelections(List<PhotoSelection> selections) {
+		for (PhotoSelection selection : selections) {
+			// TODO Think of quicker way for this
+			addPhotoSelection(selection);
+		}
+	}
 
 	public void clearPhotoSelections() {
 		if (!mSelectedPhotoList.isEmpty()) {

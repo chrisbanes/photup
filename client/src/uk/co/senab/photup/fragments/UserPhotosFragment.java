@@ -270,6 +270,15 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 		// NO-OP
 	}
 
+	public void selectAll() {
+		Cursor cursor = mPhotoAdapter.getCursor();
+		if (null != cursor) {
+			ArrayList<PhotoSelection> selections = MediaStoreCursorHelper.photosCursorToSelectionList(
+					MediaStoreCursorHelper.MEDIA_STORE_CONTENT_URI, cursor);
+			mPhotoSelectionController.addPhotoSelections(selections);
+		}
+	}
+
 	public void onPhotoSelectionChanged(PhotoSelection upload, boolean added) {
 		for (int i = 0, z = mPhotoGrid.getChildCount(); i < z; i++) {
 			View view = mPhotoGrid.getChildAt(i);

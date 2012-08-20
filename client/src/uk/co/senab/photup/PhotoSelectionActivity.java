@@ -116,6 +116,11 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 				return true;
 
 			case R.id.menu_select_all:
+				UserPhotosFragment fragment = (UserPhotosFragment) getSupportFragmentManager().findFragmentById(
+						R.id.fl_fragment);
+				if (null != fragment) {
+					fragment.selectAll();
+				}
 				return true;
 		}
 
