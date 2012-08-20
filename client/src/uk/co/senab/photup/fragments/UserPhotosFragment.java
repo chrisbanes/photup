@@ -26,9 +26,9 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
@@ -186,7 +186,7 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 					}
 				}
 
-				cursorLoader = new CursorLoader(getActivity(), Images.Media.EXTERNAL_CONTENT_URI,
+				cursorLoader = new CursorLoader(getActivity(), MediaStoreCursorHelper.MEDIA_STORE_CONTENT_URI,
 						MediaStoreCursorHelper.PHOTOS_PROJECTION, selection, selectionArgs,
 						MediaStoreCursorHelper.PHOTOS_ORDER_BY);
 				break;

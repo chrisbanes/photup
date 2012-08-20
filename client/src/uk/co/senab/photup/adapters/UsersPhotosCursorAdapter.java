@@ -9,7 +9,6 @@ import uk.co.senab.photup.views.PhotoItemLayout;
 import uk.co.senab.photup.views.PhotupImageView;
 import android.content.Context;
 import android.database.Cursor;
-import android.provider.MediaStore.Images;
 import android.support.v4.widget.ResourceCursorAdapter;
 import android.view.View;
 import android.widget.Checkable;
@@ -30,8 +29,8 @@ public class UsersPhotosCursorAdapter extends ResourceCursorAdapter {
 		PhotoItemLayout layout = (PhotoItemLayout) view;
 		PhotupImageView iv = layout.getImageView();
 
-		final PhotoSelection upload = MediaStoreCursorHelper.photosCursorToSelection(Images.Media.EXTERNAL_CONTENT_URI,
-				cursor);
+		final PhotoSelection upload = MediaStoreCursorHelper.photosCursorToSelection(
+				MediaStoreCursorHelper.MEDIA_STORE_CONTENT_URI, cursor);
 
 		if (null != upload) {
 			iv.setFadeInDrawables(true);

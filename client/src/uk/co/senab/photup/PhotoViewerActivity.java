@@ -450,7 +450,7 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 			selectionArgs = new String[] { mBucketId };
 		}
 
-		return new CursorLoader(this, Images.Media.EXTERNAL_CONTENT_URI, MediaStoreCursorHelper.PHOTOS_PROJECTION,
+		return new CursorLoader(this, MediaStoreCursorHelper.MEDIA_STORE_CONTENT_URI, MediaStoreCursorHelper.PHOTOS_PROJECTION,
 				selection, selectionArgs, MediaStoreCursorHelper.PHOTOS_ORDER_BY);
 	}
 

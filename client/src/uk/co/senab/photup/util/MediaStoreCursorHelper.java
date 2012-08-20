@@ -17,6 +17,8 @@ public class MediaStoreCursorHelper {
 	public static final String[] PHOTOS_PROJECTION = { Images.Media._ID, Images.Media.MINI_THUMB_MAGIC,
 			Images.Media.DATA, Images.Media.BUCKET_DISPLAY_NAME, Images.Media.BUCKET_ID };
 	public static final String PHOTOS_ORDER_BY = Images.Media.DATE_ADDED + " desc";
+	
+	public static final Uri MEDIA_STORE_CONTENT_URI = Images.Media.EXTERNAL_CONTENT_URI;
 
 	public static ArrayList<PhotoSelection> photosCursorToSelectionList(Uri contentUri, Cursor cursor) {
 		ArrayList<PhotoSelection> items = new ArrayList<PhotoSelection>(cursor.getCount());

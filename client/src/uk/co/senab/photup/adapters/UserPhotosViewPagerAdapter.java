@@ -11,7 +11,6 @@ import uk.co.senab.photup.views.MultiTouchImageView;
 import uk.co.senab.photup.views.PhotoTagItemLayout;
 import android.content.Context;
 import android.database.Cursor;
-import android.provider.MediaStore.Images;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,8 +41,8 @@ public class UserPhotosViewPagerAdapter extends CursorPagerAdapter {
 	}
 
 	@Override
-	public View newView(Context context, Cursor cursor, ViewGroup parent) {
-		final PhotoSelection upload = MediaStoreCursorHelper.photosCursorToSelection(Images.Media.EXTERNAL_CONTENT_URI,
+	public View newView(Context context, Cursor cursor, ViewGroup parent) {	
+		final PhotoSelection upload = MediaStoreCursorHelper.photosCursorToSelection(MediaStoreCursorHelper.MEDIA_STORE_CONTENT_URI,
 				cursor);
 
 		PhotoTagItemLayout view = null;

@@ -8,7 +8,6 @@ import uk.co.senab.photup.util.MediaStoreCursorHelper;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
-import android.provider.MediaStore.Images;
 
 public class MediaStoreBucketsAsyncTask extends AsyncTask<Void, Void, List<MediaStoreBucket>> {
 
@@ -30,7 +29,7 @@ public class MediaStoreBucketsAsyncTask extends AsyncTask<Void, Void, List<Media
 		Context context = mContext.get();
 		
 		if (null != context) {
-			Cursor cursor = MediaStoreCursorHelper.openPhotosCursor(context, Images.Media.EXTERNAL_CONTENT_URI);
+			Cursor cursor = MediaStoreCursorHelper.openPhotosCursor(context, MediaStoreCursorHelper.MEDIA_STORE_CONTENT_URI);
 
 			if (null != cursor) {
 				if (cursor.getCount() > 0) {
