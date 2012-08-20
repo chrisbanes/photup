@@ -90,7 +90,7 @@ public class UploadsFragment extends SherlockListFragment implements OnPhotoSele
 		}
 	}
 
-	public void onSelectionsAddedToUploads() {
+	public void onPhotoSelectionsCleared() {
 		mAdapter.notifyDataSetChanged();
 	}
 

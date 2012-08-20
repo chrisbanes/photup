@@ -64,16 +64,21 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		if (getSupportActionBar().getSelectedNavigationIndex() <= TAB_SELECTED) {
-			getSupportMenuInflater().inflate(R.menu.menu_photo_grid, menu);
+		switch (getSupportActionBar().getSelectedNavigationIndex()) {
+			case TAB_PHOTOS:
+				getSupportMenuInflater().inflate(R.menu.menu_photo_grid_users, menu);
+				setupUploadActionBarView(menu);
+				break;
 
-			MenuItem item = menu.findItem(R.id.menu_upload);
-			mUploadActionView = (UploadActionBarView) item.getActionView();
-			mUploadActionView.setOnClickListener(this);
-			refreshUploadActionBarView();
-		} else {
-			getSupportMenuInflater().inflate(R.menu.menu_photo_grid_uploads, menu);
-			mUploadActionView = null;
+			case TAB_SELECTED:
+				getSupportMenuInflater().inflate(R.menu.menu_photo_grid_selected, menu);
+				setupUploadActionBarView(menu);
+				break;
+
+			case TAB_UPLOADS:
+				getSupportMenuInflater().inflate(R.menu.menu_photo_grid_uploads, menu);
+				mUploadActionView = null;
+				break;
 		}
 
 		return super.onCreateOptionsMenu(menu);
@@ -81,7 +86,6 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-
 		switch (item.getItemId()) {
 			case android.R.id.home:
 				startActivity(new Intent(this, LoginActivity.class));
@@ -105,7 +109,14 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 				if (mPhotoController.moveFailedToSelected()) {
 					getSupportActionBar().setSelectedNavigationItem(TAB_SELECTED);
 				}
-				break;
+				return true;
+
+			case R.id.menu_clear_selection:
+				mPhotoController.clearPhotoSelections();
+				return true;
+
+			case R.id.menu_select_all:
+				return true;
 		}
 
 		return super.onOptionsItemSelected(item);
@@ -147,7 +158,7 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 		super.onSaveInstanceState(outState);
 	}
 
-	public void onSelectionsAddedToUploads() {
+	public void onPhotoSelectionsCleared() {
 		addUploadTab();
 		refreshSelectedTabTitle();
 		refreshUploadActionBarView();
@@ -200,6 +211,13 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 
 	public void onTabReselected(Tab tab, FragmentTransaction ft) {
 		// NO-OP
+	}
+
+	private void setupUploadActionBarView(Menu menu) {
+		MenuItem item = menu.findItem(R.id.menu_upload);
+		mUploadActionView = (UploadActionBarView) item.getActionView();
+		mUploadActionView.setOnClickListener(this);
+		refreshUploadActionBarView();
 	}
 
 	private void refreshUploadActionBarView() {

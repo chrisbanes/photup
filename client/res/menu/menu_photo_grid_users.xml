@@ -7,6 +7,10 @@
 		android:showAsAction="always"
 		android:title="@string/upload_title"/>
 	<item
+		android:id="@+id/menu_select_all"
+		android:showAsAction="never"
+		android:title="@string/select_all"/>
+	<item
 		android:id="@+id/menu_settings"
 		android:showAsAction="never"
 		android:title="@string/settings"/>

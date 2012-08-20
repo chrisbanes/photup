@@ -48,6 +48,16 @@ public class PhotoUploadController {
 		}
 	}
 
+	public void clearPhotoSelections() {
+		if (!mSelectedPhotoList.isEmpty()) {
+			mSelectedPhotoList.clear();
+			
+			for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
+				l.onPhotoSelectionsCleared();
+			}
+		}
+	}
+
 	public void removePhotoSelection(final PhotoSelection upload) {
 		if (mSelectedPhotoList.remove(upload)) {
 
@@ -113,7 +123,7 @@ public class PhotoUploadController {
 
 		while (iterator.hasNext()) {
 			upload = iterator.next();
-			
+
 			if (upload.getState() == PhotoUpload.STATE_UPLOAD_ERROR) {
 				// Reset State and add to selection list
 				upload.setState(PhotoUpload.STATE_WAITING);
@@ -146,7 +156,7 @@ public class PhotoUploadController {
 			mUploadingList.add(upload);
 
 			for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
-				l.onSelectionsAddedToUploads();
+				l.onPhotoSelectionsCleared();
 			}
 
 			return true;
@@ -167,7 +177,7 @@ public class PhotoUploadController {
 		}
 
 		for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
-			l.onSelectionsAddedToUploads();
+			l.onPhotoSelectionsCleared();
 		}
 	}
 

@@ -295,7 +295,7 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 		super.onSaveInstanceState(outState);
 	}
 
-	public void onSelectionsAddedToUploads() {
+	public void onPhotoSelectionsCleared() {
 		mPhotoAdapter.notifyDataSetChanged();
 	}
 

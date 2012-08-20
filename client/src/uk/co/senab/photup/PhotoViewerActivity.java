@@ -219,7 +219,7 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 		return hideFiltersView();
 	}
 
-	public void onSelectionsAddedToUploads() {
+	public void onPhotoSelectionsCleared() {
 		mAdapter.notifyDataSetChanged();
 	}
 
