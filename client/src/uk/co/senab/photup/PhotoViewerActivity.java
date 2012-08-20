@@ -225,9 +225,12 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 
 	public void onPhotoSelectionChanged(PhotoSelection upload, boolean added) {
 		if (mMode == MODE_SELECTED_VALUE) {
-			View view = getCurrentView();
-			mFadeOutAnimation.setAnimationListener(new PhotoRemoveAnimListener(view));
-			view.startAnimation(mFadeOutAnimation);
+			PhotoTagItemLayout view = getCurrentView();
+
+			if (upload.equals(view.getPhotoSelection())) {
+				mFadeOutAnimation.setAnimationListener(new PhotoRemoveAnimListener(view));
+				view.startAnimation(mFadeOutAnimation);
+			}
 		}
 	}
 
@@ -450,8 +453,9 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 			selectionArgs = new String[] { mBucketId };
 		}
 
-		return new CursorLoader(this, MediaStoreCursorHelper.MEDIA_STORE_CONTENT_URI, MediaStoreCursorHelper.PHOTOS_PROJECTION,
-				selection, selectionArgs, MediaStoreCursorHelper.PHOTOS_ORDER_BY);
+		return new CursorLoader(this, MediaStoreCursorHelper.MEDIA_STORE_CONTENT_URI,
+				MediaStoreCursorHelper.PHOTOS_PROJECTION, selection, selectionArgs,
+				MediaStoreCursorHelper.PHOTOS_ORDER_BY);
 	}
 
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
@@ -467,5 +471,9 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 
 	public void onLoaderReset(Loader<Cursor> loader) {
 		onLoadFinished(loader, null);
+	}
+
+	public void onPhotoSelectionsAdded() {
+		mAdapter.notifyDataSetChanged();
 	}
 }

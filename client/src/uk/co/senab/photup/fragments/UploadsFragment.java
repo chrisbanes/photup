@@ -52,6 +52,7 @@ public class UploadsFragment extends SherlockListFragment implements OnPhotoSele
 	}
 
 	public void onPhotoSelectionChanged(PhotoSelection upload, boolean added) {
+		// NO-OP
 	}
 
 	@Override
@@ -114,6 +115,10 @@ public class UploadsFragment extends SherlockListFragment implements OnPhotoSele
 	}
 
 	public void onUploadsCleared() {
+		// NO-OP
+	}
+
+	public void onPhotoSelectionsAdded() {
 		// NO-OP
 	}
 

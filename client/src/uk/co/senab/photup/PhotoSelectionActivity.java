@@ -309,4 +309,9 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 		}
 	}
 
+	public void onPhotoSelectionsAdded() {
+		refreshSelectedTabTitle();
+		refreshUploadActionBarView();
+	}
+
 }

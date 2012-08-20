@@ -102,4 +102,8 @@ public class SelectedPhotosFragment extends SherlockFragment implements OnPhotoS
 	public void onUploadsCleared() {
 		// NO-OP
 	}
+
+	public void onPhotoSelectionsAdded() {
+		mAdapter.notifyDataSetChanged();
+	}
 }

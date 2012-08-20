@@ -5,6 +5,8 @@ import uk.co.senab.photup.model.PhotoSelection;
 public interface OnPhotoSelectionChangedListener {
 
 	void onPhotoSelectionChanged(PhotoSelection upload, boolean added);
+	
+	void onPhotoSelectionsAdded();
 
 	void onPhotoSelectionsCleared();
 

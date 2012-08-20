@@ -279,6 +279,10 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 		}
 	}
 
+	public void onPhotoSelectionsAdded() {
+		mPhotoAdapter.notifyDataSetChanged();
+	}
+
 	public void onPhotoSelectionChanged(PhotoSelection upload, boolean added) {
 		for (int i = 0, z = mPhotoGrid.getChildCount(); i < z; i++) {
 			View view = mPhotoGrid.getChildAt(i);

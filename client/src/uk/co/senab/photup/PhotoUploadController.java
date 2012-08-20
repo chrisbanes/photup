@@ -47,18 +47,29 @@ public class PhotoUploadController {
 			}
 		}
 	}
-	
+
 	public void addPhotoSelections(List<PhotoSelection> selections) {
-		for (PhotoSelection selection : selections) {
-			// TODO Think of quicker way for this
-			addPhotoSelection(selection);
+		final HashSet<PhotoSelection> currentSelectionsSet = new HashSet<PhotoSelection>(mSelectedPhotoList);
+		boolean callListeners = false;
+
+		for (final PhotoSelection selection : selections) {
+			if (!currentSelectionsSet.contains(selection)) {
+				mSelectedPhotoList.add(selection);
+				callListeners = true;
+			}
+		}
+
+		if (callListeners) {
+			for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
+				l.onPhotoSelectionsAdded();
+			}
 		}
 	}
 
 	public void clearPhotoSelections() {
 		if (!mSelectedPhotoList.isEmpty()) {
 			mSelectedPhotoList.clear();
-			
+
 			for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
 				l.onPhotoSelectionsCleared();
 			}
