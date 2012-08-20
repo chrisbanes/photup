@@ -164,7 +164,9 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 	}
 
 	public void onPhotoSelectionsCleared() {
-		addUploadTab();
+		if (mPhotoController.getActiveUploadsSize() > 0) {
+			addUploadTab();
+		}
 		refreshSelectedTabTitle();
 		refreshUploadActionBarView();
 	}
