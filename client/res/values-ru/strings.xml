@@ -42,6 +42,8 @@
 	<string name="logout_prompt_title">Вы уверены?</string>
 	<string name="libraries">Библиотеки</string>
 	<string name="settings">Настройки</string>
+	<string name="select_all">Select All</string>
+	<string name="clear_selection">Clear Selection</string>
 	<string name="places_search_hint">Поиск</string>
 	<string name="pref_instant_upload_title">Быстрая загрузка</string>
 	<string name="pref_instant_upload_album_title">Альбом</string>
@@ -60,4 +62,5 @@
 	<string name="dialog_place_overwrite_text">Вы выбрали место здесь и еще на нескольких фотографиях. Хотите заменить все выбранные отметки мест?</string>
 	<string name="donate_title">Пожертвовать</string>
 	<string name="promo_text">Я пользуюсь photup для Facebook — новый загрузчик фотографий в Facebook для Android. Попробуйте!</string>
+	<string name="album_all">All Photos</string>
 </resources>

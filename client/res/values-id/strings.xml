@@ -42,6 +42,8 @@
 	<string name="logout_prompt_title">Anda yakin?</string>
 	<string name="libraries">Perpustakaan</string>
 	<string name="settings">Pengaturan</string>
+	<string name="select_all">Select All</string>
+	<string name="clear_selection">Clear Selection</string>
 	<string name="places_search_hint">Pencarian</string>
 	<string name="pref_instant_upload_title">Unggah Seketika</string>
 	<string name="pref_instant_upload_album_title">Album</string>
@@ -60,4 +62,5 @@
 	<string name="dialog_place_overwrite_text">Kamu telah memilih lokasi disini, tapi dapat juga hanya pada beberapa foto tersendiri. Kamu yakin akan menimpa semua lokasi pilihanmu?</string>
 	<string name="donate_title">Sumbangan</string>
 	<string name="promo_text">I\'m checking out photup for Facebook, a new Facebook photo sharer for Android. Give it a try!</string>
+	<string name="album_all">All Photos</string>
 </resources>

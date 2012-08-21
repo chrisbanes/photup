@@ -42,6 +42,8 @@
 	<string name="logout_prompt_title">Weet u het zeker?</string>
 	<string name="libraries">Bibliotheken</string>
 	<string name="settings">Instellingen</string>
+	<string name="select_all">Select All</string>
+	<string name="clear_selection">Clear Selection</string>
 	<string name="places_search_hint">Zoeken</string>
 	<string name="pref_instant_upload_title">Snelle Upload</string>
 	<string name="pref_instant_upload_album_title">Album</string>
@@ -60,4 +62,5 @@
 	<string name="dialog_place_overwrite_text">U heeft hier een plaats geselecteerd, maar ook op een aantal van de individuele foto\'s. Wilt u alle geselecteerde plaatsen overschrijven?</string>
 	<string name="donate_title">Doneer</string>
 	<string name="promo_text">Ik probeer photup voor Facebook uit, een nieuwe app om foto\'s met Facebook te delen voor Android. Probeer het ook uit!</string>
+	<string name="album_all">All Photos</string>
 </resources>
