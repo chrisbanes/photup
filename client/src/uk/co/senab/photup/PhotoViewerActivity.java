@@ -20,6 +20,7 @@ import uk.co.senab.photup.model.Place;
 import uk.co.senab.photup.util.Analytics;
 import uk.co.senab.photup.util.CursorPagerAdapter;
 import uk.co.senab.photup.util.MediaStoreCursorHelper;
+import uk.co.senab.photup.util.PhotupCursorLoader;
 import uk.co.senab.photup.views.FiltersRadioGroup;
 import uk.co.senab.photup.views.MultiTouchImageView;
 import uk.co.senab.photup.views.PhotoTagItemLayout;
@@ -30,7 +31,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore.Images;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -453,9 +453,9 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 			selectionArgs = new String[] { mBucketId };
 		}
 
-		return new CursorLoader(this, MediaStoreCursorHelper.MEDIA_STORE_CONTENT_URI,
+		return new PhotupCursorLoader(this, MediaStoreCursorHelper.MEDIA_STORE_CONTENT_URI,
 				MediaStoreCursorHelper.PHOTOS_PROJECTION, selection, selectionArgs,
-				MediaStoreCursorHelper.PHOTOS_ORDER_BY);
+				MediaStoreCursorHelper.PHOTOS_ORDER_BY, false);
 	}
 
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {

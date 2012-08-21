@@ -17,6 +17,7 @@ import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.tasks.MediaStoreBucketsAsyncTask;
 import uk.co.senab.photup.tasks.MediaStoreBucketsAsyncTask.MediaStoreBucketsResultListener;
 import uk.co.senab.photup.util.MediaStoreCursorHelper;
+import uk.co.senab.photup.util.PhotupCursorLoader;
 import uk.co.senab.photup.util.Utils;
 import uk.co.senab.photup.views.PhotoItemLayout;
 import uk.co.senab.photup.views.PhotupImageView;
@@ -25,6 +26,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.media.MediaScannerConnection;
+import android.media.MediaScannerConnection.OnScanCompletedListener;
 import android.net.Uri;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
@@ -55,7 +57,7 @@ import com.jakewharton.activitycompat2.ActivityOptionsCompat2;
 
 public class UserPhotosFragment extends SherlockFragment implements OnItemClickListener,
 		OnPhotoSelectionChangedListener, LoaderManager.LoaderCallbacks<Cursor>, MediaStoreBucketsResultListener,
-		OnItemSelectedListener {
+		OnItemSelectedListener, OnScanCompletedListener {
 
 	static class ScaleAnimationListener implements AnimationListener {
 
@@ -94,7 +96,6 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 
 	private MergeAdapter mAdapter;
 	private UsersPhotosCursorAdapter mPhotoAdapter;
-
 	private GridView mPhotoGrid;
 
 	private ArrayAdapter<MediaStoreBucket> mBucketAdapter;
@@ -103,7 +104,6 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 
 	private PhotoUploadController mPhotoSelectionController;
 	private File mPhotoFile;
-
 	private SharedPreferences mPrefs;
 
 	@Override
@@ -124,7 +124,7 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 				if (null != mPhotoFile) {
 					if (resultCode == Activity.RESULT_OK) {
 						MediaScannerConnection.scanFile(getActivity(), new String[] { mPhotoFile.getAbsolutePath() },
-								new String[] { "image/jpg" }, null);
+								new String[] { "image/jpg" }, this);
 					} else {
 						if (Constants.DEBUG) {
 							Log.d("UserPhotosFragment", "Deleting Photo File");
@@ -180,15 +180,15 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 			case LOADER_USER_PHOTOS_EXTERNAL:
 				String selection = null;
 				String[] selectionArgs = null;
-				
+
 				if (null != bundle && bundle.containsKey(LOADER_PHOTOS_BUCKETS_PARAM)) {
 					selection = Images.Media.BUCKET_ID + " = ?";
 					selectionArgs = new String[] { bundle.getString(LOADER_PHOTOS_BUCKETS_PARAM) };
 				}
 
-				cursorLoader = new CursorLoader(getActivity(), MediaStoreCursorHelper.MEDIA_STORE_CONTENT_URI,
+				cursorLoader = new PhotupCursorLoader(getActivity(), MediaStoreCursorHelper.MEDIA_STORE_CONTENT_URI,
 						MediaStoreCursorHelper.PHOTOS_PROJECTION, selection, selectionArgs,
-						MediaStoreCursorHelper.PHOTOS_ORDER_BY);
+						MediaStoreCursorHelper.PHOTOS_ORDER_BY, false);
 				break;
 		}
 
@@ -197,7 +197,7 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R .layout.fragment_user_photos, null);
+		View view = inflater.inflate(R.layout.fragment_user_photos, null);
 
 		mPhotoGrid = (GridView) view.findViewById(R.id.gv_photos);
 		mPhotoGrid.setAdapter(mAdapter);
@@ -269,19 +269,6 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 		// NO-OP
 	}
 
-	public void selectAll() {
-		Cursor cursor = mPhotoAdapter.getCursor();
-		if (null != cursor) {
-			ArrayList<PhotoSelection> selections = MediaStoreCursorHelper.photosCursorToSelectionList(
-					MediaStoreCursorHelper.MEDIA_STORE_CONTENT_URI, cursor);
-			mPhotoSelectionController.addPhotoSelections(selections);
-		}
-	}
-
-	public void onPhotoSelectionsAdded() {
-		mPhotoAdapter.notifyDataSetChanged();
-	}
-
 	public void onPhotoSelectionChanged(PhotoSelection upload, boolean added) {
 		for (int i = 0, z = mPhotoGrid.getChildCount(); i < z; i++) {
 			View view = mPhotoGrid.getChildAt(i);
@@ -299,6 +286,14 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 		}
 	}
 
+	public void onPhotoSelectionsAdded() {
+		mPhotoAdapter.notifyDataSetChanged();
+	}
+
+	public void onPhotoSelectionsCleared() {
+		mPhotoAdapter.notifyDataSetChanged();
+	}
+
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		if (null != mPhotoFile) {
@@ -307,12 +302,28 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 		super.onSaveInstanceState(outState);
 	}
 
-	public void onPhotoSelectionsCleared() {
-		mPhotoAdapter.notifyDataSetChanged();
+	public void onScanCompleted(String path, Uri uri) {
+		getActivity().runOnUiThread(new Runnable() {
+			public void run() {
+				MediaStoreBucket bucket = getSelectedBucket();
+				if (null != bucket) {
+					loadBucketId(bucket.getId());
+				}
+			}
+		});
 	}
 
 	public void onUploadsCleared() {
 		// NO-OP
+	}
+
+	public void selectAll() {
+		Cursor cursor = mPhotoAdapter.getCursor();
+		if (null != cursor) {
+			ArrayList<PhotoSelection> selections = MediaStoreCursorHelper.photosCursorToSelectionList(
+					MediaStoreCursorHelper.MEDIA_STORE_CONTENT_URI, cursor);
+			mPhotoSelectionController.addPhotoSelections(selections);
+		}
 	}
 
 	private MediaStoreBucket getSelectedBucket() {
