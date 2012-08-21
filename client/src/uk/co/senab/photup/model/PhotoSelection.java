@@ -416,12 +416,13 @@ public class PhotoSelection extends PhotoUpload {
 		try {
 			final long id = Long.parseLong(getOriginalPhotoUri().getLastPathSegment());
 
-			ContentResolver cr = context.getContentResolver();
-			Bitmap bitmap = Thumbnails.getThumbnail(cr, id, kind, opts);
+			Bitmap bitmap = Thumbnails.getThumbnail(context.getContentResolver(), id, kind, opts);
 			bitmap = Utils.rotate(bitmap, getExifRotation(context));
 			return bitmap;
 		} catch (Exception e) {
-			e.printStackTrace();
+			if (Constants.DEBUG) {
+				e.printStackTrace();
+			}
 			return null;
 		}
 	}

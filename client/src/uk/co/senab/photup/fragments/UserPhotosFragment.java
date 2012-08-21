@@ -180,11 +180,10 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 			case LOADER_USER_PHOTOS_EXTERNAL:
 				String selection = null;
 				String[] selectionArgs = null;
-				if (null != bundle) {
-					if (bundle.containsKey(LOADER_PHOTOS_BUCKETS_PARAM)) {
-						selection = Images.Media.BUCKET_ID + " = ?";
-						selectionArgs = new String[] { bundle.getString(LOADER_PHOTOS_BUCKETS_PARAM) };
-					}
+				
+				if (null != bundle && bundle.containsKey(LOADER_PHOTOS_BUCKETS_PARAM)) {
+					selection = Images.Media.BUCKET_ID + " = ?";
+					selectionArgs = new String[] { bundle.getString(LOADER_PHOTOS_BUCKETS_PARAM) };
 				}
 
 				cursorLoader = new CursorLoader(getActivity(), MediaStoreCursorHelper.MEDIA_STORE_CONTENT_URI,
@@ -198,7 +197,7 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_user_photos, null);
+		View view = inflater.inflate(R .layout.fragment_user_photos, null);
 
 		mPhotoGrid = (GridView) view.findViewById(R.id.gv_photos);
 		mPhotoGrid.setAdapter(mAdapter);
