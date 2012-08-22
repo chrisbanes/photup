@@ -101,7 +101,7 @@ public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 	private void addButtons(Context context) {
 		LayoutInflater layoutInflater = LayoutInflater.from(context);
 		RadioButton button;
-		for (Filter filter : Filter.FILTERS) {
+		for (Filter filter : Filter.values()) {
 			button = (RadioButton) layoutInflater.inflate(R.layout.layout_filters_item, this, false);
 			button.setText(filter.getLabelId());
 			button.setId(filter.getId());
@@ -110,13 +110,13 @@ public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 	}
 
 	public void setPhotoUpload(PhotoUpload upload) {
-		for (final Filter filter : Filter.FILTERS) {
+		for (final Filter filter : Filter.values()) {
 			final RadioButton button = (RadioButton) findViewById(filter.getId());
 			mExecutor.submit(new FilterRunnable(getContext(), upload, filter, button));
 		}
 
 		Filter filter = upload.getFilterUsed();
-		final int filterId = null != filter ? filter.getId() : Filter.FILTER_ORIGINAL;
+		final int filterId = filter.getId();
 
 		check(filterId);
 
@@ -140,7 +140,7 @@ public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 			startAnimation(mSlideOutBottomAnim);
 		}
 	}
-	
+
 	public boolean isShowing() {
 		return getVisibility() == View.VISIBLE && getAnimation() != mSlideOutBottomAnim;
 	}

@@ -28,6 +28,7 @@ import android.provider.MediaStore.Images.Thumbnails;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.j256.ormlite.field.DatabaseField;
 import com.lightbox.android.photoprocessing.PhotoProcessing;
 import com.lightbox.android.photoprocessing.utils.BitmapUtils;
 import com.lightbox.android.photoprocessing.utils.BitmapUtils.BitmapSize;
@@ -71,7 +72,7 @@ public class PhotoUpload {
 	 * Edit Variables
 	 */
 	private boolean mCompletedDetection;
-	private int mUserRotation;
+	@DatabaseField private int mUserRotation;
 	private RectF mCropValues;
 	private Filter mFilter;
 
@@ -79,14 +80,15 @@ public class PhotoUpload {
 	 * Upload Variables
 	 */
 	private Account mAccount;
-	private String mTargetId;
+
+	@DatabaseField private String mTargetId;
 	private Bitmap mBigPictureNotificationBmp;
-	private Place mPlace;
+	@DatabaseField private Place mPlace;
 	private int mProgress;
-	private UploadQuality mQuality;
-	private String mResultPostId;
-	private int mState;
-	private String mCaption;
+	@DatabaseField private UploadQuality mQuality;
+	@DatabaseField private String mResultPostId;
+	@DatabaseField private int mState;
+	@DatabaseField private String mCaption;
 	private HashSet<PhotoTag> mTags;
 
 	/**
@@ -116,7 +118,7 @@ public class PhotoUpload {
 	}
 
 	public boolean beenFiltered() {
-		return null != mFilter && mFilter.getId() != Filter.FILTER_ORIGINAL;
+		return null != mFilter && mFilter != Filter.FILTER_ORIGINAL;
 	}
 
 	public void detectPhotoTags(final Bitmap originalBitmap) {
@@ -225,6 +227,9 @@ public class PhotoUpload {
 	}
 
 	public Filter getFilterUsed() {
+		if (null == mFilter) {
+			mFilter = Filter.FILTER_ORIGINAL;
+		}
 		return mFilter;
 	}
 

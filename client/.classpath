@@ -11,5 +11,7 @@
 	<classpathentry kind="lib" path="libs/Android-BitmapMemoryCache-v1.0.jar"/>
 	<classpathentry kind="lib" path="libs/FlurryAgent-v2.2.5.jar"/>
 	<classpathentry kind="lib" path="libs/NotificationCompat2-1.1.2.jar"/>
+	<classpathentry kind="lib" path="libs/ormlite-android-4.41.jar"/>
+	<classpathentry kind="lib" path="libs/ormlite-core-4.41.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

@@ -51,7 +51,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements Albu
 
 	private void populateFiltersPref() {
 		ListPreference filtersPref = (ListPreference) findPreference(PreferenceConstants.PREF_INSTANT_UPLOAD_FILTER);
-		Filter[] filters = Filter.FILTERS;
+		Filter[] filters = Filter.values();
 
 		String[] entries = new String[filters.length];
 		String[] entryValues = new String[filters.length];
@@ -59,7 +59,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements Albu
 		for (int i = 0, z = filters.length; i < z; i++) {
 			Filter filter = filters[i];
 			entries[i] = getString(filter.getLabelId());
-			entryValues[i] = String.valueOf(filter.getId());
+			entryValues[i] = filter.name();
 		}
 
 		filtersPref.setEntries(entries);

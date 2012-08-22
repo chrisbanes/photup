@@ -135,7 +135,7 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 
 	public void onCheckedChanged(RadioGroup group, int checkedId) {
 		if (!mIgnoreFilterCheckCallback) {
-			Filter filter = checkedId != -1 ? Filter.FILTERS[checkedId] : null;
+			Filter filter = checkedId != -1 ? Filter.mapFromId(checkedId) : null;
 			PhotoTagItemLayout currentView = getCurrentView();
 			PhotoUpload upload = currentView.getPhotoSelection();
 
