@@ -96,20 +96,28 @@ public class UploadsFragment extends SherlockListFragment implements OnPhotoSele
 	}
 
 	public void onDismiss(ListView listView, int[] reverseSortedPositions) {
-		for (int i = 0, z = reverseSortedPositions.length; i < z; i++) {
-			PhotoSelection upload = (PhotoSelection) listView.getItemAtPosition(reverseSortedPositions[i]);
-			mPhotoSelectionController.removePhotoFromUploads(upload);
+		try {
+			for (int i = 0, z = reverseSortedPositions.length; i < z; i++) {
+				PhotoSelection upload = (PhotoSelection) listView.getItemAtPosition(reverseSortedPositions[i]);
+				mPhotoSelectionController.removePhotoFromUploads(upload);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		mAdapter.notifyDataSetChanged();
 	}
 
 	public boolean canDismiss(ListView listView, int position) {
-		PhotoUpload upload = (PhotoUpload) listView.getItemAtPosition(position);
-		switch (upload.getState()) {
-			case PhotoUpload.STATE_UPLOAD_COMPLETED:
-			case PhotoUpload.STATE_UPLOAD_ERROR:
-			case PhotoUpload.STATE_WAITING:
-				return true;
+		try {
+			PhotoUpload upload = (PhotoUpload) listView.getItemAtPosition(position);
+			switch (upload.getState()) {
+				case PhotoUpload.STATE_UPLOAD_COMPLETED:
+				case PhotoUpload.STATE_UPLOAD_ERROR:
+				case PhotoUpload.STATE_WAITING:
+					return true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return false;
 	}
