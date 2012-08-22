@@ -5,6 +5,7 @@ import java.util.List;
 
 import uk.co.senab.photup.base.PhotupFragmentActivity;
 import uk.co.senab.photup.fragments.NewAlbumFragment;
+import uk.co.senab.photup.fragments.NewAlbumFragment.AccountProviderAccessor;
 import uk.co.senab.photup.fragments.NewAlbumFragment.OnAlbumCreatedListener;
 import uk.co.senab.photup.fragments.PlacesListFragment;
 import uk.co.senab.photup.listeners.OnPlacePickedListener;
@@ -55,7 +56,7 @@ import com.lightbox.android.photoprocessing.R;
 
 public class UploadActivity extends PhotupFragmentActivity implements ServiceConnection, AlbumsResultListener,
 		AccountsResultListener, GroupsResultListener, EventsResultListener, OnClickListener, OnAlbumCreatedListener,
-		OnPlacePickedListener, OnItemSelectedListener, OnCheckedChangeListener {
+		OnPlacePickedListener, OnItemSelectedListener, OnCheckedChangeListener, AccountProviderAccessor {
 
 	static final int DEFAULT_UPLOAD_TARGET_ID = R.id.rb_target_album;
 	static final int REQUEST_FACEBOOK_LOGIN = 99;
@@ -267,7 +268,7 @@ public class UploadActivity extends PhotupFragmentActivity implements ServiceCon
 
 	public void onClick(View v) {
 		if (v == mNewAlbumButton) {
-			NewAlbumFragment fragment = new NewAlbumFragment((Account) mAccountsSpinner.getSelectedItem());
+			NewAlbumFragment fragment = new NewAlbumFragment();
 			fragment.show(getSupportFragmentManager(), "new_album");
 		} else if (v == mPlacesLayout) {
 			startPlaceFragment();
@@ -393,7 +394,7 @@ public class UploadActivity extends PhotupFragmentActivity implements ServiceCon
 	}
 
 	public void onCheckedChanged(RadioGroup group, final int checkedId) {
-		final Account account = (Account) mAccountsSpinner.getSelectedItem();
+		final Account account = getSelectedAccount();
 		mTargetLayout.setVisibility(View.GONE);
 
 		if (null != account) {
@@ -419,4 +420,7 @@ public class UploadActivity extends PhotupFragmentActivity implements ServiceCon
 		}
 	}
 
+	public Account getSelectedAccount() {
+		return (Account) mAccountsSpinner.getSelectedItem();
+	}
 }

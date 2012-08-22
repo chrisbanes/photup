@@ -20,6 +20,10 @@ import com.actionbarsherlock.app.SherlockDialogFragment;
 @SuppressLint("ValidFragment")
 public class NewAlbumFragment extends SherlockDialogFragment implements View.OnClickListener, NewAlbumResultListener {
 
+	public static interface AccountProviderAccessor {
+		Account getSelectedAccount();
+	}
+
 	public static interface OnAlbumCreatedListener {
 		void onAlbumCreated();
 	}
@@ -32,12 +36,6 @@ public class NewAlbumFragment extends SherlockDialogFragment implements View.OnC
 	private OnAlbumCreatedListener mAlbumCreated;
 
 	private String[] mPrivacyValues;
-	
-	private final Account mAccount;
-	
-	public NewAlbumFragment(Account account) {
-		mAccount = account;
-	}
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -82,7 +80,9 @@ public class NewAlbumFragment extends SherlockDialogFragment implements View.OnC
 		v.setVisibility(View.GONE);
 		mLoadingProgressBar.setVisibility(View.VISIBLE);
 
-		new NewAlbumAsyncTask(mAccount, this).execute(albumName, description, privacyValue);
+		final Account account = ((AccountProviderAccessor) getActivity()).getSelectedAccount();
+
+		new NewAlbumAsyncTask(account, this).execute(albumName, description, privacyValue);
 	}
 
 	public void onNewAlbumCreated(String albumId) {
