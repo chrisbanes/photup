@@ -5,7 +5,7 @@ import java.util.List;
 import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
-import uk.co.senab.photup.model.PhotoSelection;
+import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.views.PhotoItemLayout;
 import uk.co.senab.photup.views.PhotupImageView;
 import android.content.Context;
@@ -16,7 +16,7 @@ import android.widget.BaseAdapter;
 
 public class SelectedPhotosBaseAdapter extends BaseAdapter {
 
-	private List<PhotoSelection> mItems;
+	private List<PhotoUpload> mItems;
 
 	private final Context mContext;
 	private final LayoutInflater mLayoutInflater;
@@ -39,7 +39,7 @@ public class SelectedPhotosBaseAdapter extends BaseAdapter {
 		return position;
 	}
 
-	public PhotoSelection getItem(int position) {
+	public PhotoUpload getItem(int position) {
 		return mItems.get(position);
 	}
 
@@ -51,7 +51,7 @@ public class SelectedPhotosBaseAdapter extends BaseAdapter {
 		PhotoItemLayout layout = (PhotoItemLayout) view;
 		PhotupImageView iv = layout.getImageView();
 
-		final PhotoSelection upload = getItem(position);
+		final PhotoUpload upload = getItem(position);
 
 		iv.requestThumbnail(upload, true);
 		layout.setAnimateWhenChecked(false);

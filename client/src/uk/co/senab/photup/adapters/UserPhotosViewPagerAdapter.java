@@ -4,7 +4,7 @@ import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.listeners.OnPickFriendRequestListener;
 import uk.co.senab.photup.listeners.OnSingleTapListener;
-import uk.co.senab.photup.model.PhotoSelection;
+import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.util.CursorPagerAdapter;
 import uk.co.senab.photup.util.MediaStoreCursorHelper;
 import uk.co.senab.photup.views.MultiTouchImageView;
@@ -42,7 +42,7 @@ public class UserPhotosViewPagerAdapter extends CursorPagerAdapter {
 
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {	
-		final PhotoSelection upload = MediaStoreCursorHelper.photosCursorToSelection(MediaStoreCursorHelper.MEDIA_STORE_CONTENT_URI,
+		final PhotoUpload upload = MediaStoreCursorHelper.photosCursorToSelection(MediaStoreCursorHelper.MEDIA_STORE_CONTENT_URI,
 				cursor);
 
 		PhotoTagItemLayout view = null;

@@ -3,7 +3,7 @@ package uk.co.senab.photup.adapters;
 import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
-import uk.co.senab.photup.model.PhotoSelection;
+import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.util.MediaStoreCursorHelper;
 import uk.co.senab.photup.views.PhotoItemLayout;
 import uk.co.senab.photup.views.PhotupImageView;
@@ -29,7 +29,7 @@ public class UsersPhotosCursorAdapter extends ResourceCursorAdapter {
 		PhotoItemLayout layout = (PhotoItemLayout) view;
 		PhotupImageView iv = layout.getImageView();
 
-		final PhotoSelection upload = MediaStoreCursorHelper.photosCursorToSelection(
+		final PhotoUpload upload = MediaStoreCursorHelper.photosCursorToSelection(
 				MediaStoreCursorHelper.MEDIA_STORE_CONTENT_URI, cursor);
 
 		if (null != upload) {

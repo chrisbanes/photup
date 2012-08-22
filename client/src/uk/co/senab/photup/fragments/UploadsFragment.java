@@ -4,7 +4,6 @@ import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.adapters.UploadsListBaseAdapter;
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
-import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.model.PhotoUpload;
 import android.content.Intent;
 import android.net.Uri;
@@ -51,14 +50,14 @@ public class UploadsFragment extends SherlockListFragment implements OnPhotoSele
 		mPhotoSelectionController.removePhotoSelectionListener(this);
 	}
 
-	public void onPhotoSelectionChanged(PhotoSelection upload, boolean added) {
+	public void onPhotoSelectionChanged(PhotoUpload upload, boolean added) {
 		// NO-OP
 	}
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		PhotoUpload upload = (PhotoUpload) l.getItemAtPosition(position);
-		if (null != upload && upload.getState() == PhotoUpload.STATE_UPLOAD_COMPLETED) {
+		if (null != upload && upload.getUploadState() == PhotoUpload.STATE_UPLOAD_COMPLETED) {
 
 			String postId = upload.getResultPostId();
 			if (null != postId) {
@@ -98,7 +97,7 @@ public class UploadsFragment extends SherlockListFragment implements OnPhotoSele
 	public void onDismiss(ListView listView, int[] reverseSortedPositions) {
 		try {
 			for (int i = 0, z = reverseSortedPositions.length; i < z; i++) {
-				PhotoSelection upload = (PhotoSelection) listView.getItemAtPosition(reverseSortedPositions[i]);
+				PhotoUpload upload = (PhotoUpload) listView.getItemAtPosition(reverseSortedPositions[i]);
 				mPhotoSelectionController.removePhotoFromUploads(upload);
 			}
 		} catch (Exception e) {
@@ -110,7 +109,7 @@ public class UploadsFragment extends SherlockListFragment implements OnPhotoSele
 	public boolean canDismiss(ListView listView, int position) {
 		try {
 			PhotoUpload upload = (PhotoUpload) listView.getItemAtPosition(position);
-			switch (upload.getState()) {
+			switch (upload.getUploadState()) {
 				case PhotoUpload.STATE_UPLOAD_COMPLETED:
 				case PhotoUpload.STATE_UPLOAD_ERROR:
 				case PhotoUpload.STATE_WAITING:

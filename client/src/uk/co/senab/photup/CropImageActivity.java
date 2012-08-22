@@ -1,7 +1,7 @@
 package uk.co.senab.photup;
 
 import uk.co.senab.photup.base.PhotupActivity;
-import uk.co.senab.photup.model.PhotoSelection;
+import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.platform.Platform;
 import uk.co.senab.photup.views.CropImageView;
 import uk.co.senab.photup.views.HighlightView;
@@ -17,12 +17,12 @@ import com.actionbarsherlock.view.Window;
 
 public class CropImageActivity extends PhotupActivity implements OnPhotoLoadListener {
 
-	static PhotoSelection CROP_SELECTION;
+	static PhotoUpload CROP_SELECTION;
 
 	private CropImageView mCropImageView;
 	private HighlightView mHighlightView;
 
-	private PhotoSelection mPhotoUpload;
+	private PhotoUpload mPhotoUpload;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

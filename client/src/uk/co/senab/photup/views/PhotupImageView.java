@@ -8,7 +8,7 @@ import uk.co.senab.bitmapcache.CacheableBitmapWrapper;
 import uk.co.senab.bitmapcache.CacheableImageView;
 import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.PhotupApplication;
-import uk.co.senab.photup.model.PhotoSelection;
+import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.tasks.PhotupThreadRunnable;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -29,10 +29,10 @@ public class PhotupImageView extends CacheableImageView {
 
 	static final class FaceDetectionRunnable implements Runnable {
 
-		private final PhotoSelection mUpload;
+		private final PhotoUpload mUpload;
 		private final CacheableBitmapWrapper mBitmapWrapper;
 
-		public FaceDetectionRunnable(PhotoSelection upload, CacheableBitmapWrapper bitmap) {
+		public FaceDetectionRunnable(PhotoUpload upload, CacheableBitmapWrapper bitmap) {
 			mUpload = upload;
 			mBitmapWrapper = bitmap;
 		}
@@ -48,12 +48,12 @@ public class PhotupImageView extends CacheableImageView {
 	static final class PhotoFilterRunnable extends PhotupThreadRunnable {
 
 		private final WeakReference<PhotupImageView> mImageView;
-		private final PhotoSelection mUpload;
+		private final PhotoUpload mUpload;
 		private final boolean mFullSize;
 		private final BitmapLruCache mCache;
 		private final OnPhotoLoadListener mListener;
 
-		public PhotoFilterRunnable(PhotupImageView imageView, PhotoSelection upload, BitmapLruCache cache,
+		public PhotoFilterRunnable(PhotupImageView imageView, PhotoUpload upload, BitmapLruCache cache,
 				final boolean fullSize, final OnPhotoLoadListener listener) {
 			mImageView = new WeakReference<PhotupImageView>(imageView);
 			mUpload = upload;
@@ -114,12 +114,12 @@ public class PhotupImageView extends CacheableImageView {
 	static final class PhotoLoadRunnable extends PhotupThreadRunnable {
 
 		private final WeakReference<PhotupImageView> mImageView;
-		private final PhotoSelection mUpload;
+		private final PhotoUpload mUpload;
 		private final boolean mFullSize;
 		private final BitmapLruCache mCache;
 		private final OnPhotoLoadListener mListener;
 
-		public PhotoLoadRunnable(PhotupImageView imageView, PhotoSelection upload, BitmapLruCache cache,
+		public PhotoLoadRunnable(PhotupImageView imageView, PhotoUpload upload, BitmapLruCache cache,
 				final boolean fullSize, final OnPhotoLoadListener listener) {
 			mImageView = new WeakReference<PhotupImageView>(imageView);
 			mUpload = upload;
@@ -173,9 +173,9 @@ public class PhotupImageView extends CacheableImageView {
 	static class RequestFaceDetectionPassRunnable implements Runnable {
 
 		private final PhotupImageView mImageView;
-		private final PhotoSelection mSelection;
+		private final PhotoUpload mSelection;
 
-		public RequestFaceDetectionPassRunnable(PhotupImageView imageView, PhotoSelection selection) {
+		public RequestFaceDetectionPassRunnable(PhotupImageView imageView, PhotoUpload selection) {
 			mImageView = imageView;
 			mSelection = selection;
 		}
@@ -226,7 +226,7 @@ public class PhotupImageView extends CacheableImageView {
 		return null;
 	}
 
-	public void postFaceDetection(PhotoSelection selection) {
+	public void postFaceDetection(PhotoUpload selection) {
 		if (null == mRequestFaceDetectionRunnable && selection.requiresFaceDetectPass()) {
 			mRequestFaceDetectionRunnable = new RequestFaceDetectionPassRunnable(this, selection);
 			postDelayed(mRequestFaceDetectionRunnable, FACE_DETECTION_DELAY);
@@ -241,7 +241,7 @@ public class PhotupImageView extends CacheableImageView {
 		}
 	}
 
-	public void requestFullSize(final PhotoSelection upload, final boolean honourFilter,
+	public void requestFullSize(final PhotoUpload upload, final boolean honourFilter,
 			final boolean clearDrawableOnLoad, final OnPhotoLoadListener listener) {
 		resetForRequest(clearDrawableOnLoad);
 
@@ -264,12 +264,12 @@ public class PhotupImageView extends CacheableImageView {
 		}
 	}
 
-	public void requestFullSize(final PhotoSelection upload, final boolean honourFilter,
+	public void requestFullSize(final PhotoUpload upload, final boolean honourFilter,
 			final OnPhotoLoadListener listener) {
 		requestFullSize(upload, honourFilter, true, listener);
 	}
 
-	public void requestThumbnail(final PhotoSelection upload, final boolean honourFilter) {
+	public void requestThumbnail(final PhotoUpload upload, final boolean honourFilter) {
 		resetForRequest(true);
 
 		if (upload.requiresProcessing(false) && honourFilter) {
@@ -299,7 +299,7 @@ public class PhotupImageView extends CacheableImageView {
 		}
 	}
 
-	private void requestFaceDetection(final PhotoSelection upload) {
+	private void requestFaceDetection(final PhotoUpload upload) {
 		CacheableBitmapWrapper wrapper = getCachedBitmapWrapper();
 		if (null != wrapper && wrapper.hasValidBitmap()) {
 			wrapper.setBeingUsed(true);
@@ -309,13 +309,13 @@ public class PhotupImageView extends CacheableImageView {
 		}
 	}
 
-	private void requestFiltered(final PhotoSelection upload, boolean fullSize, final OnPhotoLoadListener listener) {
+	private void requestFiltered(final PhotoUpload upload, boolean fullSize, final OnPhotoLoadListener listener) {
 		PhotupApplication app = PhotupApplication.getApplication(getContext());
 		mCurrentRunnable = app.getSingleThreadExecutorService().submit(
 				new PhotoFilterRunnable(this, upload, app.getImageCache(), fullSize, listener));
 	}
 
-	private void requestImage(final PhotoSelection upload, final boolean fullSize, final OnPhotoLoadListener listener) {
+	private void requestImage(final PhotoUpload upload, final boolean fullSize, final OnPhotoLoadListener listener) {
 		final String key = fullSize ? upload.getDisplayImageKey() : upload.getThumbnailImageKey();
 		BitmapLruCache cache = PhotupApplication.getApplication(getContext()).getImageCache();
 		final CacheableBitmapWrapper cached = cache.get(key);

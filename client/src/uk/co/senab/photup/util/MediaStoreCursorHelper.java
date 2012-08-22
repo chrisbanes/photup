@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import uk.co.senab.photup.model.MediaStoreBucket;
-import uk.co.senab.photup.model.PhotoSelection;
+import uk.co.senab.photup.model.PhotoUpload;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -20,9 +20,9 @@ public class MediaStoreCursorHelper {
 
 	public static final Uri MEDIA_STORE_CONTENT_URI = Images.Media.EXTERNAL_CONTENT_URI;
 
-	public static ArrayList<PhotoSelection> photosCursorToSelectionList(Uri contentUri, Cursor cursor) {
-		ArrayList<PhotoSelection> items = new ArrayList<PhotoSelection>(cursor.getCount());
-		PhotoSelection item;
+	public static ArrayList<PhotoUpload> photosCursorToSelectionList(Uri contentUri, Cursor cursor) {
+		ArrayList<PhotoUpload> items = new ArrayList<PhotoUpload>(cursor.getCount());
+		PhotoUpload item;
 
 		if (cursor.moveToFirst()) {
 			do {
@@ -40,13 +40,13 @@ public class MediaStoreCursorHelper {
 		return items;
 	}
 
-	public static PhotoSelection photosCursorToSelection(Uri contentUri, Cursor cursor) {
-		PhotoSelection item = null;
+	public static PhotoUpload photosCursorToSelection(Uri contentUri, Cursor cursor) {
+		PhotoUpload item = null;
 
 		try {
 			File file = new File(cursor.getString(cursor.getColumnIndexOrThrow(ImageColumns.DATA)));
 			if (file.exists()) {
-				item = PhotoSelection.getSelection(contentUri,
+				item = PhotoUpload.getSelection(contentUri,
 						cursor.getInt(cursor.getColumnIndexOrThrow(ImageColumns._ID)));
 			}
 		} catch (Exception e) {

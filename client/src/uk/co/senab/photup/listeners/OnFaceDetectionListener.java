@@ -1,11 +1,11 @@
 package uk.co.senab.photup.listeners;
 
-import uk.co.senab.photup.model.PhotoSelection;
+import uk.co.senab.photup.model.PhotoUpload;
 
 public interface OnFaceDetectionListener {
 
-	void onFaceDetectionStarted(PhotoSelection selection);
+	void onFaceDetectionStarted(PhotoUpload selection);
 
-	void onFaceDetectionFinished(PhotoSelection selection);
+	void onFaceDetectionFinished(PhotoUpload selection);
 
 }

@@ -7,7 +7,7 @@ import uk.co.senab.photup.fragments.SelectedPhotosFragment;
 import uk.co.senab.photup.fragments.UploadsFragment;
 import uk.co.senab.photup.fragments.UserPhotosFragment;
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
-import uk.co.senab.photup.model.PhotoSelection;
+import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.views.UploadActionBarView;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -171,7 +171,7 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 		refreshUploadActionBarView();
 	}
 
-	public void onPhotoSelectionChanged(PhotoSelection upload, boolean added) {
+	public void onPhotoSelectionChanged(PhotoUpload upload, boolean added) {
 		refreshSelectedTabTitle();
 		refreshUploadActionBarView();
 	}

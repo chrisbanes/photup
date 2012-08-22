@@ -14,7 +14,6 @@ import uk.co.senab.photup.listeners.OnPlacePickedListener;
 import uk.co.senab.photup.listeners.OnSingleTapListener;
 import uk.co.senab.photup.model.FbUser;
 import uk.co.senab.photup.model.Filter;
-import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.model.Place;
 import uk.co.senab.photup.util.Analytics;
@@ -121,14 +120,14 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 
 	private void rotateCurrentPhoto() {
 		PhotoTagItemLayout currentView = getCurrentView();
-		PhotoSelection upload = currentView.getPhotoSelection();
+		PhotoUpload upload = currentView.getPhotoSelection();
 		upload.rotateClockwise();
 		reloadView(currentView);
 	}
 
 	private void resetCurrentPhoto() {
 		PhotoTagItemLayout currentView = getCurrentView();
-		PhotoSelection upload = currentView.getPhotoSelection();
+		PhotoUpload upload = currentView.getPhotoSelection();
 
 		upload.reset();
 		reloadView(currentView);
@@ -138,7 +137,7 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 		if (!mIgnoreFilterCheckCallback) {
 			Filter filter = checkedId != -1 ? Filter.FILTERS[checkedId] : null;
 			PhotoTagItemLayout currentView = getCurrentView();
-			PhotoSelection upload = currentView.getPhotoSelection();
+			PhotoUpload upload = currentView.getPhotoSelection();
 
 			upload.setFilterUsed(filter);
 			reloadView(currentView);
@@ -202,7 +201,7 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 		PhotoTagItemLayout currentView = getCurrentView();
 
 		if (null != currentView) {
-			PhotoSelection upload = currentView.getPhotoSelection();
+			PhotoUpload upload = currentView.getPhotoSelection();
 
 			getSupportActionBar().setTitle(upload.toString());
 
@@ -223,7 +222,7 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 		mAdapter.notifyDataSetChanged();
 	}
 
-	public void onPhotoSelectionChanged(PhotoSelection upload, boolean added) {
+	public void onPhotoSelectionChanged(PhotoUpload upload, boolean added) {
 		if (mMode == MODE_SELECTED_VALUE) {
 			PhotoTagItemLayout view = getCurrentView();
 
@@ -307,7 +306,7 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 		mController.removePhotoSelectionListener(this);
 	}
 
-	private PhotoSelection getCurrentUpload() {
+	private PhotoUpload getCurrentUpload() {
 		PhotoTagItemLayout view = getCurrentView();
 		if (null != view) {
 			return view.getPhotoSelection();
@@ -331,7 +330,7 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 	private void reloadView(PhotoTagItemLayout currentView) {
 		if (null != currentView) {
 			MultiTouchImageView imageView = currentView.getImageView();
-			PhotoSelection selection = currentView.getPhotoSelection();
+			PhotoUpload selection = currentView.getPhotoSelection();
 			imageView.requestFullSize(selection, true, false, null);
 		}
 	}
@@ -346,7 +345,7 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 	}
 
 	private void showCaptionDialog() {
-		final PhotoSelection currentUpload = getCurrentUpload();
+		final PhotoUpload currentUpload = getCurrentUpload();
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle(R.string.photo_caption);

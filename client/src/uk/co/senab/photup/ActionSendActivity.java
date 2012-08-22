@@ -2,7 +2,7 @@ package uk.co.senab.photup;
 
 import java.util.ArrayList;
 
-import uk.co.senab.photup.model.PhotoSelection;
+import uk.co.senab.photup.model.PhotoUpload;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -31,7 +31,7 @@ public class ActionSendActivity extends Activity {
 		if (null != uris && !uris.isEmpty()) {
 			PhotoUploadController controller = PhotupApplication.getApplication(this).getPhotoUploadController();
 			for (Uri uri : uris) {
-				controller.addPhotoSelection(PhotoSelection.getSelection(uri));
+				controller.addPhotoSelection(PhotoUpload.getSelection(uri));
 			}
 		}
 

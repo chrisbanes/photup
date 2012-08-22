@@ -3,7 +3,7 @@ package uk.co.senab.photup.views;
 import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
-import uk.co.senab.photup.model.PhotoSelection;
+import uk.co.senab.photup.model.PhotoUpload;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -17,7 +17,7 @@ public class PhotoItemLayout extends CheckableFrameLayout implements View.OnClic
 
 	private final PhotupImageView mImageView;
 	private final CheckableImageView mButton;
-	private PhotoSelection mSelection;
+	private PhotoUpload mSelection;
 
 	private boolean mAnimateCheck = true;
 
@@ -75,11 +75,11 @@ public class PhotoItemLayout extends CheckableFrameLayout implements View.OnClic
 		mButton.setChecked(b);
 	}
 
-	public PhotoSelection getPhotoSelection() {
+	public PhotoUpload getPhotoSelection() {
 		return mSelection;
 	}
 
-	public void setPhotoSelection(PhotoSelection selection) {
+	public void setPhotoSelection(PhotoUpload selection) {
 		if (mSelection != selection) {
 			mButton.clearAnimation();
 			mSelection = selection;

@@ -13,7 +13,7 @@ import uk.co.senab.photup.adapters.CameraBaseAdapter;
 import uk.co.senab.photup.adapters.UsersPhotosCursorAdapter;
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
 import uk.co.senab.photup.model.MediaStoreBucket;
-import uk.co.senab.photup.model.PhotoSelection;
+import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.tasks.MediaStoreBucketsAsyncTask;
 import uk.co.senab.photup.tasks.MediaStoreBucketsAsyncTask.MediaStoreBucketsResultListener;
 import uk.co.senab.photup.util.MediaStoreCursorHelper;
@@ -269,7 +269,7 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 		// NO-OP
 	}
 
-	public void onPhotoSelectionChanged(PhotoSelection upload, boolean added) {
+	public void onPhotoSelectionChanged(PhotoUpload upload, boolean added) {
 		for (int i = 0, z = mPhotoGrid.getChildCount(); i < z; i++) {
 			View view = mPhotoGrid.getChildAt(i);
 
@@ -320,7 +320,7 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 	public void selectAll() {
 		Cursor cursor = mPhotoAdapter.getCursor();
 		if (null != cursor) {
-			ArrayList<PhotoSelection> selections = MediaStoreCursorHelper.photosCursorToSelectionList(
+			ArrayList<PhotoUpload> selections = MediaStoreCursorHelper.photosCursorToSelectionList(
 					MediaStoreCursorHelper.MEDIA_STORE_CONTENT_URI, cursor);
 			mPhotoSelectionController.addPhotoSelections(selections);
 		}

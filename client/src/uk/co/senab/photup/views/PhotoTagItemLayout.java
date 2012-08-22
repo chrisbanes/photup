@@ -9,8 +9,8 @@ import uk.co.senab.photup.listeners.OnPhotoTagsChangedListener;
 import uk.co.senab.photup.listeners.OnPhotoTapListener;
 import uk.co.senab.photup.listeners.OnPickFriendRequestListener;
 import uk.co.senab.photup.model.FbUser;
-import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.model.PhotoTag;
+import uk.co.senab.photup.model.PhotoUpload;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.RectF;
@@ -44,11 +44,11 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 	private final AbsoluteLayout mTagLayout;
 
 	private int mPosition;
-	private final PhotoSelection mUpload;
+	private final PhotoUpload mUpload;
 	private final PhotoUploadController mController;
 	private final View mFaceDetectIndicator;
 
-	public PhotoTagItemLayout(Context context, PhotoUploadController controller, PhotoSelection upload,
+	public PhotoTagItemLayout(Context context, PhotoUploadController controller, PhotoUpload upload,
 			OnPickFriendRequestListener friendRequestListener) {
 		super(context);
 
@@ -87,7 +87,7 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 		return mImageView;
 	}
 	
-	public PhotoSelection getPhotoSelection() {
+	public PhotoUpload getPhotoSelection() {
 		return mUpload;
 	}
 	
@@ -267,7 +267,7 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 	/**
 	 * More than likely on another thread
 	 */
-	public void onFaceDetectionStarted(PhotoSelection selection) {
+	public void onFaceDetectionStarted(PhotoUpload selection) {
 		mFaceDetectIndicator.post(new Runnable() {
 			public void run() {
 				Animation anim = AnimationUtils.loadAnimation(getContext(), R.anim.fade_in);
@@ -277,7 +277,7 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 		});
 	}
 
-	public void onFaceDetectionFinished(PhotoSelection selection) {
+	public void onFaceDetectionFinished(PhotoUpload selection) {
 		mFaceDetectIndicator.post(new Runnable() {
 			public void run() {
 				Animation anim = AnimationUtils.loadAnimation(getContext(), R.anim.fade_out);

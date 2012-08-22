@@ -1,7 +1,6 @@
 package uk.co.senab.photup.views;
 
 import uk.co.senab.photup.R;
-import uk.co.senab.photup.model.PhotoSelection;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.model.PhotoUpload.OnUploadStateChanged;
 import android.content.Context;
@@ -15,7 +14,7 @@ import android.widget.TextView;
 
 public class UploadItemLayout extends LinearLayout implements OnUploadStateChanged {
 
-	private PhotoSelection mSelection;
+	private PhotoUpload mSelection;
 
 	public UploadItemLayout(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -41,7 +40,7 @@ public class UploadItemLayout extends LinearLayout implements OnUploadStateChang
 		return (ProgressBar) findViewById(R.id.pb_upload_progress);
 	}
 
-	public void setPhotoSelection(PhotoSelection selection) {
+	public void setPhotoSelection(PhotoUpload selection) {
 		if (null != mSelection) {
 			mSelection.removeUploadStateChangedListener();
 			mSelection = null;
@@ -84,7 +83,7 @@ public class UploadItemLayout extends LinearLayout implements OnUploadStateChang
 		ProgressBar pb = getProgressBar();
 		ImageView resultIv = getResultImageView();
 
-		switch (mSelection.getState()) {
+		switch (mSelection.getUploadState()) {
 			case PhotoUpload.STATE_UPLOAD_COMPLETED:
 				pb.setVisibility(View.GONE);
 				resultIv.setImageResource(R.drawable.ic_success);
