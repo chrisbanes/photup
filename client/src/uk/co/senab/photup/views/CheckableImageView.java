@@ -1,6 +1,5 @@
 package uk.co.senab.photup.views;
 
-import android.R;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.Checkable;
@@ -16,7 +15,7 @@ public class CheckableImageView extends ImageView implements Checkable {
 		super(context, attrs);
 	}
 
-	private static final int[] CheckedStateSet = { R.attr.state_checked };
+	private static final int[] CheckedStateSet = { android.R.attr.state_checked };
 
 	private boolean mChecked = false;
 

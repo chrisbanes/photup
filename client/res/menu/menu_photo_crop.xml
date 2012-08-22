@@ -3,11 +3,11 @@
 
 	<item
 		android:id="@+id/menu_crop_cancel"
-		android:showAsAction="always"
+		android:showAsAction="ifRoom"
 		android:title="@android:string/cancel"/>
 	<item
 		android:id="@+id/menu_crop_ok"
-		android:showAsAction="always"
+		android:showAsAction="ifRoom"
 		android:title="@android:string/ok"/>
 
 </menu>

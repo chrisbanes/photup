@@ -3,7 +3,7 @@
 
 	<item
 		android:id="@+id/menu_retry_failed"
-		android:showAsAction="always"
+		android:showAsAction="ifRoom"
 		android:title="@string/upload_retry"/>
 	<item
 		android:id="@+id/menu_settings"

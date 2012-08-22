@@ -4,7 +4,7 @@
 	<item
 		android:id="@+id/menu_upload"
 		android:actionLayout="@layout/layout_action_upload"
-		android:showAsAction="always"
+		android:showAsAction="ifRoom"
 		android:title="@string/upload_title"/>
 	<item
 		android:id="@+id/menu_clear_selection"
