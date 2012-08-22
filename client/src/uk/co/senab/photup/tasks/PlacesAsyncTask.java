@@ -46,8 +46,8 @@ public class PlacesAsyncTask extends AsyncTask<Void, Void, List<Place>> {
 					FacebookRequester requester = new FacebookRequester(account);
 					List<Place> places = requester.getPlaces(mLocation, mSearchQuery);
 
-					// If we have a location, sort using it
-					if (null != mLocation) {
+					// If we have places and a location, sort using it
+					if (null != places && !places.isEmpty() && null != mLocation) {
 						for (Place place : places) {
 							place.calculateDistanceFrom(mLocation);
 						}
