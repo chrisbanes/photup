@@ -98,6 +98,9 @@ public class UploadItemLayout extends LinearLayout implements OnUploadStateChang
 				break;
 
 			case PhotoUpload.STATE_UPLOAD_IN_PROGRESS:
+				pb.setVisibility(View.VISIBLE);
+				resultIv.setVisibility(View.GONE);
+
 				final int progress = mSelection.getUploadProgress();
 				if (progress <= 0) {
 					pb.setIndeterminate(true);
@@ -105,11 +108,12 @@ public class UploadItemLayout extends LinearLayout implements OnUploadStateChang
 					pb.setIndeterminate(false);
 					pb.setProgress(progress);
 				}
-				resultIv.setVisibility(View.GONE);
+				break;
 
 			case PhotoUpload.STATE_WAITING:
 				pb.setVisibility(View.VISIBLE);
 				resultIv.setVisibility(View.GONE);
+				pb.setIndeterminate(true);
 				break;
 		}
 	}
