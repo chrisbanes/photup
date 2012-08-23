@@ -29,6 +29,7 @@
 	<string name="place">Place</string>
 	<string name="error_select_photos">Please select some photos to upload first</string>
 	<string name="error_select_album">Please select an album first</string>
+	<string name="error_not_connected">You\'re not connected to the Internet, try again later.</string>
 	<string name="notification_uploading_photo">Uploading Photo %1$s</string>
 	<string name="notification_uploading_photo_progress">Uploading Photo %1$d %2$d%%</string>
 	<string name="crash_toast">photup just crashed :( The developer has been notified of the cause.</string>

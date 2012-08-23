@@ -8,6 +8,7 @@ import uk.co.senab.photup.fragments.UploadsFragment;
 import uk.co.senab.photup.fragments.UserPhotosFragment;
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
 import uk.co.senab.photup.model.PhotoUpload;
+import uk.co.senab.photup.receivers.ConnectivityReceiver;
 import uk.co.senab.photup.views.UploadActionBarView;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -305,7 +306,11 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 		if (mPhotoController.getSelectedPhotoUploadsSize() == 0) {
 			Toast.makeText(this, R.string.error_select_photos, Toast.LENGTH_SHORT).show();
 		} else {
-			startActivity(new Intent(this, UploadActivity.class));
+			if (ConnectivityReceiver.isConnected(this)) {
+				startActivity(new Intent(this, UploadActivity.class));
+			} else {
+				Toast.makeText(this, R.string.error_not_connected, Toast.LENGTH_LONG).show();
+			}
 		}
 	}
 
