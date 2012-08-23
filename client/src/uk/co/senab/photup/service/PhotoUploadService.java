@@ -417,7 +417,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		}
 
 		switch (upload.getUploadState()) {
-			case PhotoUpload.STATE_WAITING:
+			case PhotoUpload.STATE_UPLOAD_WAITING:
 				text = getString(R.string.notification_uploading_photo, mNumberUploaded + 1);
 				mNotificationBuilder.setContentTitle(text);
 				mNotificationBuilder.setTicker(text);

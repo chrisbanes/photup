@@ -37,8 +37,7 @@ import android.view.WindowManager;
 import com.facebook.android.FacebookError;
 
 @ReportsCrashes(formKey = Constants.ACRA_GOOGLE_DOC_ID, mode = ReportingInteractionMode.TOAST, resToastText = R.string.crash_toast)
-public class PhotupApplication extends Application implements FriendsResultListener,
-		AccountsResultListener {
+public class PhotupApplication extends Application implements FriendsResultListener, AccountsResultListener {
 
 	static final String LOG_TAG = "PhotupApplication";
 	public static final String THREAD_FILTERS = "filters_thread";
@@ -55,7 +54,7 @@ public class PhotupApplication extends Application implements FriendsResultListe
 	private AccountsResultListener mAccountsListener;
 	private ArrayList<Account> mAccounts;
 
-	private final PhotoUploadController mPhotoController = new PhotoUploadController();
+	private PhotoUploadController mPhotoController;
 
 	public static PhotupApplication getApplication(Context context) {
 		return (PhotupApplication) context.getApplicationContext();
@@ -115,14 +114,14 @@ public class PhotupApplication extends Application implements FriendsResultListe
 
 		checkInstantUploadReceiverState();
 
+		mPhotoController = new PhotoUploadController(this);
+
 		mFriends = new ArrayList<FbUser>();
 		mAccounts = new ArrayList<Account>();
 
 		// TODO Need to check for Facebook login
 		Session session = Session.restore(this);
 		if (null != session) {
-			mPhotoController.populateFromDatabase(this);
-			
 			getAccounts(null, false);
 			getFriends(null);
 		}
@@ -136,7 +135,7 @@ public class PhotupApplication extends Application implements FriendsResultListe
 			listener.onFriendsLoaded(mFriends);
 		}
 	}
-	
+
 	public Account getMainAccount() {
 		for (Account account : mAccounts) {
 			if (account.isMainAccount()) {
@@ -174,7 +173,7 @@ public class PhotupApplication extends Application implements FriendsResultListe
 				mFriendsListener.onFriendsLoaded(mFriends);
 				mFriendsListener = null;
 			}
-			
+
 			HashMap<String, FbUser> friendsMap = new HashMap<String, FbUser>();
 			for (FbUser friend : friends) {
 				friendsMap.put(friend.getId(), friend);
@@ -203,8 +202,8 @@ public class PhotupApplication extends Application implements FriendsResultListe
 					}
 				}
 			}
-			
-			HashMap<String,Account> accountsMap = new HashMap<String, Account>();
+
+			HashMap<String, Account> accountsMap = new HashMap<String, Account>();
 			for (Account account : accounts) {
 				accountsMap.put(account.getId(), account);
 			}

@@ -112,7 +112,7 @@ public class UploadsFragment extends SherlockListFragment implements OnPhotoSele
 			switch (upload.getUploadState()) {
 				case PhotoUpload.STATE_UPLOAD_COMPLETED:
 				case PhotoUpload.STATE_UPLOAD_ERROR:
-				case PhotoUpload.STATE_WAITING:
+				case PhotoUpload.STATE_UPLOAD_WAITING:
 					return true;
 			}
 		} catch (Exception e) {

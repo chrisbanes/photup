@@ -47,10 +47,14 @@ public class PhotoUpload {
 
 	private static final HashMap<Uri, PhotoUpload> SELECTION_CACHE = new HashMap<Uri, PhotoUpload>();
 
-	public static final int STATE_UPLOAD_COMPLETED = 2;
-	public static final int STATE_UPLOAD_ERROR = 3;
-	public static final int STATE_UPLOAD_IN_PROGRESS = 1;
-	public static final int STATE_WAITING = 0;
+	public static final int STATE_UPLOAD_COMPLETED = 5;
+	public static final int STATE_UPLOAD_ERROR = 4;
+	public static final int STATE_UPLOAD_IN_PROGRESS = 3;
+	public static final int STATE_UPLOAD_WAITING = 2;
+	public static final int STATE_SELECTED = 1;
+	public static final int STATE_NONE = 0;
+
+	public static final String FIELD_STATE = "state";
 
 	static final String LOG_TAG = "PhotoUpload";
 	static final float CROP_THRESHOLD = 0.01f; // 1%
@@ -69,6 +73,12 @@ public class PhotoUpload {
 		}
 
 		return item;
+	}
+
+	public static void populateCache(List<PhotoUpload> uploads) {
+		for (PhotoUpload upload : uploads) {
+			SELECTION_CACHE.put(upload.getOriginalPhotoUri(), upload);
+		}
 	}
 
 	public static PhotoUpload getSelection(Uri baseUri, long id) {
@@ -108,7 +118,7 @@ public class PhotoUpload {
 	@DatabaseField private String mTargetId;
 	@DatabaseField private UploadQuality mQuality;
 	@DatabaseField private String mResultPostId;
-	@DatabaseField private int mState;
+	@DatabaseField(columnName = FIELD_STATE) private int mState;
 	@DatabaseField private String mCaption;
 	@DatabaseField(useGetSet = true) String tagJson;
 
@@ -449,7 +459,7 @@ public class PhotoUpload {
 	}
 
 	public void reset() {
-		mState = STATE_WAITING;
+		mState = STATE_NONE;
 		mUserRotation = 0;
 		mCaption = null;
 		mCropLeft = mCropTop = MIN_CROP_VALUE;
@@ -544,7 +554,8 @@ public class PhotoUpload {
 				case STATE_UPLOAD_COMPLETED:
 					mBigPictureNotificationBmp = null;
 					break;
-				case STATE_WAITING:
+				case STATE_SELECTED:
+				case STATE_UPLOAD_WAITING:
 					mProgress = -1;
 					break;
 			}
@@ -573,7 +584,14 @@ public class PhotoUpload {
 		return sb.toString();
 	}
 
-	void setTagJson(String json) {
+	/**
+	 * Used only for ORMLite
+	 */
+	public void setTagJson(final String json) {
+		if (null == json) {
+			return;
+		}
+
 		try {
 			JSONArray document = new JSONArray(json);
 
@@ -590,7 +608,10 @@ public class PhotoUpload {
 		}
 	}
 
-	String getTagJson() {
+	/**
+	 * Used only for ORMLite
+	 */
+	public String getTagJson() {
 		if (getPhotoTagsCount() > 0) {
 			JSONArray document = new JSONArray();
 			for (PhotoTag tag : mTags) {

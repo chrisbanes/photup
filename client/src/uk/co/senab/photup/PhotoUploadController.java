@@ -12,9 +12,12 @@ import uk.co.senab.photup.model.FbUser;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.model.Place;
 import uk.co.senab.photup.model.UploadQuality;
+import uk.co.senab.photup.util.PhotoUploadDatabaseHelper;
 import android.content.Context;
 
 public class PhotoUploadController {
+
+	private final Context mContext;
 
 	private final ArrayList<PhotoUpload> mSelectedPhotoList;
 	private final ArrayList<PhotoUpload> mUploadingList;
@@ -25,10 +28,13 @@ public class PhotoUploadController {
 		return PhotupApplication.getApplication(context).getPhotoUploadController();
 	}
 
-	PhotoUploadController() {
+	PhotoUploadController(Context context) {
+		mContext = context;
 		mSelectionChangedListeners = new HashSet<OnPhotoSelectionChangedListener>();
 		mSelectedPhotoList = new ArrayList<PhotoUpload>();
 		mUploadingList = new ArrayList<PhotoUpload>();
+
+		populateFromDatabase();
 	}
 
 	public void addPhotoSelectionListener(OnPhotoSelectionChangedListener listener) {
@@ -39,8 +45,13 @@ public class PhotoUploadController {
 		mSelectionChangedListeners.remove(listener);
 	}
 
-	public void populateFromDatabase(Context context) {
-		// TODO Populate Lists from Database
+	public void populateFromDatabase() {
+		List<PhotoUpload> selectedFromDb = PhotoUploadDatabaseHelper.getSelected(mContext);
+		if (null != selectedFromDb) {
+			// Should do contains() on each item really...
+			mSelectedPhotoList.addAll(selectedFromDb);
+			PhotoUpload.populateCache(selectedFromDb);
+		}
 	}
 
 	public void populateDatabaseItemsFromFriends(HashMap<String, FbUser> friends) {
@@ -69,12 +80,16 @@ public class PhotoUploadController {
 		}
 	}
 
-	public void addPhotoSelection(final PhotoUpload upload) {
-		if (!isPhotoUploadSelected(upload)) {
-			mSelectedPhotoList.add(upload);
+	public void addPhotoSelection(final PhotoUpload selection) {
+		if (!isPhotoUploadSelected(selection)) {
+			selection.setUploadState(PhotoUpload.STATE_SELECTED);
+			mSelectedPhotoList.add(selection);
+
+			// Save to Database
+			PhotoUploadDatabaseHelper.saveToDatabase(mContext, selection);
 
 			for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
-				l.onPhotoSelectionChanged(upload, true);
+				l.onPhotoSelectionChanged(selection, true);
 			}
 		}
 	}
@@ -85,10 +100,14 @@ public class PhotoUploadController {
 
 		for (final PhotoUpload selection : selections) {
 			if (!currentSelectionsSet.contains(selection)) {
+				selection.setUploadState(PhotoUpload.STATE_SELECTED);
 				mSelectedPhotoList.add(selection);
 				callListeners = true;
 			}
 		}
+
+		// Save to Database
+		PhotoUploadDatabaseHelper.saveToDatabase(mContext, mSelectedPhotoList);
 
 		if (callListeners) {
 			for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
@@ -101,6 +120,8 @@ public class PhotoUploadController {
 		if (!mSelectedPhotoList.isEmpty()) {
 			mSelectedPhotoList.clear();
 
+			PhotoUploadDatabaseHelper.deleteAllSelected(mContext);
+
 			for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
 				l.onPhotoSelectionsCleared();
 			}
@@ -109,6 +130,9 @@ public class PhotoUploadController {
 
 	public void removePhotoSelection(final PhotoUpload upload) {
 		if (mSelectedPhotoList.remove(upload)) {
+
+			// Delete from Database
+			PhotoUploadDatabaseHelper.deleteFromDatabase(mContext, upload);
 
 			for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
 				l.onPhotoSelectionChanged(upload, false);
@@ -148,7 +172,7 @@ public class PhotoUploadController {
 
 	public boolean hasWaitingUploads() {
 		for (PhotoUpload upload : mUploadingList) {
-			if (upload.getUploadState() == PhotoUpload.STATE_WAITING) {
+			if (upload.getUploadState() == PhotoUpload.STATE_UPLOAD_WAITING) {
 				return true;
 			}
 		}
@@ -175,7 +199,7 @@ public class PhotoUploadController {
 
 			if (upload.getUploadState() == PhotoUpload.STATE_UPLOAD_ERROR) {
 				// Reset State and add to selection list
-				upload.setUploadState(PhotoUpload.STATE_WAITING);
+				upload.setUploadState(PhotoUpload.STATE_SELECTED);
 				addPhotoSelection(upload);
 
 				// Remove from Uploading list
@@ -242,7 +266,7 @@ public class PhotoUploadController {
 
 	public PhotoUpload getNextPhotoToUpload() {
 		for (PhotoUpload selection : mUploadingList) {
-			if (selection.getUploadState() == PhotoUpload.STATE_WAITING) {
+			if (selection.getUploadState() == PhotoUpload.STATE_UPLOAD_WAITING) {
 				return selection;
 			}
 		}

@@ -109,7 +109,7 @@ public class UploadItemLayout extends LinearLayout implements OnUploadStateChang
 				}
 				break;
 
-			case PhotoUpload.STATE_WAITING:
+			case PhotoUpload.STATE_UPLOAD_WAITING:
 				pb.setVisibility(View.VISIBLE);
 				resultIv.setVisibility(View.GONE);
 				pb.setIndeterminate(true);
