@@ -17,20 +17,6 @@ public enum Filter {
 	FILTER_SAHARA(R.string.filter_sahara),
 	FILTER_HDR(R.string.filter_hdr);
 
-	private final int mLabelId;
-
-	private Filter(int labelId) {
-		mLabelId = labelId;
-	}
-
-	public int getLabelId() {
-		return mLabelId;
-	}
-
-	public int getId() {
-		return ordinal();
-	}
-
 	public static Filter mapFromId(int id) {
 		try {
 			return values()[id];
@@ -40,10 +26,31 @@ public enum Filter {
 	}
 
 	public static Filter mapFromPref(String preference) {
+		Filter returnValue;
 		try {
-			return Filter.valueOf(preference);
+			int id = Integer.parseInt(preference);
+			returnValue = mapFromId(id);
 		} catch (Exception e) {
-			return null;
+			returnValue = FILTER_ORIGINAL;
 		}
+		return returnValue;
+	}
+
+	private final int mLabelId;
+
+	private Filter(int labelId) {
+		mLabelId = labelId;
+	}
+
+	public int getId() {
+		return ordinal();
+	}
+
+	public int getLabelId() {
+		return mLabelId;
+	}
+
+	public String mapToPref() {
+		return String.valueOf(getId());
 	}
 }

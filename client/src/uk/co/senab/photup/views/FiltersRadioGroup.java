@@ -117,7 +117,6 @@ public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 
 		Filter filter = upload.getFilterUsed();
 		final int filterId = filter.getId();
-
 		check(filterId);
 
 		View child = findViewById(filterId);
