@@ -54,8 +54,6 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 
 		mController = controller;
 		mPickFriendListener = friendRequestListener;
-		mUpload = upload;
-		mUpload.setTagChangedListener(this);
 
 		mLayoutInflater = LayoutInflater.from(context);
 
@@ -75,10 +73,15 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 		mButton = (CheckableImageView) inflater.inflate(R.layout.layout_check_button_lrg, this, false);
 		mButton.setOnClickListener(this);
 		addView(mButton);
-		mButton.setChecked(mController.isPhotoUploadSelected(upload));
 
 		mFaceDetectIndicator = inflater.inflate(R.layout.layout_face_detect, this, false);
 		addView(mFaceDetectIndicator);
+
+		if (null != upload) {
+			upload.setTagChangedListener(this);
+			mButton.setChecked(mController.isPhotoUploadSelected(upload));
+		}
+		mUpload = upload;
 
 		addPhotoTags();
 	}
@@ -86,15 +89,15 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 	public MultiTouchImageView getImageView() {
 		return mImageView;
 	}
-	
+
 	public PhotoUpload getPhotoSelection() {
 		return mUpload;
 	}
-	
+
 	public int getPosition() {
 		return mPosition;
 	}
-	
+
 	public void setPosition(int position) {
 		mPosition = position;
 	}
@@ -167,7 +170,7 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 
 	private void addPhotoTags() {
 		mTagLayout.removeAllViews();
-		
+
 		if (mUpload.getPhotoTagsCount() > 0) {
 			for (PhotoTag tag : mUpload.getPhotoTags()) {
 				mTagLayout.addView(createPhotoTagLayout(tag));

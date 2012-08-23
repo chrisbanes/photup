@@ -41,16 +41,14 @@ public class UserPhotosViewPagerAdapter extends CursorPagerAdapter {
 	}
 
 	@Override
-	public View newView(Context context, Cursor cursor, ViewGroup parent) {	
-		final PhotoUpload upload = MediaStoreCursorHelper.photosCursorToSelection(MediaStoreCursorHelper.MEDIA_STORE_CONTENT_URI,
-				cursor);
+	public View newView(Context context, Cursor cursor, ViewGroup parent) {
+		final PhotoUpload upload = MediaStoreCursorHelper.photosCursorToSelection(
+				MediaStoreCursorHelper.MEDIA_STORE_CONTENT_URI, cursor);
 
-		PhotoTagItemLayout view = null;
+		PhotoTagItemLayout view = new PhotoTagItemLayout(mContext, mController, upload, mFriendPickRequestListener);
+		view.setPosition(cursor.getPosition());
 
 		if (null != upload) {
-			view = new PhotoTagItemLayout(mContext, mController, upload, mFriendPickRequestListener);
-			view.setPosition(cursor.getPosition());
-
 			upload.setFaceDetectionListener(view);
 
 			MultiTouchImageView imageView = view.getImageView();
