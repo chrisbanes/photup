@@ -17,16 +17,16 @@ import android.content.Context;
 
 public class PhotoUploadController {
 
-	private final Context mContext;
-
-	private final ArrayList<PhotoUpload> mSelectedPhotoList;
-	private final ArrayList<PhotoUpload> mUploadingList;
-
-	private final HashSet<OnPhotoSelectionChangedListener> mSelectionChangedListeners;
-
 	public static PhotoUploadController getFromContext(Context context) {
 		return PhotupApplication.getApplication(context).getPhotoUploadController();
 	}
+
+	private final Context mContext;
+	private final ArrayList<PhotoUpload> mSelectedPhotoList;
+
+	private final ArrayList<PhotoUpload> mUploadingList;
+
+	private final HashSet<OnPhotoSelectionChangedListener> mSelectionChangedListeners;
 
 	PhotoUploadController(Context context) {
 		mContext = context;
@@ -35,49 +35,6 @@ public class PhotoUploadController {
 		mUploadingList = new ArrayList<PhotoUpload>();
 
 		populateFromDatabase();
-	}
-
-	public void addPhotoSelectionListener(OnPhotoSelectionChangedListener listener) {
-		mSelectionChangedListeners.add(listener);
-	}
-
-	public void removePhotoSelectionListener(OnPhotoSelectionChangedListener listener) {
-		mSelectionChangedListeners.remove(listener);
-	}
-
-	public void populateFromDatabase() {
-		List<PhotoUpload> selectedFromDb = PhotoUploadDatabaseHelper.getSelected(mContext);
-		if (null != selectedFromDb) {
-			// Should do contains() on each item really...
-			mSelectedPhotoList.addAll(selectedFromDb);
-			PhotoUpload.populateCache(selectedFromDb);
-		}
-	}
-
-	public void populateDatabaseItemsFromFriends(HashMap<String, FbUser> friends) {
-		if (!mSelectedPhotoList.isEmpty()) {
-			for (PhotoUpload upload : mSelectedPhotoList) {
-				upload.populateFromFriends(friends);
-			}
-		}
-		if (!mUploadingList.isEmpty()) {
-			for (PhotoUpload upload : mUploadingList) {
-				upload.populateFromFriends(friends);
-			}
-		}
-	}
-
-	public void populateDatabaseItemsFromAccounts(HashMap<String, Account> accounts) {
-		if (!mSelectedPhotoList.isEmpty()) {
-			for (PhotoUpload upload : mSelectedPhotoList) {
-				upload.populateFromAccounts(accounts);
-			}
-		}
-		if (!mUploadingList.isEmpty()) {
-			for (PhotoUpload upload : mUploadingList) {
-				upload.populateFromAccounts(accounts);
-			}
-		}
 	}
 
 	public void addPhotoSelection(final PhotoUpload selection) {
@@ -94,6 +51,10 @@ public class PhotoUploadController {
 		}
 	}
 
+	public void addPhotoSelectionListener(OnPhotoSelectionChangedListener listener) {
+		mSelectionChangedListeners.add(listener);
+	}
+
 	public void addPhotoSelections(List<PhotoUpload> selections) {
 		final HashSet<PhotoUpload> currentSelectionsSet = new HashSet<PhotoUpload>(mSelectedPhotoList);
 		boolean callListeners = false;
@@ -107,13 +68,28 @@ public class PhotoUploadController {
 		}
 
 		// Save to Database
-		PhotoUploadDatabaseHelper.saveToDatabase(mContext, mSelectedPhotoList);
+		PhotoUploadDatabaseHelper.saveToDatabase(mContext, mSelectedPhotoList, true);
 
 		if (callListeners) {
 			for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
 				l.onPhotoSelectionsAdded();
 			}
 		}
+	}
+
+	public boolean addPhotoToUploads(PhotoUpload upload) {
+		if (null != upload && !mUploadingList.contains(upload)) {
+			mUploadingList.add(upload);
+
+			// TODO Database...
+
+			for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
+				l.onPhotoSelectionsCleared();
+			}
+
+			return true;
+		}
+		return false;
 	}
 
 	public void clearPhotoSelections() {
@@ -135,22 +111,23 @@ public class PhotoUploadController {
 		}
 	}
 
-	public void removePhotoSelection(final PhotoUpload upload) {
-		if (mSelectedPhotoList.remove(upload)) {
-			// Delete from Database
-			PhotoUploadDatabaseHelper.deleteFromDatabase(mContext, upload);
-
-			// Reset State (as may still be in cache)
-			upload.setUploadState(PhotoUpload.STATE_NONE);
-
-			for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
-				l.onPhotoSelectionChanged(upload, false);
+	public int getActiveUploadsSize() {
+		int count = 0;
+		for (PhotoUpload upload : mUploadingList) {
+			if (upload.getUploadState() != PhotoUpload.STATE_UPLOAD_COMPLETED) {
+				count++;
 			}
 		}
+		return count;
 	}
 
-	public boolean isPhotoUploadSelected(PhotoUpload upload) {
-		return mSelectedPhotoList.contains(upload);
+	public PhotoUpload getNextPhotoToUpload() {
+		for (PhotoUpload selection : mUploadingList) {
+			if (selection.getUploadState() == PhotoUpload.STATE_UPLOAD_WAITING) {
+				return selection;
+			}
+		}
+		return null;
 	}
 
 	public List<PhotoUpload> getSelectedPhotoUploads() {
@@ -169,14 +146,17 @@ public class PhotoUploadController {
 		return new ArrayList<PhotoUpload>(mUploadingList);
 	}
 
-	public int getActiveUploadsSize() {
-		int count = 0;
-		for (PhotoUpload upload : mUploadingList) {
-			if (upload.getUploadState() != PhotoUpload.STATE_UPLOAD_COMPLETED) {
-				count++;
+	public boolean hasSelectionsWithPlace() {
+		for (PhotoUpload selection : mSelectedPhotoList) {
+			if (selection.hasPlace()) {
+				return true;
 			}
 		}
-		return count;
+		return false;
+	}
+
+	public boolean hasUploads() {
+		return !mUploadingList.isEmpty();
 	}
 
 	public boolean hasWaitingUploads() {
@@ -188,13 +168,8 @@ public class PhotoUploadController {
 		return false;
 	}
 
-	public boolean hasSelectionsWithPlace() {
-		for (PhotoUpload selection : mSelectedPhotoList) {
-			if (selection.hasPlace()) {
-				return true;
-			}
-		}
-		return false;
+	public boolean isPhotoUploadSelected(PhotoUpload upload) {
+		return mSelectedPhotoList.contains(upload);
 	}
 
 	public boolean moveFailedToSelected() {
@@ -210,7 +185,7 @@ public class PhotoUploadController {
 				// Reset State and add to selection list
 				upload.setUploadState(PhotoUpload.STATE_SELECTED);
 				addPhotoSelection(upload);
-				
+
 				// TODO Database...
 
 				// Remove from Uploading list
@@ -231,30 +206,11 @@ public class PhotoUploadController {
 		return result;
 	}
 
-	public boolean hasUploads() {
-		return !mUploadingList.isEmpty();
-	}
-
-	public boolean addPhotoToUploads(PhotoUpload upload) {
-		if (null != upload && !mUploadingList.contains(upload)) {
-			mUploadingList.add(upload);
-			
-			// TODO Database...
-
-			for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
-				l.onPhotoSelectionsCleared();
-			}
-
-			return true;
-		}
-		return false;
-	}
-
 	public void moveSelectedPhotosToUploads(final Account account, final String targetId, final UploadQuality quality,
 			final Place place) {
 		mUploadingList.addAll(mSelectedPhotoList);
 		mSelectedPhotoList.clear();
-		
+
 		// TODO Database...
 
 		for (PhotoUpload upload : mUploadingList) {
@@ -269,9 +225,49 @@ public class PhotoUploadController {
 		}
 	}
 
+	public void populateDatabaseItemsFromAccounts(HashMap<String, Account> accounts) {
+		if (!mSelectedPhotoList.isEmpty()) {
+			for (PhotoUpload upload : mSelectedPhotoList) {
+				upload.populateFromAccounts(accounts);
+			}
+		}
+		if (!mUploadingList.isEmpty()) {
+			for (PhotoUpload upload : mUploadingList) {
+				upload.populateFromAccounts(accounts);
+			}
+		}
+	}
+
+	public void populateDatabaseItemsFromFriends(HashMap<String, FbUser> friends) {
+		if (!mSelectedPhotoList.isEmpty()) {
+			for (PhotoUpload upload : mSelectedPhotoList) {
+				upload.populateFromFriends(friends);
+			}
+		}
+		if (!mUploadingList.isEmpty()) {
+			for (PhotoUpload upload : mUploadingList) {
+				upload.populateFromFriends(friends);
+			}
+		}
+	}
+
+	public void populateFromDatabase() {
+		List<PhotoUpload> selectedFromDb = PhotoUploadDatabaseHelper.getSelected(mContext);
+		if (null != selectedFromDb) {
+			// Should do contains() on each item really...
+			mSelectedPhotoList.addAll(selectedFromDb);
+			PhotoUpload.populateCache(selectedFromDb);
+		}
+	}
+
+	public void updateDatabase() {
+		PhotoUploadDatabaseHelper.saveToDatabase(mContext, mSelectedPhotoList, false);
+		PhotoUploadDatabaseHelper.saveToDatabase(mContext, mUploadingList, false);
+	}
+
 	public void removePhotoFromUploads(PhotoUpload selection) {
 		mUploadingList.remove(selection);
-		
+
 		// TODO Database...
 
 		if (mUploadingList.isEmpty()) {
@@ -281,13 +277,22 @@ public class PhotoUploadController {
 		}
 	}
 
-	public PhotoUpload getNextPhotoToUpload() {
-		for (PhotoUpload selection : mUploadingList) {
-			if (selection.getUploadState() == PhotoUpload.STATE_UPLOAD_WAITING) {
-				return selection;
+	public void removePhotoSelection(final PhotoUpload upload) {
+		if (mSelectedPhotoList.remove(upload)) {
+			// Delete from Database
+			PhotoUploadDatabaseHelper.deleteFromDatabase(mContext, upload);
+
+			// Reset State (as may still be in cache)
+			upload.setUploadState(PhotoUpload.STATE_NONE);
+
+			for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
+				l.onPhotoSelectionChanged(upload, false);
 			}
 		}
-		return null;
+	}
+
+	public void removePhotoSelectionListener(OnPhotoSelectionChangedListener listener) {
+		mSelectionChangedListeners.remove(listener);
 	}
 
 }

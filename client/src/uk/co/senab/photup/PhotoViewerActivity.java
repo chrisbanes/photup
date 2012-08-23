@@ -302,8 +302,9 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 
 	@Override
 	protected void onDestroy() {
-		super.onDestroy();
 		mController.removePhotoSelectionListener(this);
+		mController.updateDatabase();
+		super.onDestroy();
 	}
 
 	private PhotoUpload getCurrentUpload() {

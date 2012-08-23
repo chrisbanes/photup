@@ -137,6 +137,8 @@ public class PhotoUpload {
 	private WeakReference<OnPhotoTagsChangedListener> mTagChangedListener;
 	private WeakReference<OnUploadStateChanged> mStateListener;
 
+	private boolean mNeedsSaveFlag = false;
+
 	PhotoUpload() {
 		// NO-Arg for Ormlite
 	}
@@ -153,6 +155,8 @@ public class PhotoUpload {
 		}
 		mTags.add(tag);
 		notifyTagListener(tag, true);
+
+		setRequiresSaveFlag();
 	}
 
 	public boolean beenCropped() {
@@ -444,6 +448,7 @@ public class PhotoUpload {
 				mTags = null;
 			}
 		}
+		setRequiresSaveFlag();
 	}
 
 	public void removeUploadStateChangedListener() {
@@ -458,6 +463,10 @@ public class PhotoUpload {
 		return getUserRotation() != 0 || beenFiltered() || (fullSize && beenCropped());
 	}
 
+	public boolean requiresSaving() {
+		return mNeedsSaveFlag;
+	}
+
 	public void reset() {
 		mState = STATE_NONE;
 		mUserRotation = 0;
@@ -467,10 +476,17 @@ public class PhotoUpload {
 		mFilter = null;
 		mTags = null;
 		mCompletedDetection = false;
+
+		setRequiresSaveFlag();
+	}
+
+	public void resetSaveFlag() {
+		mNeedsSaveFlag = false;
 	}
 
 	public void rotateClockwise() {
 		mUserRotation += 90;
+		setRequiresSaveFlag();
 	}
 
 	public void setBigPictureNotificationBmp(Context context, Bitmap bigPictureNotificationBmp) {
@@ -487,6 +503,8 @@ public class PhotoUpload {
 		} else {
 			mCaption = caption;
 		}
+
+		setRequiresSaveFlag();
 	}
 
 	public void setCropValues(RectF cropValues) {
@@ -506,6 +524,8 @@ public class PhotoUpload {
 			mCropLeft = mCropTop = MIN_CROP_VALUE;
 			mCropRight = mCropBottom = MAX_CROP_VALUE;
 		}
+
+		setRequiresSaveFlag();
 	}
 
 	public void setFaceDetectionListener(OnFaceDetectionListener listener) {
@@ -517,14 +537,17 @@ public class PhotoUpload {
 
 	public void setFilterUsed(Filter filter) {
 		mFilter = filter;
+		setRequiresSaveFlag();
 	}
 
 	public void setPlace(Place place) {
 		mPlace = place;
+		setRequiresSaveFlag();
 	}
 
 	public void setResultPostId(String resultPostId) {
 		mResultPostId = resultPostId;
+		setRequiresSaveFlag();
 	}
 
 	public void setTagChangedListener(OnPhotoTagsChangedListener tagChangedListener) {
@@ -536,6 +559,7 @@ public class PhotoUpload {
 		mAccountId = account.getId();
 		mTargetId = targetId;
 		mQuality = quality;
+		setRequiresSaveFlag();
 	}
 
 	public void setUploadProgress(int progress) {
@@ -561,6 +585,7 @@ public class PhotoUpload {
 			}
 
 			notifyUploadStateListener();
+			setRequiresSaveFlag();
 		}
 	}
 
@@ -770,5 +795,9 @@ public class PhotoUpload {
 		if (null != listener) {
 			listener.onUploadStateChanged(this, mState, mProgress);
 		}
+	}
+
+	private void setRequiresSaveFlag() {
+		mNeedsSaveFlag = true;
 	}
 }

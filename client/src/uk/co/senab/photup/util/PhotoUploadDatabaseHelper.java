@@ -35,7 +35,7 @@ public class PhotoUploadDatabaseHelper {
 
 	public static void deleteAllSelected(Context context) {
 		final DatabaseHelper helper = getHelper(context);
-		
+
 		try {
 			final Dao<PhotoUpload, String> dao = helper.getPhotoUploadDao();
 			final DeleteBuilder<PhotoUpload, String> deleteBuilder = dao.deleteBuilder();
@@ -72,7 +72,7 @@ public class PhotoUploadDatabaseHelper {
 		OpenHelperManager.releaseHelper();
 	}
 
-	public static void saveToDatabase(Context context, final List<PhotoUpload> uploads) {
+	public static void saveToDatabase(Context context, final List<PhotoUpload> uploads, final boolean forceUpdate) {
 		final DatabaseHelper helper = getHelper(context);
 
 		try {
@@ -82,7 +82,10 @@ public class PhotoUploadDatabaseHelper {
 				public Void call() throws Exception {
 
 					for (PhotoUpload upload : uploads) {
-						dao.createOrUpdate(upload);
+						if (forceUpdate || upload.requiresSaving()) {
+							dao.createOrUpdate(upload);
+							upload.resetSaveFlag();
+						}
 					}
 					return null;
 				}
