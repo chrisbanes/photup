@@ -9,30 +9,25 @@ import uk.co.senab.photup.Constants;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-
-@DatabaseTable
 public class PhotoTag {
 
-	@DatabaseField private float mX;
-	@DatabaseField private float mY;
-	@DatabaseField private String mFriendId;
-
+	private final float mX;
+	private final float mY;
+	private String mFriendId;
 	private FbUser mFriend;
 
-	PhotoTag() {
-		// Empty Constructor
-	}
-
 	public PhotoTag(float x, float y) {
-		mFriend = null;
 		mX = x;
 		mY = y;
 
 		if (Constants.DEBUG) {
 			Log.d("PhotoTag", "X: " + x + " Y: " + y);
 		}
+	}
+
+	public PhotoTag(JSONObject object) throws JSONException {
+		this((float) object.getDouble("x"), (float) object.getDouble("y"));
+		mFriendId = object.getString("tag_uid");
 	}
 
 	public PhotoTag(float x, float y, float bitmapWidth, float bitmapHeight) {

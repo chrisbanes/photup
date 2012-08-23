@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
@@ -107,12 +110,12 @@ public class PhotoUpload {
 	@DatabaseField private String mResultPostId;
 	@DatabaseField private int mState;
 	@DatabaseField private String mCaption;
+	@DatabaseField(useGetSet = true) String tagJson;
 
-	// TODO Persist Tags
-	private HashSet<PhotoTag> mTags;
 	// TODO Persist Place
 	private Place mPlace;
 
+	private HashSet<PhotoTag> mTags;
 	private Account mAccount;
 	private int mProgress;
 	private Bitmap mBigPictureNotificationBmp;
@@ -568,6 +571,38 @@ public class PhotoUpload {
 		}
 
 		return sb.toString();
+	}
+
+	void setTagJson(String json) {
+		try {
+			JSONArray document = new JSONArray(json);
+
+			if (null == mTags) {
+				mTags = new HashSet<PhotoTag>();
+			}
+			mTags.clear();
+
+			for (int i = 0, z = document.length(); i < z; i++) {
+				mTags.add(new PhotoTag(document.getJSONObject(i)));
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+
+	String getTagJson() {
+		if (getPhotoTagsCount() > 0) {
+			JSONArray document = new JSONArray();
+			for (PhotoTag tag : mTags) {
+				try {
+					document.put(tag.toJsonObject());
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+			return document.toString();
+		}
+		return null;
 	}
 
 	private Bitmap getThumbnailImageFromMediaStore(Context context) {
