@@ -51,6 +51,8 @@ public class PhotoUpload {
 	static final float CROP_THRESHOLD = 0.01f; // 1%
 	static final int MINI_THUMBNAIL_SIZE = 300;
 	static final int MICRO_THUMBNAIL_SIZE = 96;
+	static final float MIN_CROP_VALUE = 0.0f;
+	static final float MAX_CROP_VALUE = 1.0f;
 
 	public static PhotoUpload getSelection(Uri uri) {
 		// Check whether we've already got a Selection cached
@@ -68,28 +70,41 @@ public class PhotoUpload {
 		return getSelection(Uri.withAppendedPath(baseUri, String.valueOf(id)));
 	}
 
+	private static boolean checkCropValues(float left, float top, float right, float bottom) {
+		return Math.max(left, top) >= (MIN_CROP_VALUE + CROP_THRESHOLD)
+				|| Math.min(right, bottom) <= (MAX_CROP_VALUE - CROP_THRESHOLD);
+	}
+
+	private static float santizeCropValue(float value) {
+		return Math.min(1f, Math.max(0f, value));
+	}
+
 	/**
 	 * Edit Variables
 	 */
-	private boolean mCompletedDetection;
+	@DatabaseField private boolean mCompletedDetection;
 	@DatabaseField private int mUserRotation;
-	private RectF mCropValues;
-	private Filter mFilter;
+	@DatabaseField private Filter mFilter;
+	@DatabaseField private float mCropLeft;
+	@DatabaseField private float mCropTop;
+	@DatabaseField private float mCropRight;
+	@DatabaseField private float mCropBottom;
 
 	/**
 	 * Upload Variables
 	 */
-	private Account mAccount;
-
+	@DatabaseField String mAccountId;
 	@DatabaseField private String mTargetId;
-	private Bitmap mBigPictureNotificationBmp;
 	@DatabaseField private Place mPlace;
-	private int mProgress;
 	@DatabaseField private UploadQuality mQuality;
 	@DatabaseField private String mResultPostId;
 	@DatabaseField private int mState;
 	@DatabaseField private String mCaption;
 	private HashSet<PhotoTag> mTags;
+
+	private Account mAccount;
+	private int mProgress;
+	private Bitmap mBigPictureNotificationBmp;
 
 	/**
 	 * Listeners
@@ -114,7 +129,7 @@ public class PhotoUpload {
 	}
 
 	public boolean beenCropped() {
-		return null != mCropValues;
+		return checkCropValues(mCropLeft, mCropTop, mCropRight, mCropBottom);
 	}
 
 	public boolean beenFiltered() {
@@ -198,12 +213,11 @@ public class PhotoUpload {
 	}
 
 	public RectF getCropValues() {
-		return mCropValues;
+		return new RectF(mCropLeft, mCropTop, mCropRight, mCropBottom);
 	}
 
 	public RectF getCropValues(final int width, final int height) {
-		return new RectF(mCropValues.left * width, mCropValues.top * height, mCropValues.right * width,
-				mCropValues.bottom * height);
+		return new RectF(mCropLeft * width, mCropTop * height, mCropRight * width, mCropBottom * height);
 	}
 
 	public Bitmap getDisplayImage(Context context) {
@@ -333,6 +347,16 @@ public class PhotoUpload {
 		return null != mPlace;
 	}
 
+	public void populateFromFriends(HashMap<String, FbUser> friends) {
+		// TODO Populate Tags here!
+	}
+
+	public void populateFromAccounts(HashMap<String, Account> accounts) {
+		if (null == mAccount && !TextUtils.isEmpty(mAccountId)) {
+			mAccount = accounts.get(mAccountId);
+		}
+	}
+
 	public Bitmap processBitmap(Bitmap bitmap, final boolean fullSize, final boolean modifyOriginal) {
 		if (requiresProcessing(fullSize)) {
 			return processBitmapUsingFilter(bitmap, mFilter, fullSize, modifyOriginal);
@@ -402,7 +426,8 @@ public class PhotoUpload {
 		mState = STATE_WAITING;
 		mUserRotation = 0;
 		mCaption = null;
-		mCropValues = null;
+		mCropLeft = mCropTop = MIN_CROP_VALUE;
+		mCropRight = mCropBottom = MAX_CROP_VALUE;
 		mFilter = null;
 		mTags = null;
 		mCompletedDetection = false;
@@ -429,12 +454,12 @@ public class PhotoUpload {
 	}
 
 	public void setCropValues(RectF cropValues) {
-		if (cropValues.left >= CROP_THRESHOLD || cropValues.right <= (1f - CROP_THRESHOLD)
-				|| cropValues.top >= CROP_THRESHOLD || cropValues.bottom <= (1f - CROP_THRESHOLD)) {
+		if (checkCropValues(cropValues.left, cropValues.top, cropValues.right, cropValues.bottom)) {
 
-			// TODO Remap Photo Tags using new crop values
-
-			mCropValues = cropValues;
+			mCropLeft = santizeCropValue(cropValues.left);
+			mCropTop = santizeCropValue(cropValues.top);
+			mCropRight = santizeCropValue(cropValues.right);
+			mCropBottom = santizeCropValue(cropValues.bottom);
 			if (Constants.DEBUG) {
 				Log.d(LOG_TAG, "Valid Crop Values: " + cropValues.toString());
 			}
@@ -442,7 +467,8 @@ public class PhotoUpload {
 			if (Constants.DEBUG) {
 				Log.d(LOG_TAG, "Invalid Crop Values: " + cropValues.toString());
 			}
-			mCropValues = null;
+			mCropLeft = mCropTop = MIN_CROP_VALUE;
+			mCropRight = mCropBottom = MAX_CROP_VALUE;
 		}
 	}
 
@@ -471,6 +497,7 @@ public class PhotoUpload {
 
 	public void setUploadParams(Account account, String targetId, UploadQuality quality) {
 		mAccount = account;
+		mAccountId = account.getId();
 		mTargetId = targetId;
 		mQuality = quality;
 	}
