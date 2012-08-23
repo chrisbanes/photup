@@ -26,6 +26,7 @@ import uk.co.senab.photup.model.PhotoTag;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.model.UploadQuality;
 import uk.co.senab.photup.receivers.ConnectivityReceiver;
+import uk.co.senab.photup.util.PhotoUploadDatabaseHelper;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -357,12 +358,16 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 	private void onFinishedUpload(PhotoUpload completedUpload) {
 		completedUpload.setUploadState(PhotoUpload.STATE_UPLOAD_COMPLETED);
+		PhotoUploadDatabaseHelper.saveToDatabase(getApplicationContext(), completedUpload);
+		
 		mNumberUploaded++;
 		startNextUploadOrFinish();
 	}
 
 	private void onFailedUpload(PhotoUpload failedUpload) {
 		failedUpload.setUploadState(PhotoUpload.STATE_UPLOAD_ERROR);
+		PhotoUploadDatabaseHelper.saveToDatabase(getApplicationContext(), failedUpload);
+		
 		mNumberUploaded++;
 		startNextUploadOrFinish();
 	}
