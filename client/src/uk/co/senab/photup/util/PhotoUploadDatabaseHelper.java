@@ -33,6 +33,24 @@ public class PhotoUploadDatabaseHelper {
 		return uploads;
 	}
 
+	public static List<PhotoUpload> getUploads(Context context) {
+		final DatabaseHelper helper = getHelper(context);
+		List<PhotoUpload> uploads = null;
+
+		try {
+			final Dao<PhotoUpload, String> dao = helper.getPhotoUploadDao();
+			uploads = dao.query(dao.queryBuilder().where()
+					.ge(PhotoUpload.FIELD_STATE, PhotoUpload.STATE_UPLOAD_WAITING).prepare());
+		} catch (SQLException e) {
+			if (Constants.DEBUG) {
+				e.printStackTrace();
+			}
+		}
+
+		OpenHelperManager.releaseHelper();
+		return uploads;
+	}
+
 	public static void deleteAllSelected(Context context) {
 		final DatabaseHelper helper = getHelper(context);
 
