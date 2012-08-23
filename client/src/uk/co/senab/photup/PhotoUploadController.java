@@ -44,11 +44,29 @@ public class PhotoUploadController {
 	}
 
 	public void populateDatabaseItemsFromFriends(HashMap<String, FbUser> friends) {
-		// TODO Populate items
+		if (!mSelectedPhotoList.isEmpty()) {
+			for (PhotoUpload upload : mSelectedPhotoList) {
+				upload.populateFromFriends(friends);
+			}
+		}
+		if (!mUploadingList.isEmpty()) {
+			for (PhotoUpload upload : mUploadingList) {
+				upload.populateFromFriends(friends);
+			}
+		}
 	}
-	
+
 	public void populateDatabaseItemsFromAccounts(HashMap<String, Account> accounts) {
-		// TODO Populate items
+		if (!mSelectedPhotoList.isEmpty()) {
+			for (PhotoUpload upload : mSelectedPhotoList) {
+				upload.populateFromAccounts(accounts);
+			}
+		}
+		if (!mUploadingList.isEmpty()) {
+			for (PhotoUpload upload : mUploadingList) {
+				upload.populateFromAccounts(accounts);
+			}
+		}
 	}
 
 	public void addPhotoSelection(final PhotoUpload upload) {

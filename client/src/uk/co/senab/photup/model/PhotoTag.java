@@ -1,18 +1,32 @@
 package uk.co.senab.photup.model;
 
+import java.util.HashMap;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.co.senab.photup.Constants;
+import android.text.TextUtils;
 import android.util.Log;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
+@DatabaseTable
 public class PhotoTag {
 
-	private final float mX, mY;
+	@DatabaseField private float mX;
+	@DatabaseField private float mY;
+	@DatabaseField private String mFriendId;
+
 	private FbUser mFriend;
 
-	public PhotoTag(FbUser friend, float x, float y) {
-		mFriend = friend;
+	PhotoTag() {
+		// Empty Constructor
+	}
+
+	public PhotoTag(float x, float y) {
+		mFriend = null;
 		mX = x;
 		mY = y;
 
@@ -22,7 +36,7 @@ public class PhotoTag {
 	}
 
 	public PhotoTag(float x, float y, float bitmapWidth, float bitmapHeight) {
-		this(null, 100 * x / bitmapWidth, 100 * y / bitmapHeight);
+		this(100 * x / bitmapWidth, 100 * y / bitmapHeight);
 	}
 
 	public PhotoTag(float x, float y, int bitmapWidth, int bitmapHeight) {
@@ -45,8 +59,15 @@ public class PhotoTag {
 		return null != mFriend;
 	}
 
+	public void populateFromFriends(HashMap<String, FbUser> friends) {
+		if (null == mFriend && !TextUtils.isEmpty(mFriendId)) {
+			mFriend = friends.get(mFriendId);
+		}
+	}
+
 	public void setFriend(FbUser friend) {
 		mFriend = friend;
+		mFriendId = null != friend ? friend.getId() : null;
 	}
 
 	public JSONObject toJsonObject() throws JSONException {
