@@ -273,11 +273,13 @@ public class PhotoUpload {
 	public HashSet<FbUser> getTaggedFriends() {
 		HashSet<FbUser> friends = new HashSet<FbUser>();
 
-		FbUser friend;
-		for (PhotoTag tag : mTags) {
-			friend = tag.getFriend();
-			if (null != friend) {
-				friends.add(friend);
+		if (getPhotoTagsCount() > 0) {
+			FbUser friend;
+			for (PhotoTag tag : mTags) {
+				friend = tag.getFriend();
+				if (null != friend) {
+					friends.add(friend);
+				}
 			}
 		}
 
@@ -348,7 +350,11 @@ public class PhotoUpload {
 	}
 
 	public void populateFromFriends(HashMap<String, FbUser> friends) {
-		// TODO Populate Tags here!
+		if (getPhotoTagsCount() > 0) {
+			for (PhotoTag tag : mTags) {
+				tag.populateFromFriends(friends);
+			}
+		}
 	}
 
 	public void populateFromAccounts(HashMap<String, Account> accounts) {
