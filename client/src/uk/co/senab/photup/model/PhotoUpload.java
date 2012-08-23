@@ -147,7 +147,7 @@ public class PhotoUpload {
 	}
 
 	public boolean beenFiltered() {
-		return null != mFilter && mFilter != Filter.FILTER_ORIGINAL;
+		return null != mFilter && mFilter != Filter.ORIGINAL;
 	}
 
 	public void detectPhotoTags(final Bitmap originalBitmap) {
@@ -256,7 +256,7 @@ public class PhotoUpload {
 
 	public Filter getFilterUsed() {
 		if (null == mFilter) {
-			mFilter = Filter.FILTER_ORIGINAL;
+			mFilter = Filter.ORIGINAL;
 		}
 		return mFilter;
 	}

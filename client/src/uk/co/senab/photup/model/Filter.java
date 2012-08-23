@@ -4,18 +4,19 @@ import uk.co.senab.photup.R;
 
 public enum Filter {
 
-	FILTER_ORIGINAL(R.string.filter_original),
-	FILTER_INSTAFIX(R.string.filter_instafix),
-	FILTER_ANSEL(R.string.filter_ansel),
-	FILTER_TESTINO(R.string.filter_testino),
-	FILTER_XPRO(R.string.filter_xpro),
-	FILTER_RETRO(R.string.filter_retro),
-	FILTER_BW(R.string.filter_bw),
-	FILTER_SEPIA(R.string.filter_sepia),
-	FILTER_CYANO(R.string.filter_cyano),
-	FILTER_GEORGIA(R.string.filter_georgia),
-	FILTER_SAHARA(R.string.filter_sahara),
-	FILTER_HDR(R.string.filter_hdr);
+	// DO NOT CHANGE ORDER DUE TO INSTANT UPLOAD FILTER PREF!
+	ORIGINAL(R.string.filter_original),
+	INSTAFIX(R.string.filter_instafix),
+	ANSEL(R.string.filter_ansel),
+	TESTINO(R.string.filter_testino),
+	XPRO(R.string.filter_xpro),
+	RETRO(R.string.filter_retro),
+	BW(R.string.filter_bw),
+	SEPIA(R.string.filter_sepia),
+	CYANO(R.string.filter_cyano),
+	GEORGIA(R.string.filter_georgia),
+	SAHARA(R.string.filter_sahara),
+	HDR(R.string.filter_hdr);
 
 	public static Filter mapFromId(int id) {
 		try {
@@ -31,7 +32,7 @@ public enum Filter {
 			int id = Integer.parseInt(preference);
 			returnValue = mapFromId(id);
 		} catch (Exception e) {
-			returnValue = FILTER_ORIGINAL;
+			returnValue = ORIGINAL;
 		}
 		return returnValue;
 	}
