@@ -1,6 +1,7 @@
 package uk.co.senab.photup.util;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -109,7 +110,9 @@ public class PhotoUploadDatabaseHelper {
 		});
 	}
 
-	public static void saveToDatabase(final Context context, final List<PhotoUpload> uploads, final boolean forceUpdate) {
+	public static void saveToDatabase(final Context context, List<PhotoUpload> uploads, final boolean forceUpdate) {
+		final ArrayList<PhotoUpload> uploadsCopy = new ArrayList<PhotoUpload>(uploads);
+		
 		PhotupApplication.getApplication(context).getMultiThreadExecutorService().submit(new Runnable() {
 
 			public void run() {
@@ -119,7 +122,7 @@ public class PhotoUploadDatabaseHelper {
 					dao.callBatchTasks(new Callable<Void>() {
 						public Void call() throws Exception {
 
-							for (PhotoUpload upload : uploads) {
+							for (PhotoUpload upload : uploadsCopy) {
 								if (forceUpdate || upload.requiresSaving()) {
 									dao.createOrUpdate(upload);
 									upload.resetSaveFlag();

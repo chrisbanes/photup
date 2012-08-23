@@ -45,7 +45,9 @@ public class UploadItemLayout extends LinearLayout implements OnUploadStateChang
 			mSelection.removeUploadStateChangedListener();
 			mSelection = null;
 		}
+
 		mSelection = selection;
+		mSelection.setUploadStateChangedListener(this);
 
 		/**
 		 * Initial UI Update
@@ -69,10 +71,9 @@ public class UploadItemLayout extends LinearLayout implements OnUploadStateChang
 		}
 
 		/**
-		 * Refresh Progrss Bar and add listener
+		 * Refresh Progress Bar
 		 */
 		refreshUploadUi();
-		mSelection.setUploadStateChangedListener(this);
 	}
 
 	public void refreshUploadUi() {
