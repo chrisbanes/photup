@@ -20,7 +20,7 @@ import com.j256.ormlite.table.TableUtils;
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	private static final String DATABASE_NAME = "photup.db";
-	private static final int DATABASE_VERSION = 2;
+	private static final int DATABASE_VERSION = 3;
 
 	// the DAO object we use to access the PhotoUpload table
 	private Dao<PhotoUpload, String> mPhotoUploadDao = null;

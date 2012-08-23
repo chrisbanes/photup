@@ -6,6 +6,7 @@ import java.util.concurrent.Callable;
 
 import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.DatabaseHelper;
+import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.model.PhotoUpload;
 import android.content.Context;
 
@@ -27,9 +28,9 @@ public class PhotoUploadDatabaseHelper {
 			if (Constants.DEBUG) {
 				e.printStackTrace();
 			}
+		} finally {
+			OpenHelperManager.releaseHelper();
 		}
-
-		OpenHelperManager.releaseHelper();
 		return uploads;
 	}
 
@@ -45,74 +46,95 @@ public class PhotoUploadDatabaseHelper {
 			if (Constants.DEBUG) {
 				e.printStackTrace();
 			}
+		} finally {
+			OpenHelperManager.releaseHelper();
 		}
 
-		OpenHelperManager.releaseHelper();
 		return uploads;
 	}
 
-	public static void deleteAllSelected(Context context) {
-		final DatabaseHelper helper = getHelper(context);
+	public static void deleteAllSelected(final Context context) {
+		PhotupApplication.getApplication(context).getMultiThreadExecutorService().submit(new Runnable() {
 
-		try {
-			final Dao<PhotoUpload, String> dao = helper.getPhotoUploadDao();
-			final DeleteBuilder<PhotoUpload, String> deleteBuilder = dao.deleteBuilder();
-			deleteBuilder.where().eq(PhotoUpload.FIELD_STATE, PhotoUpload.STATE_SELECTED);
-			dao.delete(deleteBuilder.prepare());
-		} catch (SQLException e) {
-			if (Constants.DEBUG) {
-				e.printStackTrace();
-			}
-		}
-
-		OpenHelperManager.releaseHelper();
-	}
-
-	public static void deleteFromDatabase(Context context, PhotoUpload upload) {
-		final DatabaseHelper helper = getHelper(context);
-		try {
-			Dao<PhotoUpload, String> dao = helper.getPhotoUploadDao();
-			dao.delete(upload);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		OpenHelperManager.releaseHelper();
-	}
-
-	public static void saveToDatabase(Context context, PhotoUpload upload) {
-		final DatabaseHelper helper = getHelper(context);
-		try {
-			Dao<PhotoUpload, String> dao = helper.getPhotoUploadDao();
-			dao.createOrUpdate(upload);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		OpenHelperManager.releaseHelper();
-	}
-
-	public static void saveToDatabase(Context context, final List<PhotoUpload> uploads, final boolean forceUpdate) {
-		final DatabaseHelper helper = getHelper(context);
-
-		try {
-			final Dao<PhotoUpload, String> dao = helper.getPhotoUploadDao();
-
-			dao.callBatchTasks(new Callable<Void>() {
-				public Void call() throws Exception {
-
-					for (PhotoUpload upload : uploads) {
-						if (forceUpdate || upload.requiresSaving()) {
-							dao.createOrUpdate(upload);
-							upload.resetSaveFlag();
-						}
+			public void run() {
+				final DatabaseHelper helper = getHelper(context);
+				try {
+					final Dao<PhotoUpload, String> dao = helper.getPhotoUploadDao();
+					final DeleteBuilder<PhotoUpload, String> deleteBuilder = dao.deleteBuilder();
+					deleteBuilder.where().eq(PhotoUpload.FIELD_STATE, PhotoUpload.STATE_SELECTED);
+					dao.delete(deleteBuilder.prepare());
+				} catch (SQLException e) {
+					if (Constants.DEBUG) {
+						e.printStackTrace();
 					}
-					return null;
+				} finally {
+					OpenHelperManager.releaseHelper();
 				}
-			});
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+			}
+		});
 
-		OpenHelperManager.releaseHelper();
+	}
+
+	public static void deleteFromDatabase(final Context context, final PhotoUpload upload) {
+		PhotupApplication.getApplication(context).getMultiThreadExecutorService().submit(new Runnable() {
+
+			public void run() {
+				final DatabaseHelper helper = getHelper(context);
+				try {
+					Dao<PhotoUpload, String> dao = helper.getPhotoUploadDao();
+					dao.delete(upload);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				} finally {
+					OpenHelperManager.releaseHelper();
+				}
+			}
+		});
+	}
+
+	public static void saveToDatabase(final Context context, final PhotoUpload upload) {
+		PhotupApplication.getApplication(context).getMultiThreadExecutorService().submit(new Runnable() {
+
+			public void run() {
+				final DatabaseHelper helper = getHelper(context);
+				try {
+					Dao<PhotoUpload, String> dao = helper.getPhotoUploadDao();
+					dao.createOrUpdate(upload);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				} finally {
+					OpenHelperManager.releaseHelper();
+				}
+			}
+		});
+	}
+
+	public static void saveToDatabase(final Context context, final List<PhotoUpload> uploads, final boolean forceUpdate) {
+		PhotupApplication.getApplication(context).getMultiThreadExecutorService().submit(new Runnable() {
+
+			public void run() {
+				final DatabaseHelper helper = getHelper(context);
+				try {
+					final Dao<PhotoUpload, String> dao = helper.getPhotoUploadDao();
+					dao.callBatchTasks(new Callable<Void>() {
+						public Void call() throws Exception {
+
+							for (PhotoUpload upload : uploads) {
+								if (forceUpdate || upload.requiresSaving()) {
+									dao.createOrUpdate(upload);
+									upload.resetSaveFlag();
+								}
+							}
+							return null;
+						}
+					});
+				} catch (Exception e) {
+					e.printStackTrace();
+				} finally {
+					OpenHelperManager.releaseHelper();
+				}
+			}
+		});
 	}
 
 	private static DatabaseHelper getHelper(Context context) {
