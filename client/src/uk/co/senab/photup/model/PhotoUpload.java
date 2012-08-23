@@ -121,9 +121,8 @@ public class PhotoUpload {
 	@DatabaseField(columnName = FIELD_STATE) private int mState;
 	@DatabaseField private String mCaption;
 	@DatabaseField(useGetSet = true) String tagJson;
-
-	// TODO Persist Place
-	private Place mPlace;
+	@DatabaseField private String mPlaceName;
+	@DatabaseField private String mPlaceId;
 
 	private HashSet<PhotoTag> mTags;
 	private Account mAccount;
@@ -296,8 +295,8 @@ public class PhotoUpload {
 		return null != mTags ? mTags.size() : 0;
 	}
 
-	public Place getPlace() {
-		return mPlace;
+	public String getPlaceId() {
+		return mPlaceId;
 	}
 
 	public String getResultPostId() {
@@ -380,7 +379,7 @@ public class PhotoUpload {
 	}
 
 	public boolean hasPlace() {
-		return null != mPlace;
+		return null != mPlaceId && null != mPlaceName;
 	}
 
 	public void populateFromFriends(HashMap<String, FbUser> friends) {
@@ -541,7 +540,12 @@ public class PhotoUpload {
 	}
 
 	public void setPlace(Place place) {
-		mPlace = place;
+		if (null != place) {
+			mPlaceId = place.getId();
+			mPlaceName = place.getName();
+		} else {
+			mPlaceId = mPlaceName = null;
+		}
 		setRequiresSaveFlag();
 	}
 
@@ -601,9 +605,8 @@ public class PhotoUpload {
 			sb.append(caption).append(" ");
 		}
 
-		Place place = getPlace();
-		if (null != place) {
-			sb.append("(").append(place.getName()).append(")");
+		if (hasPlace()) {
+			sb.append("(").append(mPlaceName).append(")");
 		}
 
 		return sb.toString();

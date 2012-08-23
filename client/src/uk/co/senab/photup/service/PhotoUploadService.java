@@ -24,7 +24,6 @@ import uk.co.senab.photup.R;
 import uk.co.senab.photup.facebook.Session;
 import uk.co.senab.photup.model.PhotoTag;
 import uk.co.senab.photup.model.PhotoUpload;
-import uk.co.senab.photup.model.Place;
 import uk.co.senab.photup.model.UploadQuality;
 import uk.co.senab.photup.receivers.ConnectivityReceiver;
 import android.app.NotificationManager;
@@ -143,9 +142,8 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 				}
 			}
 
-			Place place = mUpload.getPlace();
-			if (null != place) {
-				bundle.putString("place", place.getId());
+			if (mUpload.hasPlace()) {
+				bundle.putString("place", mUpload.getPlaceId());
 			}
 
 			/**
