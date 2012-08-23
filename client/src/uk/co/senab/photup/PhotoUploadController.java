@@ -118,9 +118,16 @@ public class PhotoUploadController {
 
 	public void clearPhotoSelections() {
 		if (!mSelectedPhotoList.isEmpty()) {
-			mSelectedPhotoList.clear();
-
+			// Delete from Database
 			PhotoUploadDatabaseHelper.deleteAllSelected(mContext);
+
+			// Reset States (as may still be in cache)
+			for (PhotoUpload upload : mSelectedPhotoList) {
+				upload.setUploadState(PhotoUpload.STATE_NONE);
+			}
+
+			// Clear from memory
+			mSelectedPhotoList.clear();
 
 			for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
 				l.onPhotoSelectionsCleared();
@@ -130,9 +137,11 @@ public class PhotoUploadController {
 
 	public void removePhotoSelection(final PhotoUpload upload) {
 		if (mSelectedPhotoList.remove(upload)) {
-
 			// Delete from Database
 			PhotoUploadDatabaseHelper.deleteFromDatabase(mContext, upload);
+
+			// Reset State (as may still be in cache)
+			upload.setUploadState(PhotoUpload.STATE_NONE);
 
 			for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
 				l.onPhotoSelectionChanged(upload, false);
@@ -201,6 +210,8 @@ public class PhotoUploadController {
 				// Reset State and add to selection list
 				upload.setUploadState(PhotoUpload.STATE_SELECTED);
 				addPhotoSelection(upload);
+				
+				// TODO Database...
 
 				// Remove from Uploading list
 				iterator.remove();
@@ -227,6 +238,8 @@ public class PhotoUploadController {
 	public boolean addPhotoToUploads(PhotoUpload upload) {
 		if (null != upload && !mUploadingList.contains(upload)) {
 			mUploadingList.add(upload);
+			
+			// TODO Database...
 
 			for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
 				l.onPhotoSelectionsCleared();
@@ -241,6 +254,8 @@ public class PhotoUploadController {
 			final Place place) {
 		mUploadingList.addAll(mSelectedPhotoList);
 		mSelectedPhotoList.clear();
+		
+		// TODO Database...
 
 		for (PhotoUpload upload : mUploadingList) {
 			upload.setUploadParams(account, targetId, quality);
@@ -256,6 +271,8 @@ public class PhotoUploadController {
 
 	public void removePhotoFromUploads(PhotoUpload selection) {
 		mUploadingList.remove(selection);
+		
+		// TODO Database...
 
 		if (mUploadingList.isEmpty()) {
 			for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
