@@ -351,14 +351,12 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	private void onFailedUpload(PhotoUpload failedUpload) {
 		failedUpload.setUploadState(PhotoUpload.STATE_UPLOAD_ERROR);
 		PhotoUploadDatabaseHelper.saveToDatabase(getApplicationContext(), failedUpload);
-
-		mNumberUploaded++;
 		startNextUploadOrFinish();
 	}
 
 	void startNextUploadOrFinish() {
 		PhotoUpload nextUpload = mController.getNextPhotoToUpload();
-		if (null != nextUpload) {
+		if (ConnectivityReceiver.isConnected(this) && null != nextUpload) {
 			mCurrentlyUploading = true;
 			startUpload(nextUpload);
 		} else {
