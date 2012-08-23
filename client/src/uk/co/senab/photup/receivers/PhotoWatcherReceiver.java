@@ -7,6 +7,7 @@ import uk.co.senab.photup.model.Account;
 import uk.co.senab.photup.model.Filter;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.model.UploadQuality;
+import uk.co.senab.photup.util.Utils;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -58,7 +59,7 @@ public class PhotoWatcherReceiver extends BroadcastReceiver {
 				if (Constants.DEBUG) {
 					Log.d(LOG_TAG, "Starting Upload for URI: " + uri.toString());
 				}
-				context.startService(new Intent(Constants.INTENT_SERVICE_UPLOAD_ALL));
+				context.startService(Utils.getUploadAllIntent(context));
 			}
 
 		}

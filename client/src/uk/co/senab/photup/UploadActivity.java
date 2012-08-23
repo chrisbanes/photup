@@ -16,8 +16,6 @@ import uk.co.senab.photup.model.Event;
 import uk.co.senab.photup.model.Group;
 import uk.co.senab.photup.model.Place;
 import uk.co.senab.photup.model.UploadQuality;
-import uk.co.senab.photup.service.PhotoUploadService;
-import uk.co.senab.photup.service.PhotoUploadService.ServiceBinder;
 import uk.co.senab.photup.tasks.AccountsAsyncTask.AccountsResultListener;
 import uk.co.senab.photup.tasks.AlbumsAsyncTask.AlbumsResultListener;
 import uk.co.senab.photup.tasks.EventsAsyncTask.EventsResultListener;
@@ -25,15 +23,12 @@ import uk.co.senab.photup.tasks.GroupsAsyncTask.GroupsResultListener;
 import uk.co.senab.photup.util.Utils;
 import uk.co.senab.photup.views.NetworkedCacheableImageView;
 import android.app.AlertDialog;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.View;
@@ -54,17 +49,15 @@ import com.actionbarsherlock.view.MenuItem;
 import com.facebook.android.FacebookError;
 import com.lightbox.android.photoprocessing.R;
 
-public class UploadActivity extends PhotupFragmentActivity implements ServiceConnection, AlbumsResultListener,
-		AccountsResultListener, GroupsResultListener, EventsResultListener, OnClickListener, OnAlbumCreatedListener,
-		OnPlacePickedListener, OnItemSelectedListener, OnCheckedChangeListener, AccountProviderAccessor {
+public class UploadActivity extends PhotupFragmentActivity implements AlbumsResultListener, AccountsResultListener,
+		GroupsResultListener, EventsResultListener, OnClickListener, OnAlbumCreatedListener, OnPlacePickedListener,
+		OnItemSelectedListener, OnCheckedChangeListener, AccountProviderAccessor {
 
 	static final int DEFAULT_UPLOAD_TARGET_ID = R.id.rb_target_album;
 	static final int REQUEST_FACEBOOK_LOGIN = 99;
 
 	private final ArrayList<AbstractFacebookObject> mFacebookObjects = new ArrayList<AbstractFacebookObject>();
 	private final ArrayList<Account> mAccounts = new ArrayList<Account>();
-
-	private ServiceBinder<PhotoUploadService> mBinder;
 
 	private RadioGroup mQualityRadioGroup;
 	private Spinner mTargetSpinner, mAccountsSpinner;
@@ -127,8 +120,6 @@ public class UploadActivity extends PhotupFragmentActivity implements ServiceCon
 		mTargetHelpBtn = (ImageButton) findViewById(R.id.btn_target_help);
 		mTargetHelpBtn.setOnClickListener(this);
 
-		bindService(new Intent(this, PhotoUploadService.class), this, Context.BIND_AUTO_CREATE);
-
 		PhotupApplication app = PhotupApplication.getApplication(this);
 		app.getAccounts(this, false);
 	}
@@ -170,7 +161,7 @@ public class UploadActivity extends PhotupFragmentActivity implements ServiceCon
 
 		if (validTarget) {
 			controller.moveSelectedPhotosToUploads(account, targetId, quality, mPlace);
-			mBinder.getService().uploadAll();
+			startService(Utils.getUploadAllIntent(this));
 			finish();
 		} else {
 			Toast.makeText(this, getString(R.string.error_select_album), Toast.LENGTH_SHORT).show();
@@ -242,21 +233,6 @@ public class UploadActivity extends PhotupFragmentActivity implements ServiceCon
 	protected void onResume() {
 		super.onResume();
 		checkConnectionSpeed();
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		unbindService(this);
-	}
-
-	@SuppressWarnings("unchecked")
-	public void onServiceConnected(ComponentName name, IBinder service) {
-		mBinder = (ServiceBinder<PhotoUploadService>) service;
-	}
-
-	public void onServiceDisconnected(ComponentName name) {
-		mBinder = null;
 	}
 
 	public void onAlbumsLoaded(List<Album> albums) {

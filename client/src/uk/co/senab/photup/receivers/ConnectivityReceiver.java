@@ -1,7 +1,7 @@
 package uk.co.senab.photup.receivers;
 
-import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.PhotoUploadController;
+import uk.co.senab.photup.util.Utils;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +15,7 @@ public class ConnectivityReceiver extends BroadcastReceiver {
 		if (isConnected(context)) {
 			PhotoUploadController controller = PhotoUploadController.getFromContext(context);
 			if (controller.hasWaitingUploads()) {
-				context.startService(new Intent(Constants.INTENT_SERVICE_UPLOAD_ALL));
+				context.startService(Utils.getUploadAllIntent(context));
 			}
 		}
 	}

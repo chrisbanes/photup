@@ -34,7 +34,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
-import android.os.Binder;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -59,23 +58,6 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	static final int MSG_UPLOAD_FAILED = 2;
 
 	static final String TEMPORARY_FILE_NAME = "upload_temp.jpg";
-
-	public static class ServiceBinder<S> extends Binder {
-		private WeakReference<S> mService;
-
-		public ServiceBinder(final S service) {
-			mService = new WeakReference<S>(service);
-		}
-
-		public void close() {
-			mService.clear();
-			mService = null;
-		}
-
-		public S getService() {
-			return mService.get();
-		}
-	}
 
 	private class UpdateBigPictureStyleRunnable implements Runnable {
 
@@ -273,8 +255,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		}
 	}
 
-	private ServiceBinder<PhotoUploadService> mBinder;
-
+	private boolean mCurrentlyUploading = false;
 	private ExecutorService mExecutor;
 	private Session mSession;
 	private PhotoUploadController mController;
@@ -291,7 +272,6 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		mBinder = new ServiceBinder<PhotoUploadService>(this);
 
 		PhotupApplication app = PhotupApplication.getApplication(this);
 
@@ -304,7 +284,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		if (Constants.INTENT_SERVICE_UPLOAD_ALL.equals(intent.getAction())) {
+		if (null != intent && Constants.INTENT_SERVICE_UPLOAD_ALL.equals(intent.getAction())) {
 			uploadAll();
 		}
 
@@ -313,8 +293,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		startService(new Intent(this, PhotoUploadService.class));
-		return mBinder;
+		return null;
 	}
 
 	public boolean handleMessage(Message msg) {
@@ -337,7 +316,12 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		return false;
 	}
 
-	public void uploadAll() {
+	private void uploadAll() {
+		// If we're currently uploading, ignore call
+		if (mCurrentlyUploading) {
+			return;
+		}
+
 		if (ConnectivityReceiver.isConnected(this)) {
 			PhotoUpload nextUpload = mController.getNextPhotoToUpload();
 			if (null != nextUpload) {
@@ -359,7 +343,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	private void onFinishedUpload(PhotoUpload completedUpload) {
 		completedUpload.setUploadState(PhotoUpload.STATE_UPLOAD_COMPLETED);
 		PhotoUploadDatabaseHelper.saveToDatabase(getApplicationContext(), completedUpload);
-		
+
 		mNumberUploaded++;
 		startNextUploadOrFinish();
 	}
@@ -367,7 +351,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	private void onFailedUpload(PhotoUpload failedUpload) {
 		failedUpload.setUploadState(PhotoUpload.STATE_UPLOAD_ERROR);
 		PhotoUploadDatabaseHelper.saveToDatabase(getApplicationContext(), failedUpload);
-		
+
 		mNumberUploaded++;
 		startNextUploadOrFinish();
 	}
@@ -375,8 +359,10 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	void startNextUploadOrFinish() {
 		PhotoUpload nextUpload = mController.getNextPhotoToUpload();
 		if (null != nextUpload) {
+			mCurrentlyUploading = true;
 			startUpload(nextUpload);
 		} else {
+			mCurrentlyUploading = false;
 			stopForeground(true);
 			finishedNotification();
 			stopSelf();
@@ -412,7 +398,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 		if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) {
 			final Bitmap uploadBigPic = upload.getBigPictureNotificationBmp();
-			
+
 			if (null == uploadBigPic) {
 				mExecutor.submit(new UpdateBigPictureStyleRunnable(upload));
 			}

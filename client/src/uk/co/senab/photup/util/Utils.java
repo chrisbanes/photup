@@ -6,7 +6,10 @@ import java.io.FileNotFoundException;
 import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
+import uk.co.senab.photup.service.PhotoUploadService;
 import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -176,6 +179,12 @@ public class Utils {
 	public static File getCameraPhotoFile() {
 		File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
 		return new File(dir, "photup_" + System.currentTimeMillis() + ".jpg");
+	}
+	
+	public static Intent getUploadAllIntent(Context context) {
+		Intent intent = new Intent(context, PhotoUploadService.class);
+		intent.setAction(Constants.INTENT_SERVICE_UPLOAD_ALL);
+		return intent;
 	}
 
 	public static Bitmap rotate(Bitmap original, final int angle) {
