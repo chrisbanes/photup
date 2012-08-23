@@ -29,11 +29,13 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 import com.lightbox.android.photoprocessing.PhotoProcessing;
 import com.lightbox.android.photoprocessing.utils.BitmapUtils;
 import com.lightbox.android.photoprocessing.utils.BitmapUtils.BitmapSize;
 import com.lightbox.android.photoprocessing.utils.FileUtils;
 
+@DatabaseTable
 public class PhotoUpload {
 
 	public static interface OnUploadStateChanged {
@@ -80,6 +82,12 @@ public class PhotoUpload {
 	}
 
 	/**
+	 * Uri and Database Key
+	 */
+	private Uri mFullUri;
+	@DatabaseField(id = true) private String mFullUriString;
+
+	/**
 	 * Edit Variables
 	 */
 	@DatabaseField private boolean mCompletedDetection;
@@ -93,14 +101,17 @@ public class PhotoUpload {
 	/**
 	 * Upload Variables
 	 */
-	@DatabaseField String mAccountId;
+	@DatabaseField private String mAccountId;
 	@DatabaseField private String mTargetId;
-	@DatabaseField private Place mPlace;
 	@DatabaseField private UploadQuality mQuality;
 	@DatabaseField private String mResultPostId;
 	@DatabaseField private int mState;
 	@DatabaseField private String mCaption;
+
+	// TODO Persist Tags
 	private HashSet<PhotoTag> mTags;
+	// TODO Persist Place
+	private Place mPlace;
 
 	private Account mAccount;
 	private int mProgress;
@@ -113,10 +124,13 @@ public class PhotoUpload {
 	private WeakReference<OnPhotoTagsChangedListener> mTagChangedListener;
 	private WeakReference<OnUploadStateChanged> mStateListener;
 
-	private final Uri mFullUri;
+	PhotoUpload() {
+		// NO-Arg for Ormlite
+	}
 
 	private PhotoUpload(Uri uri) {
 		mFullUri = uri;
+		mFullUriString = uri.toString();
 		reset();
 	}
 
@@ -248,6 +262,9 @@ public class PhotoUpload {
 	}
 
 	public Uri getOriginalPhotoUri() {
+		if (null == mFullUri && !TextUtils.isEmpty(mFullUriString)) {
+			mFullUri = Uri.parse(mFullUriString);
+		}
 		return mFullUri;
 	}
 
@@ -287,7 +304,7 @@ public class PhotoUpload {
 	}
 
 	public Bitmap getThumbnailImage(Context context) {
-		if (ContentResolver.SCHEME_CONTENT.equals(mFullUri.getScheme())) {
+		if (ContentResolver.SCHEME_CONTENT.equals(getOriginalPhotoUri().getScheme())) {
 			return getThumbnailImageFromMediaStore(context);
 		}
 
