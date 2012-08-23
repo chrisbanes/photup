@@ -1,6 +1,7 @@
 package uk.co.senab.photup;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -120,6 +121,8 @@ public class PhotupApplication extends Application implements FriendsResultListe
 		// TODO Need to check for Facebook login
 		Session session = Session.restore(this);
 		if (null != session) {
+			mPhotoController.populateFromDatabase(this);
+			
 			getAccounts(null, false);
 			getFriends(null);
 		}
@@ -171,13 +174,19 @@ public class PhotupApplication extends Application implements FriendsResultListe
 				mFriendsListener.onFriendsLoaded(mFriends);
 				mFriendsListener = null;
 			}
+			
+			HashMap<String, FbUser> friendsMap = new HashMap<String, FbUser>();
+			for (FbUser friend : friends) {
+				friendsMap.put(friend.getId(), friend);
+			}
+			mPhotoController.populateDatabaseItemsFromFriends(friendsMap);
 		}
 	}
 
 	public void onAccountsLoaded(List<Account> accounts) {
 		mAccounts.clear();
 
-		if (null != accounts) {
+		if (null != accounts && !accounts.isEmpty()) {
 			mAccounts.addAll(accounts);
 			if (null != mAccountsListener && mAccountsListener != this) {
 				mAccountsListener.onAccountsLoaded(mAccounts);
@@ -194,6 +203,12 @@ public class PhotupApplication extends Application implements FriendsResultListe
 					}
 				}
 			}
+			
+			HashMap<String,Account> accountsMap = new HashMap<String, Account>();
+			for (Account account : accounts) {
+				accountsMap.put(account.getId(), account);
+			}
+			mPhotoController.populateDatabaseItemsFromAccounts(accountsMap);
 		}
 	}
 

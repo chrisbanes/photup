@@ -1,12 +1,14 @@
 package uk.co.senab.photup;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
 import uk.co.senab.photup.model.Account;
+import uk.co.senab.photup.model.FbUser;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.model.Place;
 import uk.co.senab.photup.model.UploadQuality;
@@ -35,6 +37,18 @@ public class PhotoUploadController {
 
 	public void removePhotoSelectionListener(OnPhotoSelectionChangedListener listener) {
 		mSelectionChangedListeners.remove(listener);
+	}
+
+	public void populateFromDatabase(Context context) {
+		// TODO Populate Lists from Database
+	}
+
+	public void populateDatabaseItemsFromFriends(HashMap<String, FbUser> friends) {
+		// TODO Populate items
+	}
+	
+	public void populateDatabaseItemsFromAccounts(HashMap<String, Account> accounts) {
+		// TODO Populate items
 	}
 
 	public void addPhotoSelection(final PhotoUpload upload) {
