@@ -62,7 +62,7 @@ public class PhotoUploadDatabaseHelper {
 				try {
 					final Dao<PhotoUpload, String> dao = helper.getPhotoUploadDao();
 					final DeleteBuilder<PhotoUpload, String> deleteBuilder = dao.deleteBuilder();
-					deleteBuilder.where().eq(PhotoUpload.FIELD_STATE, PhotoUpload.STATE_SELECTED);
+					deleteBuilder.where().le(PhotoUpload.FIELD_STATE, PhotoUpload.STATE_SELECTED);
 					dao.delete(deleteBuilder.prepare());
 				} catch (SQLException e) {
 					if (Constants.DEBUG) {
@@ -102,7 +102,9 @@ public class PhotoUploadDatabaseHelper {
 					Dao<PhotoUpload, String> dao = helper.getPhotoUploadDao();
 					dao.createOrUpdate(upload);
 				} catch (SQLException e) {
-					e.printStackTrace();
+					if (Constants.DEBUG) {
+						e.printStackTrace();
+					}
 				} finally {
 					OpenHelperManager.releaseHelper();
 				}
@@ -111,8 +113,9 @@ public class PhotoUploadDatabaseHelper {
 	}
 
 	public static void saveToDatabase(final Context context, List<PhotoUpload> uploads, final boolean forceUpdate) {
-		final ArrayList<PhotoUpload> uploadsCopy = new ArrayList<PhotoUpload>(uploads);
-		
+		final ArrayList<PhotoUpload> uploadsCopy = new ArrayList<PhotoUpload>();
+		uploadsCopy.addAll(uploads);
+
 		PhotupApplication.getApplication(context).getMultiThreadExecutorService().submit(new Runnable() {
 
 			public void run() {
@@ -132,7 +135,9 @@ public class PhotoUploadDatabaseHelper {
 						}
 					});
 				} catch (Exception e) {
-					e.printStackTrace();
+					if (Constants.DEBUG) {
+						e.printStackTrace();
+					}
 				} finally {
 					OpenHelperManager.releaseHelper();
 				}

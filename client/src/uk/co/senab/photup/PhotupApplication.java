@@ -23,6 +23,7 @@ import uk.co.senab.photup.tasks.AccountsAsyncTask;
 import uk.co.senab.photup.tasks.AccountsAsyncTask.AccountsResultListener;
 import uk.co.senab.photup.tasks.FriendsAsyncTask;
 import uk.co.senab.photup.tasks.FriendsAsyncTask.FriendsResultListener;
+import uk.co.senab.photup.util.Utils;
 import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
@@ -53,6 +54,8 @@ public class PhotupApplication extends Application implements FriendsResultListe
 
 	private AccountsResultListener mAccountsListener;
 	private ArrayList<Account> mAccounts;
+
+	private boolean mIsFriendsLoaded, mIsAccountsLoaded;
 
 	private PhotoUploadController mPhotoController;
 
@@ -180,6 +183,8 @@ public class PhotupApplication extends Application implements FriendsResultListe
 			}
 			mPhotoController.populateDatabaseItemsFromFriends(friendsMap);
 		}
+
+		setFriendsLoaded();
 	}
 
 	public void onAccountsLoaded(List<Account> accounts) {
@@ -208,6 +213,34 @@ public class PhotupApplication extends Application implements FriendsResultListe
 				accountsMap.put(account.getId(), account);
 			}
 			mPhotoController.populateDatabaseItemsFromAccounts(accountsMap);
+		}
+
+		setAccountsLoaded();
+	}
+
+	private void setFriendsLoaded() {
+		mIsFriendsLoaded = true;
+
+		if (isDataLoaded()) {
+			onDataLoaded();
+		}
+	}
+
+	private void setAccountsLoaded() {
+		mIsAccountsLoaded = true;
+
+		if (isDataLoaded()) {
+			onDataLoaded();
+		}
+	}
+
+	private boolean isDataLoaded() {
+		return mIsFriendsLoaded && mIsAccountsLoaded;
+	}
+
+	private void onDataLoaded() {
+		if (mPhotoController.hasWaitingUploads()) {
+			startService(Utils.getUploadAllIntent(this));
 		}
 	}
 

@@ -220,7 +220,7 @@ public class PhotoUploadController {
 		}
 
 		// Update Database
-		PhotoUploadDatabaseHelper.saveToDatabase(mContext, mSelectedPhotoList, false);
+		PhotoUploadDatabaseHelper.saveToDatabase(mContext, mSelectedPhotoList, true);
 
 		mUploadingList.addAll(mSelectedPhotoList);
 		mSelectedPhotoList.clear();
