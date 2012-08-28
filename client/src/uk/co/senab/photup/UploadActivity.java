@@ -160,7 +160,7 @@ public class UploadActivity extends PhotupFragmentActivity implements AlbumsResu
 		}
 
 		if (validTarget) {
-			controller.moveSelectedPhotosToUploads(account, targetId, quality, mPlace);
+			controller.addUploadsFromSelected(account, targetId, quality, mPlace);
 			startService(Utils.getUploadAllIntent(this));
 			finish();
 		} else {

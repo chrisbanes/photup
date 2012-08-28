@@ -26,7 +26,7 @@ public class UploadsFragment extends SherlockListFragment implements OnPhotoSele
 		mAdapter = new UploadsListBaseAdapter(getActivity());
 
 		mPhotoSelectionController = PhotoUploadController.getFromContext(getActivity());
-		mPhotoSelectionController.addPhotoSelectionListener(this);
+		mPhotoSelectionController.addListener(this);
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class UploadsFragment extends SherlockListFragment implements OnPhotoSele
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		mPhotoSelectionController.removePhotoSelectionListener(this);
+		mPhotoSelectionController.removeListener(this);
 	}
 
 	public void onPhotoSelectionChanged(PhotoUpload upload, boolean added) {
@@ -98,7 +98,7 @@ public class UploadsFragment extends SherlockListFragment implements OnPhotoSele
 		try {
 			for (int i = 0, z = reverseSortedPositions.length; i < z; i++) {
 				PhotoUpload upload = (PhotoUpload) listView.getItemAtPosition(reverseSortedPositions[i]);
-				mPhotoSelectionController.removePhotoFromUploads(upload);
+				mPhotoSelectionController.removeUpload(upload);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

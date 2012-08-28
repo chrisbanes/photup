@@ -38,7 +38,7 @@ public class SelectedPhotosFragment extends SherlockFragment implements OnPhotoS
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mPhotoSelectionController.addPhotoSelectionListener(this);
+		mPhotoSelectionController.addListener(this);
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class SelectedPhotosFragment extends SherlockFragment implements OnPhotoS
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		mPhotoSelectionController.removePhotoSelectionListener(this);
+		mPhotoSelectionController.removeListener(this);
 	}
 
 	@Override

@@ -324,7 +324,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		}
 
 		if (ConnectivityReceiver.isConnected(this)) {
-			PhotoUpload nextUpload = mController.getNextPhotoToUpload();
+			PhotoUpload nextUpload = mController.getNextUpload();
 			if (null != nextUpload) {
 				startForeground();
 				startUpload(nextUpload);
@@ -357,11 +357,12 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		if (Flags.ENABLE_DB_PERSISTENCE) {
 			PhotoUploadDatabaseHelper.saveToDatabase(getApplicationContext(), failedUpload);
 		}
+		
 		startNextUploadOrFinish();
 	}
 
 	void startNextUploadOrFinish() {
-		PhotoUpload nextUpload = mController.getNextPhotoToUpload();
+		PhotoUpload nextUpload = mController.getNextUpload();
 		if (ConnectivityReceiver.isConnected(this) && null != nextUpload) {
 			startUpload(nextUpload);
 		} else {

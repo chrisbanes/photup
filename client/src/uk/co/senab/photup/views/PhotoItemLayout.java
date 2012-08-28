@@ -88,9 +88,9 @@ public class PhotoItemLayout extends CheckableFrameLayout implements View.OnClic
 
 	void updateController() {
 		if (isChecked()) {
-			mController.addPhotoSelection(mSelection);
+			mController.addSelection(mSelection);
 		} else {
-			mController.removePhotoSelection(mSelection);
+			mController.removeSelection(mSelection);
 		}
 	}
 

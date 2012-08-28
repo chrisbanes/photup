@@ -169,7 +169,7 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 		mBucketAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		new MediaStoreBucketsAsyncTask(getActivity(), this).execute();
 
-		mPhotoSelectionController.addPhotoSelectionListener(this);
+		mPhotoSelectionController.addListener(this);
 	}
 
 	public Loader<Cursor> onCreateLoader(final int id, Bundle bundle) {
@@ -213,7 +213,7 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		mPhotoSelectionController.removePhotoSelectionListener(this);
+		mPhotoSelectionController.removeListener(this);
 		saveSelectedBucketToPrefs();
 	}
 
@@ -322,7 +322,7 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 		if (null != cursor) {
 			ArrayList<PhotoUpload> selections = MediaStoreCursorHelper.photosCursorToSelectionList(
 					MediaStoreCursorHelper.MEDIA_STORE_CONTENT_URI, cursor);
-			mPhotoSelectionController.addPhotoSelections(selections);
+			mPhotoSelectionController.addSelections(selections);
 		}
 	}
 

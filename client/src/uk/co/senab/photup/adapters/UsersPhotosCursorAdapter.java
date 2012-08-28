@@ -38,7 +38,7 @@ public class UsersPhotosCursorAdapter extends ResourceCursorAdapter {
 			layout.setPhotoSelection(upload);
 
 			if (null != mController) {
-				((Checkable) view).setChecked(mController.isPhotoUploadSelected(upload));
+				((Checkable) view).setChecked(mController.isSelected(upload));
 			}
 		}
 	}

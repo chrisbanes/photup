@@ -48,7 +48,7 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 		setContentView(R.layout.activity_choose_photos);
 
 		mPhotoController = PhotoUploadController.getFromContext(this);
-		mPhotoController.addPhotoSelectionListener(this);
+		mPhotoController.addListener(this);
 
 		ActionBar ab = getSupportActionBar();
 		ab.setDisplayShowTitleEnabled(false);
@@ -113,7 +113,7 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 				return true;
 
 			case R.id.menu_clear_selection:
-				mPhotoController.clearPhotoSelections();
+				mPhotoController.clearSelected();
 				return true;
 
 			case R.id.menu_select_all:
@@ -143,10 +143,10 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 		}
 
 		try {
-			if (mPhotoController.getActiveUploadsSize() > 0) {
+			if (mPhotoController.getActiveUploadsCount() > 0) {
 				// Load Uploads Tab if we need to
 				getSupportActionBar().setSelectedNavigationItem(2);
-			} else if (mPhotoController.getSelectedPhotoUploadsSize() == 0) {
+			} else if (mPhotoController.getSelectedCount() == 0) {
 				// Else just show Media Lib tab
 				getSupportActionBar().setSelectedNavigationItem(0);
 			}
@@ -165,7 +165,7 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 	}
 
 	public void onPhotoSelectionsCleared() {
-		if (mPhotoController.getActiveUploadsSize() > 0) {
+		if (mPhotoController.getActiveUploadsCount() > 0) {
 			addUploadTab();
 		}
 		refreshSelectedTabTitle();
@@ -180,7 +180,7 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		mPhotoController.removePhotoSelectionListener(this);
+		mPhotoController.removeListener(this);
 	}
 
 	private Tab mPreviouslySelectedTab;
@@ -230,7 +230,7 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 
 	private void refreshUploadActionBarView() {
 		if (null != mUploadActionView) {
-			if (mPhotoController.getSelectedPhotoUploadsSize() > 0) {
+			if (mPhotoController.getSelectedCount() > 0) {
 				mUploadActionView.animateBackground();
 			} else {
 				mUploadActionView.stopAnimatingBackground();
@@ -243,7 +243,7 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 	}
 
 	private CharSequence getSelectedTabTitle() {
-		return getString(R.string.tab_selected_photos, mPhotoController.getSelectedPhotoUploadsSize());
+		return getString(R.string.tab_selected_photos, mPhotoController.getSelectedCount());
 	}
 
 	private void addUploadTab() {
@@ -303,7 +303,7 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 	}
 
 	public void onClick(View v) {
-		if (mPhotoController.getSelectedPhotoUploadsSize() == 0) {
+		if (mPhotoController.getSelectedCount() == 0) {
 			Toast.makeText(this, R.string.error_select_photos, Toast.LENGTH_SHORT).show();
 		} else {
 			if (ConnectivityReceiver.isConnected(this)) {

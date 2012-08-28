@@ -79,7 +79,7 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 
 		if (null != upload) {
 			upload.setTagChangedListener(this);
-			mButton.setChecked(mController.isPhotoUploadSelected(upload));
+			mButton.setChecked(mController.isSelected(upload));
 		}
 		mUpload = upload;
 
@@ -261,9 +261,9 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 
 	void updateController() {
 		if (mButton.isChecked()) {
-			mController.addPhotoSelection(mUpload);
+			mController.addSelection(mUpload);
 		} else {
-			mController.removePhotoSelection(mUpload);
+			mController.removeSelection(mUpload);
 		}
 	}
 

@@ -31,7 +31,7 @@ public class ActionSendActivity extends Activity {
 		if (null != uris && !uris.isEmpty()) {
 			PhotoUploadController controller = PhotupApplication.getApplication(this).getPhotoUploadController();
 			for (Uri uri : uris) {
-				controller.addPhotoSelection(PhotoUpload.getSelection(uri));
+				controller.addSelection(PhotoUpload.getSelection(uri));
 			}
 		}
 

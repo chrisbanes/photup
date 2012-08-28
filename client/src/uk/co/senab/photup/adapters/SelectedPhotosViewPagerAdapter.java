@@ -95,7 +95,7 @@ public class SelectedPhotosViewPagerAdapter extends PagerAdapter {
 	}
 
 	private void refreshData() {
-		mItems = mController.getSelectedPhotoUploads();
+		mItems = mController.getSelected();
 	}
 
 }

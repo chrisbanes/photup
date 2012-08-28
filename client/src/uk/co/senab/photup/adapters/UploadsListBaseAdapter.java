@@ -27,7 +27,7 @@ public class UploadsListBaseAdapter extends BaseAdapter {
 
 		PhotupApplication app = PhotupApplication.getApplication(context);
 		mController = app.getPhotoUploadController();
-		mItems = mController.getUploadingPhotoUploads();
+		mItems = mController.getUploadingUploads();
 	}
 
 	public int getCount() {
@@ -55,7 +55,7 @@ public class UploadsListBaseAdapter extends BaseAdapter {
 
 	@Override
 	public void notifyDataSetChanged() {
-		mItems = mController.getUploadingPhotoUploads();
+		mItems = mController.getUploadingUploads();
 		super.notifyDataSetChanged();
 	}
 

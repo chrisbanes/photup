@@ -55,7 +55,7 @@ public class PhotoWatcherReceiver extends BroadcastReceiver {
 
 			PhotoUploadController controller = PhotoUploadController.getFromContext(context);
 
-			if (controller.addPhotoToUploads(upload)) {
+			if (controller.addUpload(upload)) {
 				if (Flags.DEBUG) {
 					Log.d(LOG_TAG, "Starting Upload for URI: " + uri.toString());
 				}

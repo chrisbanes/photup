@@ -28,7 +28,7 @@ public class SelectedPhotosBaseAdapter extends BaseAdapter {
 
 		PhotupApplication app = PhotupApplication.getApplication(context);
 		mController = app.getPhotoUploadController();
-		mItems = mController.getSelectedPhotoUploads();
+		mItems = mController.getSelected();
 	}
 
 	public int getCount() {
@@ -63,7 +63,7 @@ public class SelectedPhotosBaseAdapter extends BaseAdapter {
 
 	@Override
 	public void notifyDataSetChanged() {
-		mItems = mController.getSelectedPhotoUploads();
+		mItems = mController.getSelected();
 		super.notifyDataSetChanged();
 	}
 

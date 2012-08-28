@@ -74,7 +74,7 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 			mView.setVisibility(View.GONE);
 			animation.setAnimationListener(null);
 
-			if (mController.getSelectedPhotoUploadsSize() == 0) {
+			if (mController.getSelectedCount() == 0) {
 				finish();
 			} else {
 				View view = (View) mView.getParent();
@@ -254,7 +254,7 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 		mContentView = (ViewGroup) findViewById(R.id.fl_root);
 
 		mController = PhotoUploadController.getFromContext(this);
-		mController.addPhotoSelectionListener(this);
+		mController.addListener(this);
 
 		final Intent intent = getIntent();
 		mMode = intent.getIntExtra(EXTRA_MODE, MODE_ALL_VALUE);
@@ -302,7 +302,7 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 
 	@Override
 	protected void onDestroy() {
-		mController.removePhotoSelectionListener(this);
+		mController.removeListener(this);
 		mController.updateDatabase();
 		super.onDestroy();
 	}
