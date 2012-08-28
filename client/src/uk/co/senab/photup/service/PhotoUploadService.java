@@ -339,6 +339,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		trimCache();
 		updateNotification(upload);
 		mExecutor.submit(new UploadPhotoRunnable(this, mHandler, upload, mSession));
+		mCurrentlyUploading = true;
 	}
 
 	private void onFinishedUpload(PhotoUpload completedUpload) {
@@ -362,7 +363,6 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	void startNextUploadOrFinish() {
 		PhotoUpload nextUpload = mController.getNextPhotoToUpload();
 		if (ConnectivityReceiver.isConnected(this) && null != nextUpload) {
-			mCurrentlyUploading = true;
 			startUpload(nextUpload);
 		} else {
 			mCurrentlyUploading = false;
