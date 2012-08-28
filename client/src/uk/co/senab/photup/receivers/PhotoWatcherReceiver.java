@@ -32,9 +32,17 @@ public class PhotoWatcherReceiver extends BroadcastReceiver {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
 		if (null != uri && prefs.getBoolean(PreferenceConstants.PREF_INSTANT_UPLOAD_ENABLED, false)) {
-
 			if (Flags.DEBUG) {
 				Log.d(LOG_TAG, "Got Photo with URI: " + uri.toString());
+			}
+
+			final boolean uploadWhileRoaming = prefs.getBoolean(PreferenceConstants.PREF_INSTANT_UPLOAD_IF_ROAMING,
+					false);
+			if (ConnectivityReceiver.isConnectedViaCellularRoaming(context) && !uploadWhileRoaming) {
+				if (Flags.DEBUG) {
+					Log.d(LOG_TAG, "Instant Upload disabled because we're roaming.");
+				}
+				return;
 			}
 
 			final String albumId = prefs.getString(PreferenceConstants.PREF_INSTANT_UPLOAD_ALBUM_ID, null);
@@ -63,7 +71,6 @@ public class PhotoWatcherReceiver extends BroadcastReceiver {
 					context.startService(Utils.getUploadAllIntent(context));
 				}
 			}
-
 		}
 	}
 }

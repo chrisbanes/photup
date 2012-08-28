@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 public class ConnectivityReceiver extends BroadcastReceiver {
@@ -35,6 +36,17 @@ public class ConnectivityReceiver extends BroadcastReceiver {
 		ConnectivityManager mgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo info = mgr.getActiveNetworkInfo();
 		return null != info && info.isConnectedOrConnecting();
+	}
+
+	public static boolean isConnectedViaCellular(Context context) {
+		ConnectivityManager mgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo info = mgr.getActiveNetworkInfo();
+		return null != info && info.isConnectedOrConnecting() && info.getType() == ConnectivityManager.TYPE_MOBILE;
+	}
+	
+	public static boolean isConnectedViaCellularRoaming(Context context) {
+		TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+		return telephonyManager.isNetworkRoaming() && isConnectedViaCellular(context);
 	}
 
 }

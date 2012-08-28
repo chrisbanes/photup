@@ -25,6 +25,16 @@
 			android:key="pref_instant_upload_filter"
 			android:summary="@string/pref_instant_upload_filter_summary"
 			android:title="@string/pref_instant_upload_filter_title" />
+
+		<PreferenceScreen
+			android:dependency="pref_instant_upload_enabled"
+			android:title="@string/pref_more_options" >
+			<CheckBoxPreference
+				android:defaultValue="false"
+				android:key="pref_instant_upload_roaming_enabled"
+				android:summary="@string/pref_instant_upload_roaming_summary"
+				android:title="@string/pref_instant_upload_roaming_title" />
+		</PreferenceScreen>
 	</PreferenceCategory>
 
 </PreferenceScreen>
