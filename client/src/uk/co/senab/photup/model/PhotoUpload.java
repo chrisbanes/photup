@@ -26,6 +26,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.location.Location;
 import android.media.FaceDetector;
 import android.net.Uri;
 import android.provider.MediaStore.Images.Thumbnails;
@@ -265,6 +266,14 @@ public class PhotoUpload {
 
 	public String getDisplayImageKey() {
 		return "dsply_" + getOriginalPhotoUri();
+	}
+	
+	public Location getExifLocation(Context context) {
+		final String filePath = Utils.getPathFromContentUri(context.getContentResolver(), getOriginalPhotoUri());
+		if (null != filePath) {
+			return Utils.getExifLocation(filePath);
+		}
+		return null;
 	}
 
 	public int getExifRotation(Context context) {

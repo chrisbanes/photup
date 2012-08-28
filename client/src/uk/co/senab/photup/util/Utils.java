@@ -2,6 +2,7 @@ package uk.co.senab.photup.util;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.Flags;
@@ -16,6 +17,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.location.Location;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
@@ -181,7 +184,7 @@ public class Utils {
 		File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
 		return new File(dir, "photup_" + System.currentTimeMillis() + ".jpg");
 	}
-	
+
 	public static Intent getUploadAllIntent(Context context) {
 		Intent intent = new Intent(context, PhotoUploadService.class);
 		intent.setAction(Constants.INTENT_SERVICE_UPLOAD_ALL);
@@ -229,12 +232,31 @@ public class Utils {
 			return String.format("%.2fkm", distance / 1000f);
 		}
 	}
-	
+
 	public static int getSpinnerItemResId() {
 		if (VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB) {
 			return android.R.layout.simple_spinner_item;
 		} else {
 			return R.layout.layout_spinner_item;
 		}
+	}
+
+	public static Location getExifLocation(String filepath) {
+		Location location = null;
+
+		try {
+			final ExifInterface exif = new ExifInterface(filepath);
+			final float[] latLong = new float[2];
+
+			if (exif.getLatLong(latLong)) {
+				location = new Location("");
+				location.setLatitude(latLong[0]);
+				location.setLongitude(latLong[1]);
+			}
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+
+		return location;
 	}
 }
