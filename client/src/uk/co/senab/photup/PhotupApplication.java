@@ -64,14 +64,17 @@ public class PhotupApplication extends Application implements FriendsResultListe
 	}
 
 	public ExecutorService getMultiThreadExecutorService() {
-		if (null == mMultiThreadExecutor) {
-			mMultiThreadExecutor = createExecutor();
+		if (null == mMultiThreadExecutor || mMultiThreadExecutor.isShutdown()) {
+			final int numCores = Runtime.getRuntime().availableProcessors();
+			
+			mMultiThreadExecutor = new ThreadPoolExecutor(numCores * EXECUTOR_CORE_POOL_SIZE_PER_CORE, numCores
+					* EXECUTOR_MAX_POOL_SIZE_PER_CORE, 1L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 		}
 		return mMultiThreadExecutor;
 	}
 
 	public ExecutorService getSingleThreadExecutorService() {
-		if (null == mSingleThreadExecutor) {
+		if (null == mSingleThreadExecutor || mSingleThreadExecutor.isShutdown()) {
 			mSingleThreadExecutor = Executors.newSingleThreadExecutor(new ThreadFactory() {
 
 				public Thread newThread(Runnable r) {
@@ -91,13 +94,6 @@ public class PhotupApplication extends Application implements FriendsResultListe
 
 	public PhotoUploadController getPhotoUploadController() {
 		return mPhotoController;
-	}
-
-	private static ExecutorService createExecutor() {
-		final int numCores = Runtime.getRuntime().availableProcessors();
-
-		return new ThreadPoolExecutor(numCores * EXECUTOR_CORE_POOL_SIZE_PER_CORE, numCores
-				* EXECUTOR_MAX_POOL_SIZE_PER_CORE, 1L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 	}
 
 	@SuppressWarnings("deprecation")
