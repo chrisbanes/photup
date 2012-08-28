@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.DatabaseHelper;
+import uk.co.senab.photup.Flags;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.model.PhotoUpload;
 import android.content.Context;
@@ -26,7 +26,7 @@ public class PhotoUploadDatabaseHelper {
 			uploads = dao.query(dao.queryBuilder().where().eq(PhotoUpload.FIELD_STATE, PhotoUpload.STATE_SELECTED)
 					.prepare());
 		} catch (SQLException e) {
-			if (Constants.DEBUG) {
+			if (Flags.DEBUG) {
 				e.printStackTrace();
 			}
 		} finally {
@@ -44,7 +44,7 @@ public class PhotoUploadDatabaseHelper {
 			uploads = dao.query(dao.queryBuilder().where()
 					.ge(PhotoUpload.FIELD_STATE, PhotoUpload.STATE_UPLOAD_WAITING).prepare());
 		} catch (SQLException e) {
-			if (Constants.DEBUG) {
+			if (Flags.DEBUG) {
 				e.printStackTrace();
 			}
 		} finally {
@@ -55,7 +55,7 @@ public class PhotoUploadDatabaseHelper {
 	}
 
 	public static void deleteAllSelected(final Context context) {
-		PhotupApplication.getApplication(context).getMultiThreadExecutorService().submit(new Runnable() {
+		PhotupApplication.getApplication(context).getSingleThreadExecutorService().submit(new Runnable() {
 
 			public void run() {
 				final DatabaseHelper helper = getHelper(context);
@@ -65,7 +65,7 @@ public class PhotoUploadDatabaseHelper {
 					deleteBuilder.where().le(PhotoUpload.FIELD_STATE, PhotoUpload.STATE_SELECTED);
 					dao.delete(deleteBuilder.prepare());
 				} catch (SQLException e) {
-					if (Constants.DEBUG) {
+					if (Flags.DEBUG) {
 						e.printStackTrace();
 					}
 				} finally {
@@ -77,7 +77,7 @@ public class PhotoUploadDatabaseHelper {
 	}
 
 	public static void deleteFromDatabase(final Context context, final PhotoUpload upload) {
-		PhotupApplication.getApplication(context).getMultiThreadExecutorService().submit(new Runnable() {
+		PhotupApplication.getApplication(context).getSingleThreadExecutorService().submit(new Runnable() {
 
 			public void run() {
 				final DatabaseHelper helper = getHelper(context);
@@ -94,7 +94,7 @@ public class PhotoUploadDatabaseHelper {
 	}
 
 	public static void saveToDatabase(final Context context, final PhotoUpload upload) {
-		PhotupApplication.getApplication(context).getMultiThreadExecutorService().submit(new Runnable() {
+		PhotupApplication.getApplication(context).getSingleThreadExecutorService().submit(new Runnable() {
 
 			public void run() {
 				final DatabaseHelper helper = getHelper(context);
@@ -102,7 +102,7 @@ public class PhotoUploadDatabaseHelper {
 					Dao<PhotoUpload, String> dao = helper.getPhotoUploadDao();
 					dao.createOrUpdate(upload);
 				} catch (SQLException e) {
-					if (Constants.DEBUG) {
+					if (Flags.DEBUG) {
 						e.printStackTrace();
 					}
 				} finally {
@@ -116,7 +116,7 @@ public class PhotoUploadDatabaseHelper {
 		final ArrayList<PhotoUpload> uploadsCopy = new ArrayList<PhotoUpload>();
 		uploadsCopy.addAll(uploads);
 
-		PhotupApplication.getApplication(context).getMultiThreadExecutorService().submit(new Runnable() {
+		PhotupApplication.getApplication(context).getSingleThreadExecutorService().submit(new Runnable() {
 
 			public void run() {
 				final DatabaseHelper helper = getHelper(context);
@@ -135,7 +135,7 @@ public class PhotoUploadDatabaseHelper {
 						}
 					});
 				} catch (Exception e) {
-					if (Constants.DEBUG) {
+					if (Flags.DEBUG) {
 						e.printStackTrace();
 					}
 				} finally {

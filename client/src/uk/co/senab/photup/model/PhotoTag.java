@@ -5,7 +5,7 @@ import java.util.HashMap;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import uk.co.senab.photup.Constants;
+import uk.co.senab.photup.Flags;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -20,7 +20,7 @@ public class PhotoTag {
 		mX = x;
 		mY = y;
 
-		if (Constants.DEBUG) {
+		if (Flags.DEBUG) {
 			Log.d("PhotoTag", "X: " + x + " Y: " + y);
 		}
 	}

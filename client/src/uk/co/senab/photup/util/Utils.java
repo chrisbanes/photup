@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 import uk.co.senab.photup.Constants;
+import uk.co.senab.photup.Flags;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.service.PhotoUploadService;
@@ -61,7 +62,7 @@ public class Utils {
 	// And to convert the image URI to the direct file system path of the image
 	// file
 	public static String getPathFromContentUri(ContentResolver cr, Uri contentUri) {
-		if (Constants.DEBUG) {
+		if (Flags.DEBUG) {
 			Log.d("Utils", "Getting file path for Uri: " + contentUri);
 		}
 
@@ -148,7 +149,7 @@ public class Utils {
 		}
 
 		if (null != bitmap) {
-			if (Constants.DEBUG) {
+			if (Flags.DEBUG) {
 				Log.d("Utils", "Resized bitmap to: " + bitmap.getWidth() + "x" + bitmap.getHeight());
 			}
 		}
@@ -169,7 +170,7 @@ public class Utils {
 
 		final float ratio = maxDimension / (float) biggestDimension;
 		Bitmap resized = PhotoProcessing.resize(bitmap, Math.round(width * ratio), Math.round(height * ratio));
-		if (Constants.DEBUG) {
+		if (Flags.DEBUG) {
 			Log.d("PhotoUpload", "Finely resized to: " + resized.getWidth() + "x" + resized.getHeight());
 		}
 

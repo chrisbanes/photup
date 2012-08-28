@@ -17,6 +17,7 @@ package uk.co.senab.photup.facebook;
  */
 
 import uk.co.senab.photup.Constants;
+import uk.co.senab.photup.Flags;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -87,7 +88,7 @@ public class Session {
 	 * @return
 	 */
 	public void save(Context context) {
-		if (Constants.DEBUG) {
+		if (Flags.DEBUG) {
 			Log.d(getClass().getSimpleName(), "Saving Session! Expires: " + fb.getAccessExpires());
 		}
 		Editor editor = context.getSharedPreferences(KEY, Context.MODE_PRIVATE).edit();

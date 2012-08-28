@@ -1,6 +1,6 @@
 package uk.co.senab.photup.receivers;
 
-import uk.co.senab.photup.Constants;
+import uk.co.senab.photup.Flags;
 import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PreferenceConstants;
 import uk.co.senab.photup.model.Account;
@@ -24,7 +24,7 @@ public class PhotoWatcherReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		if (Constants.DEBUG) {
+		if (Flags.DEBUG) {
 			Log.d(LOG_TAG, "onReceive");
 		}
 
@@ -33,13 +33,13 @@ public class PhotoWatcherReceiver extends BroadcastReceiver {
 
 		if (null != uri && prefs.getBoolean(PreferenceConstants.PREF_INSTANT_UPLOAD_ENABLED, false)) {
 
-			if (Constants.DEBUG) {
+			if (Flags.DEBUG) {
 				Log.d(LOG_TAG, "Got Photo with URI: " + uri.toString());
 			}
 
 			final String albumId = prefs.getString(PreferenceConstants.PREF_INSTANT_UPLOAD_ALBUM_ID, null);
 			if (TextUtils.isEmpty(albumId)) {
-				if (Constants.DEBUG) {
+				if (Flags.DEBUG) {
 					Log.d(LOG_TAG, "No album set!!!");
 				}
 				return;
@@ -56,7 +56,7 @@ public class PhotoWatcherReceiver extends BroadcastReceiver {
 			PhotoUploadController controller = PhotoUploadController.getFromContext(context);
 
 			if (controller.addPhotoToUploads(upload)) {
-				if (Constants.DEBUG) {
+				if (Flags.DEBUG) {
 					Log.d(LOG_TAG, "Starting Upload for URI: " + uri.toString());
 				}
 				context.startService(Utils.getUploadAllIntent(context));

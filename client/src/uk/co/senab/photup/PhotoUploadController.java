@@ -42,7 +42,9 @@ public class PhotoUploadController {
 			mSelectedPhotoList.add(selection);
 
 			// Save to Database
-			PhotoUploadDatabaseHelper.saveToDatabase(mContext, selection);
+			if (Flags.ENABLE_DB_PERSISTENCE) {
+				PhotoUploadDatabaseHelper.saveToDatabase(mContext, selection);
+			}
 
 			for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
 				l.onPhotoSelectionChanged(selection, true);
@@ -68,7 +70,9 @@ public class PhotoUploadController {
 
 		if (listModified) {
 			// Save to Database
-			PhotoUploadDatabaseHelper.saveToDatabase(mContext, mSelectedPhotoList, true);
+			if (Flags.ENABLE_DB_PERSISTENCE) {
+				PhotoUploadDatabaseHelper.saveToDatabase(mContext, mSelectedPhotoList, true);
+			}
 
 			for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
 				l.onPhotoSelectionsAdded();
@@ -81,7 +85,9 @@ public class PhotoUploadController {
 			mUploadingList.add(upload);
 
 			// Save to Database
-			PhotoUploadDatabaseHelper.saveToDatabase(mContext, upload);
+			if (Flags.ENABLE_DB_PERSISTENCE) {
+				PhotoUploadDatabaseHelper.saveToDatabase(mContext, upload);
+			}
 
 			for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
 				l.onPhotoSelectionsCleared();
@@ -94,8 +100,11 @@ public class PhotoUploadController {
 
 	public void clearPhotoSelections() {
 		if (!mSelectedPhotoList.isEmpty()) {
+
 			// Delete from Database
-			PhotoUploadDatabaseHelper.deleteAllSelected(mContext);
+			if (Flags.ENABLE_DB_PERSISTENCE) {
+				PhotoUploadDatabaseHelper.deleteAllSelected(mContext);
+			}
 
 			// Reset States (as may still be in cache)
 			for (PhotoUpload upload : mSelectedPhotoList) {
@@ -193,7 +202,9 @@ public class PhotoUploadController {
 		}
 
 		// Update Database, but don't force update
-		PhotoUploadDatabaseHelper.saveToDatabase(mContext, mSelectedPhotoList, false);
+		if (Flags.ENABLE_DB_PERSISTENCE) {
+			PhotoUploadDatabaseHelper.saveToDatabase(mContext, mSelectedPhotoList, false);
+		}
 
 		/**
 		 * Make sure we call listener if we've emptied the list
@@ -220,7 +231,9 @@ public class PhotoUploadController {
 		}
 
 		// Update Database
-		PhotoUploadDatabaseHelper.saveToDatabase(mContext, mSelectedPhotoList, true);
+		if (Flags.ENABLE_DB_PERSISTENCE) {
+			PhotoUploadDatabaseHelper.saveToDatabase(mContext, mSelectedPhotoList, true);
+		}
 
 		mUploadingList.addAll(mSelectedPhotoList);
 		mSelectedPhotoList.clear();
@@ -257,29 +270,36 @@ public class PhotoUploadController {
 	}
 
 	public void populateFromDatabase() {
-		final List<PhotoUpload> selectedFromDb = PhotoUploadDatabaseHelper.getSelected(mContext);
-		if (null != selectedFromDb) {
-			// Should do contains() on each item really...
-			mSelectedPhotoList.addAll(selectedFromDb);
-			PhotoUpload.populateCache(selectedFromDb);
-		}
+		if (Flags.ENABLE_DB_PERSISTENCE) {
+			final List<PhotoUpload> selectedFromDb = PhotoUploadDatabaseHelper.getSelected(mContext);
+			if (null != selectedFromDb) {
+				// Should do contains() on each item really...
+				mSelectedPhotoList.addAll(selectedFromDb);
+				PhotoUpload.populateCache(selectedFromDb);
+			}
 
-		final List<PhotoUpload> uploadsFromDb = PhotoUploadDatabaseHelper.getUploads(mContext);
-		if (null != uploadsFromDb) {
-			// Should do contains() on each item really...
-			mUploadingList.addAll(uploadsFromDb);
-			PhotoUpload.populateCache(uploadsFromDb);
+			final List<PhotoUpload> uploadsFromDb = PhotoUploadDatabaseHelper.getUploads(mContext);
+			if (null != uploadsFromDb) {
+				// Should do contains() on each item really...
+				mUploadingList.addAll(uploadsFromDb);
+				PhotoUpload.populateCache(uploadsFromDb);
+			}
 		}
 	}
 
 	public void updateDatabase() {
-		PhotoUploadDatabaseHelper.saveToDatabase(mContext, mSelectedPhotoList, false);
-		PhotoUploadDatabaseHelper.saveToDatabase(mContext, mUploadingList, false);
+		if (Flags.ENABLE_DB_PERSISTENCE) {
+			PhotoUploadDatabaseHelper.saveToDatabase(mContext, mSelectedPhotoList, false);
+			PhotoUploadDatabaseHelper.saveToDatabase(mContext, mUploadingList, false);
+		}
 	}
 
 	public void removePhotoFromUploads(PhotoUpload selection) {
 		mUploadingList.remove(selection);
-		PhotoUploadDatabaseHelper.deleteFromDatabase(mContext, selection);
+
+		if (Flags.ENABLE_DB_PERSISTENCE) {
+			PhotoUploadDatabaseHelper.deleteFromDatabase(mContext, selection);
+		}
 
 		if (mUploadingList.isEmpty()) {
 			for (OnPhotoSelectionChangedListener l : mSelectionChangedListeners) {
@@ -290,8 +310,11 @@ public class PhotoUploadController {
 
 	public void removePhotoSelection(final PhotoUpload upload) {
 		if (mSelectedPhotoList.remove(upload)) {
+
 			// Delete from Database
-			PhotoUploadDatabaseHelper.deleteFromDatabase(mContext, upload);
+			if (Flags.ENABLE_DB_PERSISTENCE) {
+				PhotoUploadDatabaseHelper.deleteFromDatabase(mContext, upload);
+			}
 
 			// Reset State (as may still be in cache)
 			upload.setUploadState(PhotoUpload.STATE_NONE);

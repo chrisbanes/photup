@@ -1,6 +1,6 @@
 package uk.co.senab.photup.util;
 
-import uk.co.senab.photup.Constants;
+import uk.co.senab.photup.Flags;
 import android.content.Context;
 
 import com.flurry.android.FlurryAgent;
@@ -17,7 +17,7 @@ public class Analytics {
 	public static final String EVENT_PHOTO_PLACE = "photo_viewer_place";
 
 	static {
-		FlurryAgent.setLogEnabled(Constants.DEBUG);
+		FlurryAgent.setLogEnabled(Flags.DEBUG);
 		FlurryAgent.setCaptureUncaughtExceptions(false);
 		FlurryAgent.setReportLocation(false);
 	}

@@ -13,6 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import uk.co.senab.photup.Constants;
+import uk.co.senab.photup.Flags;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.listeners.OnFaceDetectionListener;
@@ -197,7 +198,7 @@ public class PhotoUpload {
 			bitmap = null;
 		}
 
-		if (Constants.DEBUG) {
+		if (Flags.DEBUG) {
 			Log.d(LOG_TAG, "Detected Faces: " + detectedFaces);
 		}
 
@@ -206,7 +207,7 @@ public class PhotoUpload {
 		for (int i = 0, z = faces.length; i < z; i++) {
 			face = faces[i];
 			if (null != face) {
-				if (Constants.DEBUG) {
+				if (Flags.DEBUG) {
 					Log.d(LOG_TAG, "Detected Face with confidence: " + face.confidence());
 				}
 				face.getMidPoint(point);
@@ -513,11 +514,11 @@ public class PhotoUpload {
 			mCropTop = santizeCropValue(cropValues.top);
 			mCropRight = santizeCropValue(cropValues.right);
 			mCropBottom = santizeCropValue(cropValues.bottom);
-			if (Constants.DEBUG) {
+			if (Flags.DEBUG) {
 				Log.d(LOG_TAG, "Valid Crop Values: " + cropValues.toString());
 			}
 		} else {
-			if (Constants.DEBUG) {
+			if (Flags.DEBUG) {
 				Log.d(LOG_TAG, "Invalid Crop Values: " + cropValues.toString());
 			}
 			mCropLeft = mCropTop = MIN_CROP_VALUE;
@@ -672,7 +673,7 @@ public class PhotoUpload {
 			bitmap = Utils.rotate(bitmap, getExifRotation(context));
 			return bitmap;
 		} catch (Exception e) {
-			if (Constants.DEBUG) {
+			if (Flags.DEBUG) {
 				e.printStackTrace();
 			}
 			return null;
@@ -686,7 +687,7 @@ public class PhotoUpload {
 				BitmapSize size = BitmapUtils.getBitmapSize(path);
 
 				byte[] jpegData = FileUtils.readFileToByteArray(new File(path));
-				if (Constants.DEBUG) {
+				if (Flags.DEBUG) {
 					Log.d("MediaStorePhotoUpload", "getUploadImage. Read file to RAM!");
 				}
 
@@ -694,7 +695,7 @@ public class PhotoUpload {
 				size = new BitmapSize(Math.round(size.width / resizeRatio), Math.round(size.height / resizeRatio));
 
 				PhotoProcessing.nativeInitBitmap(size.width, size.height);
-				if (Constants.DEBUG) {
+				if (Flags.DEBUG) {
 					Log.d("MediaStorePhotoUpload", "getUploadImage. Init " + size.width + "x" + size.height);
 				}
 
@@ -705,11 +706,11 @@ public class PhotoUpload {
 				jpegData = null;
 
 				if (decodeResult == 0) {
-					if (Constants.DEBUG) {
+					if (Flags.DEBUG) {
 						Log.d("MediaStorePhotoUpload", "getUploadImage. Native decode complete!");
 					}
 				} else {
-					if (Constants.DEBUG) {
+					if (Flags.DEBUG) {
 						Log.d("MediaStorePhotoUpload", "getUploadImage. Native decode failed. Trying Android decode");
 					}
 
@@ -739,7 +740,7 @@ public class PhotoUpload {
 				 */
 				if (beenFiltered()) {
 					PhotoProcessing.filterPhoto(getFilterUsed().getId());
-					if (Constants.DEBUG) {
+					if (Flags.DEBUG) {
 						Log.d("MediaStorePhotoUpload", "getUploadImage. Native filter complete!");
 					}
 				}
@@ -760,11 +761,11 @@ public class PhotoUpload {
 						PhotoProcessing.nativeRotate90();
 						break;
 				}
-				if (Constants.DEBUG) {
+				if (Flags.DEBUG) {
 					Log.d("MediaStorePhotoUpload", "getUploadImage. " + rotation + " degree rotation complete!");
 				}
 
-				if (Constants.DEBUG) {
+				if (Flags.DEBUG) {
 					Log.d("MediaStorePhotoUpload", "getUploadImage. Native worked!");
 				}
 

@@ -17,6 +17,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.co.senab.photup.Constants;
+import uk.co.senab.photup.Flags;
 import uk.co.senab.photup.PhotoSelectionActivity;
 import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotupApplication;
@@ -132,7 +133,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 			/**
 			 * Photo
 			 */
-			if (Constants.DEBUG) {
+			if (Flags.DEBUG) {
 				Log.d(LOG_TAG, "About to get Upload bitmap");
 			}
 			UploadQuality quality = mUpload.getUploadQuality();
@@ -164,7 +165,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 			/**
 			 * Actual Request
 			 */
-			if (Constants.DEBUG) {
+			if (Flags.DEBUG) {
 				Log.d(LOG_TAG, "Starting Facebook Request");
 			}
 
@@ -178,7 +179,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 					String graphPath = null != targetId ? targetId : "me";
 
 					response = facebook.request(graphPath + "/photos", bundle, "POST", is, "source");
-					if (Constants.DEBUG) {
+					if (Flags.DEBUG) {
 						Log.d(LOG_TAG, response);
 					}
 				} catch (MalformedURLException e) {
@@ -242,7 +243,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 					mTotalBytesRead += numBytesRead;
 				}
 
-				if (Constants.DEBUG) {
+				if (Flags.DEBUG) {
 					Log.d(LOG_TAG, "Upload. File length: " + mInputLength + ". Read so far:" + mTotalBytesRead);
 				}
 
@@ -342,7 +343,9 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 	private void onFinishedUpload(PhotoUpload completedUpload) {
 		completedUpload.setUploadState(PhotoUpload.STATE_UPLOAD_COMPLETED);
-		PhotoUploadDatabaseHelper.saveToDatabase(getApplicationContext(), completedUpload);
+		if (Flags.ENABLE_DB_PERSISTENCE) {
+			PhotoUploadDatabaseHelper.saveToDatabase(getApplicationContext(), completedUpload);
+		}
 
 		mNumberUploaded++;
 		startNextUploadOrFinish();
@@ -350,7 +353,9 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 	private void onFailedUpload(PhotoUpload failedUpload) {
 		failedUpload.setUploadState(PhotoUpload.STATE_UPLOAD_ERROR);
-		PhotoUploadDatabaseHelper.saveToDatabase(getApplicationContext(), failedUpload);
+		if (Flags.ENABLE_DB_PERSISTENCE) {
+			PhotoUploadDatabaseHelper.saveToDatabase(getApplicationContext(), failedUpload);
+		}
 		startNextUploadOrFinish();
 	}
 

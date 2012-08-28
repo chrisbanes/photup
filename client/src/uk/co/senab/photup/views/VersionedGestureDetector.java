@@ -15,7 +15,7 @@
  */
 package uk.co.senab.photup.views;
 
-import uk.co.senab.photup.Constants;
+import uk.co.senab.photup.Flags;
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
@@ -38,7 +38,7 @@ public abstract class VersionedGestureDetector {
 			detector = new FroyoDetector(context);
 		}
 
-		if (Constants.DEBUG) {
+		if (Flags.DEBUG) {
 			Log.d(TAG, "Created new " + detector.getClass());
 		}
 		detector.mListener = listener;

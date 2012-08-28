@@ -1,6 +1,6 @@
 package uk.co.senab.photup.views;
 
-import uk.co.senab.photup.Constants;
+import uk.co.senab.photup.Flags;
 import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.listeners.OnFaceDetectionListener;
@@ -143,7 +143,7 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 	}
 
 	public void onNewPhotoTagTap(PhotoTag newTag) {
-		if (Constants.DEBUG) {
+		if (Flags.DEBUG) {
 			Log.d(LOG_TAG, "onPhotoTap");
 		}
 		mUpload.addPhotoTag(newTag);
@@ -215,7 +215,7 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 			return;
 		}
 
-		if (Constants.DEBUG) {
+		if (Flags.DEBUG) {
 			Log.d(LOG_TAG, "layoutTags. Rect: " + rect.toString());
 		}
 

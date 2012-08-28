@@ -6,7 +6,7 @@ import java.util.concurrent.Future;
 import uk.co.senab.bitmapcache.BitmapLruCache;
 import uk.co.senab.bitmapcache.CacheableBitmapWrapper;
 import uk.co.senab.bitmapcache.CacheableImageView;
-import uk.co.senab.photup.Constants;
+import uk.co.senab.photup.Flags;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.tasks.PhotupThreadRunnable;
@@ -252,7 +252,7 @@ public class PhotupImageView extends CacheableImageView {
 			BitmapLruCache cache = PhotupApplication.getApplication(getContext()).getImageCache();
 			CacheableBitmapWrapper thumbWrapper = cache.get(upload.getThumbnailImageKey());
 			if (null != thumbWrapper && thumbWrapper.hasValidBitmap()) {
-				if (Constants.DEBUG) {
+				if (Flags.DEBUG) {
 					Log.d("requestFullSize", "Got Cached Thumbnail");
 				}
 				setImageCachedBitmap(thumbWrapper);

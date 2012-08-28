@@ -109,7 +109,7 @@ public class PhotupApplication extends Application implements FriendsResultListe
 
 	@Override
 	public void onCreate() {
-		if (Constants.ENABLE_ACRA) {
+		if (Flags.ENABLE_ACRA) {
 			ACRA.init(this);
 		}
 
@@ -177,11 +177,13 @@ public class PhotupApplication extends Application implements FriendsResultListe
 				mFriendsListener = null;
 			}
 
-			HashMap<String, FbUser> friendsMap = new HashMap<String, FbUser>();
-			for (FbUser friend : friends) {
-				friendsMap.put(friend.getId(), friend);
+			if (Flags.ENABLE_DB_PERSISTENCE) {
+				HashMap<String, FbUser> friendsMap = new HashMap<String, FbUser>();
+				for (FbUser friend : friends) {
+					friendsMap.put(friend.getId(), friend);
+				}
+				mPhotoController.populateDatabaseItemsFromFriends(friendsMap);
 			}
-			mPhotoController.populateDatabaseItemsFromFriends(friendsMap);
 		}
 
 		setFriendsLoaded();
@@ -208,11 +210,13 @@ public class PhotupApplication extends Application implements FriendsResultListe
 				}
 			}
 
-			HashMap<String, Account> accountsMap = new HashMap<String, Account>();
-			for (Account account : accounts) {
-				accountsMap.put(account.getId(), account);
+			if (Flags.ENABLE_DB_PERSISTENCE) {
+				HashMap<String, Account> accountsMap = new HashMap<String, Account>();
+				for (Account account : accounts) {
+					accountsMap.put(account.getId(), account);
+				}
+				mPhotoController.populateDatabaseItemsFromAccounts(accountsMap);
 			}
-			mPhotoController.populateDatabaseItemsFromAccounts(accountsMap);
 		}
 
 		setAccountsLoaded();
@@ -266,7 +270,7 @@ public class PhotupApplication extends Application implements FriendsResultListe
 				if (enabled) {
 					pkgMgr.setComponentEnabledSetting(component, PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
 							PackageManager.DONT_KILL_APP);
-					if (Constants.DEBUG) {
+					if (Flags.DEBUG) {
 						Log.d(LOG_TAG, "Enabled Instant Upload Receiver");
 					}
 				}
@@ -277,7 +281,7 @@ public class PhotupApplication extends Application implements FriendsResultListe
 				if (!enabled) {
 					pkgMgr.setComponentEnabledSetting(component, PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
 							PackageManager.DONT_KILL_APP);
-					if (Constants.DEBUG) {
+					if (Flags.DEBUG) {
 						Log.d(LOG_TAG, "Disabled Instant Upload Receiver");
 					}
 				}

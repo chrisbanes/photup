@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.co.senab.photup.Constants;
+import uk.co.senab.photup.Flags;
 import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotoViewerActivity;
 import uk.co.senab.photup.PreferenceConstants;
@@ -126,7 +126,7 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 						MediaScannerConnection.scanFile(getActivity(), new String[] { mPhotoFile.getAbsolutePath() },
 								new String[] { "image/jpg" }, this);
 					} else {
-						if (Constants.DEBUG) {
+						if (Flags.DEBUG) {
 							Log.d("UserPhotosFragment", "Deleting Photo File");
 						}
 						mPhotoFile.delete();
@@ -276,7 +276,7 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 			if (view instanceof PhotoItemLayout) {
 				PhotoItemLayout layout = (PhotoItemLayout) view;
 				if (upload.equals(layout.getPhotoSelection())) {
-					if (Constants.DEBUG) {
+					if (Flags.DEBUG) {
 						Log.d("UserPhotosFragment", "Found View, setChecked");
 					}
 					layout.setChecked(added);

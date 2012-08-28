@@ -1,15 +1,12 @@
 package uk.co.senab.photup;
 
-public class Constants {
+public final class Constants {
 
 	public static final float IMAGE_CACHE_HEAP_PERCENTAGE = 1f / 6f;
 
-	public static final boolean DEBUG = BuildConfig.DEBUG;
-	public static final boolean ENABLE_ACRA = false;
+	public static final int DISPLAY_PHOTO_SIZE = 640;
 
 	public static final long SCALE_ANIMATION_DURATION_FULL_DISTANCE = 800;
-
-	public static final int DISPLAY_PHOTO_SIZE = 640;
 
 	public static final String FACEBOOK_APP_ID = "134669876670695";
 

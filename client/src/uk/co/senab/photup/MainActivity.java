@@ -30,7 +30,7 @@ public class MainActivity extends Activity {
 
 	private void launchSelectionActivity(final Session session) {
 		// Extend Access Token if we're not on a debug build
-		if (!Constants.DEBUG) {
+		if (!Flags.DEBUG) {
 			session.getFb().extendAccessTokenIfNeeded(getApplicationContext(), new ServiceListener() {
 				public void onFacebookError(FacebookError e) {
 					e.printStackTrace();
