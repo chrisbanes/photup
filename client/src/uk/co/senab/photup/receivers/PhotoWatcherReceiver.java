@@ -56,10 +56,12 @@ public class PhotoWatcherReceiver extends BroadcastReceiver {
 			PhotoUploadController controller = PhotoUploadController.getFromContext(context);
 
 			if (controller.addUpload(upload)) {
-				if (Flags.DEBUG) {
-					Log.d(LOG_TAG, "Starting Upload for URI: " + uri.toString());
+				if (ConnectivityReceiver.isConnected(context)) {
+					if (Flags.DEBUG) {
+						Log.d(LOG_TAG, "Adding Upload for URI: " + uri.toString());
+					}
+					context.startService(Utils.getUploadAllIntent(context));
 				}
-				context.startService(Utils.getUploadAllIntent(context));
 			}
 
 		}
