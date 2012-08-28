@@ -9,8 +9,8 @@
 	<string name="photo_reset">Redefinir</string>
 	<string name="tag_no_name">Quem é?</string>
 	<string name="tab_uploads">Envios</string>
-	<string name="upload_title">Envio</string>
-	<string name="upload_retry">Falha na Tentativa</string>
+	<string name="upload_title">Enviar</string>
+	<string name="upload_retry">Reenviar as com Erro</string>
 	<string name="upload_quality_title">Qualidade</string>
 	<string name="upload_quality_low">Baixa (640px)</string>
 	<string name="upload_quality_medium">Média (1024px)</string>
@@ -37,7 +37,7 @@
 	<string name="welcome_message">Bem-vindo ao photup. Para continuar pressione o botão abaixo para fazer login no Facebook.</string>
 	<string name="login">Entrar</string>
 	<string name="login_promo">Contar aos amigos sobre o photup?</string>
-	<string name="logout_static">Sair</string>
+	<string name="logout_static">Desconectar</string>
 	<string name="logout">Desconectar %1$s</string>
 	<string name="logout_prompt_title">Tem certeza?</string>
 	<string name="libraries">Bibliotecas</string>

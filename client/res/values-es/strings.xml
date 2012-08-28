@@ -7,8 +7,8 @@
 	<string name="photo_rotate">Girar</string>
 	<string name="photo_crop">Crop</string>
 	<string name="photo_reset">Restablecer</string>
-	<string name="tag_no_name">Quién es?</string>
-	<string name="tab_uploads">Mis Subidas</string>
+	<string name="tag_no_name">¿Quién es?</string>
+	<string name="tab_uploads">Subidas</string>
 	<string name="upload_title">Subir/Cargar</string>
 	<string name="upload_retry">Reintento fallido</string>
 	<string name="upload_quality_title">Calidad</string>
