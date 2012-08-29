@@ -1,6 +1,5 @@
 package uk.co.senab.photup.model;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -38,7 +37,6 @@ import com.j256.ormlite.table.DatabaseTable;
 import com.lightbox.android.photoprocessing.PhotoProcessing;
 import com.lightbox.android.photoprocessing.utils.BitmapUtils;
 import com.lightbox.android.photoprocessing.utils.BitmapUtils.BitmapSize;
-import com.lightbox.android.photoprocessing.utils.FileUtils;
 
 @DatabaseTable
 public class PhotoUpload {
@@ -267,7 +265,7 @@ public class PhotoUpload {
 	public String getDisplayImageKey() {
 		return "dsply_" + getOriginalPhotoUri();
 	}
-	
+
 	public Location getExifLocation(Context context) {
 		final String filePath = Utils.getPathFromContentUri(context.getContentResolver(), getOriginalPhotoUri());
 		if (null != filePath) {
@@ -695,11 +693,6 @@ public class PhotoUpload {
 			if (null != path) {
 				BitmapSize size = BitmapUtils.getBitmapSize(path);
 
-				byte[] jpegData = FileUtils.readFileToByteArray(new File(path));
-				if (Flags.DEBUG) {
-					Log.d("MediaStorePhotoUpload", "getUploadImage. Read file to RAM!");
-				}
-
 				final float resizeRatio = Math.max(size.width, size.height) / (float) quality.getMaxDimension();
 				size = new BitmapSize(Math.round(size.width / resizeRatio), Math.round(size.height / resizeRatio));
 
@@ -708,11 +701,7 @@ public class PhotoUpload {
 					Log.d("MediaStorePhotoUpload", "getUploadImage. Init " + size.width + "x" + size.height);
 				}
 
-				final int decodeResult = PhotoProcessing.nativeLoadResizedJpegBitmap(jpegData, jpegData.length,
-						size.width * size.height);
-
-				// Free the byte[]
-				jpegData = null;
+				final int decodeResult = PhotoProcessing.nativeLoadResizedBitmap(path, size.width * size.height);
 
 				if (decodeResult == 0) {
 					if (Flags.DEBUG) {
