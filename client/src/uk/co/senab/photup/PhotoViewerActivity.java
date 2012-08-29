@@ -45,6 +45,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
@@ -296,6 +297,7 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 			public void onGlobalLayout() {
 				mViewPager.getViewTreeObserver().removeGlobalOnLayoutListener(this);
 				onPageSelected(mViewPager.getCurrentItem());
+				showTapToTagPrompt();
 			}
 		});
 	}
@@ -415,6 +417,10 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 
 		mFilterGroup.show();
 		updateFiltersView();
+	}
+	
+	private void showTapToTagPrompt() {
+		Toast.makeText(this, R.string.tag_friend_prompt, Toast.LENGTH_SHORT).show();
 	}
 
 	private void updateFiltersView() {

@@ -26,6 +26,7 @@
 	<string name="upload_new_album">New Album</string>
 	<string name="upload_privacy_title">Privacy</string>
 	<string name="upload_account">Account</string>
+	<string name="tag_friend_prompt">Tap to tag</string>
 	<string name="place">Place</string>
 	<string name="error_select_photos">Please select some photos to upload first</string>
 	<string name="error_select_album">Please select an album first</string>
