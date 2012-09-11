@@ -2,6 +2,7 @@ package uk.co.senab.photup.util;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 
 import uk.co.senab.photup.model.MediaStoreBucket;
@@ -36,6 +37,9 @@ public class MediaStoreCursorHelper {
 				}
 			} while (cursor.moveToNext());
 		}
+		
+		// Need to reset the List so that oldest is first
+		Collections.reverse(items);
 
 		return items;
 	}
