@@ -30,8 +30,9 @@ public class PhotoWatcherReceiver extends BroadcastReceiver {
 
 		Uri uri = intent.getData();
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		Account account = Account.getAccountFromSession(context);
 
-		if (null != uri && prefs.getBoolean(PreferenceConstants.PREF_INSTANT_UPLOAD_ENABLED, false)) {
+		if (null != account && null != uri && prefs.getBoolean(PreferenceConstants.PREF_INSTANT_UPLOAD_ENABLED, false)) {
 			if (Flags.DEBUG) {
 				Log.d(LOG_TAG, "Got Photo with URI: " + uri.toString());
 			}
@@ -57,8 +58,7 @@ public class PhotoWatcherReceiver extends BroadcastReceiver {
 			final String qualityId = prefs.getString(PreferenceConstants.PREF_INSTANT_UPLOAD_QUALITY, null);
 			final String filterId = prefs.getString(PreferenceConstants.PREF_INSTANT_UPLOAD_FILTER, "0");
 
-			upload.setUploadParams(Account.getAccountFromSession(context), albumId,
-					UploadQuality.mapFromPreference(qualityId));
+			upload.setUploadParams(account, albumId, UploadQuality.mapFromPreference(qualityId));
 			upload.setFilterUsed(Filter.mapFromPref(filterId));
 
 			PhotoUploadController controller = PhotoUploadController.getFromContext(context);

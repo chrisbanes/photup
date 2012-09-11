@@ -144,7 +144,7 @@ public class UploadActivity extends PhotupFragmentActivity implements AlbumsResu
 
 		switch (mTargetRadioGroup.getCheckedRadioButtonId()) {
 			case R.id.rb_target_wall:
-				validTarget = true;
+				validTarget = (null != account);
 				break;
 
 			case R.id.rb_target_album:
