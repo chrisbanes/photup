@@ -49,3 +49,11 @@ public org.acra.ErrorReporter$ReportsSenderWorker handleSilentException(java.lan
 }
 
 
+# For ORMLite
+-keep class com.j256.**
+-keepclassmembers class com.j256.** { *; }
+-keep enum com.j256.**
+-keepclassmembers enum com.j256.** { *; }
+-keep interface com.j256.**
+-keepclassmembers interface com.j256.** { *; }
+-keepclassmembers class uk.co.senab.photup.DatabaseHelper { *; }

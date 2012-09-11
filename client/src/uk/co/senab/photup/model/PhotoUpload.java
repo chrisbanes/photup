@@ -119,7 +119,7 @@ public class PhotoUpload {
 	/**
 	 * Edit Variables
 	 */
-	@DatabaseField(columnName = FIELD_STATE) private boolean mCompletedDetection;
+	@DatabaseField(columnName = FIELD_COMPLETED_DETECTION) private boolean mCompletedDetection;
 	@DatabaseField(columnName = FIELD_USER_ROTATION) private int mUserRotation;
 	@DatabaseField(columnName = FIELD_FILTER) private Filter mFilter;
 	@DatabaseField(columnName = FIELD_CROP_L) private float mCropLeft;
