@@ -256,7 +256,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		}
 	}
 
-	private boolean mCurrentlyUploading = false;
+	private boolean mCurrentlyUploading;
 	private ExecutorService mExecutor;
 	private Session mSession;
 	private PhotoUploadController mController;
@@ -275,18 +275,29 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		super.onCreate();
 
 		PhotupApplication app = PhotupApplication.getApplication(this);
-
 		mController = app.getPhotoUploadController();
 		mExecutor = app.getSingleThreadExecutorService();
-		mSession = Session.restore(this);
 
+		mSession = Session.restore(this);
 		mNotificationMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		mCurrentlyUploading = false;
+	}
+
+	@Override
+	public void onDestroy() {
+		mCurrentlyUploading = false;
+		stopForeground(true);
+		finishedNotification();
+
+		super.onDestroy();
 	}
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		if (null != intent && Constants.INTENT_SERVICE_UPLOAD_ALL.equals(intent.getAction())) {
-			uploadAll();
+		if (null == intent || Constants.INTENT_SERVICE_UPLOAD_ALL.equals(intent.getAction())) {
+			if (uploadAll()) {
+				return START_STICKY;
+			}
 		}
 
 		return START_NOT_STICKY;
@@ -317,10 +328,10 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		return false;
 	}
 
-	private void uploadAll() {
+	private boolean uploadAll() {
 		// If we're currently uploading, ignore call
 		if (mCurrentlyUploading) {
-			return;
+			return true;
 		}
 
 		if (ConnectivityReceiver.isConnected(this)) {
@@ -328,11 +339,15 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 			if (null != nextUpload) {
 				startForeground();
 				startUpload(nextUpload);
+				return true;
 			}
-		} else {
-			// No need to keep us running
-			stopSelf();
 		}
+
+		// If we reach here, there's no need to keep us running
+		mCurrentlyUploading = false;
+		stopSelf();
+		
+		return false;
 	}
 
 	private void startUpload(PhotoUpload upload) {
@@ -373,8 +388,6 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 			startUpload(nextUpload);
 		} else {
 			mCurrentlyUploading = false;
-			stopForeground(true);
-			finishedNotification();
 			stopSelf();
 		}
 	}
