@@ -55,6 +55,22 @@ public class PhotoUpload {
 	public static final int STATE_NONE = 0;
 
 	public static final String FIELD_STATE = "state";
+	static final String FIELD_URI = "uri";
+	static final String FIELD_COMPLETED_DETECTION = "tag_detection";
+	static final String FIELD_USER_ROTATION = "user_rotation";
+	static final String FIELD_FILTER = "filter";
+	static final String FIELD_CROP_L = "crop_l";
+	static final String FIELD_CROP_T = "crop_t";
+	static final String FIELD_CROP_R = "crop_r";
+	static final String FIELD_CROP_B = "crop_b";
+	static final String FIELD_ACCOUNT_ID = "acc_id";
+	static final String FIELD_TARGET_ID = "target_id";
+	static final String FIELD_QUALITY = "quality";
+	static final String FIELD_RESULT_POST_ID = "r_post_id";
+	static final String FIELD_CAPTION = "caption";
+	static final String FIELD_TAGS_JSON = "tags";
+	static final String FIELD_PLACE_NAME = "place_name";
+	static final String FIELD_PLACE_ID = "place_id";
 
 	static final String LOG_TAG = "PhotoUpload";
 	static final float CROP_THRESHOLD = 0.01f; // 1%
@@ -98,31 +114,31 @@ public class PhotoUpload {
 	 * Uri and Database Key
 	 */
 	private Uri mFullUri;
-	@DatabaseField(id = true) private String mFullUriString;
+	@DatabaseField(columnName = FIELD_URI, id = true) private String mFullUriString;
 
 	/**
 	 * Edit Variables
 	 */
-	@DatabaseField private boolean mCompletedDetection;
-	@DatabaseField private int mUserRotation;
-	@DatabaseField private Filter mFilter;
-	@DatabaseField private float mCropLeft;
-	@DatabaseField private float mCropTop;
-	@DatabaseField private float mCropRight;
-	@DatabaseField private float mCropBottom;
+	@DatabaseField(columnName = FIELD_STATE) private boolean mCompletedDetection;
+	@DatabaseField(columnName = FIELD_USER_ROTATION) private int mUserRotation;
+	@DatabaseField(columnName = FIELD_FILTER) private Filter mFilter;
+	@DatabaseField(columnName = FIELD_CROP_L) private float mCropLeft;
+	@DatabaseField(columnName = FIELD_CROP_T) private float mCropTop;
+	@DatabaseField(columnName = FIELD_CROP_R) private float mCropRight;
+	@DatabaseField(columnName = FIELD_CROP_B) private float mCropBottom;
 
 	/**
 	 * Upload Variables
 	 */
-	@DatabaseField private String mAccountId;
-	@DatabaseField private String mTargetId;
-	@DatabaseField private UploadQuality mQuality;
-	@DatabaseField private String mResultPostId;
+	@DatabaseField(columnName = FIELD_ACCOUNT_ID) private String mAccountId;
+	@DatabaseField(columnName = FIELD_TARGET_ID) private String mTargetId;
+	@DatabaseField(columnName = FIELD_QUALITY) private UploadQuality mQuality;
+	@DatabaseField(columnName = FIELD_RESULT_POST_ID) private String mResultPostId;
 	@DatabaseField(columnName = FIELD_STATE) private int mState;
-	@DatabaseField private String mCaption;
-	@DatabaseField(useGetSet = true) String tagJson;
-	@DatabaseField private String mPlaceName;
-	@DatabaseField private String mPlaceId;
+	@DatabaseField(columnName = FIELD_CAPTION) private String mCaption;
+	@DatabaseField(columnName = FIELD_TAGS_JSON, useGetSet = true) String tagJson;
+	@DatabaseField(columnName = FIELD_PLACE_NAME) private String mPlaceName;
+	@DatabaseField(columnName = FIELD_PLACE_ID) private String mPlaceId;
 
 	private HashSet<PhotoTag> mTags;
 	private Account mAccount;
@@ -302,7 +318,7 @@ public class PhotoUpload {
 	public int getPhotoTagsCount() {
 		return null != mTags ? mTags.size() : 0;
 	}
-	
+
 	public int getFriendPhotoTagsCount() {
 		int count = 0;
 		if (getPhotoTagsCount() > 0) {
