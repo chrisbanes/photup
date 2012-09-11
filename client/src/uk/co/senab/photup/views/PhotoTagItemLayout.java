@@ -171,7 +171,7 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 	private void addPhotoTags() {
 		mTagLayout.removeAllViews();
 
-		if (mUpload.getPhotoTagsCount() > 0) {
+		if (null != mUpload && mUpload.getPhotoTagsCount() > 0) {
 			for (PhotoTag tag : mUpload.getPhotoTags()) {
 				mTagLayout.addView(createPhotoTagLayout(tag));
 			}
