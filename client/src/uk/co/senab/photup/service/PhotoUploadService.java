@@ -353,11 +353,17 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	}
 
 	private void onFailedUpload(PhotoUpload failedUpload) {
-		failedUpload.setUploadState(PhotoUpload.STATE_UPLOAD_ERROR);
+		// If we're connected and failed, set our state to error, else just
+		// return us to the queue
+		if (ConnectivityReceiver.isConnected(this)) {
+			failedUpload.setUploadState(PhotoUpload.STATE_UPLOAD_ERROR);
+		} else {
+			failedUpload.setUploadState(PhotoUpload.STATE_UPLOAD_WAITING);
+		}
 		if (Flags.ENABLE_DB_PERSISTENCE) {
 			PhotoUploadDatabaseHelper.saveToDatabase(getApplicationContext(), failedUpload);
 		}
-		
+
 		startNextUploadOrFinish();
 	}
 
