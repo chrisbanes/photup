@@ -67,7 +67,9 @@ public class PhotoTag {
 
 	public JSONObject toJsonObject() throws JSONException {
 		JSONObject object = new JSONObject();
-		object.put("tag_uid", mFriend.getId());
+		if (hasFriend()) {
+			object.put("tag_uid", mFriend.getId());
+		}
 		object.put("x", mX);
 		object.put("y", mY);
 		return object;
