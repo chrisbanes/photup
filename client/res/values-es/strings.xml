@@ -25,9 +25,11 @@
 	<string name="upload_new_album">Nuevo álbum</string>
 	<string name="upload_privacy_title">Privacidad</string>
 	<string name="upload_account">Cuenta</string>
+	<string name="tag_friend_prompt">Toca para etiquetar.</string>
 	<string name="place">Lugar</string>
 	<string name="error_select_photos">Por favor elige primero algunas fotos para subir</string>
 	<string name="error_select_album">Por favor elige primero un álbum</string>
+	<string name="error_not_connected">No estás conectado a internet, intenta de nuevo más tarde</string>
 	<string name="notification_uploading_photo">Subiendo foto %1$s</string>
 	<string name="notification_uploading_photo_progress">Subiendo foto %1$d %2$d%%</string>
 	<string name="crash_toast">photup ha fallado :( La causa se ha notificado al desarrollador</string>
@@ -51,6 +53,9 @@
 	<string name="pref_instant_upload_quality_title">Calidad</string>
 	<string name="pref_instant_upload_filter_title">Efecto</string>
 	<string name="pref_instant_upload_filter_summary">Selecciona un efecto para ser aplicado automáticamente</string>
+	<string name="pref_instant_upload_roaming_title">Roaming</string>
+	<string name="pref_instant_upload_roaming_summary">Carga instantánea si estás en Roaming?</string>
+	<string name="pref_more_options">Opciones avanzadas.</string>
 	<string name="dialog_instant_upload">photup ahora tiene Instant Upload! Esto significa que cada vez que tomes una foto, photup puede subirla autompaticamente a Facebook.\n\n Sólo activala en Ajustes y nosotros haremos el resto!</string>
 	<string name="dialog_missing_pages_title">Cuentas Perdidas?</string>
 	<string name="dialog_missing_items_title">Objetos perdidos?</string>
