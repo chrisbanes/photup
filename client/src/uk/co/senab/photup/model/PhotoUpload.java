@@ -38,7 +38,7 @@ import com.lightbox.android.photoprocessing.PhotoProcessing;
 import com.lightbox.android.photoprocessing.utils.BitmapUtils;
 import com.lightbox.android.photoprocessing.utils.BitmapUtils.BitmapSize;
 
-@DatabaseTable
+@DatabaseTable(tableName = "photo_upload")
 public class PhotoUpload {
 
 	public static interface OnUploadStateChanged {
