@@ -302,6 +302,20 @@ public class PhotoUpload {
 	public int getPhotoTagsCount() {
 		return null != mTags ? mTags.size() : 0;
 	}
+	
+	public int getFriendPhotoTagsCount() {
+		int count = 0;
+		if (getPhotoTagsCount() > 0) {
+			FbUser friend;
+			for (PhotoTag tag : mTags) {
+				friend = tag.getFriend();
+				if (null != friend) {
+					count++;
+				}
+			}
+		}
+		return count;
+	}
 
 	public String getPlaceId() {
 		return mPlaceId;

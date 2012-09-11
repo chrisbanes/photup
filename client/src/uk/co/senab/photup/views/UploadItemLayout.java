@@ -61,7 +61,7 @@ public class UploadItemLayout extends LinearLayout implements OnUploadStateChang
 			getCaptionTextView().setText(mSelection.getCaption());
 		}
 
-		final int tagsCount = mSelection.getPhotoTagsCount();
+		final int tagsCount = mSelection.getFriendPhotoTagsCount();
 		TextView tagsTv = getTagTextView();
 		if (tagsCount > 0) {
 			tagsTv.setText(getResources().getQuantityString(R.plurals.tag_summary_photo, tagsCount, tagsCount));
