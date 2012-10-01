@@ -331,11 +331,13 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 	}
 
 	private void loadBucketId(String id) {
-		Bundle bundle = new Bundle();
-		if (null != id) {
-			bundle.putString(LOADER_PHOTOS_BUCKETS_PARAM, id);
+		if (isAdded()) {
+			Bundle bundle = new Bundle();
+			if (null != id) {
+				bundle.putString(LOADER_PHOTOS_BUCKETS_PARAM, id);
+			}
+			getLoaderManager().restartLoader(LOADER_USER_PHOTOS_EXTERNAL, bundle, this);
 		}
-		getLoaderManager().restartLoader(LOADER_USER_PHOTOS_EXTERNAL, bundle, this);
 	}
 
 	private void saveSelectedBucketToPrefs() {
