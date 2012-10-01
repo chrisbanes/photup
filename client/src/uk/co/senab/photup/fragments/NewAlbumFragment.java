@@ -88,7 +88,12 @@ public class NewAlbumFragment extends SherlockDialogFragment implements View.OnC
 	public void onNewAlbumCreated(String albumId) {
 		if (null != mAlbumCreated) {
 			mAlbumCreated.onAlbumCreated();
-			dismiss();
+
+			try {
+				dismiss();
+			} catch (Exception e) {
+				// WTF moment. Shown up in logs.
+			}
 		}
 	}
 
