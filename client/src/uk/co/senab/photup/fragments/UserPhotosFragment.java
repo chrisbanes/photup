@@ -346,19 +346,21 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 	}
 
 	private void setSelectedBucketFromPrefs() {
-		if (null != mPrefs) {
-			final String lastBucketId = mPrefs.getString(PreferenceConstants.PREF_SELECTED_MEDIA_BUCKET_ID, null);
-			if (null != lastBucketId) {
-				for (int i = 0, z = mBuckets.size(); i < z; i++) {
-					if (lastBucketId.equals(mBuckets.get(i).getId())) {
-						mBucketSpinner.setSelection(i);
-						return;
+		if (null != mBucketSpinner) {
+			if (null != mPrefs) {
+				final String lastBucketId = mPrefs.getString(PreferenceConstants.PREF_SELECTED_MEDIA_BUCKET_ID, null);
+				if (null != lastBucketId) {
+					for (int i = 0, z = mBuckets.size(); i < z; i++) {
+						if (lastBucketId.equals(mBuckets.get(i).getId())) {
+							mBucketSpinner.setSelection(i);
+							return;
+						}
 					}
 				}
 			}
-		}
 
-		mBucketSpinner.setSelection(0);
+			mBucketSpinner.setSelection(0);
+		}
 	}
 
 	private void takePhoto() {
