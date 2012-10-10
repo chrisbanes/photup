@@ -272,9 +272,11 @@ public class UploadActivity extends PhotupFragmentActivity implements AlbumsResu
 			mPlacesButton.setText(place.getName());
 			mPlacesIcon.loadImage(PhotupApplication.getApplication(getApplicationContext()).getImageCache(),
 					place.getAvatarUrl());
+			mPlaceRemoveBtn.setVisibility(View.VISIBLE);
 		} else {
 			mPlacesButton.setText(R.string.place);
 			mPlacesIcon.setImageResource(R.drawable.ic_action_place);
+			mPlaceRemoveBtn.setVisibility(View.GONE);
 		}
 	}
 

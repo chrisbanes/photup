@@ -114,6 +114,7 @@
 			android:id="@+id/ll_place"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
+			android:animateLayoutChanges="true"
 			android:background="?attr/actionBarItemBackground"
 			android:gravity="center_vertical" >
 
@@ -121,7 +122,9 @@
 				android:id="@+id/iv_place_photo"
 				android:layout_width="@dimen/listview_sml_item_dimension"
 				android:layout_height="@dimen/listview_sml_item_dimension"
-				android:scaleType="centerInside"
+				android:layout_gravity="top"
+				android:padding="@dimen/spacing"
+				android:scaleType="fitCenter"
 				android:src="@drawable/ic_action_place" />
 
 			<TextView
@@ -141,7 +144,8 @@
 				android:layout_height="@dimen/form_item_height"
 				android:background="?attr/actionBarItemBackground"
 				android:padding="@dimen/spacing"
-				android:src="@drawable/ic_menu_delete" />
+				android:src="@drawable/ic_menu_delete"
+				android:visibility="gone" />
 		</LinearLayout>
 
 		<TextView
