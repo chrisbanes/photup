@@ -9,12 +9,15 @@ import uk.co.senab.photup.R;
 import uk.co.senab.photup.listeners.OnFriendPickedListener;
 import uk.co.senab.photup.model.FbUser;
 import uk.co.senab.photup.tasks.FriendsAsyncTask.FriendsResultListener;
+import android.app.Dialog;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -62,6 +65,26 @@ public class FriendsListFragment extends SherlockDialogFragment implements Frien
 		mFilterEditText.addTextChangedListener(this);
 
 		return view;
+	}
+
+	@Override
+	public Dialog onCreateDialog(Bundle savedInstanceState) {
+		Dialog dialog = super.onCreateDialog(savedInstanceState);
+
+		// Set Soft Input mode so it's always visible
+		dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+
+		return dialog;
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+
+		// Clear filter text if needed
+		if (!TextUtils.isEmpty(mFilterEditText.getText())) {
+			mFilterEditText.setText("");
+		}
 	}
 
 	public void onFriendsLoaded(List<FbUser> friends) {
