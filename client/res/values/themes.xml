@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-	<style name="Theme.Photup" parent="Theme.Sherlock.ForceOverflow">
+	<style name="Theme.Photup" parent="Theme.Sherlock">
 		<item name="actionBarItemBackground">@drawable/selectable_background_photup</item>
 		<item name="popupMenuStyle">@style/photup_PopupMenu</item>
 		<item name="dropDownListViewStyle">@style/photup_DropDownListView</item>
@@ -15,16 +15,14 @@
 		<item name="android:actionDropDownStyle">@style/photup_DropDownNav</item>
 		<item name="android:actionBarStyle">@style/photup_solid_ActionBar</item>
 		<item name="android:panelBackground">@drawable/menu_hardkey_panel_photup</item>
-		<item name="absForceOverflow">true</item>
 	</style>
 
-	<style name="Theme.FullscreenOverlay" parent="Theme.Sherlock.ForceOverflow">
+	<style name="Theme.FullscreenOverlay" parent="Theme.Sherlock">
 		<item name="android:windowFullscreen">true</item>
 		<item name="android:windowActionBarOverlay">true</item>
 		<item name="windowActionBarOverlay">true</item>
 		<item name="actionBarStyle">@style/photup_translucent_ActionBar</item>
 		<item name="android:actionBarStyle">@style/photup_translucent_ActionBar</item>
-		<item name="absForceOverflow">true</item>
 	</style>
 
 	<style name="Theme.Fullscreen" parent="Theme.Photup">
