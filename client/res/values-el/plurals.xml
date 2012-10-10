@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <plurals name="notification_uploaded_photo">
+        <item quantity="one">Ανέβηκε %d φωτογραφία</item>
+        <item quantity="other">Ανέβηκαν %d φωτογραφίες</item>
+    </plurals>
+
+    <plurals name="tag_summary_photo">
+        <item quantity="one">Με ένα φίλο</item>
+        <item quantity="other">Με %d φίλους</item>
+    </plurals>
+    
+</resources>
