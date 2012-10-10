@@ -5,6 +5,7 @@ import java.util.concurrent.ExecutorService;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.model.Filter;
 import uk.co.senab.photup.model.PhotoUpload;
+import uk.co.senab.photup.tasks.PhotupThreadRunnable;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -28,7 +29,7 @@ import com.lightbox.android.photoprocessing.R;
 
 public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 
-	static final class FilterRunnable implements Runnable {
+	static final class FilterRunnable extends PhotupThreadRunnable  {
 
 		// TODO Should make these WeakReferences
 		private final Context mContext;
@@ -44,10 +45,10 @@ public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 			mButton = button;
 		}
 
-		public void run() {
+		public void runImpl() {
 			Bitmap bitmap = mUpload.processBitmapUsingFilter(mUpload.getThumbnailImage(mContext), mFilter, false, true);
 
-			if (Thread.currentThread().isInterrupted()) {
+			if (isInterrupted()) {
 				bitmap.recycle();
 				return;
 			}
@@ -87,7 +88,7 @@ public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 	public FiltersRadioGroup(Context context, AttributeSet attrs) {
 		super(context, attrs);
 
-		mExecutor = PhotupApplication.getApplication(context).getSingleThreadExecutorService();
+		mExecutor = PhotupApplication.getApplication(context).getPhotoFilterThreadExecutorService();
 
 		mSlideInBottomAnim = AnimationUtils.loadAnimation(context, R.anim.slide_in_bottom);
 		mSlideInBottomAnim.setAnimationListener(this);

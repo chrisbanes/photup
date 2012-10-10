@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -23,6 +22,7 @@ import uk.co.senab.photup.tasks.AccountsAsyncTask;
 import uk.co.senab.photup.tasks.AccountsAsyncTask.AccountsResultListener;
 import uk.co.senab.photup.tasks.FriendsAsyncTask;
 import uk.co.senab.photup.tasks.FriendsAsyncTask.FriendsResultListener;
+import uk.co.senab.photup.tasks.PhotupThreadFactory;
 import uk.co.senab.photup.util.Utils;
 import android.app.Application;
 import android.content.ComponentName;
@@ -46,7 +46,7 @@ public class PhotupApplication extends Application implements FriendsResultListe
 	static final int EXECUTOR_CORE_POOL_SIZE_PER_CORE = 2;
 	static final int EXECUTOR_MAX_POOL_SIZE_PER_CORE = 5;
 
-	private ExecutorService mMultiThreadExecutor, mSingleThreadExecutor;
+	private ExecutorService mMultiThreadExecutor, mSingleThreadExecutor, mDatabaseThreadExecutor;
 	private BitmapLruCache mImageCache;
 
 	private FriendsResultListener mFriendsListener;
@@ -66,23 +66,26 @@ public class PhotupApplication extends Application implements FriendsResultListe
 	public ExecutorService getMultiThreadExecutorService() {
 		if (null == mMultiThreadExecutor || mMultiThreadExecutor.isShutdown()) {
 			final int numCores = Runtime.getRuntime().availableProcessors();
-			
+
 			mMultiThreadExecutor = new ThreadPoolExecutor(numCores * EXECUTOR_CORE_POOL_SIZE_PER_CORE, numCores
-					* EXECUTOR_MAX_POOL_SIZE_PER_CORE, 1L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+					* EXECUTOR_MAX_POOL_SIZE_PER_CORE, 1L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(),
+					new PhotupThreadFactory());
 		}
 		return mMultiThreadExecutor;
 	}
 
-	public ExecutorService getSingleThreadExecutorService() {
+	public ExecutorService getPhotoFilterThreadExecutorService() {
 		if (null == mSingleThreadExecutor || mSingleThreadExecutor.isShutdown()) {
-			mSingleThreadExecutor = Executors.newSingleThreadExecutor(new ThreadFactory() {
-
-				public Thread newThread(Runnable r) {
-					return new Thread(r, THREAD_FILTERS);
-				}
-			});
+			mSingleThreadExecutor = Executors.newSingleThreadExecutor(new PhotupThreadFactory(THREAD_FILTERS));
 		}
 		return mSingleThreadExecutor;
+	}
+
+	public ExecutorService getDatabaseThreadExecutorService() {
+		if (null == mDatabaseThreadExecutor || mDatabaseThreadExecutor.isShutdown()) {
+			mDatabaseThreadExecutor = Executors.newSingleThreadExecutor(new PhotupThreadFactory());
+		}
+		return mDatabaseThreadExecutor;
 	}
 
 	public BitmapLruCache getImageCache() {

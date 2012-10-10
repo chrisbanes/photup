@@ -17,7 +17,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
-import android.os.Process;
 import android.util.AttributeSet;
 import android.util.Log;
 
@@ -27,7 +26,7 @@ public class PhotupImageView extends CacheableImageView {
 		void onPhotoLoadFinished(Bitmap bitmap);
 	}
 
-	static final class FaceDetectionRunnable implements Runnable {
+	static final class FaceDetectionRunnable extends PhotupThreadRunnable {
 
 		private final PhotoUpload mUpload;
 		private final CacheableBitmapWrapper mBitmapWrapper;
@@ -37,7 +36,7 @@ public class PhotupImageView extends CacheableImageView {
 			mBitmapWrapper = bitmap;
 		}
 
-		public void run() {
+		public void runImpl() {
 			if (mBitmapWrapper.hasValidBitmap()) {
 				mUpload.detectPhotoTags(mBitmapWrapper.getBitmap());
 			}
@@ -62,9 +61,7 @@ public class PhotupImageView extends CacheableImageView {
 			mListener = listener;
 		}
 
-		public void run() {
-			Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-
+		public void runImpl() {
 			final PhotupImageView imageView = mImageView.get();
 			if (null == imageView) {
 				return;
@@ -128,9 +125,7 @@ public class PhotupImageView extends CacheableImageView {
 			mListener = listener;
 		}
 
-		public void run() {
-			Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-
+		public void runImpl() {
 			final PhotupImageView imageView = mImageView.get();
 			if (null == imageView) {
 				return;
@@ -311,7 +306,7 @@ public class PhotupImageView extends CacheableImageView {
 
 	private void requestFiltered(final PhotoUpload upload, boolean fullSize, final OnPhotoLoadListener listener) {
 		PhotupApplication app = PhotupApplication.getApplication(getContext());
-		mCurrentRunnable = app.getSingleThreadExecutorService().submit(
+		mCurrentRunnable = app.getPhotoFilterThreadExecutorService().submit(
 				new PhotoFilterRunnable(this, upload, app.getImageCache(), fullSize, listener));
 	}
 

@@ -9,6 +9,7 @@ import uk.co.senab.photup.DatabaseHelper;
 import uk.co.senab.photup.Flags;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.model.PhotoUpload;
+import uk.co.senab.photup.tasks.PhotupThreadRunnable;
 import android.content.Context;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
@@ -55,9 +56,9 @@ public class PhotoUploadDatabaseHelper {
 	}
 
 	public static void deleteAllSelected(final Context context) {
-		PhotupApplication.getApplication(context).getSingleThreadExecutorService().submit(new Runnable() {
+		PhotupApplication.getApplication(context).getDatabaseThreadExecutorService().submit(new PhotupThreadRunnable() {
 
-			public void run() {
+			public void runImpl() {
 				final DatabaseHelper helper = getHelper(context);
 				try {
 					final Dao<PhotoUpload, String> dao = helper.getPhotoUploadDao();
@@ -77,9 +78,9 @@ public class PhotoUploadDatabaseHelper {
 	}
 
 	public static void deleteFromDatabase(final Context context, final PhotoUpload upload) {
-		PhotupApplication.getApplication(context).getSingleThreadExecutorService().submit(new Runnable() {
+		PhotupApplication.getApplication(context).getDatabaseThreadExecutorService().submit(new PhotupThreadRunnable() {
 
-			public void run() {
+			public void runImpl() {
 				final DatabaseHelper helper = getHelper(context);
 				try {
 					Dao<PhotoUpload, String> dao = helper.getPhotoUploadDao();
@@ -94,9 +95,9 @@ public class PhotoUploadDatabaseHelper {
 	}
 
 	public static void saveToDatabase(final Context context, final PhotoUpload upload) {
-		PhotupApplication.getApplication(context).getSingleThreadExecutorService().submit(new Runnable() {
+		PhotupApplication.getApplication(context).getDatabaseThreadExecutorService().submit(new PhotupThreadRunnable() {
 
-			public void run() {
+			public void runImpl() {
 				final DatabaseHelper helper = getHelper(context);
 				try {
 					Dao<PhotoUpload, String> dao = helper.getPhotoUploadDao();
@@ -116,9 +117,9 @@ public class PhotoUploadDatabaseHelper {
 		final ArrayList<PhotoUpload> uploadsCopy = new ArrayList<PhotoUpload>();
 		uploadsCopy.addAll(uploads);
 
-		PhotupApplication.getApplication(context).getSingleThreadExecutorService().submit(new Runnable() {
+		PhotupApplication.getApplication(context).getDatabaseThreadExecutorService().submit(new PhotupThreadRunnable() {
 
-			public void run() {
+			public void runImpl() {
 				final DatabaseHelper helper = getHelper(context);
 				try {
 					final Dao<PhotoUpload, String> dao = helper.getPhotoUploadDao();

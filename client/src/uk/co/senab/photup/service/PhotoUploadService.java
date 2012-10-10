@@ -27,6 +27,7 @@ import uk.co.senab.photup.model.PhotoTag;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.model.UploadQuality;
 import uk.co.senab.photup.receivers.ConnectivityReceiver;
+import uk.co.senab.photup.tasks.PhotupThreadRunnable;
 import uk.co.senab.photup.util.PhotoUploadDatabaseHelper;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -60,7 +61,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 	static final String TEMPORARY_FILE_NAME = "upload_temp.jpg";
 
-	private class UpdateBigPictureStyleRunnable implements Runnable {
+	private class UpdateBigPictureStyleRunnable extends PhotupThreadRunnable {
 
 		private final PhotoUpload mSelection;
 
@@ -68,7 +69,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 			mSelection = selection;
 		}
 
-		public void run() {
+		public void runImpl() {
 			mSelection.setBigPictureNotificationBmp(PhotoUploadService.this,
 					mSelection.processBitmap(mSelection.getThumbnailImage(PhotoUploadService.this), false, true));
 			updateNotification(mSelection);
@@ -76,7 +77,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 	}
 
-	private static class UploadPhotoRunnable implements Runnable {
+	private static class UploadPhotoRunnable extends PhotupThreadRunnable {
 
 		static final String LOG_TAG = "UploadPhotoRunnable";
 
@@ -90,7 +91,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 			mUpload = upload;
 		}
 
-		public void run() {
+		public void runImpl() {
 			Context context = mContextRef.get();
 			if (null == context) {
 				return;
@@ -276,7 +277,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 
 		PhotupApplication app = PhotupApplication.getApplication(this);
 		mController = app.getPhotoUploadController();
-		mExecutor = app.getSingleThreadExecutorService();
+		mExecutor = app.getPhotoFilterThreadExecutorService();
 
 		mSession = Session.restore(this);
 		mNotificationMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -346,7 +347,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		// If we reach here, there's no need to keep us running
 		mCurrentlyUploading = false;
 		stopSelf();
-		
+
 		return false;
 	}
 
