@@ -7,11 +7,13 @@ import java.io.IOException;
 import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.Flags;
 import uk.co.senab.photup.PhotupApplication;
+import uk.co.senab.photup.PreferenceConstants;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.service.PhotoUploadService;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,6 +25,7 @@ import android.net.Uri;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.FloatMath;
 import android.util.Log;
@@ -258,5 +261,10 @@ public class Utils {
 		}
 
 		return location;
+	}
+	
+	public static boolean tryNativeDecoder(Context context) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		return prefs.getBoolean(PreferenceConstants.PREF_SAFE_DECODER_ONLY, false) == false;
 	}
 }

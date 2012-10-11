@@ -36,5 +36,14 @@
 				android:title="@string/pref_instant_upload_roaming_title" />
 		</PreferenceScreen>
 	</PreferenceCategory>
+	<PreferenceCategory
+		android:title="@string/pref_decode" >
+		<CheckBoxPreference
+			android:defaultValue="false"
+			android:key="pref_safe_decoder_only"
+			android:summaryOff="@string/pref_decode_safe_summary_off"
+			android:summaryOn="@string/pref_decode_safe_summary_on"
+			android:title="@string/pref_decode_safe_title" />
+	</PreferenceCategory>
 
 </PreferenceScreen>

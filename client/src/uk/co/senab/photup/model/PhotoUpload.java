@@ -726,15 +726,23 @@ public class PhotoUpload {
 				final float resizeRatio = Math.max(size.width, size.height) / (float) quality.getMaxDimension();
 				size = new BitmapSize(Math.round(size.width / resizeRatio), Math.round(size.height / resizeRatio));
 
-				final int decodeResult = PhotoProcessing.nativeLoadResizedBitmap(path, size.width * size.height);
+				boolean doAndroidDecode = true;
 
-				if (decodeResult == 0) {
+				if (Utils.tryNativeDecoder(context)) {
+					doAndroidDecode = PhotoProcessing.nativeLoadResizedBitmap(path, size.width * size.height) != 0;
+					
 					if (Flags.DEBUG) {
-						Log.d("MediaStorePhotoUpload", "getUploadImage. Native decode complete!");
+						if (doAndroidDecode) {
+							Log.d("MediaStorePhotoUpload", "getUploadImage. Native decode failed :(");
+						} else {
+							Log.d("MediaStorePhotoUpload", "getUploadImage. Native decode complete!");
+						}
 					}
-				} else {
+				}
+
+				if (doAndroidDecode) {
 					if (Flags.DEBUG) {
-						Log.d("MediaStorePhotoUpload", "getUploadImage. Native decode failed. Trying Android decode");
+						Log.d("MediaStorePhotoUpload", "getUploadImage. Doing Android decode");
 					}
 
 					// Just in case
