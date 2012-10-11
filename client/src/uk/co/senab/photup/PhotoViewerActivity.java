@@ -34,7 +34,6 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -215,7 +214,7 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 		}
 	}
 
-	public boolean onSingleTap(MotionEvent event) {
+	public boolean onSingleTap() {
 		return hideFiltersView();
 	}
 

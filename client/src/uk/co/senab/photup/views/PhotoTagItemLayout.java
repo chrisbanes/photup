@@ -1,12 +1,13 @@
 package uk.co.senab.photup.views;
 
+import uk.co.senab.photoview.PhotoViewAttacher;
 import uk.co.senab.photup.Flags;
 import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.listeners.OnFaceDetectionListener;
 import uk.co.senab.photup.listeners.OnFriendPickedListener;
+import uk.co.senab.photup.listeners.OnPhotoTagTapListener;
 import uk.co.senab.photup.listeners.OnPhotoTagsChangedListener;
-import uk.co.senab.photup.listeners.OnPhotoTapListener;
 import uk.co.senab.photup.listeners.OnPickFriendRequestListener;
 import uk.co.senab.photup.model.FbUser;
 import uk.co.senab.photup.model.PhotoTag;
@@ -26,10 +27,8 @@ import android.widget.TextView;
 
 @SuppressLint("ViewConstructor")
 @SuppressWarnings("deprecation")
-public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageView.OnMatrixChangedListener,
-		OnPhotoTagsChangedListener, View.OnClickListener, OnPhotoTapListener, OnFriendPickedListener,
-		OnFaceDetectionListener {
-
+public class PhotoTagItemLayout extends FrameLayout implements OnPhotoTagsChangedListener, View.OnClickListener,
+		OnPhotoTagTapListener, OnFriendPickedListener, OnFaceDetectionListener, PhotoViewAttacher.OnMatrixChangedListener {
 	static final String LOG_TAG = "PhotoTagItemLayout";
 
 	private PhotoTag mFriendRequestTag;
@@ -57,8 +56,8 @@ public class PhotoTagItemLayout extends FrameLayout implements MultiTouchImageVi
 
 		mLayoutInflater = LayoutInflater.from(context);
 
-		mImageView = new MultiTouchImageView(context, true);
-		mImageView.setMatrixChangeListener(this);
+		mImageView = new MultiTouchImageView(context);
+		mImageView.setOnMatrixChangeListener(this);
 		mImageView.setPhotoTapListener(this);
 		addView(mImageView, FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
 

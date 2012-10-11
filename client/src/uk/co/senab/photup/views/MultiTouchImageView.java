@@ -1,360 +1,97 @@
 package uk.co.senab.photup.views;
 
-import uk.co.senab.photup.listeners.OnPhotoTapListener;
+import uk.co.senab.photoview.PhotoViewAttacher;
+import uk.co.senab.photoview.PhotoViewAttacher.OnMatrixChangedListener;
+import uk.co.senab.photup.listeners.OnPhotoTagTapListener;
 import uk.co.senab.photup.listeners.OnSingleTapListener;
 import uk.co.senab.photup.model.PhotoTag;
 import android.content.Context;
-import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
+import android.view.View;
 
-public class MultiTouchImageView extends PhotupImageView implements VersionedGestureDetector.OnGestureListener,
-		GestureDetector.OnDoubleTapListener {
+public class MultiTouchImageView extends PhotupImageView implements PhotoViewAttacher.OnPhotoTapListener {
 
-	static final String LOG_TAG = "MultiTouchImageView";
+	private final PhotoViewAttacher mAttacher;
 
-	static interface OnMatrixChangedListener {
-		void onMatrixChanged(RectF rect);
-	}
-
-	static final long ANIMATION_DURATION = 200;
-
-	private class AnimatedZoomRunnable implements Runnable {
-
-		private final long mStartTime;
-		private final float mIncrementPerMs;
-		private final float mStartScale;
-		private final float mFocalX, mFocalY;
-
-		public AnimatedZoomRunnable(final float zoomLevel, final float focalX, final float focalY) {
-			mStartScale = getScale();
-			mStartTime = System.currentTimeMillis();
-			mIncrementPerMs = (zoomLevel - mStartScale) / ANIMATION_DURATION;
-			mFocalX = focalX;
-			mFocalY = focalY;
-		}
-
-		public void run() {
-			float currentMs = Math.min(ANIMATION_DURATION, System.currentTimeMillis() - mStartTime);
-			float target = mStartScale + (mIncrementPerMs * currentMs);
-
-			mSuppMatrix.setScale(target, target, mFocalX, mFocalY);
-			centerAndDisplayMatrix();
-
-			if (currentMs < ANIMATION_DURATION) {
-				ViewCompat.postOnAnimation(MultiTouchImageView.this, this);
-			}
-		}
-	}
-
-	static final int EDGE_NONE = -1;
-	static final int EDGE_LEFT = 0;
-	static final int EDGE_RIGHT = 1;
-	static final int EDGE_BOTH = 2;
-
-	private static final float MAX_ZOOM = 3.0f;
-	private static final float MID_ZOOM = 1.75f;
-	private static final float MIN_ZOOM = 1.0f;
-
-	private GestureDetector gestureScanner;
-	private VersionedGestureDetector mScaleDetector;
-
-	private final Matrix mBaseMatrix = new Matrix();
-	private final Matrix mSuppMatrix = new Matrix();
-	private final Matrix mDrawMatrix = new Matrix();
-
-	private final float[] mMatrixValues = new float[9];
-
-	private int mScrollEdge = EDGE_BOTH;
-
-	private OnMatrixChangedListener mMatrixChangeListener;
-	private OnPhotoTapListener mPhotoTapListener;
 	private OnSingleTapListener mSingleTapListener;
+	private OnPhotoTagTapListener mTagTapListener;
 
-	private boolean mZoomEnabled = false;
+	public MultiTouchImageView(Context context) {
+		super(context);
+		mAttacher = new PhotoViewAttacher(this);
+	}
 
 	public MultiTouchImageView(Context context, AttributeSet attr) {
 		super(context, attr);
-		setZoomable(false);
+		mAttacher = new PhotoViewAttacher(this);
 	}
 
-	public MultiTouchImageView(Context context, boolean zoomable) {
-		super(context);
-		setZoomable(zoomable);
-	}
-
-	public Matrix getDisplayMatrix() {
-		mDrawMatrix.set(mBaseMatrix);
-		mDrawMatrix.postConcat(mSuppMatrix);
-		return mDrawMatrix;
-	}
-
-	public boolean isZoomable() {
-		return mZoomEnabled;
-	}
-
-	public void onDrag(float dx, float dy) {
-		mSuppMatrix.postTranslate(dx, dy);
-		centerAndDisplayMatrix();
-	}
-
-	public void onScale(float scaleFactor, float focusX, float focusY) {
-		mSuppMatrix.postScale(scaleFactor, scaleFactor, focusX, focusY);
-		centerAndDisplayMatrix();
-	}
-
-	public boolean onDoubleTap(MotionEvent e) {
-		try {
-			float scale = getScale();
-			float x = e.getX();
-			float y = e.getY();
-
-			if (scale < MID_ZOOM) {
-				post(new AnimatedZoomRunnable(MID_ZOOM, x, y));
-			} else if (scale >= MID_ZOOM && scale < MAX_ZOOM) {
-				post(new AnimatedZoomRunnable(MAX_ZOOM, x, y));
-			} else {
-				post(new AnimatedZoomRunnable(MIN_ZOOM, x, y));
-			}
-		} catch (java.lang.ArrayIndexOutOfBoundsException ae) {
-		}
-
-		return true;
-	}
-
-	public boolean onDoubleTapEvent(MotionEvent e) {
-		return false;
-	}
-
-	public boolean onSingleTapConfirmed(MotionEvent e) {
-		if (null != mSingleTapListener && mSingleTapListener.onSingleTap(e)) {
-			return true;
-		}
-
-		if (null != mPhotoTapListener) {
-			final RectF displayRect = getDisplayRect();
-
-			if (null != displayRect) {
-				final float x = e.getX(), y = e.getY();
-				if (displayRect.contains(x, y)) {
-					mPhotoTapListener.onNewPhotoTagTap(new PhotoTag(x - displayRect.left, y - displayRect.top,
-							displayRect.width(), displayRect.height()));
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	@Override
-	public boolean onTouchEvent(MotionEvent ev) {
-		if (mZoomEnabled) {
-
-			getParent().requestDisallowInterceptTouchEvent(true);
-
-			if (null != gestureScanner && gestureScanner.onTouchEvent(ev)) {
-				return true;
-			}
-
-			// Let the ScaleGestureDetector inspect all events.
-			if (null != mScaleDetector && mScaleDetector.onTouchEvent(ev)) {
-
-				if (mScrollEdge != EDGE_NONE) {
-					getParent().requestDisallowInterceptTouchEvent(false);
-				}
-
-				// Reset Scale back to 1.0f if we're below 0.9f;
-				switch (ev.getAction()) {
-					case MotionEvent.ACTION_CANCEL:
-					case MotionEvent.ACTION_UP:
-						if (getScale() < MIN_ZOOM) {
-							post(new AnimatedZoomRunnable(MIN_ZOOM, 0f, 0f));
-						}
-						break;
-				}
-
-				return true;
-			}
-
-			getParent().requestDisallowInterceptTouchEvent(false);
-		}
-
-		return super.onTouchEvent(ev);
-	}
-
-	public void resetScalePan() {
-		mSuppMatrix.reset();
-		setImageMatrix(getDisplayMatrix());
-		mScrollEdge = EDGE_BOTH;
+	/**
+	 * Gets the Display Rectangle of the currently displayed Drawable. The
+	 * Rectangle is relative to this View and includes all scaling and
+	 * translations.
+	 * 
+	 * @return - RectF of Displayed Drawable
+	 */
+	public RectF getDisplayRect() {
+		return mAttacher.getDisplayRect();
 	}
 
 	@Override
 	public void setImageDrawable(Drawable drawable) {
 		super.setImageDrawable(drawable);
-		updateBaseMatrix(drawable);
+		mAttacher.update();
 	}
 
-	public void setZoomable(boolean zoomable) {
-		mZoomEnabled = zoomable;
-		if (mZoomEnabled) {
-
-			setScaleType(ScaleType.MATRIX);
-
-			if (null == mScaleDetector) {
-				mScaleDetector = VersionedGestureDetector.newInstance(getContext(), this);
-			}
-
-			if (null == gestureScanner) {
-				gestureScanner = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener());
-				gestureScanner.setOnDoubleTapListener(this);
-			}
-		} else {
-			if (getScaleType() == ScaleType.MATRIX) {
-				resetScalePan();
-			}
-		}
+	/**
+	 * Register a callback to be invoked when the Matrix has changed for this
+	 * View. An example would be the user panning or scaling the Photo.
+	 * 
+	 * @param listener
+	 *            - Listener to be registered.
+	 */
+	public void setOnMatrixChangeListener(OnMatrixChangedListener listener) {
+		mAttacher.setOnMatrixChangeListener(listener);
 	}
 
-	public void setRotation(int rotation) {
-		mSuppMatrix.postRotate((float) rotation, getWidth() / 2, getHeight() / 2);
-		centerAndDisplayMatrix();
-	}
-
-	public void rotateClockwise() {
-		mSuppMatrix.postRotate(90f, getWidth() / 2, getHeight() / 2);
-		centerAndDisplayMatrix();
-	}
-
-	public void setMatrixChangeListener(OnMatrixChangedListener listener) {
-		mMatrixChangeListener = listener;
-	}
-
-	public void setPhotoTapListener(OnPhotoTapListener listener) {
-		mPhotoTapListener = listener;
+	/**
+	 * Register a callback to be invoked when the Photo displayed by this View
+	 * is tapped with a single tap.
+	 * 
+	 * @param listener
+	 *            - Listener to be registered.
+	 */
+	public void setPhotoTapListener(OnPhotoTagTapListener listener) {
+		mTagTapListener = listener;
+		mAttacher.setOnPhotoTapListener(this);
 	}
 
 	public void setSingleTapListener(OnSingleTapListener listener) {
 		mSingleTapListener = listener;
+		mAttacher.setOnPhotoTapListener(this);
 	}
 
-	@Override
-	protected boolean setFrame(int l, int t, int r, int b) {
-		if (super.setFrame(l, t, r, b)) {
-			updateBaseMatrix(getDrawable());
-			return true;
-		}
-		return false;
-	}
-
-	private void centerMatrix() {
-		Drawable d = getDrawable();
-		if (null == d) {
+	public final void onPhotoTap(View view, float x, float y) {
+		if (null != mSingleTapListener && mSingleTapListener.onSingleTap()) {
 			return;
 		}
 
-		RectF rect = new RectF(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
-		getDisplayMatrix().mapRect(rect);
-
-		final float height = rect.height(), width = rect.width();
-		float deltaX = 0, deltaY = 0;
-
-		final int viewHeight = getHeight();
-		if (height < viewHeight) {
-			deltaY = (viewHeight - height) / 2 - rect.top;
-		} else if (rect.top > 0) {
-			deltaY = -rect.top;
-		} else if (rect.bottom < viewHeight) {
-			deltaY = viewHeight - rect.bottom;
+		if (null != mTagTapListener) {
+			mTagTapListener.onNewPhotoTagTap(new PhotoTag(x * 100f, y * 100f));
+			return;
 		}
-
-		final int viewWidth = getWidth();
-		if (width < viewWidth) {
-			deltaX = (viewWidth - width) / 2 - rect.left;
-			mScrollEdge = EDGE_BOTH;
-		} else if (rect.left > 0) {
-			mScrollEdge = EDGE_LEFT;
-			deltaX = -rect.left;
-		} else if (rect.right < viewWidth) {
-			deltaX = viewWidth - rect.right;
-			mScrollEdge = EDGE_RIGHT;
-		} else {
-			mScrollEdge = EDGE_NONE;
-		}
-
-		mSuppMatrix.postTranslate(deltaX, deltaY);
-	}
-
-	private void centerAndDisplayMatrix() {
-		centerMatrix();
-		setImageMatrix(getDisplayMatrix());
-	}
-
-	@Override
-	public void setImageMatrix(Matrix matrix) {
-		super.setImageMatrix(matrix);
-
-		if (null != mMatrixChangeListener) {
-			RectF displayRect = getDisplayRect(matrix);
-			if (null != displayRect) {
-				mMatrixChangeListener.onMatrixChanged(displayRect);
-			}
-		}
-	}
-
-	public RectF getDisplayRect() {
-		centerMatrix();
-		return getDisplayRect(getDisplayMatrix());
-	}
-
-	private RectF getDisplayRect(Matrix matrix) {
-		Drawable d = getDrawable();
-		if (null != d) {
-			RectF rect = new RectF(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
-			matrix.mapRect(rect);
-			return rect;
-		}
-		return null;
-	}
-
-	private float getScale() {
-		return getValue(mSuppMatrix, Matrix.MSCALE_X);
-	}
-
-	private float getValue(Matrix matrix, int whichValue) {
-		matrix.getValues(mMatrixValues);
-		return mMatrixValues[whichValue];
 	}
 
 	/**
-	 * Calculate Matrix for FIT_CENTER
+	 * Allows you to enable/disable the zoom functionality on the ImageView.
+	 * When disable the ImageView reverts to using the FIT_CENTER matrix.
 	 * 
-	 * @param d
+	 * @param zoomable
+	 *            - Whether the zoom functionality is enabled.
 	 */
-	private void updateBaseMatrix(Drawable d) {
-		if (null == d) {
-			return;
-		}
-
-		float viewWidth = getWidth();
-		float viewHeight = getHeight();
-
-		int w = d.getIntrinsicWidth();
-		int h = d.getIntrinsicHeight();
-		mBaseMatrix.reset();
-
-		// We limit up-scaling to 2x otherwise the result may look bad if it's
-		// a small icon.
-		float widthScale = viewWidth / w;
-		float heightScale = viewHeight / h;
-		float scale = Math.min(widthScale, heightScale);
-
-		mBaseMatrix.postScale(scale, scale);
-		mBaseMatrix.postTranslate((viewWidth - w * scale) / 2F, (viewHeight - h * scale) / 2F);
-
-		resetScalePan();
+	public void setZoomable(boolean zoomable) {
+		mAttacher.setZoomable(zoomable);
 	}
 }
