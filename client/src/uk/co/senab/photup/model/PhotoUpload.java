@@ -726,11 +726,6 @@ public class PhotoUpload {
 				final float resizeRatio = Math.max(size.width, size.height) / (float) quality.getMaxDimension();
 				size = new BitmapSize(Math.round(size.width / resizeRatio), Math.round(size.height / resizeRatio));
 
-				PhotoProcessing.nativeInitBitmap(size.width, size.height);
-				if (Flags.DEBUG) {
-					Log.d("MediaStorePhotoUpload", "getUploadImage. Init " + size.width + "x" + size.height);
-				}
-
 				final int decodeResult = PhotoProcessing.nativeLoadResizedBitmap(path, size.width * size.height);
 
 				if (decodeResult == 0) {
@@ -748,11 +743,16 @@ public class PhotoUpload {
 					// Decode in Android and send to native
 					Bitmap bitmap = Utils.decodeImage(context.getContentResolver(), getOriginalPhotoUri(),
 							quality.getMaxDimension());
-					PhotoProcessing.sendBitmapToNative(bitmap);
-					bitmap.recycle();
 
-					// Do resize
-					PhotoProcessing.nativeResizeBitmap(size.width, size.height);
+					if (null != bitmap) {
+						PhotoProcessing.sendBitmapToNative(bitmap);
+						bitmap.recycle();
+
+						// Resize image to correct size
+						PhotoProcessing.nativeResizeBitmap(size.width, size.height);
+					} else {
+						return null;
+					}
 				}
 
 				/**
