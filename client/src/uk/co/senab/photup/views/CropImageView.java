@@ -4,8 +4,9 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.View;
 
-public class CropImageView extends MultiTouchImageView {
+public class CropImageView extends MultiTouchImageView implements View.OnTouchListener {
 
 	private float mLastX, mLastY;
 	private int mMotionEdge;
@@ -16,10 +17,12 @@ public class CropImageView extends MultiTouchImageView {
 	public CropImageView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setZoomable(true);
+
+		// Override the touch listener so that only we get the touch events
+		setOnTouchListener(this);
 	}
 
-	@Override
-	public boolean onTouchEvent(MotionEvent event) {
+	public boolean onTouch(View view, MotionEvent event) {
 		if (mCrop == null) {
 			return false;
 		}
