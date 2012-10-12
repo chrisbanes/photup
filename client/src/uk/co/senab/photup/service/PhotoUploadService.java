@@ -287,8 +287,14 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	@Override
 	public void onDestroy() {
 		mCurrentlyUploading = false;
-		stopForeground(true);
-		finishedNotification();
+
+		try {
+			stopForeground(true);
+			finishedNotification();
+		} catch (Exception e) {
+			e.printStackTrace();
+			// Can sometimes call NPE
+		}
 
 		super.onDestroy();
 	}
@@ -452,15 +458,17 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	}
 
 	void finishedNotification() {
-		String text = getResources().getQuantityString(R.plurals.notification_uploaded_photo, mNumberUploaded,
-				mNumberUploaded);
+		if (null != mNotificationBuilder) {
+			String text = getResources().getQuantityString(R.plurals.notification_uploaded_photo, mNumberUploaded,
+					mNumberUploaded);
 
-		mNotificationBuilder.setOngoing(false);
-		mNotificationBuilder.setProgress(100, 100, false);
-		mNotificationBuilder.setWhen(System.currentTimeMillis());
-		mNotificationBuilder.setContentTitle(text);
-		mNotificationBuilder.setTicker(text);
+			mNotificationBuilder.setOngoing(false);
+			mNotificationBuilder.setProgress(100, 100, false);
+			mNotificationBuilder.setWhen(System.currentTimeMillis());
+			mNotificationBuilder.setContentTitle(text);
+			mNotificationBuilder.setTicker(text);
 
-		mNotificationMgr.notify(NOTIFICATION_ID, mNotificationBuilder.build());
+			mNotificationMgr.notify(NOTIFICATION_ID, mNotificationBuilder.build());
+		}
 	}
 }

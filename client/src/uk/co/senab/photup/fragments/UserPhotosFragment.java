@@ -327,7 +327,10 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 	}
 
 	private MediaStoreBucket getSelectedBucket() {
-		return (MediaStoreBucket) mBucketSpinner.getSelectedItem();
+		if (null != mBucketSpinner) {
+			return (MediaStoreBucket) mBucketSpinner.getSelectedItem();
+		}
+		return null;
 	}
 
 	private void loadBucketId(String id) {
@@ -336,7 +339,13 @@ public class UserPhotosFragment extends SherlockFragment implements OnItemClickL
 			if (null != id) {
 				bundle.putString(LOADER_PHOTOS_BUCKETS_PARAM, id);
 			}
-			getLoaderManager().restartLoader(LOADER_USER_PHOTOS_EXTERNAL, bundle, this);
+			try {
+				getLoaderManager().restartLoader(LOADER_USER_PHOTOS_EXTERNAL, bundle, this);
+			} catch (IllegalStateException e) {
+				e.printStackTrace();
+				// Can sometimes catch with: Fragment not attached to Activity.
+				// Not much we can do to recover
+			}
 		}
 	}
 
