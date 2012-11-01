@@ -38,8 +38,8 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 	static final int TAB_UPLOADS = 2;
 
 	private UploadActionBarView mUploadActionView;
-
 	private PhotoUploadController mPhotoController;
+	private boolean mUseTabs;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -47,26 +47,39 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_choose_photos);
 
+		mUseTabs = null != findViewById(R.id.fl_fragment);
+
 		mPhotoController = PhotoUploadController.getFromContext(this);
 		mPhotoController.addListener(this);
 
 		ActionBar ab = getSupportActionBar();
 		ab.setDisplayShowTitleEnabled(false);
-		ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-		ab.addTab(ab.newTab().setText(R.string.tab_photos).setTag(TAB_PHOTOS).setTabListener(this));
-		ab.addTab(ab.newTab().setText(getSelectedTabTitle()).setTag(TAB_SELECTED).setTabListener(this));
 
-		Intent intent = getIntent();
-		int defaultTab = intent.getIntExtra(EXTRA_DEFAULT_TAB, -1);
-		if (defaultTab != -1) {
-			ab.setSelectedNavigationItem(defaultTab);
+		if (mUseTabs) {
+			ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+			ab.addTab(ab.newTab().setText(R.string.tab_photos).setTag(TAB_PHOTOS).setTabListener(this));
+			ab.addTab(ab.newTab().setTag(TAB_SELECTED).setTabListener(this));
+
+			Intent intent = getIntent();
+			int defaultTab = intent.getIntExtra(EXTRA_DEFAULT_TAB, -1);
+			if (defaultTab != -1) {
+				ab.setSelectedNavigationItem(defaultTab);
+			}
+		} else {
+			UserPhotosFragment userPhotos = (UserPhotosFragment) getSupportFragmentManager().findFragmentById(
+					R.id.frag_photos_users);
+			userPhotos.setFragmentTitleVisibility(View.VISIBLE);
 		}
+
+		refreshSelectedTabTitle();
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		switch (getSupportActionBar().getSelectedNavigationIndex()) {
+			default:
 			case TAB_PHOTOS:
+				// Shown when no tabs too!
 				getSupportMenuInflater().inflate(R.menu.menu_photo_grid_users, menu);
 				setupUploadActionBarView(menu);
 				break;
@@ -118,7 +131,7 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 
 			case R.id.menu_select_all:
 				UserPhotosFragment fragment = (UserPhotosFragment) getSupportFragmentManager().findFragmentById(
-						R.id.fl_fragment);
+						mUseTabs ? R.id.fl_fragment : R.id.frag_photos_users);
 				if (null != fragment) {
 					fragment.selectAll();
 				}
@@ -139,20 +152,26 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 		super.onResume();
 
 		if (mPhotoController.hasUploads()) {
-			addUploadTab();
+			if (mUseTabs) {
+				addUploadTab();
+			} else {
+				// TODO
+			}
 		}
 
-		try {
-			if (mPhotoController.getActiveUploadsCount() > 0) {
-				// Load Uploads Tab if we need to
-				getSupportActionBar().setSelectedNavigationItem(2);
-			} else if (mPhotoController.getSelectedCount() == 0) {
-				// Else just show Media Lib tab
-				getSupportActionBar().setSelectedNavigationItem(0);
+		if (mUseTabs) {
+			try {
+				if (mPhotoController.getActiveUploadsCount() > 0) {
+					// Load Uploads Tab if we need to
+					getSupportActionBar().setSelectedNavigationItem(2);
+				} else if (mPhotoController.getSelectedCount() == 0) {
+					// Else just show Media Lib tab
+					getSupportActionBar().setSelectedNavigationItem(0);
+				}
+			} catch (IllegalStateException e) {
+				// Getting FCs. Not core function so just hide it if it happens
+				e.printStackTrace();
 			}
-		} catch (IllegalStateException e) {
-			// Getting FCs. Not core function so just hide it if it happens
-			e.printStackTrace();
 		}
 	}
 
@@ -239,7 +258,13 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 	}
 
 	private void refreshSelectedTabTitle() {
-		getSupportActionBar().getTabAt(1).setText(getSelectedTabTitle());
+		if (mUseTabs) {
+			getSupportActionBar().getTabAt(1).setText(getSelectedTabTitle());
+		} else {
+			SelectedPhotosFragment userPhotos = (SelectedPhotosFragment) getSupportFragmentManager().findFragmentById(
+					R.id.frag_photos_selected);
+			userPhotos.setFragmentTitle(getSelectedTabTitle());
+		}
 	}
 
 	private CharSequence getSelectedTabTitle() {

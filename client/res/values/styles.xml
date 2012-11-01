@@ -58,4 +58,11 @@
 		<item name="android:verticalSpacing">@dimen/gridview_spacing</item>
 	</style>
 
+	<style name="FragmentTitle">
+		<item name="android:fontFamily">sans-serif-light</item>
+		<item name="android:padding">@dimen/double_spacing</item>
+		<item name="android:textSize">36sp</item>
+		<item name="android:visibility">gone</item>
+	</style>
+
 </resources>

@@ -19,11 +19,10 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 
-import com.actionbarsherlock.app.SherlockFragment;
 import com.jakewharton.activitycompat2.ActivityCompat2;
 import com.jakewharton.activitycompat2.ActivityOptionsCompat2;
 
-public class SelectedPhotosFragment extends SherlockFragment implements OnPhotoSelectionChangedListener,
+public class SelectedPhotosFragment extends AbstractPhotosFragment implements OnPhotoSelectionChangedListener,
 		OnItemClickListener {
 
 	private GridView mGridView;
@@ -106,4 +105,5 @@ public class SelectedPhotosFragment extends SherlockFragment implements OnPhotoS
 	public void onPhotoSelectionsAdded() {
 		mAdapter.notifyDataSetChanged();
 	}
+
 }

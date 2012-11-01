@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/ll_photo_fragments"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="horizontal" >
+
+	<fragment
+		android:id="@+id/frag_photos_users"
+		android:name="uk.co.senab.photup.fragments.UserPhotosFragment"
+		android:layout_width="0px"
+		android:layout_height="fill_parent"
+		android:layout_weight="60" />
+
+	<fragment
+		android:id="@+id/frag_photos_selected"
+		android:name="uk.co.senab.photup.fragments.SelectedPhotosFragment"
+		android:layout_width="0px"
+		android:layout_height="fill_parent"
+		android:layout_weight="40" />
+
+</LinearLayout>

@@ -4,6 +4,13 @@
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
 	android:orientation="vertical" >
+	
+	<uk.co.senab.photup.views.RobotoLightTextView
+		android:id="@+id/tv_fragment_title"
+		style="@style/FragmentTitle"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:text="@string/tab_photos" />
 
 	<GridView
 		android:id="@+id/gv_photos"

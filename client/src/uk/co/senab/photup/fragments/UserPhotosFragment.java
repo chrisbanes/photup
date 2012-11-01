@@ -50,12 +50,11 @@ import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.Spinner;
 
-import com.actionbarsherlock.app.SherlockFragment;
 import com.commonsware.cwac.merge.MergeAdapter;
 import com.jakewharton.activitycompat2.ActivityCompat2;
 import com.jakewharton.activitycompat2.ActivityOptionsCompat2;
 
-public class UserPhotosFragment extends SherlockFragment implements OnItemClickListener,
+public class UserPhotosFragment extends AbstractPhotosFragment implements OnItemClickListener,
 		OnPhotoSelectionChangedListener, LoaderManager.LoaderCallbacks<Cursor>, MediaStoreBucketsResultListener,
 		OnItemSelectedListener, OnScanCompletedListener {
 
