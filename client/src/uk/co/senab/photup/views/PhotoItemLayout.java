@@ -5,42 +5,38 @@ import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.model.PhotoUpload;
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.FrameLayout;
-import android.widget.ImageView.ScaleType;
+import android.widget.TextView;
 
 public class PhotoItemLayout extends CheckableFrameLayout implements View.OnClickListener {
 
 	private final PhotupImageView mImageView;
 	private final CheckableImageView mButton;
+	private final TextView mCaptionText;
+
 	private PhotoUpload mSelection;
 
 	private boolean mAnimateCheck = true;
+	private boolean mShowCaption = false;
 
-	private PhotoUploadController mController;
+	private final PhotoUploadController mController;
 
 	public PhotoItemLayout(Context context, AttributeSet attrs) {
 		super(context, attrs);
 
+		LayoutInflater.from(context).inflate(R.layout.item_grid_photo_internal, this);
+
 		mController = PhotupApplication.getApplication(context).getPhotoUploadController();
 
-		mImageView = new PhotupImageView(context);
-		addView(mImageView, FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-		mImageView.setScaleType(ScaleType.CENTER_CROP);
-
-		mButton = new CheckableImageView(context);
-		mButton.setScaleType(ScaleType.CENTER);
+		mImageView = (PhotupImageView) findViewById(R.id.iv_photo);
+		mCaptionText = (TextView) findViewById(R.id.tv_photo_caption);
+		mButton = (CheckableImageView) findViewById(R.id.civ_button);
 		mButton.setOnClickListener(this);
-		mButton.setImageResource(R.drawable.btn_selection);
-
-		int dimension = getResources().getDimensionPixelSize(R.dimen.spacing);
-		addView(mButton, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
-				FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.RIGHT | Gravity.TOP));
-		mButton.setPadding(dimension, dimension, dimension, dimension);
 	}
 
 	public PhotupImageView getImageView() {
@@ -49,6 +45,10 @@ public class PhotoItemLayout extends CheckableFrameLayout implements View.OnClic
 
 	public void setAnimateWhenChecked(boolean animate) {
 		mAnimateCheck = animate;
+	}
+
+	public void setShowCaption(boolean show) {
+		mShowCaption = show;
 	}
 
 	public void onClick(View v) {
@@ -83,6 +83,16 @@ public class PhotoItemLayout extends CheckableFrameLayout implements View.OnClic
 		if (mSelection != selection) {
 			mButton.clearAnimation();
 			mSelection = selection;
+		}
+
+		if (mShowCaption) {
+			String caption = mSelection.getCaption();
+			if (TextUtils.isEmpty(caption)) {
+				mCaptionText.setVisibility(View.GONE);
+			} else {
+				mCaptionText.setVisibility(View.VISIBLE);
+				mCaptionText.setText(caption);
+			}
 		}
 	}
 
