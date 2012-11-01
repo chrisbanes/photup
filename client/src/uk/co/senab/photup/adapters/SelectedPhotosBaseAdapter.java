@@ -45,7 +45,7 @@ public class SelectedPhotosBaseAdapter extends BaseAdapter {
 
 	public View getView(int position, View view, ViewGroup parent) {
 		if (null == view) {
-			view = mLayoutInflater.inflate(R.layout.item_grid_photo, parent, false);
+			view = mLayoutInflater.inflate(R.layout.item_grid_photo_selected, parent, false);
 		}
 
 		PhotoItemLayout layout = (PhotoItemLayout) view;

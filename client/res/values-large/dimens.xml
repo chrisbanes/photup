@@ -2,7 +2,8 @@
 <resources>
 
 	<dimen name="gridview_item_margin">6dp</dimen>
-	<dimen name="gridview_item_dimension">200dp</dimen>
+	<dimen name="gridview_item_dimension_user">200dp</dimen>
+	<dimen name="gridview_item_dimension_selected">270dp</dimen>
 	<dimen name="listview_item_dimension">200dp</dimen>
 	<dimen name="grid_item_caption_textSize">22sp</dimen>
 

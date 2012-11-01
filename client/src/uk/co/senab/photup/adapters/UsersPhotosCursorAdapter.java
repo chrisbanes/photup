@@ -18,7 +18,7 @@ public class UsersPhotosCursorAdapter extends ResourceCursorAdapter {
 	private final PhotoUploadController mController;
 
 	public UsersPhotosCursorAdapter(Context context, Cursor c) {
-		super(context, R.layout.item_grid_photo, c, 0);
+		super(context, R.layout.item_grid_photo_user, c, 0);
 
 		PhotupApplication app = PhotupApplication.getApplication(context);
 		mController = app.getPhotoUploadController();

@@ -2,6 +2,6 @@
 <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/iv_camera_button"
     android:layout_width="fill_parent"
-    android:layout_height="@dimen/gridview_item_dimension"
+    android:layout_height="@dimen/gridview_item_dimension_user"
     android:scaleType="centerInside"
     android:src="@drawable/ic_menu_camera" />

@@ -5,8 +5,13 @@
 	android:layout_height="fill_parent"
 	android:orientation="vertical" >
 
-	<include
-		layout="@layout/layout_grid" />
+	<GridView
+		android:id="@+id/gv_photos"
+		style="@style/PhotosGridView"
+		android:layout_width="match_parent"
+		android:layout_height="0px"
+		android:layout_weight="1"
+		android:columnWidth="@dimen/gridview_item_dimension_user" />
 
 	<Spinner
 		android:id="@+id/sp_buckets"

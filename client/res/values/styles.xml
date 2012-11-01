@@ -45,9 +45,17 @@
 		<item name="android:orientation">horizontal</item>
 		<item name="android:showDividers">middle</item>
 	</style>
-	
+
 	<style name="PhotupSpinner">
 		<item name="android:background">@drawable/abs__spinner_ab_holo_dark</item>
+	</style>
+
+	<style name="PhotosGridView">
+		<item name="android:horizontalSpacing">@dimen/gridview_spacing</item>
+		<item name="android:listSelector">@drawable/selectable_background_photup</item>
+		<item name="android:numColumns">auto_fit</item>
+		<item name="android:stretchMode">columnWidth</item>
+		<item name="android:verticalSpacing">@dimen/gridview_spacing</item>
 	</style>
 
 </resources>
