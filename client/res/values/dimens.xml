@@ -18,5 +18,6 @@
 	<dimen name="form_item_height">48dp</dimen>
 	<dimen name="crop_hysteresis">16dp</dimen>
 	<dimen name="grid_item_caption_textSize">16sp</dimen>
+	<dimen name="fragment_title_textSize">28sp</dimen>
 
 </resources>
