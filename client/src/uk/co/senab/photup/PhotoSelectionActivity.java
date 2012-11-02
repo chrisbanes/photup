@@ -65,10 +65,6 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 			if (defaultTab != -1) {
 				ab.setSelectedNavigationItem(defaultTab);
 			}
-		} else {
-			UserPhotosFragment userPhotos = (UserPhotosFragment) getSupportFragmentManager().findFragmentById(
-					R.id.frag_photos_users);
-			userPhotos.setFragmentTitleVisibility(View.VISIBLE);
 		}
 
 		refreshSelectedTabTitle();
