@@ -55,10 +55,10 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 
 		ActionBar ab = getSupportActionBar();
 		ab.setDisplayShowTitleEnabled(false);
+		ab.addTab(ab.newTab().setText(R.string.tab_photos).setTag(TAB_PHOTOS).setTabListener(this));
 
 		if (mSinglePane) {
 			ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-			ab.addTab(ab.newTab().setText(R.string.tab_photos).setTag(TAB_PHOTOS).setTabListener(this));
 			ab.addTab(ab.newTab().setTag(TAB_SELECTED).setTabListener(this));
 
 			Intent intent = getIntent();
@@ -66,6 +66,10 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 			if (defaultTab != -1) {
 				ab.setSelectedNavigationItem(defaultTab);
 			}
+		} else {
+			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+			replacePrimaryFragment(TAB_PHOTOS, ft);
+			ft.commit();
 		}
 
 		refreshSelectedTabTitle();
@@ -147,29 +151,7 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 	@Override
 	protected void onResume() {
 		super.onResume();
-
-		if (mPhotoController.hasUploads()) {
-			if (mSinglePane) {
-				addUploadTab();
-			} else {
-				// TODO
-			}
-		}
-
-		if (mSinglePane) {
-			try {
-				if (mPhotoController.getActiveUploadsCount() > 0) {
-					// Load Uploads Tab if we need to
-					getSupportActionBar().setSelectedNavigationItem(2);
-				} else if (mPhotoController.getSelectedCount() == 0) {
-					// Else just show Media Lib tab
-					getSupportActionBar().setSelectedNavigationItem(0);
-				}
-			} catch (IllegalStateException e) {
-				// Getting FCs. Not core function so just hide it if it happens
-				e.printStackTrace();
-			}
-		}
+		checkTabs();
 	}
 
 	@Override
@@ -181,9 +163,28 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 	}
 
 	public void onPhotoSelectionsCleared() {
-		if (mPhotoController.getActiveUploadsCount() > 0) {
+		checkTabs();
+	}
+
+	private void checkTabs() {
+		if (mPhotoController.hasUploads()) {
 			addUploadTab();
 		}
+
+		try {
+			if (mPhotoController.getActiveUploadsCount() > 0) {
+				// Load Uploads Tab if we need to
+				final int lastTabIndex = getSupportActionBar().getTabCount() - 1;
+				getSupportActionBar().setSelectedNavigationItem(lastTabIndex);
+			} else if (mSinglePane && mPhotoController.getSelectedCount() == 0) {
+				// Else just show Media Lib tab
+				getSupportActionBar().setSelectedNavigationItem(0);
+			}
+		} catch (IllegalStateException e) {
+			// Getting FCs. Not core function so just hide it if it happens
+			e.printStackTrace();
+		}
+
 		refreshSelectedTabTitle();
 		refreshUploadActionBarView();
 	}
@@ -203,6 +204,11 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 
 	public void onTabSelected(Tab tab, FragmentTransaction ft) {
 		final int id = (Integer) tab.getTag();
+		replacePrimaryFragment(id, ft);
+		supportInvalidateOptionsMenu();
+	}
+
+	private void replacePrimaryFragment(int id, FragmentTransaction ft) {
 		Fragment fragment;
 
 		switch (id) {
@@ -226,7 +232,6 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 		}
 
 		ft.replace(R.id.frag_primary, fragment);
-		supportInvalidateOptionsMenu();
 	}
 
 	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
@@ -270,27 +275,45 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 		return getString(R.string.tab_selected_photos, mPhotoController.getSelectedCount());
 	}
 
-	private void addUploadTab() {
+	private Tab getTabWithId(final int id) {
 		ActionBar ab = getSupportActionBar();
+		Tab tab;
+		for (int i = 0, z = ab.getTabCount(); i < z; i++) {
+			tab = ab.getTabAt(i);
+			if (((Integer) tab.getTag()) == id) {
+				return tab;
+			}
+		}
+		return null;
+	}
 
-		// Bit of a hack as but we expect the upload tab to be the third
-		if (ab.getTabCount() == 2) {
+	private void addUploadTab() {
+		if (null == getTabWithId(TAB_UPLOADS)) {
+			ActionBar ab = getSupportActionBar();
 			ab.addTab(ab.newTab().setText(R.string.tab_uploads).setTag(TAB_UPLOADS).setTabListener(this));
+
+			// Make sure we're showing the tabs
+			ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		}
 	}
 
 	public void onUploadsCleared() {
-		ActionBar ab = getSupportActionBar();
+		final Tab uploadsTab = getTabWithId(TAB_UPLOADS);
 
 		// If we have 3 tabs...
-		if (ab.getTabCount() == 3) {
-			// If we're currently showing the tab, move to the first tab
-			if (ab.getSelectedNavigationIndex() == TAB_UPLOADS) {
-				ab.setSelectedNavigationItem(TAB_PHOTOS);
-			}
+		if (null != uploadsTab) {
+			ActionBar ab = getSupportActionBar();
+
+			// Move to the first tab
+			ab.setSelectedNavigationItem(TAB_PHOTOS);
 
 			// Remove the tab
-			ab.removeTabAt(TAB_UPLOADS);
+			ab.removeTab(uploadsTab);
+
+			// If we only have one tab left, disable the navigation
+			if (ab.getTabCount() == 1) {
+				ab.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+			}
 		}
 	}
 

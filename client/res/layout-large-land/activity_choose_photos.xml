@@ -5,12 +5,13 @@
 	android:layout_height="fill_parent"
 	android:orientation="horizontal" >
 
-	<fragment
+	<FrameLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
 		android:id="@+id/frag_primary"
-		android:name="uk.co.senab.photup.fragments.UserPhotosFragment"
 		android:layout_width="0px"
 		android:layout_height="fill_parent"
-		android:layout_weight="1" />
+		android:layout_weight="1" >
+	</FrameLayout>
 
 	<fragment
 		android:id="@+id/frag_secondary"
