@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+	<color name="blue_v_dark">#ff166C8C</color>
 	<color name="item_bg_dark">#ff1087B3</color>
 	<color name="item_bg_mid">#ff33b5e5</color>
 	<color name="item_bg_light">#ff6FCDF7</color>
 	<color name="translucent_dk_grey">#88000000</color>
 	<color name="translucent_grey">#50000000</color>
 	<color name="translucent_lght_grey">#30000000</color>
-	
 	<color name="crop_rectangle_line">@android:color/white</color>
 	<color name="crop_rectangle_area">@color/translucent_grey</color>
 

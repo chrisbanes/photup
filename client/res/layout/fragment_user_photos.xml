@@ -4,13 +4,27 @@
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
 	android:orientation="vertical" >
-	
-	<uk.co.senab.photup.views.RobotoLightTextView
-		android:id="@+id/tv_fragment_title"
-		style="@style/FragmentTitle"
+
+	<LinearLayout
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:text="@string/tab_photos" />
+		android:gravity="center_vertical" >
+
+		<uk.co.senab.photup.views.RobotoLightTextView
+			android:id="@+id/tv_fragment_title"
+			style="@style/FragmentTitle"
+			android:layout_width="0px"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:text="@string/tab_photos" />
+
+		<Spinner
+			android:id="@+id/sp_buckets"
+			style="@style/PhotupSpinner"
+			android:layout_width="0px"
+			android:layout_height="wrap_content"
+			android:layout_weight="1" />
+	</LinearLayout>
 
 	<GridView
 		android:id="@+id/gv_photos"
@@ -19,11 +33,5 @@
 		android:layout_height="0px"
 		android:layout_weight="1"
 		android:columnWidth="@dimen/gridview_item_dimension_user" />
-
-	<Spinner
-		android:id="@+id/sp_buckets"
-		style="@style/PhotupSpinner"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content" />
 
 </LinearLayout>

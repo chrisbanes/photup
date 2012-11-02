@@ -10,20 +10,19 @@
 		android:name="uk.co.senab.photup.fragments.UserPhotosFragment"
 		android:layout_width="0px"
 		android:layout_height="fill_parent"
-		android:layout_weight="65" />
+		android:layout_weight="1" />
 
 	<View
 		android:layout_width="10dp"
 		android:layout_height="fill_parent"
 		android:layout_marginLeft="@dimen/half_spacing"
 		android:layout_marginRight="@dimen/half_spacing"
-		android:background="@color/item_bg_dark" />
+		android:background="@color/blue_v_dark" />
 
 	<fragment
 		android:id="@+id/frag_photos_selected"
 		android:name="uk.co.senab.photup.fragments.SelectedPhotosFragment"
-		android:layout_width="0px"
-		android:layout_height="fill_parent"
-		android:layout_weight="35" />
+		android:layout_width="@dimen/selected_fragment_width"
+		android:layout_height="fill_parent" />
 
 </LinearLayout>
