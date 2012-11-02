@@ -5,9 +5,9 @@
 	<dimen name="gridview_item_dimension_user_small">110dp</dimen>
 	<dimen name="gridview_item_dimension_selected_small">165dp</dimen>
 	<dimen name="gridview_item_dimension_user_large">170dp</dimen>
-	<dimen name="gridview_item_dimension_selected_large">210dp</dimen>
+	<dimen name="gridview_item_dimension_selected_large">190dp</dimen>
 	<dimen name="gridview_item_dimension_user_xlarge">200dp</dimen>
-	<dimen name="gridview_item_dimension_selected_xlarge">250dp</dimen>
+	<dimen name="gridview_item_dimension_selected_xlarge">235dp</dimen>
 	<dimen name="selected_fragment_large">230dp</dimen>
 	<dimen name="selected_fragment_xlarge">290dp</dimen>
 	<dimen name="gridview_item_margin_small">3dp</dimen>
