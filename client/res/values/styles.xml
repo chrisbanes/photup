@@ -61,7 +61,7 @@
 	<style name="FragmentTitle">
 		<item name="android:fontFamily">sans-serif-light</item>
 		<item name="android:padding">@dimen/spacing</item>
-		<item name="android:textSize">@dimen/fragment_title_textSize</item>
+		<item name="android:textSize">@dimen/fragment_title_text_size</item>
 		<item name="android:visibility">gone</item>
 	</style>
 

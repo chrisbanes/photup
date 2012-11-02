@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-	<dimen name="fragment_title_textSize">36sp</dimen>
+	<dimen name="fragment_title_textSize">@dimen/fragment_title_text_size_xlarge</dimen>
+	<dimen name="gridview_item_margin">@dimen/gridview_item_margin_xlarge</dimen>
+	<dimen name="gridview_item_dimension_user">@dimen/gridview_item_dimension_user_xlarge</dimen>
+	<dimen name="gridview_item_dimension_selected">@dimen/gridview_item_dimension_selected_xlarge</dimen>
+	<dimen name="selected_fragment_width">@dimen/selected_fragment_xlarge</dimen>
+	<dimen name="listview_item_dimension">@dimen/listview_item_dimension_xlarge</dimen>
+	<dimen name="fragment_title_text_size">@dimen/fragment_title_text_size_xlarge</dimen>
+	<dimen name="grid_item_caption_text_size">@dimen/gridview_item_caption_text_size_xlarge</dimen>
 
 </resources>

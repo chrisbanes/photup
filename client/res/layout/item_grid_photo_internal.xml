@@ -27,7 +27,7 @@
 		android:maxLines="2"
 		android:padding="@dimen/half_spacing"
 		android:textColor="@android:color/white"
-		android:textSize="@dimen/grid_item_caption_textSize"
+		android:textSize="@dimen/grid_item_caption_text_size"
 		android:visibility="gone" />
 
 </merge>
