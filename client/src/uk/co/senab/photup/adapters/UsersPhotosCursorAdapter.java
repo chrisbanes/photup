@@ -33,7 +33,7 @@ public class UsersPhotosCursorAdapter extends ResourceCursorAdapter {
 				MediaStoreCursorHelper.MEDIA_STORE_CONTENT_URI, cursor);
 
 		if (null != upload) {
-			iv.setFadeInDrawables(true);
+			iv.setFadeInDrawables(false);
 			iv.requestThumbnail(upload, false);
 			layout.setPhotoSelection(upload);
 
