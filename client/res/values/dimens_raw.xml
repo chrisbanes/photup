@@ -16,8 +16,8 @@
 	<dimen name="fragment_title_text_size_large">28sp</dimen>
 	<dimen name="fragment_title_text_size_xlarge">36sp</dimen>
 	<dimen name="gridview_item_caption_text_size_small">16sp</dimen>
-	<dimen name="gridview_item_caption_text_size_large">22sp</dimen>
-	<dimen name="gridview_item_caption_text_size_xlarge">24sp</dimen>
+	<dimen name="gridview_item_caption_text_size_large">18sp</dimen>
+	<dimen name="gridview_item_caption_text_size_xlarge">20sp</dimen>
 	<dimen name="listview_item_dimension_small">80dp</dimen>
 	<dimen name="listview_item_dimension_large">160dp</dimen>
 	<dimen name="listview_item_dimension_xlarge">200dp</dimen>
