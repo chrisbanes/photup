@@ -14,6 +14,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -183,6 +184,12 @@ public class Utils {
 		return resized;
 	}
 
+	public static boolean hasCamera(Context context) {
+		PackageManager pm = context.getPackageManager();
+		return pm.hasSystemFeature(PackageManager.FEATURE_CAMERA)
+				|| pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT);
+	}
+
 	public static File getCameraPhotoFile() {
 		File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
 		return new File(dir, "photup_" + System.currentTimeMillis() + ".jpg");
@@ -262,7 +269,7 @@ public class Utils {
 
 		return location;
 	}
-	
+
 	public static boolean tryNativeDecoder(Context context) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		return prefs.getBoolean(PreferenceConstants.PREF_SAFE_DECODER_ONLY, false) == false;

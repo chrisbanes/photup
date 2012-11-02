@@ -159,8 +159,10 @@ public class UserPhotosFragment extends AbstractPhotosFragment implements OnItem
 		mPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
 		mAdapter = new MergeAdapter();
-		mAdapter.addAdapter(new CameraBaseAdapter(getActivity()));
 
+		if (Utils.hasCamera(getActivity())) {
+			mAdapter.addAdapter(new CameraBaseAdapter(getActivity()));
+		}
 		mPhotoAdapter = new UsersPhotosCursorAdapter(getActivity(), null);
 		mAdapter.addAdapter(mPhotoAdapter);
 
