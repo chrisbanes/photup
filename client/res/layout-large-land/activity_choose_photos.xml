@@ -12,13 +12,6 @@
 		android:layout_height="fill_parent"
 		android:layout_weight="1" />
 
-	<View
-		android:layout_width="10dp"
-		android:layout_height="fill_parent"
-		android:layout_marginLeft="@dimen/half_spacing"
-		android:layout_marginRight="@dimen/half_spacing"
-		android:background="@color/blue_v_dark" />
-
 	<fragment
 		android:id="@+id/frag_photos_selected"
 		android:name="uk.co.senab.photup.fragments.SelectedPhotosFragment"
