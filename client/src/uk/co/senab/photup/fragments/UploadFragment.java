@@ -24,6 +24,7 @@ import uk.co.senab.photup.util.Utils;
 import uk.co.senab.photup.views.NetworkedCacheableImageView;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -36,6 +37,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
@@ -47,13 +49,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.facebook.android.FacebookError;
 import com.lightbox.android.photoprocessing.R;
 
-public class UploadFragment extends SherlockFragment implements AlbumsResultListener, AccountsResultListener,
+public class UploadFragment extends SherlockDialogFragment implements AlbumsResultListener, AccountsResultListener,
 		GroupsResultListener, EventsResultListener, OnClickListener, OnAlbumCreatedListener, OnPlacePickedListener,
 		OnItemSelectedListener, OnCheckedChangeListener, AccountProviderAccessor {
 
@@ -73,16 +73,110 @@ public class UploadFragment extends SherlockFragment implements AlbumsResultList
 
 	private RadioGroup mTargetRadioGroup;
 
-	private ImageButton mAccountHelpBtn, mTargetHelpBtn, mPlaceRemoveBtn;
+	private ImageButton mAccountHelpBtn, mTargetHelpBtn, mPlaceRemoveBtn, mUploadBtn;
 
 	private Place mPlace;
 
 	private ArrayAdapter<AbstractFacebookObject> mTargetAdapter;
 	private ArrayAdapter<Account> mAccountsAdapter;
 
+	public Account getSelectedAccount() {
+		return (Account) mAccountsSpinner.getSelectedItem();
+	}
+
+	public void onAccountsLoaded(List<Account> accounts) {
+		mAccounts.clear();
+		mAccounts.addAll(accounts);
+		mAccountsAdapter.notifyDataSetChanged();
+		mAccountsSpinner.setEnabled(true);
+	}
+
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+
+		PhotupApplication app = PhotupApplication.getApplication(getActivity());
+		app.getAccounts(this, false);
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (requestCode) {
+			case REQUEST_FACEBOOK_LOGIN:
+				if (resultCode == Activity.RESULT_OK) {
+					PhotupApplication.getApplication(getActivity()).getAccounts(this, true);
+				}
+				return;
+		}
+
+		super.onActivityResult(requestCode, resultCode, data);
+	}
+
+	public void onAlbumCreated() {
+		Account account = (Account) mAccountsSpinner.getSelectedItem();
+		account.getAlbums(this, true);
+	}
+
+	public void onAlbumsLoaded(List<Album> albums) {
+		mFacebookObjects.clear();
+		mFacebookObjects.addAll(albums);
+		mTargetAdapter.notifyDataSetChanged();
+		mTargetLayout.setVisibility(View.VISIBLE);
+	}
+
+	public void onCheckedChanged(RadioGroup group, final int checkedId) {
+		final Account account = getSelectedAccount();
+		mTargetLayout.setVisibility(View.GONE);
+
+		if (null != account) {
+			switch (checkedId) {
+				case R.id.rb_target_album:
+					account.getAlbums(this, false);
+					mTargetHelpBtn.setVisibility(View.GONE);
+					mNewAlbumButton.setVisibility(View.VISIBLE);
+					break;
+				case R.id.rb_target_event:
+					account.getEvents(this, false);
+					mTargetHelpBtn.setVisibility(View.VISIBLE);
+					mNewAlbumButton.setVisibility(View.GONE);
+					break;
+				case R.id.rb_target_group:
+					account.getGroups(this, false);
+					mTargetHelpBtn.setVisibility(View.VISIBLE);
+					mNewAlbumButton.setVisibility(View.GONE);
+					break;
+				case R.id.rb_target_wall:
+					break;
+			}
+		}
+	}
+
+	public void onClick(View v) {
+		if (v == mNewAlbumButton) {
+			startNewAlbumFragment();
+		} else if (v == mPlacesLayout) {
+			startPlaceFragment();
+		} else if (v == mAccountHelpBtn) {
+			showMissingItemsDialog(true);
+		} else if (v == mTargetHelpBtn) {
+			showMissingItemsDialog(false);
+		} else if (v == mPlaceRemoveBtn) {
+			onPlacePicked(null);
+		} else if (v == mUploadBtn) {
+			upload(false);
+		}
+	}
+
+	@Override
+	public Dialog onCreateDialog(Bundle savedInstanceState) {
+		Dialog dialog = super.onCreateDialog(savedInstanceState);
+		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		return dialog;
+	}
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		final View view = inflater.inflate(R.layout.activity_upload, container, false);
+		final View view = inflater.inflate(R.layout.fragment_upload, container, false);
 
 		mQualityRadioGroup = (RadioGroup) view.findViewById(R.id.rg_upload_quality);
 		mTargetRadioGroup = (RadioGroup) view.findViewById(R.id.rg_upload_target);
@@ -112,6 +206,9 @@ public class UploadFragment extends SherlockFragment implements AlbumsResultList
 		mPlacesLayout = view.findViewById(R.id.ll_place);
 		mPlacesLayout.setOnClickListener(this);
 
+		mUploadBtn = (ImageButton) view.findViewById(R.id.btn_upload);
+		mUploadBtn.setOnClickListener(this);
+
 		mPlaceRemoveBtn = (ImageButton) view.findViewById(R.id.btn_place_remove);
 		mPlaceRemoveBtn.setOnClickListener(this);
 
@@ -124,182 +221,15 @@ public class UploadFragment extends SherlockFragment implements AlbumsResultList
 		return view;
 	}
 
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-
-		PhotupApplication app = PhotupApplication.getApplication(getActivity());
-		app.getAccounts(this, false);
-	}
-
-	private void upload(final boolean force) {
-		final PhotoUploadController controller = PhotoUploadController.getFromContext(getActivity());
-
-		// If we're not being forced, do checks and show prompts
-		if (!force) {
-			// Show Place Overwrite dialog
-			if (null != mPlace && controller.hasSelectionsWithPlace()) {
-				showPlaceOverwriteDialog();
-				return;
-			}
-		}
-
-		UploadQuality quality = UploadQuality.mapFromButtonId(mQualityRadioGroup.getCheckedRadioButtonId());
-		Account account = (Account) mAccountsSpinner.getSelectedItem();
-
-		boolean validTarget = false;
-		String targetId = null;
-
-		switch (mTargetRadioGroup.getCheckedRadioButtonId()) {
-			case R.id.rb_target_wall:
-				validTarget = (null != account);
-				break;
-
-			case R.id.rb_target_album:
-			case R.id.rb_target_group:
-			case R.id.rb_target_event:
-			default:
-				AbstractFacebookObject object = (AbstractFacebookObject) mTargetSpinner.getSelectedItem();
-				if (null != object) {
-					targetId = object.getId();
-					validTarget = !TextUtils.isEmpty(targetId);
-				}
-				break;
-		}
-
-		if (validTarget) {
-			controller.addUploadsFromSelected(account, targetId, quality, mPlace);
-			getActivity().startService(Utils.getUploadAllIntent(getActivity()));
-			// TODO finish();
-		} else {
-			Toast.makeText(getActivity(), getString(R.string.error_select_album), Toast.LENGTH_SHORT).show();
-		}
-	}
-
-	private void checkConnectionSpeed() {
-		ConnectivityManager mgr = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo info = mgr.getActiveNetworkInfo();
-
-		if (null != info) {
-			int checkedId;
-
-			switch (info.getType()) {
-				case ConnectivityManager.TYPE_MOBILE: {
-					if (info.getSubtype() == TelephonyManager.NETWORK_TYPE_EDGE
-							|| info.getSubtype() == TelephonyManager.NETWORK_TYPE_GPRS) {
-						checkedId = R.id.rb_quality_low;
-					} else {
-						checkedId = R.id.rb_quality_medium;
-					}
-				}
-
-				default:
-				case ConnectivityManager.TYPE_WIFI:
-					checkedId = R.id.rb_quality_high;
-					break;
-			}
-
-			RadioButton button = (RadioButton) mQualityRadioGroup.findViewById(checkedId);
-			button.setChecked(true);
-		}
-	}
-
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		switch (requestCode) {
-			case REQUEST_FACEBOOK_LOGIN:
-				if (resultCode == Activity.RESULT_OK) {
-					PhotupApplication.getApplication(getActivity()).getAccounts(this, true);
-				}
-				return;
-		}
-
-		super.onActivityResult(requestCode, resultCode, data);
-	}
-
-	// TODO
-//	@Override
-//	public boolean onCreateOptionsMenu(Menu menu) {
-//		getSupportMenuInflater().inflate(R.menu.menu_photo_upload, menu);
-//		return super.onCreateOptionsMenu(menu);
-//	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case android.R.id.home:
-				// TODO finish();
-				return true;
-			case R.id.menu_upload:
-				upload(false);
-				return true;
-		}
-
-		return super.onOptionsItemSelected(item);
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-		checkConnectionSpeed();
-	}
-
-	public void onAlbumsLoaded(List<Album> albums) {
-		mFacebookObjects.clear();
-		mFacebookObjects.addAll(albums);
-		mTargetAdapter.notifyDataSetChanged();
-		mTargetLayout.setVisibility(View.VISIBLE);
-	}
-
-	public void onClick(View v) {
-		if (v == mNewAlbumButton) {
-			startNewAlbumFragment();
-		} else if (v == mPlacesLayout) {
-			startPlaceFragment();
-		} else if (v == mAccountHelpBtn) {
-			showMissingItemsDialog(true);
-		} else if (v == mTargetHelpBtn) {
-			showMissingItemsDialog(false);
-		} else if (v == mPlaceRemoveBtn) {
-			onPlacePicked(null);
-		}
-	}
-
-	public void onAlbumCreated() {
-		Account account = (Account) mAccountsSpinner.getSelectedItem();
-		account.getAlbums(this, true);
-	}
-
-	public void onFacebookError(FacebookError e) {
-		// NO-OP
-	}
-
-	public void onPlacePicked(Place place) {
-		mPlace = place;
-		if (null != place) {
-			mPlacesButton.setText(place.getName());
-			mPlacesIcon
-					.loadImage(PhotupApplication.getApplication(getActivity()).getImageCache(), place.getAvatarUrl());
-			mPlaceRemoveBtn.setVisibility(View.VISIBLE);
-		} else {
-			mPlacesButton.setText(R.string.place);
-			mPlacesIcon.setImageResource(R.drawable.ic_action_place);
-			mPlaceRemoveBtn.setVisibility(View.GONE);
-		}
-	}
-
-	public void onAccountsLoaded(List<Account> accounts) {
-		mAccounts.clear();
-		mAccounts.addAll(accounts);
-		mAccountsAdapter.notifyDataSetChanged();
-		mAccountsSpinner.setEnabled(true);
-	}
-
 	public void onEventsLoaded(List<Event> events) {
 		mFacebookObjects.clear();
 		mFacebookObjects.addAll(events);
 		mTargetAdapter.notifyDataSetChanged();
 		mTargetLayout.setVisibility(View.VISIBLE);
+	}
+
+	public void onFacebookError(FacebookError e) {
+		// NO-OP
 	}
 
 	public void onGroupsLoaded(List<Group> groups) {
@@ -329,16 +259,52 @@ public class UploadFragment extends SherlockFragment implements AlbumsResultList
 		// NO-OP
 	}
 
-	private void startPlaceFragment() {
-		// TODO PlacesListFragment fragment = new PlacesListFragment();
-		// fragment.setOnPlacePickedListener(this);
-		// fragment.show(getSupportFragmentManager(), "places");
+	public void onPlacePicked(Place place) {
+		mPlace = place;
+		if (null != place) {
+			mPlacesButton.setText(place.getName());
+			mPlacesIcon
+					.loadImage(PhotupApplication.getApplication(getActivity()).getImageCache(), place.getAvatarUrl());
+			mPlaceRemoveBtn.setVisibility(View.VISIBLE);
+		} else {
+			mPlacesButton.setText(R.string.place);
+			mPlacesIcon.setImageResource(R.drawable.ic_action_place);
+			mPlaceRemoveBtn.setVisibility(View.GONE);
+		}
 	}
-	
-	private void startNewAlbumFragment() {
-		// TODO
-		// NewAlbumFragment fragment = new NewAlbumFragment();
-		// fragment.show(getSupportFragmentManager(), "new_album");
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		checkConnectionSpeed();
+	}
+
+	private void checkConnectionSpeed() {
+		ConnectivityManager mgr = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo info = mgr.getActiveNetworkInfo();
+
+		if (null != info) {
+			int checkedId;
+
+			switch (info.getType()) {
+				case ConnectivityManager.TYPE_MOBILE: {
+					if (info.getSubtype() == TelephonyManager.NETWORK_TYPE_EDGE
+							|| info.getSubtype() == TelephonyManager.NETWORK_TYPE_GPRS) {
+						checkedId = R.id.rb_quality_low;
+					} else {
+						checkedId = R.id.rb_quality_medium;
+					}
+				}
+
+				default:
+				case ConnectivityManager.TYPE_WIFI:
+					checkedId = R.id.rb_quality_high;
+					break;
+			}
+
+			RadioButton button = (RadioButton) mQualityRadioGroup.findViewById(checkedId);
+			button.setChecked(true);
+		}
 	}
 
 	private void showMissingItemsDialog(final boolean pages) {
@@ -386,34 +352,59 @@ public class UploadFragment extends SherlockFragment implements AlbumsResultList
 		builder.show();
 	}
 
-	public void onCheckedChanged(RadioGroup group, final int checkedId) {
-		final Account account = getSelectedAccount();
-		mTargetLayout.setVisibility(View.GONE);
-
-		if (null != account) {
-			switch (checkedId) {
-				case R.id.rb_target_album:
-					account.getAlbums(this, false);
-					mTargetHelpBtn.setVisibility(View.GONE);
-					mNewAlbumButton.setVisibility(View.VISIBLE);
-					break;
-				case R.id.rb_target_event:
-					account.getEvents(this, false);
-					mTargetHelpBtn.setVisibility(View.VISIBLE);
-					mNewAlbumButton.setVisibility(View.GONE);
-					break;
-				case R.id.rb_target_group:
-					account.getGroups(this, false);
-					mTargetHelpBtn.setVisibility(View.VISIBLE);
-					mNewAlbumButton.setVisibility(View.GONE);
-					break;
-				case R.id.rb_target_wall:
-					break;
-			}
-		}
+	private void startNewAlbumFragment() {
+		NewAlbumFragment fragment = new NewAlbumFragment();
+		fragment.setOnAlbumCreatedListener(this);
+		fragment.show(getActivity().getSupportFragmentManager(), "new_album");
 	}
 
-	public Account getSelectedAccount() {
-		return (Account) mAccountsSpinner.getSelectedItem();
+	private void startPlaceFragment() {
+		PlacesListFragment fragment = new PlacesListFragment();
+		fragment.setOnPlacePickedListener(this);
+		fragment.show(getActivity().getSupportFragmentManager(), "places");
+	}
+
+	private void upload(final boolean force) {
+		final PhotoUploadController controller = PhotoUploadController.getFromContext(getActivity());
+
+		// If we're not being forced, do checks and show prompts
+		if (!force) {
+			// Show Place Overwrite dialog
+			if (null != mPlace && controller.hasSelectionsWithPlace()) {
+				showPlaceOverwriteDialog();
+				return;
+			}
+		}
+
+		UploadQuality quality = UploadQuality.mapFromButtonId(mQualityRadioGroup.getCheckedRadioButtonId());
+		Account account = (Account) mAccountsSpinner.getSelectedItem();
+
+		boolean validTarget = false;
+		String targetId = null;
+
+		switch (mTargetRadioGroup.getCheckedRadioButtonId()) {
+			case R.id.rb_target_wall:
+				validTarget = (null != account);
+				break;
+
+			case R.id.rb_target_album:
+			case R.id.rb_target_group:
+			case R.id.rb_target_event:
+			default:
+				AbstractFacebookObject object = (AbstractFacebookObject) mTargetSpinner.getSelectedItem();
+				if (null != object) {
+					targetId = object.getId();
+					validTarget = !TextUtils.isEmpty(targetId);
+				}
+				break;
+		}
+
+		if (validTarget) {
+			controller.addUploadsFromSelected(account, targetId, quality, mPlace);
+			getActivity().startService(Utils.getUploadAllIntent(getActivity()));
+			dismiss();
+		} else {
+			Toast.makeText(getActivity(), getString(R.string.error_select_album), Toast.LENGTH_SHORT).show();
+		}
 	}
 }

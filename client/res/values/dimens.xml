@@ -6,5 +6,6 @@
 	<dimen name="gridview_item_dimension_selected">@dimen/gridview_item_dimension_selected_small</dimen>
 	<dimen name="grid_item_caption_text_size">@dimen/gridview_item_caption_text_size_small</dimen>
 	<dimen name="listview_item_dimension">@dimen/listview_item_dimension_small</dimen>
+	<dimen name="fragment_title_text_size">@dimen/fragment_title_text_size_small</dimen>
 
 </resources>

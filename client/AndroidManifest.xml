@@ -49,10 +49,6 @@
 			android:name=".PhotoSelectionActivity" >
 		</activity>
 		<activity
-			android:name=".UploadActivity"
-			android:label="@string/upload_title" >
-		</activity>
-		<activity
 			android:name=".PhotoViewerActivity"
 			android:theme="@style/Theme.FullscreenOverlay"
 			android:uiOptions="splitActionBarWhenNarrow" >

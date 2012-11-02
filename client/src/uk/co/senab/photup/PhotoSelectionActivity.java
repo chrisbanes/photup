@@ -4,6 +4,7 @@ import org.donations.DonationsActivity;
 
 import uk.co.senab.photup.base.PhotupFragmentActivity;
 import uk.co.senab.photup.fragments.SelectedPhotosFragment;
+import uk.co.senab.photup.fragments.UploadFragment;
 import uk.co.senab.photup.fragments.UploadsFragment;
 import uk.co.senab.photup.fragments.UserPhotosFragment;
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
@@ -328,7 +329,10 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 			Toast.makeText(this, R.string.error_select_photos, Toast.LENGTH_SHORT).show();
 		} else {
 			if (ConnectivityReceiver.isConnected(this)) {
-				startActivity(new Intent(this, UploadActivity.class));
+				
+				new UploadFragment().show(getSupportFragmentManager(), "upload");
+				
+				//startActivity(new Intent(this, UploadActivity.class));
 			} else {
 				Toast.makeText(this, R.string.error_not_connected, Toast.LENGTH_LONG).show();
 			}

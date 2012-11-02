@@ -13,6 +13,7 @@
 	<dimen name="gridview_item_margin_small">3dp</dimen>
 	<dimen name="gridview_item_margin_large">6dp</dimen>
 	<dimen name="gridview_item_margin_xlarge">6dp</dimen>
+	<dimen name="fragment_title_text_size_small">24sp</dimen>
 	<dimen name="fragment_title_text_size_large">28sp</dimen>
 	<dimen name="fragment_title_text_size_xlarge">36sp</dimen>
 	<dimen name="gridview_item_caption_text_size_small">16sp</dimen>

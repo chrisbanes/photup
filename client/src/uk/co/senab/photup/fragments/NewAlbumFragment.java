@@ -5,7 +5,6 @@ import uk.co.senab.photup.model.Account;
 import uk.co.senab.photup.tasks.NewAlbumAsyncTask;
 import uk.co.senab.photup.tasks.NewAlbumAsyncTask.NewAlbumResultListener;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,12 +35,6 @@ public class NewAlbumFragment extends SherlockDialogFragment implements View.OnC
 	private OnAlbumCreatedListener mAlbumCreated;
 
 	private String[] mPrivacyValues;
-
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-		mAlbumCreated = (OnAlbumCreatedListener) activity;
-	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -95,6 +88,10 @@ public class NewAlbumFragment extends SherlockDialogFragment implements View.OnC
 				// WTF moment. Shown up in logs.
 			}
 		}
+	}
+	
+	public void setOnAlbumCreatedListener(OnAlbumCreatedListener listener) {
+		mAlbumCreated = listener;
 	}
 
 }
