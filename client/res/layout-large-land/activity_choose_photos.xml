@@ -6,14 +6,14 @@
 	android:orientation="horizontal" >
 
 	<fragment
-		android:id="@+id/frag_photos_users"
+		android:id="@+id/frag_primary"
 		android:name="uk.co.senab.photup.fragments.UserPhotosFragment"
 		android:layout_width="0px"
 		android:layout_height="fill_parent"
 		android:layout_weight="1" />
 
 	<fragment
-		android:id="@+id/frag_photos_selected"
+		android:id="@+id/frag_secondary"
 		android:name="uk.co.senab.photup.fragments.SelectedPhotosFragment"
 		android:layout_width="@dimen/selected_fragment_width"
 		android:layout_height="fill_parent" />

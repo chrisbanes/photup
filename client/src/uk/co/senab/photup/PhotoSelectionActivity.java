@@ -40,7 +40,7 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 
 	private UploadActionBarView mUploadActionView;
 	private PhotoUploadController mPhotoController;
-	private boolean mUseTabs;
+	private boolean mSinglePane;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -48,7 +48,7 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_choose_photos);
 
-		mUseTabs = null != findViewById(R.id.fl_fragment);
+		mSinglePane = null == findViewById(R.id.frag_secondary);
 
 		mPhotoController = PhotoUploadController.getFromContext(this);
 		mPhotoController.addListener(this);
@@ -56,7 +56,7 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 		ActionBar ab = getSupportActionBar();
 		ab.setDisplayShowTitleEnabled(false);
 
-		if (mUseTabs) {
+		if (mSinglePane) {
 			ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 			ab.addTab(ab.newTab().setText(R.string.tab_photos).setTag(TAB_PHOTOS).setTabListener(this));
 			ab.addTab(ab.newTab().setTag(TAB_SELECTED).setTabListener(this));
@@ -128,7 +128,7 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 
 			case R.id.menu_select_all:
 				UserPhotosFragment fragment = (UserPhotosFragment) getSupportFragmentManager().findFragmentById(
-						mUseTabs ? R.id.fl_fragment : R.id.frag_photos_users);
+						R.id.frag_primary);
 				if (null != fragment) {
 					fragment.selectAll();
 				}
@@ -149,14 +149,14 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 		super.onResume();
 
 		if (mPhotoController.hasUploads()) {
-			if (mUseTabs) {
+			if (mSinglePane) {
 				addUploadTab();
 			} else {
 				// TODO
 			}
 		}
 
-		if (mUseTabs) {
+		if (mSinglePane) {
 			try {
 				if (mPhotoController.getActiveUploadsCount() > 0) {
 					// Load Uploads Tab if we need to
@@ -225,7 +225,7 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 			ft.setCustomAnimations(enterAnim, exitAnim);
 		}
 
-		ft.replace(R.id.fl_fragment, fragment);
+		ft.replace(R.id.frag_primary, fragment);
 		supportInvalidateOptionsMenu();
 	}
 
@@ -255,12 +255,14 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 	}
 
 	private void refreshSelectedTabTitle() {
-		if (mUseTabs) {
+		if (mSinglePane) {
 			getSupportActionBar().getTabAt(1).setText(getSelectedTabTitle());
 		} else {
 			SelectedPhotosFragment userPhotos = (SelectedPhotosFragment) getSupportFragmentManager().findFragmentById(
-					R.id.frag_photos_selected);
-			userPhotos.setFragmentTitle(getSelectedTabTitle());
+					R.id.frag_secondary);
+			if (null != userPhotos) {
+				userPhotos.setFragmentTitle(getSelectedTabTitle());
+			}
 		}
 	}
 
@@ -329,10 +331,10 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 			Toast.makeText(this, R.string.error_select_photos, Toast.LENGTH_SHORT).show();
 		} else {
 			if (ConnectivityReceiver.isConnected(this)) {
-				
+
 				new UploadFragment().show(getSupportFragmentManager(), "upload");
-				
-				//startActivity(new Intent(this, UploadActivity.class));
+
+				// startActivity(new Intent(this, UploadActivity.class));
 			} else {
 				Toast.makeText(this, R.string.error_not_connected, Toast.LENGTH_LONG).show();
 			}
