@@ -3,5 +3,6 @@
     
     <bool name="load_mini_thumbnails">false</bool>
     <bool name="sample_mini_thumbnails">true</bool>
+    <bool name="swipe_selected">false</bool>
     
 </resources>

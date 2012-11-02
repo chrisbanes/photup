@@ -2,8 +2,8 @@
 
 	<style name="SelectedFragmentStyle">
 		<item name="android:background">@color/selected_fragment_bg</item>
-		<item name="android:paddingLeft">@dimen/spacing</item>
-		<item name="android:paddingRight">@dimen/spacing</item>
+		<item name="android:paddingLeft">@dimen/half_spacing</item>
+		<item name="android:paddingRight">@dimen/half_spacing</item>
 	</style>
 
 </resources>

@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
@@ -94,7 +95,7 @@ public class UploadsFragment extends SherlockListFragment implements OnPhotoSele
 		mAdapter.notifyDataSetChanged();
 	}
 
-	public void onDismiss(ListView listView, int[] reverseSortedPositions) {
+	public void onDismiss(AbsListView listView, int[] reverseSortedPositions) {
 		try {
 			for (int i = 0, z = reverseSortedPositions.length; i < z; i++) {
 				PhotoUpload upload = (PhotoUpload) listView.getItemAtPosition(reverseSortedPositions[i]);
@@ -106,7 +107,7 @@ public class UploadsFragment extends SherlockListFragment implements OnPhotoSele
 		mAdapter.notifyDataSetChanged();
 	}
 
-	public boolean canDismiss(ListView listView, int position) {
+	public boolean canDismiss(AbsListView listView, int position) {
 		try {
 			PhotoUpload upload = (PhotoUpload) listView.getItemAtPosition(position);
 			switch (upload.getUploadState()) {

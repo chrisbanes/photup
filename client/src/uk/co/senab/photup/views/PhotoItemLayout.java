@@ -35,6 +35,7 @@ public class PhotoItemLayout extends CheckableFrameLayout implements View.OnClic
 
 		mImageView = (PhotupImageView) findViewById(R.id.iv_photo);
 		mCaptionText = (TextView) findViewById(R.id.tv_photo_caption);
+
 		mButton = (CheckableImageView) findViewById(R.id.civ_button);
 		mButton.setOnClickListener(this);
 	}
@@ -45,6 +46,16 @@ public class PhotoItemLayout extends CheckableFrameLayout implements View.OnClic
 
 	public void setAnimateWhenChecked(boolean animate) {
 		mAnimateCheck = animate;
+	}
+
+	public void setShowCheckbox(boolean visible) {
+		if (visible) {
+			mButton.setVisibility(View.VISIBLE);
+			mButton.setOnClickListener(this);
+		} else {
+			mButton.setVisibility(View.GONE);
+			mButton.setOnClickListener(null);
+		}
 	}
 
 	public void setShowCaption(boolean show) {
@@ -58,7 +69,11 @@ public class PhotoItemLayout extends CheckableFrameLayout implements View.OnClic
 			toggle();
 
 			// Update the controller
-			updateController();
+			if (isChecked()) {
+				mController.addSelection(mSelection);
+			} else {
+				mController.removeSelection(mSelection);
+			}
 
 			// Show animate if we've been set to
 			if (mAnimateCheck) {
@@ -72,7 +87,9 @@ public class PhotoItemLayout extends CheckableFrameLayout implements View.OnClic
 	@Override
 	public void setChecked(final boolean b) {
 		super.setChecked(b);
-		mButton.setChecked(b);
+		if (View.VISIBLE == mButton.getVisibility()) {
+			mButton.setChecked(b);
+		}
 	}
 
 	public PhotoUpload getPhotoSelection() {
@@ -93,14 +110,6 @@ public class PhotoItemLayout extends CheckableFrameLayout implements View.OnClic
 				mCaptionText.setVisibility(View.VISIBLE);
 				mCaptionText.setText(caption);
 			}
-		}
-	}
-
-	void updateController() {
-		if (isChecked()) {
-			mController.addSelection(mSelection);
-		} else {
-			mController.removeSelection(mSelection);
 		}
 	}
 

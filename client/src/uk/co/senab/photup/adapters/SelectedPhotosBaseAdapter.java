@@ -21,10 +21,12 @@ public class SelectedPhotosBaseAdapter extends BaseAdapter {
 	private final Context mContext;
 	private final LayoutInflater mLayoutInflater;
 	private final PhotoUploadController mController;
+	private final boolean mShowCheckbox;
 
-	public SelectedPhotosBaseAdapter(Context context) {
+	public SelectedPhotosBaseAdapter(Context context, boolean showCheckbox) {
 		mContext = context;
 		mLayoutInflater = LayoutInflater.from(mContext);
+		mShowCheckbox = showCheckbox;
 
 		PhotupApplication app = PhotupApplication.getApplication(context);
 		mController = app.getPhotoUploadController();
@@ -57,7 +59,12 @@ public class SelectedPhotosBaseAdapter extends BaseAdapter {
 		layout.setShowCaption(true);
 		layout.setAnimateWhenChecked(false);
 		layout.setPhotoSelection(upload);
-		layout.setChecked(true);
+		layout.setShowCheckbox(mShowCheckbox);
+
+		// If we're showing the checkbox, then check the background too
+		if (mShowCheckbox) {
+			layout.setChecked(true);
+		}
 
 		return view;
 	}
