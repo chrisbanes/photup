@@ -116,6 +116,8 @@ public class UploadItemLayout extends LinearLayout implements OnUploadStateChang
 				pb.setIndeterminate(true);
 				break;
 		}
+		
+		requestLayout();
 	}
 
 	public void onUploadStateChanged(PhotoUpload upload, int state, int progress) {
