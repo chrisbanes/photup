@@ -24,6 +24,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:background="?attr/actionBarItemBackground"
+			android:contentDescription="@string/upload_title"
 			android:padding="@dimen/spacing"
 			android:src="@drawable/ic_action_upload" />
 	</LinearLayout>
