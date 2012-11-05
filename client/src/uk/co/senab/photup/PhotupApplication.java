@@ -5,9 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
@@ -43,8 +40,7 @@ public class PhotupApplication extends Application implements FriendsResultListe
 	static final String LOG_TAG = "PhotupApplication";
 	public static final String THREAD_FILTERS = "filters_thread";
 
-	static final int EXECUTOR_CORE_POOL_SIZE_PER_CORE = 2;
-	static final int EXECUTOR_MAX_POOL_SIZE_PER_CORE = 5;
+	static final float EXECUTOR_POOL_SIZE_PER_CORE = 1.5f;
 
 	private ExecutorService mMultiThreadExecutor, mSingleThreadExecutor, mDatabaseThreadExecutor;
 	private BitmapLruCache mImageCache;
@@ -65,11 +61,12 @@ public class PhotupApplication extends Application implements FriendsResultListe
 
 	public ExecutorService getMultiThreadExecutorService() {
 		if (null == mMultiThreadExecutor || mMultiThreadExecutor.isShutdown()) {
-			final int numCores = Runtime.getRuntime().availableProcessors();
-
-			mMultiThreadExecutor = new ThreadPoolExecutor(numCores * EXECUTOR_CORE_POOL_SIZE_PER_CORE, numCores
-					* EXECUTOR_MAX_POOL_SIZE_PER_CORE, 1L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(),
-					new PhotupThreadFactory());
+			final int numThreads = Math.round(Runtime.getRuntime().availableProcessors() * EXECUTOR_POOL_SIZE_PER_CORE);
+			mMultiThreadExecutor = Executors.newFixedThreadPool(numThreads, new PhotupThreadFactory());
+			
+			if (Flags.DEBUG) {
+				Log.d(LOG_TAG, "MultiThreadExecutor created with " + numThreads + " threads");
+			}
 		}
 		return mMultiThreadExecutor;
 	}
