@@ -463,7 +463,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 					mNumberUploaded);
 
 			mNotificationBuilder.setOngoing(false);
-			mNotificationBuilder.setProgress(100, 100, false);
+			mNotificationBuilder.setProgress(0, 0, false);
 			mNotificationBuilder.setWhen(System.currentTimeMillis());
 			mNotificationBuilder.setContentTitle(text);
 			mNotificationBuilder.setTicker(text);
