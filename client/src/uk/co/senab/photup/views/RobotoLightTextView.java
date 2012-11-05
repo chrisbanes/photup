@@ -11,8 +11,11 @@ public class RobotoLightTextView extends TextView {
 
 	public RobotoLightTextView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		mRobotoLightTypeface = Typeface.createFromAsset(context.getAssets(), "Roboto-Light.ttf");
-		setTypeface(mRobotoLightTypeface);
+
+		if (!isInEditMode()) {
+			mRobotoLightTypeface = Typeface.createFromAsset(context.getAssets(), "Roboto-Light.ttf");
+			setTypeface(mRobotoLightTypeface);
+		}
 	}
 
 }

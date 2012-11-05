@@ -36,5 +36,6 @@
 	<dimen name="button_selection_dimension">36dp</dimen>
 	<dimen name="form_item_height">48dp</dimen>
 	<dimen name="crop_hysteresis">16dp</dimen>
+	<dimen name="dialog_title_text_size">22sp</dimen>
 
 </resources>
