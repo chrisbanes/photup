@@ -1,5 +1,6 @@
 package uk.co.senab.photup.fragments;
 
+import uk.co.senab.photup.Flags;
 import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.adapters.UploadsListBaseAdapter;
@@ -8,6 +9,7 @@ import uk.co.senab.photup.model.PhotoUpload;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ListView;
@@ -110,6 +112,10 @@ public class UploadsFragment extends SherlockListFragment implements OnPhotoSele
 	public boolean canDismiss(AbsListView listView, int position) {
 		try {
 			PhotoUpload upload = (PhotoUpload) listView.getItemAtPosition(position);
+
+			if (Flags.DEBUG) {
+				Log.d("UploadsFragment", "canDismiss. State: " + upload.getUploadState());
+			}
 			switch (upload.getUploadState()) {
 				case PhotoUpload.STATE_UPLOAD_COMPLETED:
 				case PhotoUpload.STATE_UPLOAD_ERROR:
