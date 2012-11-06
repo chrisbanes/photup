@@ -5,11 +5,9 @@
 	android:orientation="vertical" >
 
 	<LinearLayout
+		style="@style/DialogActionBar"
 		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:background="@color/blue_v_dark"
-		android:gravity="center_vertical"
-		android:orientation="horizontal" >
+		android:layout_height="@dimen/form_item_height" >
 
 		<uk.co.senab.photup.views.RobotoLightTextView
 			android:layout_width="0px"
@@ -29,10 +27,8 @@
 			android:src="@drawable/ic_action_upload" />
 	</LinearLayout>
 
-	<View
-		android:layout_width="fill_parent"
-		android:layout_height="3dp"
-		android:background="@color/blue_med" />
+	<include
+		layout="@layout/layout_horizontal_line" />
 
 	<ScrollView
 		android:layout_width="match_parent"

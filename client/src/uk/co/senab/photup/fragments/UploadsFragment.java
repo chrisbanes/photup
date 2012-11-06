@@ -10,15 +10,19 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-import com.actionbarsherlock.app.SherlockListFragment;
 import com.example.android.swipedismiss.SwipeDismissListViewTouchListener;
 import com.example.android.swipedismiss.SwipeDismissListViewTouchListener.OnDismissCallback;
 
-public class UploadsFragment extends SherlockListFragment implements OnPhotoSelectionChangedListener, OnDismissCallback {
+public class UploadsFragment extends PhotupDialogFragment implements OnPhotoSelectionChangedListener,
+		OnDismissCallback, OnItemClickListener {
 
 	private PhotoUploadController mPhotoSelectionController;
 	private UploadsListBaseAdapter mAdapter;
@@ -33,18 +37,19 @@ public class UploadsFragment extends SherlockListFragment implements OnPhotoSele
 	}
 
 	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		View view = inflater.inflate(R.layout.fragment_uploads, container, false);
 
-		ListView listView = getListView();
-
+		ListView listView = (ListView) view.findViewById(android.R.id.list);
 		SwipeDismissListViewTouchListener swipeListener = new SwipeDismissListViewTouchListener(listView, this);
+
+		listView.setOnItemClickListener(this);
 		listView.setOnTouchListener(swipeListener);
 		listView.setOnScrollListener(swipeListener.makeScrollListener());
 		listView.setSelector(R.drawable.selectable_background_photup);
-
 		listView.setAdapter(mAdapter);
-		setListShown(true);
+
+		return view;
 	}
 
 	@Override
@@ -57,8 +62,7 @@ public class UploadsFragment extends SherlockListFragment implements OnPhotoSele
 		// NO-OP
 	}
 
-	@Override
-	public void onListItemClick(ListView l, View v, int position, long id) {
+	public void onItemClick(AdapterView<?> l, View view, int position, long id) {
 		PhotoUpload upload = (PhotoUpload) l.getItemAtPosition(position);
 		if (null != upload && upload.getUploadState() == PhotoUpload.STATE_UPLOAD_COMPLETED) {
 
@@ -107,6 +111,11 @@ public class UploadsFragment extends SherlockListFragment implements OnPhotoSele
 			e.printStackTrace();
 		}
 		mAdapter.notifyDataSetChanged();
+
+		// If we're now empty, and we're in a dialog, dismiss us
+		if (mAdapter.isEmpty() && getShowsDialog()) {
+			dismiss();
+		}
 	}
 
 	public boolean canDismiss(AbsListView listView, int position) {

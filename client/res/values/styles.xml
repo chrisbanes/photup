@@ -64,6 +64,12 @@
 		<item name="android:textSize">@dimen/fragment_title_text_size</item>
 	</style>
 
-	<style name="SelectedFragmentStyle">
+	<style name="SelectedFragmentStyle"></style>
+
+	<style name="DialogActionBar">
+		<item name="android:background">@color/blue_v_dark</item>
+		<item name="android:gravity">center_vertical</item>
+		<item name="android:orientation">horizontal</item>
 	</style>
+
 </resources>

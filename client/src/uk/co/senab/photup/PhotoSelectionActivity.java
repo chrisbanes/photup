@@ -153,6 +153,8 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 				return true;
 
 			case R.id.menu_uploads:
+				UploadsFragment frag = new UploadsFragment();
+				frag.show(getSupportFragmentManager(), "uploads");
 				return true;
 		}
 

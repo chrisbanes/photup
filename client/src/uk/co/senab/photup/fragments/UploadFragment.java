@@ -24,7 +24,6 @@ import uk.co.senab.photup.util.Utils;
 import uk.co.senab.photup.views.NetworkedCacheableImageView;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -37,7 +36,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
@@ -49,11 +47,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.facebook.android.FacebookError;
 import com.lightbox.android.photoprocessing.R;
 
-public class UploadFragment extends SherlockDialogFragment implements AlbumsResultListener, AccountsResultListener,
+public class UploadFragment extends PhotupDialogFragment implements AlbumsResultListener, AccountsResultListener,
 		GroupsResultListener, EventsResultListener, OnClickListener, OnAlbumCreatedListener, OnPlacePickedListener,
 		OnItemSelectedListener, OnCheckedChangeListener, AccountProviderAccessor {
 
@@ -165,13 +162,6 @@ public class UploadFragment extends SherlockDialogFragment implements AlbumsResu
 		} else if (v == mUploadBtn) {
 			upload(false);
 		}
-	}
-
-	@Override
-	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		Dialog dialog = super.onCreateDialog(savedInstanceState);
-		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		return dialog;
 	}
 
 	@Override
