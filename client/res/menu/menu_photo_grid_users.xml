@@ -2,6 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
 	<item
+		android:id="@+id/menu_uploads"
+		android:showAsAction="ifRoom"
+		android:title="@string/tab_uploads"
+		android:visible="false"/>
+	<item
 		android:id="@+id/menu_upload"
 		android:actionLayout="@layout/layout_action_upload"
 		android:showAsAction="ifRoom"
