@@ -11,7 +11,8 @@ import uk.co.senab.photup.PreferenceConstants;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.adapters.CameraBaseAdapter;
 import uk.co.senab.photup.adapters.UsersPhotosCursorAdapter;
-import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
+import uk.co.senab.photup.events.PhotoSelectionAddedEvent;
+import uk.co.senab.photup.events.PhotoSelectionRemovedEvent;
 import uk.co.senab.photup.model.MediaStoreBucket;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.tasks.MediaStoreBucketsAsyncTask;
@@ -54,9 +55,11 @@ import com.commonsware.cwac.merge.MergeAdapter;
 import com.jakewharton.activitycompat2.ActivityCompat2;
 import com.jakewharton.activitycompat2.ActivityOptionsCompat2;
 
+import de.greenrobot.event.EventBus;
+
 public class UserPhotosFragment extends AbstractPhotosFragment implements OnItemClickListener,
-		OnPhotoSelectionChangedListener, LoaderManager.LoaderCallbacks<Cursor>, MediaStoreBucketsResultListener,
-		OnItemSelectedListener, OnScanCompletedListener {
+		LoaderManager.LoaderCallbacks<Cursor>, MediaStoreBucketsResultListener, OnItemSelectedListener,
+		OnScanCompletedListener {
 
 	static class ScaleAnimationListener implements AnimationListener {
 
@@ -170,7 +173,7 @@ public class UserPhotosFragment extends AbstractPhotosFragment implements OnItem
 		mBucketAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		new MediaStoreBucketsAsyncTask(getActivity(), this).execute();
 
-		mPhotoSelectionController.addListener(this);
+		EventBus.getDefault().register(this);
 	}
 
 	public Loader<Cursor> onCreateLoader(final int id, Bundle bundle) {
@@ -214,7 +217,7 @@ public class UserPhotosFragment extends AbstractPhotosFragment implements OnItem
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		mPhotoSelectionController.removeListener(this);
+		EventBus.getDefault().unregister(this);
 		saveSelectedBucketToPrefs();
 	}
 
@@ -270,7 +273,7 @@ public class UserPhotosFragment extends AbstractPhotosFragment implements OnItem
 		// NO-OP
 	}
 
-	public void onPhotoSelectionChanged(PhotoUpload upload, boolean added) {
+	private void updateUploadView(PhotoUpload upload, boolean added) {
 		for (int i = 0, z = mPhotoGrid.getChildCount(); i < z; i++) {
 			View view = mPhotoGrid.getChildAt(i);
 
@@ -287,12 +290,20 @@ public class UserPhotosFragment extends AbstractPhotosFragment implements OnItem
 		}
 	}
 
-	public void onPhotoSelectionsAdded() {
-		mPhotoAdapter.notifyDataSetChanged();
+	public void onEvent(PhotoSelectionAddedEvent event) {
+		if (event.isSingleChange()) {
+			updateUploadView(event.getTarget(), true);
+		} else {
+			mPhotoAdapter.notifyDataSetChanged();
+		}
 	}
 
-	public void onPhotoSelectionsCleared() {
-		mPhotoAdapter.notifyDataSetChanged();
+	public void onEvent(PhotoSelectionRemovedEvent event) {
+		if (event.isSingleChange()) {
+			updateUploadView(event.getTarget(), false);
+		} else {
+			mPhotoAdapter.notifyDataSetChanged();
+		}
 	}
 
 	@Override
@@ -312,10 +323,6 @@ public class UserPhotosFragment extends AbstractPhotosFragment implements OnItem
 				}
 			}
 		});
-	}
-
-	public void onUploadsCleared() {
-		// NO-OP
 	}
 
 	public void selectAll() {

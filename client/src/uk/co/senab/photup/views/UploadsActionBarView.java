@@ -13,16 +13,17 @@ public class UploadsActionBarView extends LinearLayout {
 		super(context, attrs);
 	}
 
-	public void updateProgress(int complete, int total) {
+	public void updateProgress(final int progress, final int total) {
 		ProgressBar pb = (ProgressBar) findViewById(R.id.pb_uploads_action);
 		if (null != pb) {
 			pb.setMax(total);
-			pb.setProgress(complete);
+			pb.setProgress(progress);
 		}
 
 		TextView tv = (TextView) findViewById(R.id.tv_uploads_action);
 		if (null != tv) {
-			String string = complete + " of " + total;
+			// FIXME
+			String string = progress + " of " + total;
 			tv.setText(string.toUpperCase());
 		}
 	}

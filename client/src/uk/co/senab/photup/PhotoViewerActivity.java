@@ -5,10 +5,10 @@ import java.util.Set;
 import uk.co.senab.photup.adapters.SelectedPhotosViewPagerAdapter;
 import uk.co.senab.photup.adapters.UserPhotosViewPagerAdapter;
 import uk.co.senab.photup.base.PhotupFragmentActivity;
+import uk.co.senab.photup.events.PhotoSelectionRemovedEvent;
 import uk.co.senab.photup.fragments.FriendsListFragment;
 import uk.co.senab.photup.fragments.PlacesListFragment;
 import uk.co.senab.photup.listeners.OnFriendPickedListener;
-import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
 import uk.co.senab.photup.listeners.OnPickFriendRequestListener;
 import uk.co.senab.photup.listeners.OnPlacePickedListener;
 import uk.co.senab.photup.listeners.OnSingleTapListener;
@@ -50,9 +50,11 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPhotoSelectionChangedListener,
-		OnSingleTapListener, OnCheckedChangeListener, OnPageChangeListener, OnPickFriendRequestListener,
-		OnPlacePickedListener, LoaderManager.LoaderCallbacks<Cursor> {
+import de.greenrobot.event.EventBus;
+
+public class PhotoViewerActivity extends PhotupFragmentActivity implements OnSingleTapListener,
+		OnCheckedChangeListener, OnPageChangeListener, OnPickFriendRequestListener, OnPlacePickedListener,
+		LoaderManager.LoaderCallbacks<Cursor> {
 
 	public static final String EXTRA_POSITION = "extra_position";
 	public static final String EXTRA_MODE = "extra_mode";
@@ -74,7 +76,7 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 			mView.setVisibility(View.GONE);
 			animation.setAnimationListener(null);
 
-			if (mController.getSelectedCount() == 0) {
+			if (!mController.hasSelections()) {
 				finish();
 			} else {
 				View view = (View) mView.getParent();
@@ -218,11 +220,15 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 		return hideFiltersView();
 	}
 
-	public void onPhotoSelectionsCleared() {
-		mAdapter.notifyDataSetChanged();
+	public void onEvent(PhotoSelectionRemovedEvent event) {
+		if (event.isSingleChange()) {
+			animatePhotoUploadOut(event.getTarget());
+		} else {
+			mAdapter.notifyDataSetChanged();
+		}
 	}
 
-	public void onPhotoSelectionChanged(PhotoUpload upload, boolean added) {
+	private void animatePhotoUploadOut(PhotoUpload upload) {
 		if (mMode == MODE_SELECTED_VALUE) {
 			PhotoTagItemLayout view = getCurrentView();
 
@@ -248,13 +254,11 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		// requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-
 		setContentView(R.layout.activity_photo_viewer);
 		mContentView = (ViewGroup) findViewById(R.id.fl_root);
 
 		mController = PhotoUploadController.getFromContext(this);
-		mController.addListener(this);
+		EventBus.getDefault().register(this);
 
 		final Intent intent = getIntent();
 		mMode = intent.getIntExtra(EXTRA_MODE, MODE_ALL_VALUE);
@@ -303,7 +307,7 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 
 	@Override
 	protected void onDestroy() {
-		mController.removeListener(this);
+		EventBus.getDefault().unregister(this);
 		mController.updateDatabase();
 		super.onDestroy();
 	}
@@ -417,7 +421,7 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 		mFilterGroup.show();
 		updateFiltersView();
 	}
-	
+
 	private void showTapToTagPrompt() {
 		Toast.makeText(this, R.string.tag_friend_prompt, Toast.LENGTH_SHORT).show();
 	}
@@ -432,10 +436,6 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 		mFriendsFragment.setOnFriendPickedListener(listener);
 		mFriendsFragment.setExcludedFriends(excludeSet);
 		mFriendsFragment.show(getSupportFragmentManager(), "friends");
-	}
-
-	public void onUploadsCleared() {
-		// NO-OP
 	}
 
 	public void onPhotoLoadStatusChanged(boolean finished) {
@@ -476,9 +476,5 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnPho
 
 	public void onLoaderReset(Loader<Cursor> loader) {
 		onLoadFinished(loader, null);
-	}
-
-	public void onPhotoSelectionsAdded() {
-		mAdapter.notifyDataSetChanged();
 	}
 }

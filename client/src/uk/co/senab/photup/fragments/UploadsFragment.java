@@ -4,7 +4,7 @@ import uk.co.senab.photup.Flags;
 import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.adapters.UploadsListBaseAdapter;
-import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
+import uk.co.senab.photup.events.PhotoSelectionRemovedEvent;
 import uk.co.senab.photup.model.PhotoUpload;
 import android.content.Intent;
 import android.net.Uri;
@@ -21,8 +21,9 @@ import android.widget.ListView;
 import com.example.android.swipedismiss.SwipeDismissListViewTouchListener;
 import com.example.android.swipedismiss.SwipeDismissListViewTouchListener.OnDismissCallback;
 
-public class UploadsFragment extends PhotupDialogFragment implements OnPhotoSelectionChangedListener,
-		OnDismissCallback, OnItemClickListener {
+import de.greenrobot.event.EventBus;
+
+public class UploadsFragment extends PhotupDialogFragment implements OnDismissCallback, OnItemClickListener {
 
 	private PhotoUploadController mPhotoSelectionController;
 	private UploadsListBaseAdapter mAdapter;
@@ -30,10 +31,10 @@ public class UploadsFragment extends PhotupDialogFragment implements OnPhotoSele
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mAdapter = new UploadsListBaseAdapter(getActivity());
+		EventBus.getDefault().register(this);
 
+		mAdapter = new UploadsListBaseAdapter(getActivity());
 		mPhotoSelectionController = PhotoUploadController.getFromContext(getActivity());
-		mPhotoSelectionController.addListener(this);
 	}
 
 	@Override
@@ -55,11 +56,7 @@ public class UploadsFragment extends PhotupDialogFragment implements OnPhotoSele
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		mPhotoSelectionController.removeListener(this);
-	}
-
-	public void onPhotoSelectionChanged(PhotoUpload upload, boolean added) {
-		// NO-OP
+		EventBus.getDefault().unregister(this);
 	}
 
 	public void onItemClick(AdapterView<?> l, View view, int position, long id) {
@@ -97,7 +94,7 @@ public class UploadsFragment extends PhotupDialogFragment implements OnPhotoSele
 		}
 	}
 
-	public void onPhotoSelectionsCleared() {
+	public void onEvent(PhotoSelectionRemovedEvent event) {
 		mAdapter.notifyDataSetChanged();
 	}
 
@@ -129,14 +126,6 @@ public class UploadsFragment extends PhotupDialogFragment implements OnPhotoSele
 			e.printStackTrace();
 		}
 		return false;
-	}
-
-	public void onUploadsCleared() {
-		// NO-OP
-	}
-
-	public void onPhotoSelectionsAdded() {
-		// NO-OP
 	}
 
 }

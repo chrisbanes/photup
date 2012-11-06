@@ -3,13 +3,13 @@ package uk.co.senab.photup;
 import org.donations.DonationsActivity;
 
 import uk.co.senab.photup.base.PhotupFragmentActivity;
+import uk.co.senab.photup.events.PhotoSelectionAddedEvent;
+import uk.co.senab.photup.events.PhotoSelectionRemovedEvent;
 import uk.co.senab.photup.events.UploadsModifiedEvent;
 import uk.co.senab.photup.fragments.SelectedPhotosFragment;
 import uk.co.senab.photup.fragments.UploadFragment;
 import uk.co.senab.photup.fragments.UploadsFragment;
 import uk.co.senab.photup.fragments.UserPhotosFragment;
-import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
-import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.receivers.ConnectivityReceiver;
 import uk.co.senab.photup.views.UploadActionBarView;
 import uk.co.senab.photup.views.UploadsActionBarView;
@@ -29,8 +29,7 @@ import com.actionbarsherlock.view.MenuItem;
 
 import de.greenrobot.event.EventBus;
 
-public class PhotoSelectionActivity extends PhotupFragmentActivity implements OnPhotoSelectionChangedListener,
-		TabListener, OnClickListener {
+public class PhotoSelectionActivity extends PhotupFragmentActivity implements TabListener, OnClickListener {
 
 	public static final String EXTRA_DEFAULT_TAB = "extra_tab";
 
@@ -48,7 +47,7 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 
 	public void onClick(View v) {
 		if (v == mUploadActionView) {
-			if (mPhotoController.getSelectedCount() == 0) {
+			if (!mPhotoController.hasSelections()) {
 				Toast.makeText(this, R.string.error_select_photos, Toast.LENGTH_SHORT).show();
 			} else {
 				if (ConnectivityReceiver.isConnected(this)) {
@@ -66,12 +65,12 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_choose_photos);
+		EventBus.getDefault().register(this);
 
+		setContentView(R.layout.activity_choose_photos);
 		mSinglePane = null == findViewById(R.id.frag_secondary);
 
 		mPhotoController = PhotoUploadController.getFromContext(this);
-		mPhotoController.addListener(this);
 
 		ActionBar ab = getSupportActionBar();
 		ab.setDisplayShowTitleEnabled(false);
@@ -90,15 +89,9 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 			replacePrimaryFragment(TAB_PHOTOS, ft);
 			ft.commit();
-			
-			EventBus.getDefault().register(this);
 		}
 
 		refreshSelectedPhotosTitle();
-	}
-	
-	public void onEvent(UploadsModifiedEvent event) {
-		refreshUploadsActionBarView();
 	}
 
 	@Override
@@ -130,6 +123,20 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 		}
 
 		return super.onCreateOptionsMenu(menu);
+	}
+
+	public void onEvent(PhotoSelectionAddedEvent event) {
+		refreshSelectedPhotosTitle();
+		refreshUploadActionBarView();
+	}
+
+	public void onEvent(PhotoSelectionRemovedEvent event) {
+		refreshSelectedPhotosTitle();
+		refreshUploadActionBarView();
+	}
+
+	public void onEvent(UploadsModifiedEvent event) {
+		checkTabsAndMenu();
 	}
 
 	@Override
@@ -179,25 +186,6 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 		return super.onOptionsItemSelected(item);
 	}
 
-	private void showUploads() {
-		UploadsFragment frag = new UploadsFragment();
-		frag.show(getSupportFragmentManager(), "uploads");
-	}
-
-	public void onPhotoSelectionChanged(PhotoUpload upload, boolean added) {
-		refreshSelectedPhotosTitle();
-		refreshUploadActionBarView();
-	}
-
-	public void onPhotoSelectionsAdded() {
-		refreshSelectedPhotosTitle();
-		refreshUploadActionBarView();
-	}
-
-	public void onPhotoSelectionsCleared() {
-		checkTabsAndMenu();
-	}
-
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		// first saving my state, so the bundle wont be empty.
@@ -222,14 +210,10 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 		mPreviouslySelectedTab = tab;
 	}
 
-	public void onUploadsCleared() {
-		checkTabsAndMenu();
-	}
-
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		mPhotoController.removeListener(this);
+		EventBus.getDefault().unregister(this);
 	}
 
 	@Override
@@ -258,7 +242,7 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 					// Load Uploads Tab if we need to
 					final int lastTabIndex = getSupportActionBar().getTabCount() - 1;
 					getSupportActionBar().setSelectedNavigationItem(lastTabIndex);
-				} else if (mPhotoController.getSelectedCount() == 0) {
+				} else if (!mPhotoController.hasSelections()) {
 					// Else just show Media Lib tab
 					getSupportActionBar().setSelectedNavigationItem(0);
 				}
@@ -309,7 +293,7 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 
 	private void refreshUploadActionBarView() {
 		if (null != mUploadActionView) {
-			if (mPhotoController.getSelectedCount() > 0) {
+			if (mPhotoController.hasSelections()) {
 				mUploadActionView.animateBackground();
 			} else {
 				mUploadActionView.stopAnimatingBackground();
@@ -376,5 +360,10 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 			uploadsItem.setVisible(mPhotoController.hasUploads());
 			refreshUploadsActionBarView();
 		}
+	}
+
+	private void showUploads() {
+		UploadsFragment frag = new UploadsFragment();
+		frag.show(getSupportFragmentManager(), "uploads");
 	}
 }

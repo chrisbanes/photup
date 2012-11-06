@@ -4,7 +4,8 @@ import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotoViewerActivity;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.adapters.SelectedPhotosBaseAdapter;
-import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
+import uk.co.senab.photup.events.PhotoSelectionAddedEvent;
+import uk.co.senab.photup.events.PhotoSelectionRemovedEvent;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.util.Utils;
 import android.app.Activity;
@@ -25,8 +26,9 @@ import com.example.android.swipedismiss.SwipeDismissListViewTouchListener.OnDism
 import com.jakewharton.activitycompat2.ActivityCompat2;
 import com.jakewharton.activitycompat2.ActivityOptionsCompat2;
 
-public class SelectedPhotosFragment extends AbstractPhotosFragment implements OnPhotoSelectionChangedListener,
-		OnItemClickListener, OnDismissCallback {
+import de.greenrobot.event.EventBus;
+
+public class SelectedPhotosFragment extends AbstractPhotosFragment implements OnItemClickListener, OnDismissCallback {
 
 	private GridView mGridView;
 	private SelectedPhotosBaseAdapter mAdapter;
@@ -40,7 +42,7 @@ public class SelectedPhotosFragment extends AbstractPhotosFragment implements On
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mPhotoSelectionController.addListener(this);
+		EventBus.getDefault().register(this);
 	}
 
 	@Override
@@ -76,21 +78,20 @@ public class SelectedPhotosFragment extends AbstractPhotosFragment implements On
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		mPhotoSelectionController.removeListener(this);
+		EventBus.getDefault().unregister(this);
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-
 		// TODO Save Scroll position
 	}
 
-	public void onPhotoSelectionsCleared() {
+	public void onEvent(PhotoSelectionAddedEvent event) {
 		mAdapter.notifyDataSetChanged();
 	}
 
-	public void onPhotoSelectionChanged(PhotoUpload id, boolean added) {
+	public void onEvent(PhotoSelectionRemovedEvent event) {
 		mAdapter.notifyDataSetChanged();
 	}
 
@@ -107,14 +108,6 @@ public class SelectedPhotosFragment extends AbstractPhotosFragment implements On
 		intent.putExtra(PhotoViewerActivity.EXTRA_MODE, PhotoViewerActivity.MODE_SELECTED_VALUE);
 
 		ActivityCompat2.startActivity(getActivity(), intent, b);
-	}
-
-	public void onUploadsCleared() {
-		// NO-OP
-	}
-
-	public void onPhotoSelectionsAdded() {
-		mAdapter.notifyDataSetChanged();
 	}
 
 	public boolean canDismiss(AbsListView listView, int position) {

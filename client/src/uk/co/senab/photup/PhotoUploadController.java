@@ -6,10 +6,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
-import de.greenrobot.event.EventBus;
-
+import uk.co.senab.photup.events.PhotoSelectionAddedEvent;
+import uk.co.senab.photup.events.PhotoSelectionRemovedEvent;
 import uk.co.senab.photup.events.UploadsModifiedEvent;
-import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
 import uk.co.senab.photup.model.Account;
 import uk.co.senab.photup.model.FbUser;
 import uk.co.senab.photup.model.PhotoUpload;
@@ -17,6 +16,7 @@ import uk.co.senab.photup.model.Place;
 import uk.co.senab.photup.model.UploadQuality;
 import uk.co.senab.photup.util.PhotoUploadDatabaseHelper;
 import android.content.Context;
+import de.greenrobot.event.EventBus;
 
 public class PhotoUploadController {
 
@@ -28,19 +28,12 @@ public class PhotoUploadController {
 	private final ArrayList<PhotoUpload> mSelectedPhotoList;
 	private final ArrayList<PhotoUpload> mUploadingList;
 
-	private final HashSet<OnPhotoSelectionChangedListener> mChangedListeners;
-
 	PhotoUploadController(Context context) {
 		mContext = context;
-		mChangedListeners = new HashSet<OnPhotoSelectionChangedListener>();
 		mSelectedPhotoList = new ArrayList<PhotoUpload>();
 		mUploadingList = new ArrayList<PhotoUpload>();
 
 		populateFromDatabase();
-	}
-
-	public void addListener(OnPhotoSelectionChangedListener listener) {
-		mChangedListeners.add(listener);
 	}
 
 	public void addSelection(final PhotoUpload selection) {
@@ -53,9 +46,7 @@ public class PhotoUploadController {
 				PhotoUploadDatabaseHelper.saveToDatabase(mContext, selection);
 			}
 
-			for (OnPhotoSelectionChangedListener l : mChangedListeners) {
-				l.onPhotoSelectionChanged(selection, true);
-			}
+			postEvent(new PhotoSelectionAddedEvent(selection));
 		}
 	}
 
@@ -77,9 +68,7 @@ public class PhotoUploadController {
 				PhotoUploadDatabaseHelper.saveToDatabase(mContext, mSelectedPhotoList, true);
 			}
 
-			for (OnPhotoSelectionChangedListener l : mChangedListeners) {
-				l.onPhotoSelectionsAdded();
-			}
+			postEvent(new PhotoSelectionAddedEvent(selections));
 		}
 	}
 
@@ -95,9 +84,7 @@ public class PhotoUploadController {
 			mUploadingList.add(selection);
 			mSelectedPhotoList.remove(selection);
 
-			for (OnPhotoSelectionChangedListener l : mChangedListeners) {
-				l.onPhotoSelectionsCleared();
-			}
+			postEvent(new UploadsModifiedEvent());
 			return true;
 		}
 		return false;
@@ -120,12 +107,13 @@ public class PhotoUploadController {
 			PhotoUploadDatabaseHelper.saveToDatabase(mContext, mSelectedPhotoList, true);
 		}
 
+		ArrayList<PhotoUpload> eventResult = new ArrayList<PhotoUpload>(mSelectedPhotoList);
+
 		mUploadingList.addAll(mSelectedPhotoList);
 		mSelectedPhotoList.clear();
 
-		for (OnPhotoSelectionChangedListener l : mChangedListeners) {
-			l.onPhotoSelectionsCleared();
-		}
+		postEvent(new PhotoSelectionRemovedEvent(eventResult));
+		postEvent(new UploadsModifiedEvent());
 	}
 
 	public void clearSelected() {
@@ -141,12 +129,12 @@ public class PhotoUploadController {
 				upload.setUploadState(PhotoUpload.STATE_NONE);
 			}
 
+			ArrayList<PhotoUpload> eventResult = new ArrayList<PhotoUpload>(mSelectedPhotoList);
+
 			// Clear from memory
 			mSelectedPhotoList.clear();
 
-			for (OnPhotoSelectionChangedListener l : mChangedListeners) {
-				l.onPhotoSelectionsCleared();
-			}
+			postEvent(new PhotoSelectionRemovedEvent(eventResult));
 		}
 	}
 
@@ -177,15 +165,16 @@ public class PhotoUploadController {
 		return mSelectedPhotoList.size();
 	}
 
-	/**
-	 * Upload Methods
-	 */
+	public List<PhotoUpload> getUploadingUploads() {
+		return new ArrayList<PhotoUpload>(mUploadingList);
+	}
+
 	public int getUploadsCount() {
 		return mUploadingList.size();
 	}
 
-	public List<PhotoUpload> getUploadingUploads() {
-		return new ArrayList<PhotoUpload>(mUploadingList);
+	public boolean hasSelections() {
+		return !mSelectedPhotoList.isEmpty();
 	}
 
 	public boolean hasSelectionsWithPlace() {
@@ -239,20 +228,12 @@ public class PhotoUploadController {
 			PhotoUploadDatabaseHelper.saveToDatabase(mContext, mSelectedPhotoList, false);
 		}
 
-		/**
-		 * Make sure we call listener if we've emptied the list
-		 */
-		if (mUploadingList.isEmpty()) {
-			for (OnPhotoSelectionChangedListener l : mChangedListeners) {
-				l.onUploadsCleared();
-			}
+		// The Uploading List has been changed, send event
+		if (result) {
+			postEvent(new UploadsModifiedEvent());
 		}
 
 		return result;
-	}
-
-	public void removeListener(OnPhotoSelectionChangedListener listener) {
-		mChangedListeners.remove(listener);
 	}
 
 	public void removeSelection(final PhotoUpload selection) {
@@ -266,9 +247,7 @@ public class PhotoUploadController {
 			// Reset State (as may still be in cache)
 			selection.setUploadState(PhotoUpload.STATE_NONE);
 
-			for (OnPhotoSelectionChangedListener l : mChangedListeners) {
-				l.onPhotoSelectionChanged(selection, false);
-			}
+			postEvent(new PhotoSelectionRemovedEvent(selection));
 		}
 	}
 
@@ -283,13 +262,7 @@ public class PhotoUploadController {
 			// Reset State (as may still be in cache)
 			selection.setUploadState(PhotoUpload.STATE_NONE);
 
-			if (mUploadingList.isEmpty()) {
-				for (OnPhotoSelectionChangedListener l : mChangedListeners) {
-					l.onUploadsCleared();
-				}
-			}
-			
-			EventBus.getDefault().post(new UploadsModifiedEvent());
+			postEvent(new UploadsModifiedEvent());
 		}
 	}
 
@@ -342,6 +315,10 @@ public class PhotoUploadController {
 				PhotoUpload.populateCache(uploadsFromDb);
 			}
 		}
+	}
+
+	private void postEvent(Object event) {
+		EventBus.getDefault().post(event);
 	}
 
 }
