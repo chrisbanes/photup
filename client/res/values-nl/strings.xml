@@ -55,6 +55,10 @@
 	<string name="pref_instant_upload_filter_summary">Selecteer een effect om automatisch toegepast te worden</string>
 	<string name="pref_instant_upload_roaming_title">Roaming</string>
 	<string name="pref_instant_upload_roaming_summary">Instant Upload if roaming?</string>
+	<string name="pref_decode">Decoding</string>
+	<string name="pref_decode_safe_title">Use safe decoder?</string>
+	<string name="pref_decode_safe_summary_on">Using Android\'s built-in decoder only. Only use if images are distorted.</string>
+	<string name="pref_decode_safe_summary_off">Using photup\'s standard decoder. Quicker and uses less memory.</string>
 	<string name="pref_more_options">Advanced Settings</string>
 	<string name="dialog_instant_upload">photup heeft nu Snelle Upload! Dit betekent dat wanneer u een foto maakt, fotup deze foto automatisch naar Facebook uploadt.\n\nU hoeft het alleen maar aan te zetten in Instellingen en wij doen de rest voor u!</string>
 	<string name="dialog_missing_pages_title">Missende Accounts?</string>
@@ -68,4 +72,5 @@
 	<string name="donate_title">Doneer</string>
 	<string name="promo_text">Ik probeer photup voor Facebook uit, een nieuwe app om foto\'s met Facebook te delen voor Android. Probeer het ook uit!</string>
 	<string name="album_all">All Photos</string>
+	<string name="action_bar_upload_progress">%1$d of %2$d</string>
 </resources>

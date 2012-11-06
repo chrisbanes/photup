@@ -55,6 +55,10 @@
 	<string name="pref_instant_upload_filter_summary">Selecciona un efecto para ser aplicado automáticamente</string>
 	<string name="pref_instant_upload_roaming_title">Roaming</string>
 	<string name="pref_instant_upload_roaming_summary">Carga instantánea si estás en Roaming?</string>
+	<string name="pref_decode">Decodificando</string>
+	<string name="pref_decode_safe_title">Use safe decoder?</string>
+	<string name="pref_decode_safe_summary_on">Using Android\'s built-in decoder only. Only use if images are distorted.</string>
+	<string name="pref_decode_safe_summary_off">Using photup\'s standard decoder. Quicker and uses less memory.</string>
 	<string name="pref_more_options">Opciones avanzadas.</string>
 	<string name="dialog_instant_upload">photup ahora tiene Instant Upload! Esto significa que cada vez que tomes una foto, photup puede subirla autompaticamente a Facebook.\n\n Sólo activala en Ajustes y nosotros haremos el resto!</string>
 	<string name="dialog_missing_pages_title">Cuentas Perdidas?</string>
@@ -68,4 +72,5 @@
 	<string name="donate_title">Donar</string>
 	<string name="promo_text">Estoy probando photup para Facebook, un nuevo compartidor de fotos en Facebook para android. Pruebalo!</string>
 	<string name="album_all">Todas las Fotos</string>
+	<string name="action_bar_upload_progress">%1$d of %2$d</string>
 </resources>
