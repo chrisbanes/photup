@@ -36,8 +36,14 @@ public class PhotoUploadController {
 		populateFromDatabase();
 	}
 
-	public void addSelection(final PhotoUpload selection) {
+	public boolean addSelection(final PhotoUpload selection) {
 		if (!isSelected(selection)) {
+
+			// Remove it from Upload list if it's there
+			if (isOnUploadList(selection)) {
+				removeUpload(selection);
+			}
+
 			selection.setUploadState(PhotoUpload.STATE_SELECTED);
 			mSelectedPhotoList.add(selection);
 
@@ -47,15 +53,25 @@ public class PhotoUploadController {
 			}
 
 			postEvent(new PhotoSelectionAddedEvent(selection));
+			return true;
 		}
+
+		return false;
 	}
 
 	public void addSelections(List<PhotoUpload> selections) {
 		final HashSet<PhotoUpload> currentSelectionsSet = new HashSet<PhotoUpload>(mSelectedPhotoList);
+		final HashSet<PhotoUpload> currentUploadSet = new HashSet<PhotoUpload>(mUploadingList);
 		boolean listModified = false;
 
 		for (final PhotoUpload selection : selections) {
 			if (!currentSelectionsSet.contains(selection)) {
+
+				// Remove it from Upload list if it's there
+				if (currentUploadSet.contains(selection)) {
+					removeUpload(selection);
+				}
+
 				selection.setUploadState(PhotoUpload.STATE_SELECTED);
 				mSelectedPhotoList.add(selection);
 				listModified = true;
@@ -203,6 +219,10 @@ public class PhotoUploadController {
 		return mSelectedPhotoList.contains(selection);
 	}
 
+	public boolean isOnUploadList(PhotoUpload selection) {
+		return mUploadingList.contains(selection);
+	}
+
 	public boolean moveFailedToSelected() {
 		boolean result = false;
 
@@ -236,9 +256,8 @@ public class PhotoUploadController {
 		return result;
 	}
 
-	public void removeSelection(final PhotoUpload selection) {
+	public boolean removeSelection(final PhotoUpload selection) {
 		if (mSelectedPhotoList.remove(selection)) {
-
 			// Delete from Database
 			if (Flags.ENABLE_DB_PERSISTENCE) {
 				PhotoUploadDatabaseHelper.deleteFromDatabase(mContext, selection);
@@ -248,7 +267,10 @@ public class PhotoUploadController {
 			selection.setUploadState(PhotoUpload.STATE_NONE);
 
 			postEvent(new PhotoSelectionRemovedEvent(selection));
+			return true;
 		}
+		
+		return false;
 	}
 
 	public void removeUpload(final PhotoUpload selection) {

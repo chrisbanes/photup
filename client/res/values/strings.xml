@@ -73,5 +73,6 @@
 	<string name="donate_title">Donate</string>
 	<string name="promo_text">I\'m checking out photup for Facebook, a new Facebook photo sharer for Android. Give it a try!</string>
 	<string name="album_all">All Photos</string>
+	<string name="action_bar_upload_progress">%1$d of %2$d</string>
 
 </resources>

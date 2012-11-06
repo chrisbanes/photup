@@ -15,6 +15,7 @@ import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.Flags;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
+import uk.co.senab.photup.events.UploadStateChangedEvent;
 import uk.co.senab.photup.events.UploadsModifiedEvent;
 import uk.co.senab.photup.listeners.OnFaceDetectionListener;
 import uk.co.senab.photup.listeners.OnPhotoTagsChangedListener;
@@ -43,10 +44,6 @@ import de.greenrobot.event.EventBus;
 
 @DatabaseTable(tableName = "photo_upload")
 public class PhotoUpload {
-
-	public static interface OnUploadStateChanged {
-		void onUploadStateChanged(PhotoUpload upload, int state, int progress);
-	}
 
 	private static final HashMap<Uri, PhotoUpload> SELECTION_CACHE = new HashMap<Uri, PhotoUpload>();
 
@@ -153,7 +150,6 @@ public class PhotoUpload {
 	 */
 	private WeakReference<OnFaceDetectionListener> mFaceDetectListener;
 	private WeakReference<OnPhotoTagsChangedListener> mTagChangedListener;
-	private WeakReference<OnUploadStateChanged> mStateListener;
 
 	private boolean mNeedsSaveFlag = false;
 
@@ -491,10 +487,6 @@ public class PhotoUpload {
 		setRequiresSaveFlag();
 	}
 
-	public void removeUploadStateChangedListener() {
-		mStateListener = null;
-	}
-
 	public boolean requiresFaceDetectPass() {
 		return !mCompletedDetection;
 	}
@@ -614,15 +606,15 @@ public class PhotoUpload {
 		}
 	}
 
-	public void setUploadState(int state) {
+	public void setUploadState(final int state) {
 		if (mState != state) {
 			mState = state;
 
 			switch (state) {
 				case STATE_UPLOAD_ERROR:
 				case STATE_UPLOAD_COMPLETED:
-					EventBus.getDefault().post(new UploadsModifiedEvent());
 					mBigPictureNotificationBmp = null;
+					EventBus.getDefault().post(new UploadsModifiedEvent());
 					break;
 				case STATE_SELECTED:
 				case STATE_UPLOAD_WAITING:
@@ -633,10 +625,6 @@ public class PhotoUpload {
 			notifyUploadStateListener();
 			setRequiresSaveFlag();
 		}
-	}
-
-	public void setUploadStateChangedListener(OnUploadStateChanged listener) {
-		mStateListener = new WeakReference<OnUploadStateChanged>(listener);
 	}
 
 	@Override
@@ -734,7 +722,7 @@ public class PhotoUpload {
 
 				if (Utils.tryNativeDecoder(context)) {
 					doAndroidDecode = PhotoProcessing.nativeLoadResizedBitmap(path, size.width * size.height) != 0;
-					
+
 					if (Flags.DEBUG) {
 						if (doAndroidDecode) {
 							Log.d("MediaStorePhotoUpload", "getUploadImage. Native decode failed :(");
@@ -831,14 +819,7 @@ public class PhotoUpload {
 	}
 
 	private void notifyUploadStateListener() {
-		if (null == mStateListener) {
-			return;
-		}
-
-		OnUploadStateChanged listener = mStateListener.get();
-		if (null != listener) {
-			listener.onUploadStateChanged(this, mState, mProgress);
-		}
+		EventBus.getDefault().post(new UploadStateChangedEvent(this));
 	}
 
 	private void setRequiresSaveFlag() {

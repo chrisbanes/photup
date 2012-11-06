@@ -135,7 +135,7 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements Ta
 		refreshUploadActionBarView();
 	}
 
-	public void onEvent(UploadsModifiedEvent event) {
+	public void onEventMainThread(UploadsModifiedEvent event) {
 		checkTabsAndMenu();
 	}
 

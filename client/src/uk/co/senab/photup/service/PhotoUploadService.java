@@ -22,6 +22,7 @@ import uk.co.senab.photup.PhotoSelectionActivity;
 import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
+import uk.co.senab.photup.events.UploadStateChangedEvent;
 import uk.co.senab.photup.facebook.Session;
 import uk.co.senab.photup.model.PhotoTag;
 import uk.co.senab.photup.model.PhotoUpload;
@@ -39,9 +40,7 @@ import android.graphics.Bitmap.CompressFormat;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -50,14 +49,12 @@ import com.facebook.android.FacebookError;
 import com.facebook.android.Util;
 import com.jakewharton.notificationcompat2.NotificationCompat2;
 
-public class PhotoUploadService extends Service implements Handler.Callback {
+import de.greenrobot.event.EventBus;
+
+public class PhotoUploadService extends Service {
 
 	static final int MAX_NUMBER_RETRIES = 3;
 	static final int NOTIFICATION_ID = 1000;
-
-	static final int MSG_UPLOAD_COMPLETE = 0;
-	static final int MSG_UPLOAD_PROGRESS = 1;
-	static final int MSG_UPLOAD_FAILED = 2;
 
 	static final String TEMPORARY_FILE_NAME = "upload_temp.jpg";
 
@@ -82,12 +79,10 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		static final String LOG_TAG = "UploadPhotoRunnable";
 
 		private final WeakReference<Context> mContextRef;
-		private final Handler mHandler;
 		private final PhotoUpload mUpload;
 
-		public UploadPhotoRunnable(Context context, Handler handler, PhotoUpload upload, Session session) {
+		public UploadPhotoRunnable(Context context, PhotoUpload upload, Session session) {
 			mContextRef = new WeakReference<Context>(context);
-			mHandler = handler;
 			mUpload = upload;
 		}
 
@@ -199,9 +194,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 				try {
 					JSONObject object = Util.parseJson(response);
 					mUpload.setResultPostId(object.optString("post_id", null));
-
-					// If we get here, we've successfully uploaded the photos
-					mHandler.sendMessage(mHandler.obtainMessage(MSG_UPLOAD_COMPLETE, mUpload));
+					mUpload.setUploadState(PhotoUpload.STATE_UPLOAD_COMPLETED);
 					return;
 				} catch (FacebookError e) {
 					e.printStackTrace();
@@ -211,7 +204,11 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 			}
 
 			// If we get here, we've errored somewhere
-			mHandler.sendMessage(mHandler.obtainMessage(MSG_UPLOAD_FAILED, mUpload));
+			if (ConnectivityReceiver.isConnected(context)) {
+				mUpload.setUploadState(PhotoUpload.STATE_UPLOAD_ERROR);
+			} else {
+				mUpload.setUploadState(PhotoUpload.STATE_UPLOAD_WAITING);
+			}
 		}
 
 		class ProgressInputStream extends FilterInputStream {
@@ -248,9 +245,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 					Log.d(LOG_TAG, "Upload. File length: " + mInputLength + ". Read so far:" + mTotalBytesRead);
 				}
 
-				Message msg = mHandler.obtainMessage(MSG_UPLOAD_PROGRESS, mUpload);
-				msg.arg1 = Math.round((mTotalBytesRead * 100f) / mInputLength);
-				mHandler.sendMessage(msg);
+				mUpload.setUploadProgress(Math.round((mTotalBytesRead * 100f) / mInputLength));
 
 				return numBytesRead;
 			}
@@ -262,7 +257,6 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	private Session mSession;
 	private PhotoUploadController mController;
 
-	private final Handler mHandler = new Handler(this);
 	private int mNumberUploaded = 0;
 
 	private NotificationManager mNotificationMgr;
@@ -274,6 +268,8 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+
+		EventBus.getDefault().register(this);
 
 		PhotupApplication app = PhotupApplication.getApplication(this);
 		mController = app.getPhotoUploadController();
@@ -287,6 +283,7 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	@Override
 	public void onDestroy() {
 		mCurrentlyUploading = false;
+		EventBus.getDefault().unregister(this);
 
 		try {
 			stopForeground(true);
@@ -315,26 +312,6 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 		return null;
 	}
 
-	public boolean handleMessage(Message msg) {
-		switch (msg.what) {
-			case MSG_UPLOAD_COMPLETE:
-				onFinishedUpload((PhotoUpload) msg.obj);
-				return true;
-			case MSG_UPLOAD_FAILED:
-				onFailedUpload((PhotoUpload) msg.obj);
-				return true;
-			case MSG_UPLOAD_PROGRESS:
-				// Update the upload progress on the main thread
-				PhotoUpload upload = (PhotoUpload) msg.obj;
-				upload.setUploadProgress(msg.arg1);
-
-				updateNotification(upload);
-				return true;
-		}
-
-		return false;
-	}
-
 	private boolean uploadAll() {
 		// If we're currently uploading, ignore call
 		if (mCurrentlyUploading) {
@@ -360,33 +337,30 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 	private void startUpload(PhotoUpload upload) {
 		trimCache();
 		updateNotification(upload);
-		mExecutor.submit(new UploadPhotoRunnable(this, mHandler, upload, mSession));
+		mExecutor.submit(new UploadPhotoRunnable(this, upload, mSession));
 		mCurrentlyUploading = true;
 	}
 
-	private void onFinishedUpload(PhotoUpload completedUpload) {
-		completedUpload.setUploadState(PhotoUpload.STATE_UPLOAD_COMPLETED);
-		if (Flags.ENABLE_DB_PERSISTENCE) {
-			PhotoUploadDatabaseHelper.saveToDatabase(getApplicationContext(), completedUpload);
+	public void onEventMainThread(UploadStateChangedEvent event) {
+		PhotoUpload upload = event.getUpload();
+
+		switch (upload.getUploadState()) {
+			case PhotoUpload.STATE_UPLOAD_IN_PROGRESS:
+				updateNotification(upload);
+				break;
+
+			case PhotoUpload.STATE_UPLOAD_COMPLETED:
+				mNumberUploaded++;
+				// Fall through
+
+			case PhotoUpload.STATE_UPLOAD_ERROR:
+				startNextUploadOrFinish();
+				if (Flags.ENABLE_DB_PERSISTENCE) {
+					PhotoUploadDatabaseHelper.saveToDatabase(getApplicationContext(), upload);
+				}
+				break;
 		}
 
-		mNumberUploaded++;
-		startNextUploadOrFinish();
-	}
-
-	private void onFailedUpload(PhotoUpload failedUpload) {
-		// If we're connected and failed, set our state to error, else just
-		// return us to the queue
-		if (ConnectivityReceiver.isConnected(this)) {
-			failedUpload.setUploadState(PhotoUpload.STATE_UPLOAD_ERROR);
-		} else {
-			failedUpload.setUploadState(PhotoUpload.STATE_UPLOAD_WAITING);
-		}
-		if (Flags.ENABLE_DB_PERSISTENCE) {
-			PhotoUploadDatabaseHelper.saveToDatabase(getApplicationContext(), failedUpload);
-		}
-
-		startNextUploadOrFinish();
 	}
 
 	void startNextUploadOrFinish() {
@@ -445,10 +419,12 @@ public class PhotoUploadService extends Service implements Handler.Callback {
 				break;
 
 			case PhotoUpload.STATE_UPLOAD_IN_PROGRESS:
-				text = getString(R.string.notification_uploading_photo_progress, mNumberUploaded + 1,
-						upload.getUploadProgress());
-				mNotificationBuilder.setContentTitle(text);
-				mNotificationBuilder.setProgress(100, upload.getUploadProgress(), false);
+				if (upload.getUploadProgress() >= 0) {
+					text = getString(R.string.notification_uploading_photo_progress, mNumberUploaded + 1,
+							upload.getUploadProgress());
+					mNotificationBuilder.setContentTitle(text);
+					mNotificationBuilder.setProgress(100, upload.getUploadProgress(), false);
+				}
 				break;
 		}
 
