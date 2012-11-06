@@ -12,41 +12,10 @@
 
 # Add any project specific keep options here:
 
+# Actionbarsherlock
 -keepattributes *Annotation*
-
 -keep class com.actionbarsherlock.** { *; }
 -keep interface com.actionbarsherlock.** { *; }
-
-#ACRA specifics
-# we need line numbers in our stack traces otherwise they are pretty useless
--renamesourcefileattribute SourceFile
--keepattributes SourceFile,LineNumberTable
-
-# ACRA needs "annotations" so add this... 
--keepattributes *Annotation*
-
-# keep this class so that logging will show 'ACRA' and not a obfuscated name like 'a'.
-# Note: if you are removing log messages elsewhere in this file then this isn't necessary
--keep class org.acra.ACRA {
-        *;
-}
-
-# keep this around for some enums that ACRA needs
--keep class org.acra.ReportingInteractionMode {
-   *;
-}
-
-# keep this otherwise it is removed by ProGuard
--keep public class org.acra.ErrorReporter
-{
-public void addCustomData(java.lang.String,java.lang.String);
-}
-
-# keep this otherwise it is removed by ProGuard
--keep public class org.acra.ErrorReporter
-{
-public org.acra.ErrorReporter$ReportsSenderWorker handleSilentException(java.lang.Throwable);
-}
 
 
 # For ORMLite
@@ -63,3 +32,7 @@ public org.acra.ErrorReporter$ReportsSenderWorker handleSilentException(java.lan
 	public void onEvent(**);
 	public void onEventMainThread(**);
 }
+
+# Crittercism
+-keep public class com.crittercism.**
+-keepclassmembers public class com.crittercism.* { *; }

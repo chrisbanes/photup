@@ -130,6 +130,10 @@
 			android:launchMode="singleTask"
 			android:theme="@style/Theme.Sherlock.Dialog" />
 
+		<!-- Crittercism.com -->
+		<activity
+			android:name="com.crittercism.NotificationActivity" />
+
 		<!-- - Google Play Store donations -->
 		<service
 			android:name="org.donations.google.BillingService" />

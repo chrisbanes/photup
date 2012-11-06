@@ -6,10 +6,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.acra.ACRA;
-import org.acra.ReportingInteractionMode;
-import org.acra.annotation.ReportsCrashes;
-
 import uk.co.senab.bitmapcache.BitmapLruCache;
 import uk.co.senab.photup.facebook.Session;
 import uk.co.senab.photup.model.Account;
@@ -32,9 +28,9 @@ import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
+import com.crittercism.app.Crittercism;
 import com.facebook.android.FacebookError;
 
-@ReportsCrashes(formKey = Constants.ACRA_GOOGLE_DOC_ID, mode = ReportingInteractionMode.TOAST, resToastText = R.string.crash_toast)
 public class PhotupApplication extends Application implements FriendsResultListener, AccountsResultListener {
 
 	static final String LOG_TAG = "PhotupApplication";
@@ -63,7 +59,7 @@ public class PhotupApplication extends Application implements FriendsResultListe
 		if (null == mMultiThreadExecutor || mMultiThreadExecutor.isShutdown()) {
 			final int numThreads = Math.round(Runtime.getRuntime().availableProcessors() * EXECUTOR_POOL_SIZE_PER_CORE);
 			mMultiThreadExecutor = Executors.newFixedThreadPool(numThreads, new PhotupThreadFactory());
-			
+
 			if (Flags.DEBUG) {
 				Log.d(LOG_TAG, "MultiThreadExecutor created with " + numThreads + " threads");
 			}
@@ -105,16 +101,15 @@ public class PhotupApplication extends Application implements FriendsResultListe
 
 	@Override
 	public void onCreate() {
-		if (Flags.ENABLE_ACRA) {
-			ACRA.init(this);
-		}
-
 		super.onCreate();
 
+		if (Flags.ENABLE_BUG_TRACKING) {
+			Crittercism.init(this, Constants.CRITTERCISM_API_KEY);
+		}
+		
 		checkInstantUploadReceiverState();
 
 		mPhotoController = new PhotoUploadController(this);
-
 		mFriends = new ArrayList<FbUser>();
 		mAccounts = new ArrayList<Account>();
 

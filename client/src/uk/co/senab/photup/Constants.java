@@ -15,7 +15,7 @@ public final class Constants {
 
 	public static final int FACE_DETECTOR_MAX_FACES = 8;
 
-	public static final String ACRA_GOOGLE_DOC_ID = "dHlELWNlMndaVktHanhsYTl1ZEQtYUE6MQ";
+	public static final String CRITTERCISM_API_KEY = "50994cc4d5f9b95cfb000005";
 
 	public static final String INTENT_SERVICE_UPLOAD_ALL = "photup.intent.action.UPLOAD_ALL";
 	public static final String INTENT_PHOTO_TAKEN = "photup.intent.action.PHOTO_TAKEN";
