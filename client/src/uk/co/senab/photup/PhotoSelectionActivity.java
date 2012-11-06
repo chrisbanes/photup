@@ -137,17 +137,7 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements Ta
 	}
 
 	public void onEventMainThread(UploadsModifiedEvent event) {
-		if (mPhotoController.hasUploads()) {
-			if (null == mUploadsActionView) {
-				supportInvalidateOptionsMenu();
-			} else {
-				refreshUploadsActionBarView();
-			}
-		} else {
-			if (null != mUploadActionView) {
-				supportInvalidateOptionsMenu();
-			}
-		}
+		checkTabsAndMenu();
 	}
 
 	@Override
@@ -267,8 +257,17 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements Ta
 			refreshUploadActionBarView();
 
 		} else {
-			// Refresh Action Bar so 'Uploads' item is correctly visible/not.
-			supportInvalidateOptionsMenu();
+			if (mPhotoController.hasUploads()) {
+				if (null == mUploadsActionView) {
+					supportInvalidateOptionsMenu();
+				} else {
+					refreshUploadsActionBarView();
+				}
+			} else {
+				if (null != mUploadActionView) {
+					supportInvalidateOptionsMenu();
+				}
+			}
 		}
 
 		refreshSelectedPhotosTitle();
