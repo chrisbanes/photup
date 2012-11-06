@@ -42,6 +42,23 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 	private PhotoUploadController mPhotoController;
 	private boolean mSinglePane;
 
+	private Tab mPreviouslySelectedTab;
+
+	public void onClick(View v) {
+		if (mPhotoController.getSelectedCount() == 0) {
+			Toast.makeText(this, R.string.error_select_photos, Toast.LENGTH_SHORT).show();
+		} else {
+			if (ConnectivityReceiver.isConnected(this)) {
+
+				new UploadFragment().show(getSupportFragmentManager(), "upload");
+
+				// startActivity(new Intent(this, UploadActivity.class));
+			} else {
+				Toast.makeText(this, R.string.error_not_connected, Toast.LENGTH_LONG).show();
+			}
+		}
+	}
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -142,15 +159,17 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 		return super.onOptionsItemSelected(item);
 	}
 
-	@Override
-	protected void onStart() {
-		super.onStart();
-		showInstantUploadDialog();
+	public void onPhotoSelectionChanged(PhotoUpload upload, boolean added) {
+		refreshSelectedTabTitle();
+		refreshUploadActionBarView();
 	}
 
-	@Override
-	protected void onResume() {
-		super.onResume();
+	public void onPhotoSelectionsAdded() {
+		refreshSelectedTabTitle();
+		refreshUploadActionBarView();
+	}
+
+	public void onPhotoSelectionsCleared() {
 		checkTabs();
 	}
 
@@ -162,8 +181,66 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 		super.onSaveInstanceState(outState);
 	}
 
-	public void onPhotoSelectionsCleared() {
+	public void onTabReselected(Tab tab, FragmentTransaction ft) {
+		// NO-OP
+	}
+
+	public void onTabSelected(Tab tab, FragmentTransaction ft) {
+		final int id = (Integer) tab.getTag();
+		replacePrimaryFragment(id, ft);
+		supportInvalidateOptionsMenu();
+	}
+
+	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+		mPreviouslySelectedTab = tab;
+	}
+
+	public void onUploadsCleared() {
+		final Tab uploadsTab = getTabWithId(TAB_UPLOADS);
+
+		// If we have 3 tabs...
+		if (null != uploadsTab) {
+			ActionBar ab = getSupportActionBar();
+
+			// Move to the first tab
+			ab.setSelectedNavigationItem(TAB_PHOTOS);
+
+			// Remove the tab
+			ab.removeTab(uploadsTab);
+
+			// If we only have one tab left, disable the navigation
+			if (ab.getTabCount() == 1) {
+				ab.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+			}
+		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		mPhotoController.removeListener(this);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
 		checkTabs();
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		showInstantUploadDialog();
+	}
+
+	private void addUploadTab() {
+		if (null == getTabWithId(TAB_UPLOADS)) {
+			ActionBar ab = getSupportActionBar();
+			ab.addTab(ab.newTab().setText(R.string.tab_uploads).setTag(TAB_UPLOADS).setTabListener(this));
+
+			// Make sure we're showing the tabs
+			ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		}
 	}
 
 	private void checkTabs() {
@@ -189,23 +266,42 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 		refreshUploadActionBarView();
 	}
 
-	public void onPhotoSelectionChanged(PhotoUpload upload, boolean added) {
-		refreshSelectedTabTitle();
-		refreshUploadActionBarView();
+	private CharSequence getSelectedTabTitle() {
+		return getString(R.string.tab_selected_photos, mPhotoController.getSelectedCount());
 	}
 
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		mPhotoController.removeListener(this);
+	private Tab getTabWithId(final int id) {
+		ActionBar ab = getSupportActionBar();
+		Tab tab;
+		for (int i = 0, z = ab.getTabCount(); i < z; i++) {
+			tab = ab.getTabAt(i);
+			if (((Integer) tab.getTag()) == id) {
+				return tab;
+			}
+		}
+		return null;
 	}
 
-	private Tab mPreviouslySelectedTab;
+	private void refreshSelectedTabTitle() {
+		if (mSinglePane) {
+			getSupportActionBar().getTabAt(1).setText(getSelectedTabTitle());
+		} else {
+			SelectedPhotosFragment userPhotos = (SelectedPhotosFragment) getSupportFragmentManager().findFragmentById(
+					R.id.frag_secondary);
+			if (null != userPhotos) {
+				userPhotos.setFragmentTitle(getSelectedTabTitle());
+			}
+		}
+	}
 
-	public void onTabSelected(Tab tab, FragmentTransaction ft) {
-		final int id = (Integer) tab.getTag();
-		replacePrimaryFragment(id, ft);
-		supportInvalidateOptionsMenu();
+	private void refreshUploadActionBarView() {
+		if (null != mUploadActionView) {
+			if (mPhotoController.getSelectedCount() > 0) {
+				mUploadActionView.animateBackground();
+			} else {
+				mUploadActionView.stopAnimatingBackground();
+			}
+		}
 	}
 
 	private void replacePrimaryFragment(int id, FragmentTransaction ft) {
@@ -234,87 +330,11 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 		ft.replace(R.id.frag_primary, fragment);
 	}
 
-	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-		mPreviouslySelectedTab = tab;
-	}
-
-	public void onTabReselected(Tab tab, FragmentTransaction ft) {
-		// NO-OP
-	}
-
 	private void setupUploadActionBarView(Menu menu) {
 		MenuItem item = menu.findItem(R.id.menu_upload);
 		mUploadActionView = (UploadActionBarView) item.getActionView();
 		mUploadActionView.setOnClickListener(this);
 		refreshUploadActionBarView();
-	}
-
-	private void refreshUploadActionBarView() {
-		if (null != mUploadActionView) {
-			if (mPhotoController.getSelectedCount() > 0) {
-				mUploadActionView.animateBackground();
-			} else {
-				mUploadActionView.stopAnimatingBackground();
-			}
-		}
-	}
-
-	private void refreshSelectedTabTitle() {
-		if (mSinglePane) {
-			getSupportActionBar().getTabAt(1).setText(getSelectedTabTitle());
-		} else {
-			SelectedPhotosFragment userPhotos = (SelectedPhotosFragment) getSupportFragmentManager().findFragmentById(
-					R.id.frag_secondary);
-			if (null != userPhotos) {
-				userPhotos.setFragmentTitle(getSelectedTabTitle());
-			}
-		}
-	}
-
-	private CharSequence getSelectedTabTitle() {
-		return getString(R.string.tab_selected_photos, mPhotoController.getSelectedCount());
-	}
-
-	private Tab getTabWithId(final int id) {
-		ActionBar ab = getSupportActionBar();
-		Tab tab;
-		for (int i = 0, z = ab.getTabCount(); i < z; i++) {
-			tab = ab.getTabAt(i);
-			if (((Integer) tab.getTag()) == id) {
-				return tab;
-			}
-		}
-		return null;
-	}
-
-	private void addUploadTab() {
-		if (null == getTabWithId(TAB_UPLOADS)) {
-			ActionBar ab = getSupportActionBar();
-			ab.addTab(ab.newTab().setText(R.string.tab_uploads).setTag(TAB_UPLOADS).setTabListener(this));
-
-			// Make sure we're showing the tabs
-			ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-		}
-	}
-
-	public void onUploadsCleared() {
-		final Tab uploadsTab = getTabWithId(TAB_UPLOADS);
-
-		// If we have 3 tabs...
-		if (null != uploadsTab) {
-			ActionBar ab = getSupportActionBar();
-
-			// Move to the first tab
-			ab.setSelectedNavigationItem(TAB_PHOTOS);
-
-			// Remove the tab
-			ab.removeTab(uploadsTab);
-
-			// If we only have one tab left, disable the navigation
-			if (ab.getTabCount() == 1) {
-				ab.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-			}
-		}
 	}
 
 	private void showInstantUploadDialog() {
@@ -347,26 +367,6 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 		builder.setPositiveButton(R.string.settings, listener);
 		builder.setNegativeButton(android.R.string.cancel, listener);
 		builder.show();
-	}
-
-	public void onClick(View v) {
-		if (mPhotoController.getSelectedCount() == 0) {
-			Toast.makeText(this, R.string.error_select_photos, Toast.LENGTH_SHORT).show();
-		} else {
-			if (ConnectivityReceiver.isConnected(this)) {
-
-				new UploadFragment().show(getSupportFragmentManager(), "upload");
-
-				// startActivity(new Intent(this, UploadActivity.class));
-			} else {
-				Toast.makeText(this, R.string.error_not_connected, Toast.LENGTH_LONG).show();
-			}
-		}
-	}
-
-	public void onPhotoSelectionsAdded() {
-		refreshSelectedTabTitle();
-		refreshUploadActionBarView();
 	}
 
 }
