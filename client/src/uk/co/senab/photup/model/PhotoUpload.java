@@ -386,7 +386,6 @@ public class PhotoUpload {
 	}
 
 	public Bitmap getUploadImage(Context context, final UploadQuality quality) {
-		Utils.checkPhotoProcessingThread();
 		return getUploadImageNative(context, quality);
 	}
 
@@ -710,6 +709,7 @@ public class PhotoUpload {
 	}
 
 	private Bitmap getUploadImageNative(final Context context, final UploadQuality quality) {
+		Utils.checkPhotoProcessingThread();
 		try {
 			String path = Utils.getPathFromContentUri(context.getContentResolver(), getOriginalPhotoUri());
 			if (null != path) {
@@ -720,7 +720,7 @@ public class PhotoUpload {
 
 				boolean doAndroidDecode = true;
 
-				if (Utils.tryNativeDecoder(context)) {
+				if (Flags.USE_INTERNAL_DECODER) {
 					doAndroidDecode = PhotoProcessing.nativeLoadResizedBitmap(path, size.width * size.height) != 0;
 
 					if (Flags.DEBUG) {
