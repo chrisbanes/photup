@@ -22,6 +22,8 @@
 	<dimen name="listview_item_dimension_small">80dp</dimen>
 	<dimen name="listview_item_dimension_large">160dp</dimen>
 	<dimen name="listview_item_dimension_xlarge">200dp</dimen>
+	<dimen name="ab_upload_progress_width_large">140dp</dimen>
+	<dimen name="ab_upload_progress_width_xlarge">240dp</dimen>
 
 	<!-- Raw Dims that aren't overriden -->
 	<dimen name="gridview_spacing">1dp</dimen>
@@ -37,6 +39,5 @@
 	<dimen name="form_item_height">48dp</dimen>
 	<dimen name="crop_hysteresis">16dp</dimen>
 	<dimen name="dialog_title_text_size">22sp</dimen>
-	<dimen name="ab_upload_progress_width">140dp</dimen>
 
 </resources>
