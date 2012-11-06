@@ -15,6 +15,7 @@ import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.Flags;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.R;
+import uk.co.senab.photup.events.UploadsModifiedEvent;
 import uk.co.senab.photup.listeners.OnFaceDetectionListener;
 import uk.co.senab.photup.listeners.OnPhotoTagsChangedListener;
 import uk.co.senab.photup.util.Utils;
@@ -37,6 +38,8 @@ import com.j256.ormlite.table.DatabaseTable;
 import com.lightbox.android.photoprocessing.PhotoProcessing;
 import com.lightbox.android.photoprocessing.utils.BitmapUtils;
 import com.lightbox.android.photoprocessing.utils.BitmapUtils.BitmapSize;
+
+import de.greenrobot.event.EventBus;
 
 @DatabaseTable(tableName = "photo_upload")
 public class PhotoUpload {
@@ -618,6 +621,7 @@ public class PhotoUpload {
 			switch (state) {
 				case STATE_UPLOAD_ERROR:
 				case STATE_UPLOAD_COMPLETED:
+					EventBus.getDefault().post(new UploadsModifiedEvent());
 					mBigPictureNotificationBmp = null;
 					break;
 				case STATE_SELECTED:

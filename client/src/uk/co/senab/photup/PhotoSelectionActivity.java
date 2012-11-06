@@ -3,6 +3,7 @@ package uk.co.senab.photup;
 import org.donations.DonationsActivity;
 
 import uk.co.senab.photup.base.PhotupFragmentActivity;
+import uk.co.senab.photup.events.UploadsModifiedEvent;
 import uk.co.senab.photup.fragments.SelectedPhotosFragment;
 import uk.co.senab.photup.fragments.UploadFragment;
 import uk.co.senab.photup.fragments.UploadsFragment;
@@ -11,6 +12,7 @@ import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.receivers.ConnectivityReceiver;
 import uk.co.senab.photup.views.UploadActionBarView;
+import uk.co.senab.photup.views.UploadsActionBarView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -25,6 +27,8 @@ import com.actionbarsherlock.app.ActionBar.TabListener;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
+import de.greenrobot.event.EventBus;
+
 public class PhotoSelectionActivity extends PhotupFragmentActivity implements OnPhotoSelectionChangedListener,
 		TabListener, OnClickListener {
 
@@ -35,23 +39,26 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 	static final int TAB_UPLOADS = 2;
 
 	private UploadActionBarView mUploadActionView;
+	private UploadsActionBarView mUploadsActionView;
+
 	private PhotoUploadController mPhotoController;
 	private boolean mSinglePane;
 
 	private Tab mPreviouslySelectedTab;
 
 	public void onClick(View v) {
-		if (mPhotoController.getSelectedCount() == 0) {
-			Toast.makeText(this, R.string.error_select_photos, Toast.LENGTH_SHORT).show();
-		} else {
-			if (ConnectivityReceiver.isConnected(this)) {
-
-				new UploadFragment().show(getSupportFragmentManager(), "upload");
-
-				// startActivity(new Intent(this, UploadActivity.class));
+		if (v == mUploadActionView) {
+			if (mPhotoController.getSelectedCount() == 0) {
+				Toast.makeText(this, R.string.error_select_photos, Toast.LENGTH_SHORT).show();
 			} else {
-				Toast.makeText(this, R.string.error_not_connected, Toast.LENGTH_LONG).show();
+				if (ConnectivityReceiver.isConnected(this)) {
+					new UploadFragment().show(getSupportFragmentManager(), "upload");
+				} else {
+					Toast.makeText(this, R.string.error_not_connected, Toast.LENGTH_LONG).show();
+				}
 			}
+		} else if (v == mUploadsActionView) {
+			showUploads();
 		}
 	}
 
@@ -83,31 +90,43 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 			replacePrimaryFragment(TAB_PHOTOS, ft);
 			ft.commit();
+			
+			EventBus.getDefault().register(this);
 		}
 
 		refreshSelectedPhotosTitle();
 	}
+	
+	public void onEvent(UploadsModifiedEvent event) {
+		refreshUploadsActionBarView();
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		switch (getSupportActionBar().getSelectedNavigationIndex()) {
-			default:
-			case TAB_PHOTOS:
-				// Shown when no tabs too!
-				getSupportMenuInflater().inflate(R.menu.menu_photo_grid_users, menu);
-				setupUploadActionBarView(menu);
-				setupUploadsActionBarView(menu);
-				break;
+		mUploadActionView = null;
+		mUploadsActionView = null;
 
-			case TAB_SELECTED:
-				getSupportMenuInflater().inflate(R.menu.menu_photo_grid_selected, menu);
-				setupUploadActionBarView(menu);
-				break;
+		if (mSinglePane) {
+			switch (getSupportActionBar().getSelectedNavigationIndex()) {
+				case TAB_PHOTOS:
+					// Shown when no tabs too!
+					getSupportMenuInflater().inflate(R.menu.menu_photo_grid_users, menu);
+					setupUploadActionBarView(menu);
+					break;
 
-			case TAB_UPLOADS:
-				getSupportMenuInflater().inflate(R.menu.menu_photo_grid_uploads, menu);
-				mUploadActionView = null;
-				break;
+				case TAB_SELECTED:
+					getSupportMenuInflater().inflate(R.menu.menu_photo_grid_selected, menu);
+					setupUploadActionBarView(menu);
+					break;
+
+				case TAB_UPLOADS:
+					getSupportMenuInflater().inflate(R.menu.menu_photo_grid_uploads, menu);
+					break;
+			}
+		} else {
+			getSupportMenuInflater().inflate(R.menu.menu_photo_grid_large, menu);
+			setupUploadActionBarView(menu);
+			setupUploadsActionBarView(menu);
 		}
 
 		return super.onCreateOptionsMenu(menu);
@@ -153,12 +172,16 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 				return true;
 
 			case R.id.menu_uploads:
-				UploadsFragment frag = new UploadsFragment();
-				frag.show(getSupportFragmentManager(), "uploads");
+				showUploads();
 				return true;
 		}
 
 		return super.onOptionsItemSelected(item);
+	}
+
+	private void showUploads() {
+		UploadsFragment frag = new UploadsFragment();
+		frag.show(getSupportFragmentManager(), "uploads");
 	}
 
 	public void onPhotoSelectionChanged(PhotoUpload upload, boolean added) {
@@ -210,8 +233,8 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 	}
 
 	@Override
-	protected void onStart() {
-		super.onStart();
+	protected void onResume() {
+		super.onResume();
 		checkTabsAndMenu();
 	}
 
@@ -294,6 +317,14 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 		}
 	}
 
+	private void refreshUploadsActionBarView() {
+		if (null != mUploadsActionView) {
+			int total = mPhotoController.getUploadsCount();
+			int active = mPhotoController.getActiveUploadsCount();
+			mUploadsActionView.updateProgress(total - active, total);
+		}
+	}
+
 	private void removeUploadsTab() {
 		final Tab uploadsTab = getTabWithId(TAB_UPLOADS);
 		if (null != uploadsTab) {
@@ -340,10 +371,10 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements On
 	private void setupUploadsActionBarView(Menu menu) {
 		if (!mSinglePane) {
 			MenuItem uploadsItem = menu.findItem(R.id.menu_uploads);
-			if (null != uploadsItem) {
-				uploadsItem.setVisible(mPhotoController.hasUploads());
-			}
+			mUploadsActionView = (UploadsActionBarView) uploadsItem.getActionView();
+			mUploadsActionView.setOnClickListener(this);
+			uploadsItem.setVisible(mPhotoController.hasUploads());
+			refreshUploadsActionBarView();
 		}
 	}
-
 }

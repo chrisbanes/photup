@@ -6,6 +6,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import de.greenrobot.event.EventBus;
+
+import uk.co.senab.photup.events.UploadsModifiedEvent;
 import uk.co.senab.photup.listeners.OnPhotoSelectionChangedListener;
 import uk.co.senab.photup.model.Account;
 import uk.co.senab.photup.model.FbUser;
@@ -177,6 +180,9 @@ public class PhotoUploadController {
 	/**
 	 * Upload Methods
 	 */
+	public int getUploadsCount() {
+		return mUploadingList.size();
+	}
 
 	public List<PhotoUpload> getUploadingUploads() {
 		return new ArrayList<PhotoUpload>(mUploadingList);
@@ -282,6 +288,8 @@ public class PhotoUploadController {
 					l.onUploadsCleared();
 				}
 			}
+			
+			EventBus.getDefault().post(new UploadsModifiedEvent());
 		}
 	}
 
