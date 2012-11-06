@@ -2,8 +2,8 @@
 <resources>
 
 	<!-- Size Raw Dims -->
-	<dimen name="gridview_item_dimension_user_small">110dp</dimen>
-	<dimen name="gridview_item_dimension_selected_small">165dp</dimen>
+	<dimen name="gridview_item_dimension_user_small">105dp</dimen>
+	<dimen name="gridview_item_dimension_selected_small">155dp</dimen>
 	<dimen name="gridview_item_dimension_user_large">170dp</dimen>
 	<dimen name="gridview_item_dimension_selected_large">190dp</dimen>
 	<dimen name="gridview_item_dimension_user_xlarge">200dp</dimen>
