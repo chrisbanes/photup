@@ -8,22 +8,27 @@
 		android:title="@string/upload_title"/>
 	<item
 		android:id="@+id/menu_select_all"
+		android:icon="@drawable/ic_menu_select_all"
 		android:showAsAction="never"
 		android:title="@string/select_all"/>
 	<item
 		android:id="@+id/menu_clear_selection"
+		android:icon="@drawable/ic_menu_clear_all"
 		android:showAsAction="never"
 		android:title="@string/clear_selection"/>
 	<item
 		android:id="@+id/menu_settings"
+		android:icon="@drawable/ic_menu_settings"
 		android:showAsAction="never"
 		android:title="@string/settings"/>
 	<item
 		android:id="@+id/menu_donate"
+		android:icon="@drawable/ic_menu_donate"
 		android:showAsAction="never"
 		android:title="@string/donate_title"/>
 	<item
 		android:id="@+id/menu_logout"
+		android:icon="@drawable/ic_menu_logout"
 		android:showAsAction="never"
 		android:title="@string/logout_static"/>
 

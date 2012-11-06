@@ -7,14 +7,17 @@
 		android:title="@string/upload_retry"/>
 	<item
 		android:id="@+id/menu_settings"
+		android:icon="@drawable/ic_menu_settings"
 		android:showAsAction="never"
 		android:title="@string/settings"/>
 	<item
 		android:id="@+id/menu_donate"
+		android:icon="@drawable/ic_menu_donate"
 		android:showAsAction="never"
 		android:title="@string/donate_title"/>
 	<item
 		android:id="@+id/menu_logout"
+		android:icon="@drawable/ic_menu_logout"
 		android:showAsAction="never"
 		android:title="@string/logout_static"/>
 
