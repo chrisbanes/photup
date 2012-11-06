@@ -17,6 +17,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
@@ -136,7 +137,17 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements Ta
 	}
 
 	public void onEventMainThread(UploadsModifiedEvent event) {
-		checkTabsAndMenu();
+		if (mPhotoController.hasUploads()) {
+			if (null == mUploadsActionView) {
+				supportInvalidateOptionsMenu();
+			} else {
+				refreshUploadsActionBarView();
+			}
+		} else {
+			if (null != mUploadActionView) {
+				supportInvalidateOptionsMenu();
+			}
+		}
 	}
 
 	@Override
@@ -355,10 +366,13 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements Ta
 	private void setupUploadsActionBarView(Menu menu) {
 		if (!mSinglePane) {
 			MenuItem uploadsItem = menu.findItem(R.id.menu_uploads);
-			mUploadsActionView = (UploadsActionBarView) uploadsItem.getActionView();
-			mUploadsActionView.setOnClickListener(this);
 			uploadsItem.setVisible(mPhotoController.hasUploads());
-			refreshUploadsActionBarView();
+
+			if (uploadsItem.isVisible()) {
+				mUploadsActionView = (UploadsActionBarView) uploadsItem.getActionView();
+				mUploadsActionView.setOnClickListener(this);
+				refreshUploadsActionBarView();
+			}
 		}
 	}
 

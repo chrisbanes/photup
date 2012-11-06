@@ -289,6 +289,8 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnSin
 		mFriendsFragment = new FriendsListFragment();
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getSupportActionBar().setTitle(" ");
+		
 
 		/**
 		 * Nasty hack, basically we need to know when the ViewPager is laid out,

@@ -37,5 +37,6 @@
 	<dimen name="form_item_height">48dp</dimen>
 	<dimen name="crop_hysteresis">16dp</dimen>
 	<dimen name="dialog_title_text_size">22sp</dimen>
+	<dimen name="ab_upload_progress_width">140dp</dimen>
 
 </resources>

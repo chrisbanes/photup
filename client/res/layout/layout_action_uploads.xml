@@ -9,9 +9,10 @@
 	<ProgressBar
 		android:id="@+id/pb_uploads_action"
 		style="?android:attr/progressBarStyleHorizontal"
-		android:layout_width="140dp"
+		android:layout_width="@dimen/ab_upload_progress_width"
 		android:layout_height="wrap_content"
-		android:max="100" />
+		android:max="100"
+		android:progress="0" />
 
 	<TextView
 		android:id="@+id/tv_uploads_action"
