@@ -65,7 +65,7 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_gravity="center"
-					android:checked="true"
+					android:checked="@bool/promo_checked_default"
 					android:text="@string/login_promo"
 					android:textSize="13sp" />
 			</LinearLayout>

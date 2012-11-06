@@ -4,5 +4,6 @@
     <bool name="load_mini_thumbnails">false</bool>
     <bool name="sample_mini_thumbnails">false</bool>
     <bool name="swipe_selected">false</bool>
+    <bool name="promo_checked_default">false</bool>
     
 </resources>
