@@ -2,6 +2,6 @@
 <resources>
 
     <bool name="load_mini_thumbnails">true</bool>
-    <bool name="sample_mini_thumbnails">true</bool>
+    <bool name="sample_mini_thumbnails">false</bool>
 
 </resources>
