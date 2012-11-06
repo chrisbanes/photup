@@ -28,6 +28,7 @@
 		android:title="@string/place"/>
 	<item
 		android:id="@+id/menu_reset"
+		android:icon="@drawable/ic_menu_reset"
 		android:showAsAction="never"
 		android:title="@string/photo_reset"/>
 

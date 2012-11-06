@@ -13,7 +13,6 @@ import android.os.Bundle;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.Window;
 
 public class CropImageActivity extends PhotupActivity implements OnPhotoLoadListener {
 
@@ -28,8 +27,6 @@ public class CropImageActivity extends PhotupActivity implements OnPhotoLoadList
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-
 		mCropImageView = new CropImageView(this, null);
 		Platform.disableHardwareAcceleration(mCropImageView);
 
@@ -39,7 +36,6 @@ public class CropImageActivity extends PhotupActivity implements OnPhotoLoadList
 		mPhotoUpload = CROP_SELECTION;
 		CROP_SELECTION = null;
 
-		setProgressBarIndeterminateVisibility(true);
 		mCropImageView.requestFullSize(mPhotoUpload, false, this);
 	}
 
@@ -103,8 +99,6 @@ public class CropImageActivity extends PhotupActivity implements OnPhotoLoadList
 	}
 
 	public void onPhotoLoadFinished(Bitmap bitmap) {
-		setProgressBarIndeterminateVisibility(false);
-
 		if (null != bitmap) {
 			makeHighlight(bitmap);
 		}
