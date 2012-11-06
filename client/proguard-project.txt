@@ -57,3 +57,9 @@ public org.acra.ErrorReporter$ReportsSenderWorker handleSilentException(java.lan
 -keep interface com.j256.**
 -keepclassmembers interface com.j256.** { *; }
 -keepclassmembers class uk.co.senab.photup.DatabaseHelper { *; }
+
+# For EventBus
+-keepclassmembers class ** {
+	public void onEvent(**);
+	public void onEventMainThread(**);
+}
