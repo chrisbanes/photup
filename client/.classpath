@@ -13,5 +13,7 @@
 	<classpathentry kind="lib" path="libs/ormlite-android-4.41.jar"/>
 	<classpathentry kind="lib" path="libs/ormlite-core-4.41.jar"/>
 	<classpathentry kind="lib" path="libs/EventBus-2.0.1.jar"/>
+	<classpathentry kind="lib" path="libs/crouton-1.5.jar"/>
+	<classpathentry kind="lib" path="libs/crittercism_v3_0_3_sdkonly.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

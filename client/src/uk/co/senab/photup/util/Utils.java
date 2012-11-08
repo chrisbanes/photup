@@ -7,11 +7,13 @@ import java.io.IOException;
 import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.Flags;
 import uk.co.senab.photup.PhotupApplication;
+import uk.co.senab.photup.PreferenceConstants;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.service.PhotoUploadService;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -24,6 +26,7 @@ import android.net.Uri;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.FloatMath;
 import android.util.Log;
@@ -196,6 +199,17 @@ public class Utils {
 		Intent intent = new Intent(context, PhotoUploadService.class);
 		intent.setAction(Constants.INTENT_SERVICE_UPLOAD_ALL);
 		return intent;
+	}
+
+	public static boolean isUploadingPaused(final Context context) {
+		return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(
+				PreferenceConstants.PREF_UPLOADS_PAUSED, false);
+	}
+
+	public static void setUploadingPaused(final Context context, final boolean paused) {
+		Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+		editor.putBoolean(PreferenceConstants.PREF_UPLOADS_PAUSED, paused);
+		editor.commit();
 	}
 
 	public static Bitmap rotate(Bitmap original, final int angle) {

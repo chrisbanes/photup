@@ -5,12 +5,14 @@ import org.donations.DonationsActivity;
 import uk.co.senab.photup.base.PhotupFragmentActivity;
 import uk.co.senab.photup.events.PhotoSelectionAddedEvent;
 import uk.co.senab.photup.events.PhotoSelectionRemovedEvent;
+import uk.co.senab.photup.events.UploadingPausedStateChangedEvent;
 import uk.co.senab.photup.events.UploadsModifiedEvent;
 import uk.co.senab.photup.fragments.SelectedPhotosFragment;
 import uk.co.senab.photup.fragments.UploadFragment;
 import uk.co.senab.photup.fragments.UploadsFragment;
 import uk.co.senab.photup.fragments.UserPhotosFragment;
 import uk.co.senab.photup.receivers.ConnectivityReceiver;
+import uk.co.senab.photup.util.Utils;
 import uk.co.senab.photup.views.UploadActionBarView;
 import uk.co.senab.photup.views.UploadsActionBarView;
 import android.content.Intent;
@@ -28,6 +30,8 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
 import de.greenrobot.event.EventBus;
+import de.neofonie.mobile.app.android.widget.crouton.Crouton;
+import de.neofonie.mobile.app.android.widget.crouton.Style;
 
 public class PhotoSelectionActivity extends PhotupFragmentActivity implements TabListener, OnClickListener {
 
@@ -35,7 +39,7 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements Ta
 
 	public static final int TAB_PHOTOS = 0;
 	public static final int TAB_SELECTED = 1;
-	static final int TAB_UPLOADS = 2;
+	public static final int TAB_UPLOADS = 2;
 
 	private UploadActionBarView mUploadActionView;
 	private UploadsActionBarView mUploadsActionView;
@@ -79,6 +83,7 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements Ta
 		if (mSinglePane) {
 			ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 			ab.addTab(ab.newTab().setTag(TAB_SELECTED).setTabListener(this));
+			ab.addTab(ab.newTab().setText(R.string.tab_uploads).setTag(TAB_UPLOADS).setTabListener(this));
 
 			Intent intent = getIntent();
 			int defaultTab = intent.getIntExtra(EXTRA_DEFAULT_TAB, -1);
@@ -114,6 +119,7 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements Ta
 
 				case TAB_UPLOADS:
 					getSupportMenuInflater().inflate(R.menu.menu_photo_grid_uploads, menu);
+					setupPauseUploadingMenuItems(menu);
 					break;
 			}
 		} else {
@@ -133,6 +139,19 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements Ta
 	public void onEvent(PhotoSelectionRemovedEvent event) {
 		refreshSelectedPhotosTitle();
 		refreshUploadActionBarView();
+	}
+
+	public void onEvent(UploadingPausedStateChangedEvent event) {
+		// TODO Should probably check whether we're showing the pause/resume
+		// items before invalidating
+		supportInvalidateOptionsMenu();
+
+		Crouton.cancelAllCroutons();
+		if (Utils.isUploadingPaused(this)) {
+			Crouton.showText(this, R.string.paused_uploads, Style.ALERT);
+		} else {
+			Crouton.showText(this, R.string.started_uploads, Style.CONFIRM);
+		}
 	}
 
 	public void onEventMainThread(UploadsModifiedEvent event) {
@@ -181,6 +200,17 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements Ta
 			case R.id.menu_uploads:
 				showUploads();
 				return true;
+
+			case R.id.menu_uploading_pause:
+				Utils.setUploadingPaused(this, true);
+				EventBus.getDefault().post(new UploadingPausedStateChangedEvent());
+				return true;
+
+			case R.id.menu_uploading_start:
+				Utils.setUploadingPaused(this, false);
+				EventBus.getDefault().post(new UploadingPausedStateChangedEvent());
+				startService(Utils.getUploadAllIntent(this));
+				return true;
 		}
 
 		return super.onOptionsItemSelected(item);
@@ -222,22 +252,9 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements Ta
 		checkTabsAndMenu();
 	}
 
-	private void addUploadsTab() {
-		if (null == getTabWithId(TAB_UPLOADS)) {
-			ActionBar ab = getSupportActionBar();
-			ab.addTab(ab.newTab().setText(R.string.tab_uploads).setTag(TAB_UPLOADS).setTabListener(this));
-		}
-	}
-
 	private void checkTabsAndMenu() {
 		if (mSinglePane) {
 			try {
-				if (mPhotoController.hasUploads()) {
-					addUploadsTab();
-				} else {
-					removeUploadsTab();
-				}
-
 				if (mPhotoController.getActiveUploadsCount() > 0) {
 					// Load Uploads Tab if we need to
 					final int lastTabIndex = getSupportActionBar().getTabCount() - 1;
@@ -276,18 +293,6 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements Ta
 		return getString(R.string.tab_selected_photos, mPhotoController.getSelectedCount());
 	}
 
-	private Tab getTabWithId(final int id) {
-		ActionBar ab = getSupportActionBar();
-		Tab tab;
-		for (int i = 0, z = ab.getTabCount(); i < z; i++) {
-			tab = ab.getTabAt(i);
-			if (((Integer) tab.getTag()) == id) {
-				return tab;
-			}
-		}
-		return null;
-	}
-
 	private void refreshSelectedPhotosTitle() {
 		if (mSinglePane) {
 			getSupportActionBar().getTabAt(1).setText(formatSelectedFragmentTitle());
@@ -318,16 +323,6 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements Ta
 		}
 	}
 
-	private void removeUploadsTab() {
-		final Tab uploadsTab = getTabWithId(TAB_UPLOADS);
-		if (null != uploadsTab) {
-			// Move to the first tab, then remove the tab
-			ActionBar ab = getSupportActionBar();
-			ab.setSelectedNavigationItem(TAB_PHOTOS);
-			ab.removeTab(uploadsTab);
-		}
-	}
-
 	private void replacePrimaryFragment(int id, FragmentTransaction ft) {
 		Fragment fragment;
 
@@ -352,6 +347,15 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements Ta
 		}
 
 		ft.replace(R.id.frag_primary, fragment);
+	}
+
+	private void setupPauseUploadingMenuItems(Menu menu) {
+		MenuItem pauseItem = menu.findItem(R.id.menu_uploading_pause);
+		MenuItem startItem = menu.findItem(R.id.menu_uploading_start);
+		if (null != pauseItem && null != startItem) {
+			startItem.setVisible(Utils.isUploadingPaused(this));
+			pauseItem.setVisible(!startItem.isVisible());
+		}
 	}
 
 	private void setupUploadActionBarView(Menu menu) {
