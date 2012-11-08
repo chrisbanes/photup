@@ -14,6 +14,7 @@ import uk.co.senab.photup.model.PhotoTag;
 import uk.co.senab.photup.model.PhotoUpload;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,7 +29,8 @@ import android.widget.TextView;
 @SuppressLint("ViewConstructor")
 @SuppressWarnings("deprecation")
 public class PhotoTagItemLayout extends FrameLayout implements OnPhotoTagsChangedListener, View.OnClickListener,
-		OnPhotoTagTapListener, OnFriendPickedListener, OnFaceDetectionListener, PhotoViewAttacher.OnMatrixChangedListener {
+		OnPhotoTagTapListener, OnFriendPickedListener, OnFaceDetectionListener,
+		PhotoViewAttacher.OnMatrixChangedListener {
 	static final String LOG_TAG = "PhotoTagItemLayout";
 
 	private PhotoTag mFriendRequestTag;
@@ -158,8 +160,13 @@ public class PhotoTagItemLayout extends FrameLayout implements OnPhotoTagsChange
 
 	void onPhotoTagsChangedImp(final PhotoTag tag, final boolean added) {
 		if (added) {
-			mTagLayout.addView(createPhotoTagLayout(tag));
-			layoutTags(mImageView.getDisplayRect());
+			View tagLayout = createPhotoTagLayout(tag);
+			mTagLayout.addView(tagLayout);
+
+			final Rect viewRect = new Rect();
+			getDrawingRect(viewRect);
+
+			layoutTag(tagLayout, mImageView.getDisplayRect(), viewRect, true);
 		} else {
 			View view = getTagLayout(tag);
 			view.startAnimation(mPhotoTagOutAnimation);
@@ -218,26 +225,36 @@ public class PhotoTagItemLayout extends FrameLayout implements OnPhotoTagsChange
 			Log.d(LOG_TAG, "layoutTags. Rect: " + rect.toString());
 		}
 
-		AbsoluteLayout.LayoutParams lp;
+		final Rect viewRect = new Rect();
+		getDrawingRect(viewRect);
+
 		for (int i = 0, z = mTagLayout.getChildCount(); i < z; i++) {
-			View tagLayout = mTagLayout.getChildAt(i);
-			PhotoTag tag = (PhotoTag) tagLayout.getTag();
+			layoutTag(mTagLayout.getChildAt(i), rect, viewRect, false);
+		}
+	}
 
-			// Measure View if we need to
-			if (tagLayout.getWidth() == 0) {
-				measureView(tagLayout);
-			}
+	private void layoutTag(final View tagLayout, final RectF rect, final Rect parentRect, final boolean animate) {
+		PhotoTag tag = (PhotoTag) tagLayout.getTag();
 
-			lp = (AbsoluteLayout.LayoutParams) tagLayout.getLayoutParams();
-			lp.x = Math.round((rect.width() * tag.getX() / 100f) + rect.left) - (tagLayout.getMeasuredWidth() / 2);
-			lp.y = Math.round((rect.height() * tag.getY() / 100f) + rect.top);
+		int tagWidth = tagLayout.getWidth();
+		// Measure View if we need to
+		if (tagWidth < 1) {
+			measureView(tagLayout);
+			tagWidth = tagLayout.getMeasuredWidth();
+		}
 
-			tagLayout.setLayoutParams(lp);
+		AbsoluteLayout.LayoutParams lp = (AbsoluteLayout.LayoutParams) tagLayout.getLayoutParams();
+		lp.x = Math.round((rect.width() * tag.getX() / 100f) + rect.left) - (tagWidth / 2);
+		lp.y = Math.round((rect.height() * tag.getY() / 100f) + rect.top);
+		tagLayout.setLayoutParams(lp);
 
-			if (tagLayout.getVisibility() != View.VISIBLE) {
+		if (parentRect.contains(lp.x, lp.y)) {
+			if (animate) {
 				tagLayout.startAnimation(mPhotoTagInAnimation);
-				tagLayout.setVisibility(View.VISIBLE);
 			}
+			tagLayout.setVisibility(View.VISIBLE);
+		} else {
+			tagLayout.setVisibility(View.GONE);
 		}
 	}
 
