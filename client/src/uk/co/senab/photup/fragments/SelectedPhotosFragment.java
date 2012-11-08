@@ -61,10 +61,7 @@ public class SelectedPhotosFragment extends AbstractPhotosFragment implements On
 
 		mAdapter = new SelectedPhotosBaseAdapter(getActivity(), !swipeToDismiss);
 		mGridView.setAdapter(mAdapter);
-
-		View emptyView = inflater.inflate(R.layout.layout_empty_user_photos, container, false);
-		view.addView(emptyView);
-		mGridView.setEmptyView(emptyView);
+		mGridView.setEmptyView(view.findViewById(android.R.id.empty));
 
 		return view;
 	}

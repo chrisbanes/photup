@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/ll_root"
 	style="@style/SelectedFragmentStyle"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
@@ -12,12 +11,20 @@
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content" />
 
-	<GridView
-		android:id="@+id/gv_photos"
-		style="@style/PhotosGridView"
+	<FrameLayout
 		android:layout_width="match_parent"
 		android:layout_height="0px"
-		android:layout_weight="1"
-		android:columnWidth="@dimen/gridview_item_dimension_selected" />
+		android:layout_weight="1" >
+
+		<include
+			layout="@layout/layout_empty_user_photos" />
+
+		<GridView
+			android:id="@+id/gv_photos"
+			style="@style/PhotosGridView"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:columnWidth="@dimen/gridview_item_dimension_selected" />
+	</FrameLayout>
 
 </LinearLayout>
