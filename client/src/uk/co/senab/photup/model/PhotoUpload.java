@@ -90,6 +90,10 @@ public class PhotoUpload {
 
 		return item;
 	}
+	
+	public static void clearCache() {
+		SELECTION_CACHE.clear();
+	}
 
 	public static void populateCache(List<PhotoUpload> uploads) {
 		for (PhotoUpload upload : uploads) {

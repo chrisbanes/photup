@@ -132,6 +132,8 @@ public class LoginActivity extends Activity implements View.OnClickListener, Dia
 		}
 
 		Session.clearSavedSession(this);
+		PhotoUploadController.getFromContext(this).reset();
+
 		refreshUi();
 	}
 

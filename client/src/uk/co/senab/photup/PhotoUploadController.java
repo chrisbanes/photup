@@ -269,7 +269,7 @@ public class PhotoUploadController {
 			postEvent(new PhotoSelectionRemovedEvent(selection));
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -286,6 +286,18 @@ public class PhotoUploadController {
 
 			postEvent(new UploadsModifiedEvent());
 		}
+	}
+
+	public void reset() {
+		// Clear the cache
+		PhotoUpload.clearCache();
+
+		// Clear the internal lists
+		mSelectedPhotoList.clear();
+		mUploadingList.clear();
+
+		// Finally delete the database
+		mContext.deleteDatabase(DatabaseHelper.DATABASE_NAME);
 	}
 
 	public void updateDatabase() {
