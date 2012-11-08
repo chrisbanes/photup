@@ -115,12 +115,7 @@ public class UploadFragment extends PhotupDialogFragment implements AlbumsResult
 	}
 
 	public void onAlbumsLoaded(Account account, List<Album> albums) {
-		if (R.id.rb_target_album == mTargetRadioGroup.getCheckedRadioButtonId() && account == getSelectedAccount()) {
-			mFacebookObjects.clear();
-			mFacebookObjects.addAll(albums);
-			mTargetAdapter.notifyDataSetChanged();
-			mTargetLayout.setVisibility(View.VISIBLE);
-		}
+		updateTargetList(R.id.rb_target_album, account, albums);
 	}
 
 	public void onCheckedChanged(RadioGroup group, final int checkedId) {
@@ -214,12 +209,7 @@ public class UploadFragment extends PhotupDialogFragment implements AlbumsResult
 	}
 
 	public void onEventsLoaded(Account account, List<Event> events) {
-		if (R.id.rb_target_event == mTargetRadioGroup.getCheckedRadioButtonId() && account == getSelectedAccount()) {
-			mFacebookObjects.clear();
-			mFacebookObjects.addAll(events);
-			mTargetAdapter.notifyDataSetChanged();
-			mTargetLayout.setVisibility(View.VISIBLE);
-		}
+		updateTargetList(R.id.rb_target_event, account, events);
 	}
 
 	public void onFacebookError(FacebookError e) {
@@ -227,12 +217,7 @@ public class UploadFragment extends PhotupDialogFragment implements AlbumsResult
 	}
 
 	public void onGroupsLoaded(Account account, List<Group> groups) {
-		if (R.id.rb_target_group == mTargetRadioGroup.getCheckedRadioButtonId() && account == getSelectedAccount()) {
-			mFacebookObjects.clear();
-			mFacebookObjects.addAll(groups);
-			mTargetAdapter.notifyDataSetChanged();
-			mTargetLayout.setVisibility(View.VISIBLE);
-		}
+		updateTargetList(R.id.rb_target_group, account, groups);
 	}
 
 	public void onItemSelected(AdapterView<?> spinner, View view, int position, long id) {
@@ -358,6 +343,18 @@ public class UploadFragment extends PhotupDialogFragment implements AlbumsResult
 		PlacesListFragment fragment = new PlacesListFragment();
 		fragment.setOnPlacePickedListener(this);
 		fragment.show(getActivity().getSupportFragmentManager(), "places");
+	}
+
+	private <T extends AbstractFacebookObject> void updateTargetList(final int targetId, final Account targetAccount,
+			final List<T> objects) {
+		if (targetId == mTargetRadioGroup.getCheckedRadioButtonId() && targetAccount == getSelectedAccount()) {
+			mFacebookObjects.clear();
+			mFacebookObjects.addAll(objects);
+			mTargetAdapter.notifyDataSetChanged();
+			// Disable Spinner if it's empty
+			mTargetSpinner.setEnabled(!mTargetAdapter.isEmpty());
+			mTargetLayout.setVisibility(View.VISIBLE);
+		}
 	}
 
 	private void upload(final boolean force) {
