@@ -2,17 +2,14 @@ package uk.co.senab.photup;
 
 import org.donations.DonationsActivity;
 
-import uk.co.senab.photup.base.PhotupFragmentActivity;
 import uk.co.senab.photup.events.PhotoSelectionAddedEvent;
 import uk.co.senab.photup.events.PhotoSelectionRemovedEvent;
-import uk.co.senab.photup.events.UploadingPausedStateChangedEvent;
 import uk.co.senab.photup.events.UploadsModifiedEvent;
 import uk.co.senab.photup.fragments.SelectedPhotosFragment;
 import uk.co.senab.photup.fragments.UploadFragment;
 import uk.co.senab.photup.fragments.UploadsFragment;
 import uk.co.senab.photup.fragments.UserPhotosFragment;
 import uk.co.senab.photup.receivers.ConnectivityReceiver;
-import uk.co.senab.photup.util.Utils;
 import uk.co.senab.photup.views.UploadActionBarView;
 import uk.co.senab.photup.views.UploadsActionBarView;
 import android.content.Intent;
@@ -29,11 +26,7 @@ import com.actionbarsherlock.app.ActionBar.TabListener;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-import de.greenrobot.event.EventBus;
-import de.neofonie.mobile.app.android.widget.crouton.Crouton;
-import de.neofonie.mobile.app.android.widget.crouton.Style;
-
-public class PhotoSelectionActivity extends PhotupFragmentActivity implements TabListener, OnClickListener {
+public class PhotoSelectionActivity extends AbstractPhotoUploadActivity implements TabListener, OnClickListener {
 
 	public static final String EXTRA_DEFAULT_TAB = "extra_tab";
 
@@ -69,7 +62,6 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements Ta
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		EventBus.getDefault().register(this);
 
 		setContentView(R.layout.activity_choose_photos);
 		mSinglePane = null == findViewById(R.id.frag_secondary);
@@ -118,8 +110,7 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements Ta
 					break;
 
 				case TAB_UPLOADS:
-					getSupportMenuInflater().inflate(R.menu.menu_photo_grid_uploads, menu);
-					setupPauseUploadingMenuItems(menu);
+					// Happens in super...
 					break;
 			}
 		} else {
@@ -139,19 +130,6 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements Ta
 	public void onEvent(PhotoSelectionRemovedEvent event) {
 		refreshSelectedPhotosTitle();
 		refreshUploadActionBarView();
-	}
-
-	public void onEvent(UploadingPausedStateChangedEvent event) {
-		// TODO Should probably check whether we're showing the pause/resume
-		// items before invalidating
-		supportInvalidateOptionsMenu();
-
-		Crouton.cancelAllCroutons();
-		if (Utils.isUploadingPaused(this)) {
-			Crouton.showText(this, R.string.paused_uploads, Style.ALERT);
-		} else {
-			Crouton.showText(this, R.string.started_uploads, Style.CONFIRM);
-		}
 	}
 
 	public void onEventMainThread(UploadsModifiedEvent event) {
@@ -202,15 +180,9 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements Ta
 				return true;
 
 			case R.id.menu_uploading_pause:
-				Utils.setUploadingPaused(this, true);
-				EventBus.getDefault().post(new UploadingPausedStateChangedEvent());
-				return true;
-
 			case R.id.menu_uploading_start:
-				Utils.setUploadingPaused(this, false);
-				EventBus.getDefault().post(new UploadingPausedStateChangedEvent());
-				startService(Utils.getUploadAllIntent(this));
-				return true;
+				// Handled in super
+				break;
 		}
 
 		return super.onOptionsItemSelected(item);
@@ -238,12 +210,6 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements Ta
 
 	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
 		mPreviouslySelectedTab = tab;
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		EventBus.getDefault().unregister(this);
 	}
 
 	@Override
@@ -339,15 +305,6 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements Ta
 		ft.replace(R.id.frag_primary, fragment);
 	}
 
-	private void setupPauseUploadingMenuItems(Menu menu) {
-		MenuItem pauseItem = menu.findItem(R.id.menu_uploading_pause);
-		MenuItem startItem = menu.findItem(R.id.menu_uploading_start);
-		if (null != pauseItem && null != startItem) {
-			startItem.setVisible(Utils.isUploadingPaused(this));
-			pauseItem.setVisible(!startItem.isVisible());
-		}
-	}
-
 	private void setupUploadActionBarView(Menu menu) {
 		MenuItem item = menu.findItem(R.id.menu_upload);
 		mUploadActionView = (UploadActionBarView) item.getActionView();
@@ -368,7 +325,6 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements Ta
 	}
 
 	private void showUploads() {
-		UploadsFragment frag = new UploadsFragment();
-		frag.show(getSupportFragmentManager(), "uploads");
+		startActivity(new Intent(this, PhotoUploadsActivity.class));
 	}
 }

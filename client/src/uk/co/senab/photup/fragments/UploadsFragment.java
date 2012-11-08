@@ -19,12 +19,13 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
+import com.actionbarsherlock.app.SherlockFragment;
 import com.example.android.swipedismiss.SwipeDismissListViewTouchListener;
 import com.example.android.swipedismiss.SwipeDismissListViewTouchListener.OnDismissCallback;
 
 import de.greenrobot.event.EventBus;
 
-public class UploadsFragment extends PhotupDialogFragment implements OnDismissCallback, OnItemClickListener {
+public class UploadsFragment extends SherlockFragment implements OnDismissCallback, OnItemClickListener {
 
 	private PhotoUploadController mPhotoSelectionController;
 	private UploadsListBaseAdapter mAdapter;
@@ -52,7 +53,7 @@ public class UploadsFragment extends PhotupDialogFragment implements OnDismissCa
 		listView.setOnScrollListener(swipeListener.makeScrollListener());
 		listView.setSelector(R.drawable.selectable_background_photup);
 		listView.setAdapter(mAdapter);
-		
+
 		listView.setEmptyView(view.findViewById(android.R.id.empty));
 
 		return view;
@@ -135,11 +136,6 @@ public class UploadsFragment extends PhotupDialogFragment implements OnDismissCa
 			e.printStackTrace();
 		}
 		mAdapter.notifyDataSetChanged();
-
-		// If we're now empty, and we're in a dialog, dismiss us
-		if (mAdapter.isEmpty() && getShowsDialog()) {
-			dismiss();
-		}
 	}
 
 	public boolean canDismiss(AbsListView listView, int position) {

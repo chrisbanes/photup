@@ -73,6 +73,9 @@
 			android:name=".SettingsActivity"
 			android:label="@string/settings" />
 		<activity
+			android:name=".PhotoUploadsActivity"
+			android:label="@string/tab_uploads" />
+		<activity
 			android:name=".CropImageActivity"
 			android:configChanges="keyboard|keyboardHidden|orientation"
 			android:label="@string/photo_crop"
