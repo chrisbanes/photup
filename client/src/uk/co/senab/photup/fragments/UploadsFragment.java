@@ -6,6 +6,7 @@ import uk.co.senab.photup.R;
 import uk.co.senab.photup.adapters.UploadsListBaseAdapter;
 import uk.co.senab.photup.events.PhotoSelectionRemovedEvent;
 import uk.co.senab.photup.model.PhotoUpload;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -27,6 +28,8 @@ public class UploadsFragment extends PhotupDialogFragment implements OnDismissCa
 
 	private PhotoUploadController mPhotoSelectionController;
 	private UploadsListBaseAdapter mAdapter;
+
+	private ProgressDialog mOpeningFacebookDialog;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -54,9 +57,30 @@ public class UploadsFragment extends PhotupDialogFragment implements OnDismissCa
 	}
 
 	@Override
+	public void onStop() {
+		super.onStop();
+		closeFacebookProgressDialog();
+	}
+
+	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		EventBus.getDefault().unregister(this);
+	}
+
+	private void closeFacebookProgressDialog() {
+		if (null != mOpeningFacebookDialog) {
+			mOpeningFacebookDialog.dismiss();
+			mOpeningFacebookDialog = null;
+		}
+	}
+
+	private void openFacebookProgressDialog() {
+		closeFacebookProgressDialog();
+
+		mOpeningFacebookDialog = new ProgressDialog(getActivity());
+		mOpeningFacebookDialog.setMessage(getString(R.string.opening_app));
+		mOpeningFacebookDialog.show();
 	}
 
 	public void onItemClick(AdapterView<?> l, View view, int position, long id) {
@@ -70,6 +94,7 @@ public class UploadsFragment extends PhotupDialogFragment implements OnDismissCa
 				try {
 					intent.setData(Uri.parse("fb://post/" + postId));
 					startActivity(intent);
+					openFacebookProgressDialog();
 					return;
 				} catch (Exception e) {
 					// Facebook not installed
