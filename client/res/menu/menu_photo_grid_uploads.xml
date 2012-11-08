@@ -4,13 +4,13 @@
 	<item
 		android:id="@+id/menu_uploading_pause"
 		android:icon="@drawable/ic_action_pause"
-		android:showAsAction="ifRoom"
+		android:showAsAction="ifRoom|withText"
 		android:title="@string/pause_uploads"
 		android:visible="false"/>
 	<item
 		android:id="@+id/menu_uploading_start"
 		android:icon="@drawable/ic_action_start"
-		android:showAsAction="ifRoom"
+		android:showAsAction="ifRoom|withText"
 		android:title="@string/start_uploads"
 		android:visible="false"/>
 	<item

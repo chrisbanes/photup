@@ -5,8 +5,7 @@
 		android:id="@+id/menu_uploads"
 		android:actionLayout="@layout/layout_action_uploads"
 		android:showAsAction="ifRoom"
-		android:title="@string/tab_uploads"
-		android:visible="false"/>
+		android:title="@string/tab_uploads"/>
 	<item
 		android:id="@+id/menu_upload"
 		android:actionLayout="@layout/layout_action_upload"
