@@ -73,8 +73,8 @@
 	<string name="opening_app">Opening&#8230;</string>
 	<string name="pause_uploads">Pause Uploading</string>
 	<string name="start_uploads">Start Uploading</string>
-	<string name="paused_uploads">Uploading Disabled</string>
-	<string name="started_uploads">Uploading Enabled</string>
+	<string name="paused_uploads">Uploading is Disabled</string>
+	<string name="started_uploads">Uploading is Enabled</string>
 	<string name="empty_uploads">No uploads available</string>
 
 </resources>

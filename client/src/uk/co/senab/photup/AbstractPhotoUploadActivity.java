@@ -20,6 +20,10 @@ public abstract class AbstractPhotoUploadActivity extends PhotupFragmentActivity
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		EventBus.getDefault().register(this);
+
+		if (Utils.isUploadingPaused(this)) {
+			showUploadingDisabledCrouton();
+		}
 	}
 
 	@Override
@@ -70,12 +74,21 @@ public abstract class AbstractPhotoUploadActivity extends PhotupFragmentActivity
 		// items before invalidating
 		supportInvalidateOptionsMenu();
 
-		Crouton.cancelAllCroutons();
 		if (Utils.isUploadingPaused(this)) {
-			Crouton.showText(this, R.string.paused_uploads, Style.ALERT);
+			showUploadingDisabledCrouton();
 		} else {
-			Crouton.showText(this, R.string.started_uploads, Style.CONFIRM);
+			showUploadingEnabledCrouton();
 		}
+	}
+
+	protected final void showUploadingDisabledCrouton() {
+		Crouton.cancelAllCroutons();
+		Crouton.showText(this, R.string.paused_uploads, Style.ALERT);
+	}
+
+	protected final void showUploadingEnabledCrouton() {
+		Crouton.cancelAllCroutons();
+		Crouton.showText(this, R.string.started_uploads, Style.CONFIRM);
 	}
 
 }
