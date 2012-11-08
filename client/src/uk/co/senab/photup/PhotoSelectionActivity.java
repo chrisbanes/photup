@@ -5,6 +5,7 @@ import org.donations.DonationsActivity;
 import uk.co.senab.photup.events.PhotoSelectionAddedEvent;
 import uk.co.senab.photup.events.PhotoSelectionRemovedEvent;
 import uk.co.senab.photup.events.UploadsModifiedEvent;
+import uk.co.senab.photup.events.UploadsStartEvent;
 import uk.co.senab.photup.fragments.SelectedPhotosFragment;
 import uk.co.senab.photup.fragments.UploadFragment;
 import uk.co.senab.photup.fragments.UploadsFragment;
@@ -54,7 +55,7 @@ public class PhotoSelectionActivity extends AbstractPhotoUploadActivity implemen
 				}
 			}
 		} else if (v == mUploadsActionView) {
-			showUploads();
+			startUploadsActivity();
 		}
 	}
 
@@ -132,8 +133,17 @@ public class PhotoSelectionActivity extends AbstractPhotoUploadActivity implemen
 		refreshUploadActionBarView();
 	}
 
+	public void onEvent(UploadsStartEvent event) {
+		ActionBar ab = getSupportActionBar();
+		if (ab.getNavigationMode() != ActionBar.NAVIGATION_MODE_STANDARD) {
+			ab.setSelectedNavigationItem(TAB_UPLOADS);
+		} else {
+			startUploadsActivity();
+		}
+	}
+
 	public void onEventMainThread(UploadsModifiedEvent event) {
-		checkTabsAndMenu();
+		refreshTabMenuItems();
 	}
 
 	@Override
@@ -176,7 +186,7 @@ public class PhotoSelectionActivity extends AbstractPhotoUploadActivity implemen
 				return true;
 
 			case R.id.menu_uploads:
-				showUploads();
+				startUploadsActivity();
 				return true;
 
 			case R.id.menu_uploading_pause:
@@ -215,34 +225,7 @@ public class PhotoSelectionActivity extends AbstractPhotoUploadActivity implemen
 	@Override
 	protected void onResume() {
 		super.onResume();
-		checkTabsAndMenu();
-	}
-
-	private void checkTabsAndMenu() {
-		if (mSinglePane) {
-			try {
-				if (mPhotoController.getActiveUploadsCount() > 0) {
-					// Load Uploads Tab if we need to
-					final int lastTabIndex = getSupportActionBar().getTabCount() - 1;
-					getSupportActionBar().setSelectedNavigationItem(lastTabIndex);
-				} else if (!mPhotoController.hasSelections()) {
-					// Else just show Media Lib tab
-					getSupportActionBar().setSelectedNavigationItem(0);
-				}
-			} catch (IllegalStateException e) {
-				// Getting FCs. Not core function so just hide it if it happens
-				e.printStackTrace();
-			}
-
-			// This only needs to be done for single pane, as invalidating the
-			// action bar does it anyway (for dual pane).
-			refreshUploadActionBarView();
-
-		} else {
-			refreshUploadsActionBarView();
-		}
-
-		refreshSelectedPhotosTitle();
+		refreshTabMenuItems();
 	}
 
 	private CharSequence formatSelectedFragmentTitle() {
@@ -259,6 +242,12 @@ public class PhotoSelectionActivity extends AbstractPhotoUploadActivity implemen
 				userPhotos.setFragmentTitle(formatSelectedFragmentTitle());
 			}
 		}
+	}
+
+	private void refreshTabMenuItems() {
+		refreshUploadActionBarView();
+		refreshUploadsActionBarView();
+		refreshSelectedPhotosTitle();
 	}
 
 	private void refreshUploadActionBarView() {
@@ -324,7 +313,7 @@ public class PhotoSelectionActivity extends AbstractPhotoUploadActivity implemen
 		}
 	}
 
-	private void showUploads() {
+	private void startUploadsActivity() {
 		startActivity(new Intent(this, PhotoUploadsActivity.class));
 	}
 }

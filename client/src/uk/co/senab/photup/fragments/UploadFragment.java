@@ -6,6 +6,7 @@ import java.util.List;
 import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotupApplication;
+import uk.co.senab.photup.events.UploadsStartEvent;
 import uk.co.senab.photup.fragments.NewAlbumFragment.AccountProviderAccessor;
 import uk.co.senab.photup.fragments.NewAlbumFragment.OnAlbumCreatedListener;
 import uk.co.senab.photup.listeners.OnPlacePickedListener;
@@ -49,6 +50,8 @@ import android.widget.Toast;
 
 import com.facebook.android.FacebookError;
 import com.lightbox.android.photoprocessing.R;
+
+import de.greenrobot.event.EventBus;
 
 public class UploadFragment extends PhotupDialogFragment implements AlbumsResultListener, AccountsResultListener,
 		GroupsResultListener, EventsResultListener, OnClickListener, OnAlbumCreatedListener, OnPlacePickedListener,
@@ -396,6 +399,7 @@ public class UploadFragment extends PhotupDialogFragment implements AlbumsResult
 			controller.addUploadsFromSelected(account, targetId, quality, mPlace);
 			getActivity().startService(Utils.getUploadAllIntent(getActivity()));
 			dismiss();
+			EventBus.getDefault().post(new UploadsStartEvent());
 		} else {
 			Toast.makeText(getActivity(), getString(R.string.error_select_album), Toast.LENGTH_SHORT).show();
 		}
