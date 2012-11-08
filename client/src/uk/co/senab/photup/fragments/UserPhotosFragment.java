@@ -171,7 +171,6 @@ public class UserPhotosFragment extends AbstractPhotosFragment implements OnItem
 
 		mBucketAdapter = new ArrayAdapter<MediaStoreBucket>(getActivity(), Utils.getSpinnerItemResId(), mBuckets);
 		mBucketAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		new MediaStoreBucketsAsyncTask(getActivity(), this).execute();
 
 		EventBus.getDefault().register(this);
 	}
@@ -325,6 +324,14 @@ public class UserPhotosFragment extends AbstractPhotosFragment implements OnItem
 		});
 	}
 
+	@Override
+	public void onStart() {
+		super.onStart();
+
+		// Load buckets
+		MediaStoreBucketsAsyncTask.execute(getActivity(), this);
+	}
+
 	public void selectAll() {
 		Cursor cursor = mPhotoAdapter.getCursor();
 		if (null != cursor) {
@@ -366,19 +373,27 @@ public class UserPhotosFragment extends AbstractPhotosFragment implements OnItem
 
 	private void setSelectedBucketFromPrefs() {
 		if (null != mBucketSpinner) {
+			int newSelection = 0;
+
 			if (null != mPrefs) {
 				final String lastBucketId = mPrefs.getString(PreferenceConstants.PREF_SELECTED_MEDIA_BUCKET_ID, null);
 				if (null != lastBucketId) {
 					for (int i = 0, z = mBuckets.size(); i < z; i++) {
 						if (lastBucketId.equals(mBuckets.get(i).getId())) {
-							mBucketSpinner.setSelection(i);
-							return;
+							newSelection = i;
+							break;
 						}
 					}
 				}
 			}
 
-			mBucketSpinner.setSelection(0);
+			// If we have a new position, then just set it. If it's our current
+			// position, then call onItemSelected manually
+			if (newSelection != mBucketSpinner.getSelectedItemPosition()) {
+				mBucketSpinner.setSelection(newSelection);
+			} else {
+				onItemSelected(mBucketSpinner, null, newSelection, 0);
+			}
 		}
 	}
 

@@ -18,8 +18,12 @@ public class MediaStoreBucketsAsyncTask extends AsyncTask<Void, Void, List<Media
 
 	private final WeakReference<Context> mContext;
 	private final WeakReference<MediaStoreBucketsResultListener> mListener;
+	
+	public static void execute(Context context, MediaStoreBucketsResultListener listener) {
+		new MediaStoreBucketsAsyncTask(context, listener).execute();
+	}
 
-	public MediaStoreBucketsAsyncTask(Context context, MediaStoreBucketsResultListener listener) {
+	private MediaStoreBucketsAsyncTask(Context context, MediaStoreBucketsResultListener listener) {
 		mContext = new WeakReference<Context>(context);
 		mListener = new WeakReference<MediaStoreBucketsResultListener>(listener);
 	}
