@@ -1,5 +1,6 @@
 package uk.co.senab.photup.model;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -90,7 +91,7 @@ public class PhotoUpload {
 
 		return item;
 	}
-	
+
 	public static void clearCache() {
 		SELECTION_CACHE.clear();
 	}
@@ -245,6 +246,15 @@ public class PhotoUpload {
 	public boolean equals(Object obj) {
 		if (obj instanceof PhotoUpload) {
 			return getOriginalPhotoUri().equals(((PhotoUpload) obj).getOriginalPhotoUri());
+		}
+		return false;
+	}
+
+	public boolean isValid(Context context) {
+		final String path = Utils.getPathFromContentUri(context.getContentResolver(), getOriginalPhotoUri());
+		if (null != path) {
+			File file = new File(path);
+			return file.exists();
 		}
 		return false;
 	}

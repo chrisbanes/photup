@@ -94,6 +94,25 @@ public class PhotoUploadDatabaseHelper {
 		});
 	}
 
+	public static void deleteFromDatabase(final Context context, final List<PhotoUpload> uploads) {
+		PhotupApplication.getApplication(context).getDatabaseThreadExecutorService().submit(new PhotupThreadRunnable() {
+
+			public void runImpl() {
+				final DatabaseHelper helper = getHelper(context);
+				try {
+					Dao<PhotoUpload, String> dao = helper.getPhotoUploadDao();
+					for (PhotoUpload upload : uploads) {
+						dao.delete(upload);
+					}
+				} catch (SQLException e) {
+					e.printStackTrace();
+				} finally {
+					OpenHelperManager.releaseHelper();
+				}
+			}
+		});
+	}
+
 	public static void saveToDatabase(final Context context, final PhotoUpload upload) {
 		PhotupApplication.getApplication(context).getDatabaseThreadExecutorService().submit(new PhotupThreadRunnable() {
 

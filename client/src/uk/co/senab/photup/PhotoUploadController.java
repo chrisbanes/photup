@@ -24,8 +24,32 @@ public class PhotoUploadController {
 		return PhotupApplication.getApplication(context).getPhotoUploadController();
 	}
 
+	private static List<PhotoUpload> checkListForInvalid(final Context context, final List<PhotoUpload> uploads) {
+		ArrayList<PhotoUpload> toBeRemoved = null;
+
+		for (PhotoUpload upload : uploads) {
+			if (!upload.isValid(context)) {
+				if (null == toBeRemoved) {
+					toBeRemoved = new ArrayList<PhotoUpload>();
+				}
+				toBeRemoved.add(upload);
+			}
+		}
+
+		if (null != toBeRemoved) {
+			uploads.removeAll(toBeRemoved);
+
+			// Delete from Database
+			if (Flags.ENABLE_DB_PERSISTENCE) {
+				PhotoUploadDatabaseHelper.deleteFromDatabase(context, toBeRemoved);
+			}
+		}
+		return toBeRemoved;
+	}
+
 	private final Context mContext;
 	private final ArrayList<PhotoUpload> mSelectedPhotoList;
+
 	private final ArrayList<PhotoUpload> mUploadingList;
 
 	PhotoUploadController(Context context) {
@@ -89,7 +113,7 @@ public class PhotoUploadController {
 	}
 
 	public boolean addUpload(PhotoUpload selection) {
-		if (null != selection && !mUploadingList.contains(selection)) {
+		if (null != selection && selection.isValid(mContext) && !mUploadingList.contains(selection)) {
 			selection.setUploadState(PhotoUpload.STATE_UPLOAD_WAITING);
 
 			// Save to Database
@@ -108,6 +132,9 @@ public class PhotoUploadController {
 
 	public void addUploadsFromSelected(final Account account, final String targetId, final UploadQuality quality,
 			final Place place) {
+
+		// Check The Selected List to make sure they're all valid
+		checkSelectedForInvalid(false);
 
 		for (PhotoUpload upload : mSelectedPhotoList) {
 			upload.setUploadParams(account, targetId, quality);
@@ -174,6 +201,7 @@ public class PhotoUploadController {
 	}
 
 	public List<PhotoUpload> getSelected() {
+		checkSelectedForInvalid(true);
 		return new ArrayList<PhotoUpload>(mSelectedPhotoList);
 	}
 
@@ -215,12 +243,12 @@ public class PhotoUploadController {
 		return false;
 	}
 
-	public boolean isSelected(PhotoUpload selection) {
-		return mSelectedPhotoList.contains(selection);
-	}
-
 	public boolean isOnUploadList(PhotoUpload selection) {
 		return mUploadingList.contains(selection);
+	}
+
+	public boolean isSelected(PhotoUpload selection) {
+		return mSelectedPhotoList.contains(selection);
 	}
 
 	public boolean moveFailedToSelected() {
@@ -337,16 +365,46 @@ public class PhotoUploadController {
 		if (Flags.ENABLE_DB_PERSISTENCE) {
 			final List<PhotoUpload> selectedFromDb = PhotoUploadDatabaseHelper.getSelected(mContext);
 			if (null != selectedFromDb) {
-				// Should do contains() on each item really...
 				mSelectedPhotoList.addAll(selectedFromDb);
+				checkSelectedForInvalid(false);
 				PhotoUpload.populateCache(selectedFromDb);
 			}
 
 			final List<PhotoUpload> uploadsFromDb = PhotoUploadDatabaseHelper.getUploads(mContext);
 			if (null != uploadsFromDb) {
-				// Should do contains() on each item really...
 				mUploadingList.addAll(uploadsFromDb);
+				checkUploadsForInvalid(false);
 				PhotoUpload.populateCache(uploadsFromDb);
+			}
+		}
+	}
+
+	private void checkSelectedForInvalid(final boolean sendEvent) {
+		if (!mSelectedPhotoList.isEmpty()) {
+			List<PhotoUpload> removedUploads = checkListForInvalid(mContext, mSelectedPhotoList);
+
+			// Delete from Database
+			if (Flags.ENABLE_DB_PERSISTENCE) {
+				PhotoUploadDatabaseHelper.deleteAllSelected(mContext);
+			}
+
+			if (sendEvent && null != removedUploads) {
+				postEvent(new PhotoSelectionRemovedEvent(removedUploads));
+			}
+		}
+	}
+
+	private void checkUploadsForInvalid(final boolean sendEvent) {
+		if (!mUploadingList.isEmpty()) {
+			List<PhotoUpload> removedUploads = checkListForInvalid(mContext, mUploadingList);
+
+			// Delete from Database
+			if (Flags.ENABLE_DB_PERSISTENCE) {
+				PhotoUploadDatabaseHelper.deleteAllSelected(mContext);
+			}
+
+			if (sendEvent && null != removedUploads) {
+				postEvent(new UploadsModifiedEvent());
 			}
 		}
 	}
