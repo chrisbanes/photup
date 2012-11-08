@@ -273,17 +273,7 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements Ta
 			refreshUploadActionBarView();
 
 		} else {
-			if (mPhotoController.hasUploads()) {
-				if (null == mUploadsActionView) {
-					supportInvalidateOptionsMenu();
-				} else {
-					refreshUploadsActionBarView();
-				}
-			} else {
-				if (null != mUploadActionView) {
-					supportInvalidateOptionsMenu();
-				}
-			}
+			refreshUploadsActionBarView();
 		}
 
 		refreshSelectedPhotosTitle();
@@ -368,7 +358,6 @@ public class PhotoSelectionActivity extends PhotupFragmentActivity implements Ta
 	private void setupUploadsActionBarView(Menu menu) {
 		if (!mSinglePane) {
 			MenuItem uploadsItem = menu.findItem(R.id.menu_uploads);
-			uploadsItem.setVisible(mPhotoController.hasUploads());
 
 			if (uploadsItem.isVisible()) {
 				mUploadsActionView = (UploadsActionBarView) uploadsItem.getActionView();

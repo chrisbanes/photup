@@ -52,6 +52,8 @@ public class UploadsFragment extends PhotupDialogFragment implements OnDismissCa
 		listView.setOnScrollListener(swipeListener.makeScrollListener());
 		listView.setSelector(R.drawable.selectable_background_photup);
 		listView.setAdapter(mAdapter);
+		
+		listView.setEmptyView(view.findViewById(android.R.id.empty));
 
 		return view;
 	}

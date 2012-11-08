@@ -75,5 +75,6 @@
 	<string name="start_uploads">Start Uploading</string>
 	<string name="paused_uploads">Uploading Disabled</string>
 	<string name="started_uploads">Uploading Enabled</string>
+	<string name="empty_uploads">No uploads available</string>
 
 </resources>
