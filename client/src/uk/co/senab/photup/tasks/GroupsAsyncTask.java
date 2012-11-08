@@ -16,7 +16,7 @@ import com.facebook.android.FacebookError;
 public class GroupsAsyncTask extends AsyncTask<Void, Void, List<Group>> {
 
 	public static interface GroupsResultListener extends FacebookErrorListener {
-		void onGroupsLoaded(List<Group> groups);
+		void onGroupsLoaded(Account account, List<Group> groups);
 	}
 
 	private final Account mAccount;
@@ -53,7 +53,7 @@ public class GroupsAsyncTask extends AsyncTask<Void, Void, List<Group>> {
 
 		GroupsResultListener listener = mListener.get();
 		if (null != listener && null != result) {
-			listener.onGroupsLoaded(result);
+			listener.onGroupsLoaded(mAccount, result);
 		}
 	}
 

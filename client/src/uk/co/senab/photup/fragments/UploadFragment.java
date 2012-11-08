@@ -114,11 +114,13 @@ public class UploadFragment extends PhotupDialogFragment implements AlbumsResult
 		account.getAlbums(this, true);
 	}
 
-	public void onAlbumsLoaded(List<Album> albums) {
-		mFacebookObjects.clear();
-		mFacebookObjects.addAll(albums);
-		mTargetAdapter.notifyDataSetChanged();
-		mTargetLayout.setVisibility(View.VISIBLE);
+	public void onAlbumsLoaded(Account account, List<Album> albums) {
+		if (R.id.rb_target_album == mTargetRadioGroup.getCheckedRadioButtonId() && account == getSelectedAccount()) {
+			mFacebookObjects.clear();
+			mFacebookObjects.addAll(albums);
+			mTargetAdapter.notifyDataSetChanged();
+			mTargetLayout.setVisibility(View.VISIBLE);
+		}
 	}
 
 	public void onCheckedChanged(RadioGroup group, final int checkedId) {
@@ -211,22 +213,26 @@ public class UploadFragment extends PhotupDialogFragment implements AlbumsResult
 		return view;
 	}
 
-	public void onEventsLoaded(List<Event> events) {
-		mFacebookObjects.clear();
-		mFacebookObjects.addAll(events);
-		mTargetAdapter.notifyDataSetChanged();
-		mTargetLayout.setVisibility(View.VISIBLE);
+	public void onEventsLoaded(Account account, List<Event> events) {
+		if (R.id.rb_target_event == mTargetRadioGroup.getCheckedRadioButtonId() && account == getSelectedAccount()) {
+			mFacebookObjects.clear();
+			mFacebookObjects.addAll(events);
+			mTargetAdapter.notifyDataSetChanged();
+			mTargetLayout.setVisibility(View.VISIBLE);
+		}
 	}
 
 	public void onFacebookError(FacebookError e) {
 		// NO-OP
 	}
 
-	public void onGroupsLoaded(List<Group> groups) {
-		mFacebookObjects.clear();
-		mFacebookObjects.addAll(groups);
-		mTargetAdapter.notifyDataSetChanged();
-		mTargetLayout.setVisibility(View.VISIBLE);
+	public void onGroupsLoaded(Account account, List<Group> groups) {
+		if (R.id.rb_target_group == mTargetRadioGroup.getCheckedRadioButtonId() && account == getSelectedAccount()) {
+			mFacebookObjects.clear();
+			mFacebookObjects.addAll(groups);
+			mTargetAdapter.notifyDataSetChanged();
+			mTargetLayout.setVisibility(View.VISIBLE);
+		}
 	}
 
 	public void onItemSelected(AdapterView<?> spinner, View view, int position, long id) {

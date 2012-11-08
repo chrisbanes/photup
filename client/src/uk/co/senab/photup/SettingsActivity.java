@@ -32,7 +32,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements Albu
 		// NO-OP
 	}
 
-	public void onAlbumsLoaded(List<Album> albums) {
+	public void onAlbumsLoaded(Account account, List<Album> albums) {
 		String[] entries = new String[albums.size()];
 		String[] entryValues = new String[albums.size()];
 

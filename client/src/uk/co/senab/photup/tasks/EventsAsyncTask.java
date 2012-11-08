@@ -16,7 +16,7 @@ import com.facebook.android.FacebookError;
 public class EventsAsyncTask extends AsyncTask<Void, Void, List<Event>> {
 
 	public static interface EventsResultListener extends FacebookErrorListener {
-		void onEventsLoaded(List<Event> events);
+		void onEventsLoaded(Account account, List<Event> events);
 	}
 
 	private final Account mAccount;
@@ -53,7 +53,7 @@ public class EventsAsyncTask extends AsyncTask<Void, Void, List<Event>> {
 
 		EventsResultListener listener = mListener.get();
 		if (null != listener && null != result) {
-			listener.onEventsLoaded(result);
+			listener.onEventsLoaded(mAccount, result);
 		}
 	}
 

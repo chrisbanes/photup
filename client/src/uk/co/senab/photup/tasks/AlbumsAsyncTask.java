@@ -16,7 +16,7 @@ import com.facebook.android.FacebookError;
 public class AlbumsAsyncTask extends AsyncTask<Void, Void, List<Album>> {
 
 	public static interface AlbumsResultListener extends FacebookErrorListener {
-		void onAlbumsLoaded(List<Album> albums);
+		void onAlbumsLoaded(Account account, List<Album> albums);
 	}
 
 	private final Account mAccount;
@@ -53,7 +53,7 @@ public class AlbumsAsyncTask extends AsyncTask<Void, Void, List<Album>> {
 
 		AlbumsResultListener listener = mListener.get();
 		if (null != listener && null != result) {
-			listener.onAlbumsLoaded(result);
+			listener.onAlbumsLoaded(mAccount, result);
 		}
 	}
 

@@ -66,7 +66,7 @@ public class Account extends AbstractFacebookObject implements AlbumsResultListe
 			mAlbumsListener = listener;
 			new AlbumsAsyncTask(this, this).execute();
 		} else {
-			listener.onAlbumsLoaded(mAlbums);
+			listener.onAlbumsLoaded(this, mAlbums);
 		}
 	}
 
@@ -79,7 +79,7 @@ public class Account extends AbstractFacebookObject implements AlbumsResultListe
 			mGroupsListener = listener;
 			new GroupsAsyncTask(this, this).execute();
 		} else {
-			listener.onGroupsLoaded(mGroups);
+			listener.onGroupsLoaded(this, mGroups);
 		}
 	}
 
@@ -92,7 +92,7 @@ public class Account extends AbstractFacebookObject implements AlbumsResultListe
 			mEventsListener = listener;
 			new EventsAsyncTask(this, this).execute();
 		} else {
-			listener.onEventsLoaded(mEvents);
+			listener.onEventsLoaded(this, mEvents);
 		}
 	}
 
@@ -123,37 +123,37 @@ public class Account extends AbstractFacebookObject implements AlbumsResultListe
 		// NO-OP
 	}
 
-	public void onAlbumsLoaded(List<Album> albums) {
+	public void onAlbumsLoaded(Account account, List<Album> albums) {
 		mAlbums.clear();
 
 		if (null != albums) {
 			mAlbums.addAll(albums);
 			if (null != mAlbumsListener && mAlbumsListener != this) {
-				mAlbumsListener.onAlbumsLoaded(mAlbums);
+				mAlbumsListener.onAlbumsLoaded(account, mAlbums);
 				mAlbumsListener = null;
 			}
 		}
 	}
 
-	public void onGroupsLoaded(List<Group> groups) {
+	public void onGroupsLoaded(Account account, List<Group> groups) {
 		mGroups.clear();
 
 		if (null != groups) {
 			mGroups.addAll(groups);
 			if (null != mGroupsListener && mGroupsListener != this) {
-				mGroupsListener.onGroupsLoaded(mGroups);
+				mGroupsListener.onGroupsLoaded(account, mGroups);
 				mGroupsListener = null;
 			}
 		}
 	}
 
-	public void onEventsLoaded(List<Event> events) {
+	public void onEventsLoaded(Account account, List<Event> events) {
 		mEvents.clear();
 
 		if (null != events) {
 			mEvents.addAll(events);
 			if (null != mEventsListener && mEventsListener != this) {
-				mEventsListener.onEventsLoaded(mEvents);
+				mEventsListener.onEventsLoaded(account, mEvents);
 				mEventsListener = null;
 			}
 		}
