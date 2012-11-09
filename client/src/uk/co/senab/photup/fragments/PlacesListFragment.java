@@ -10,7 +10,6 @@ import uk.co.senab.photup.model.Place;
 import uk.co.senab.photup.tasks.PlacesAsyncTask;
 import uk.co.senab.photup.tasks.PlacesAsyncTask.PlacesResultListener;
 import uk.co.senab.photup.util.Utils;
-import android.app.Dialog;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
@@ -20,8 +19,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -29,12 +26,15 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.facebook.android.FacebookError;
 
-public class PlacesListFragment extends SherlockDialogFragment implements PlacesResultListener, OnItemClickListener {
+public class PlacesListFragment extends PhotupDialogFragment implements PlacesResultListener, OnItemClickListener,
+		OnCheckedChangeListener {
 
 	private class LocationListenerImpl implements LocationListener {
 
@@ -64,13 +64,18 @@ public class PlacesListFragment extends SherlockDialogFragment implements Places
 
 	}
 
+	static final int QUERY_CURRENT_LOCATION = 1;
+
+	static final int QUERY_PHOTO_LOCATION = 2;
+
 	private final ArrayList<Place> mPlaces = new ArrayList<Place>();
 
 	private ListView mListView;
+	private PlacesAdapter mAdapter;
+
 	private EditText mFilterEditText;
 	private ProgressBar mProgressBar;
-
-	private PlacesAdapter mAdapter;
+	private RadioGroup mLocationSourceRg;
 
 	private OnPlacePickedListener mPickedPlaceListener;
 	private LocationManager mLocationManager;
@@ -79,42 +84,31 @@ public class PlacesListFragment extends SherlockDialogFragment implements Places
 	private LocationListener mNetworkListener;
 
 	private Location mLastLocation;
+	private Location mPhotoTagLocation;
+
+	public void onCheckedChanged(RadioGroup group, int checkedId) {
+		mPlaces.clear();
+		mAdapter.notifyDataSetChanged();
+
+		switch (checkedId) {
+			case R.id.rb_place_current:
+				refreshPlacesFromLastLocation();
+				startLocationListeners();
+				break;
+
+			case R.id.rb_place_photo:
+				stopLocationListeners();
+				refreshPlaces();
+				break;
+		}
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setStyle(STYLE_NORMAL, R.style.Theme_Sherlock_Dialog);
-
 		mAdapter = new PlacesAdapter(getActivity(), mPlaces);
 		mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-
-		if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-			mGpsListener = new LocationListenerImpl();
-		}
-		if (mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-			mNetworkListener = new LocationListenerImpl();
-		}
-
-		mLastLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-		if (null == mLastLocation) {
-			mLastLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-		}
-
-		if (null != mLastLocation) {
-			refreshPlaces(null);
-		}
-	}
-
-	@Override
-	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		Dialog dialog = super.onCreateDialog(savedInstanceState);
-		dialog.setTitle(R.string.place);
-
-		Window window = dialog.getWindow();
-		window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-
-		return dialog;
 	}
 
 	@Override
@@ -138,29 +132,20 @@ public class PlacesListFragment extends SherlockDialogFragment implements Places
 			}
 		});
 
+		mLocationSourceRg = (RadioGroup) view.findViewById(R.id.rg_place_source);
+		mLocationSourceRg.setOnCheckedChangeListener(this);
+
+		if (null != mPhotoTagLocation) {
+			RadioButton photoRb = (RadioButton) mLocationSourceRg.findViewById(R.id.rb_place_photo);
+			photoRb.setVisibility(View.VISIBLE);
+			mLocationSourceRg.setVisibility(View.VISIBLE);
+		}
+
 		return view;
 	}
 
-	@Override
-	public void onResume() {
-		super.onResume();
-
-		if (null != mGpsListener) {
-			mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 5, mGpsListener);
-		}
-		if (null != mNetworkListener) {
-			mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 5, mNetworkListener);
-		}
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-		stopLocationListeners();
-	}
-
-	public void setOnPlacePickedListener(OnPlacePickedListener listener) {
-		mPickedPlaceListener = listener;
+	public void onFacebookError(FacebookError e) {
+		// NO-OP
 	}
 
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -173,16 +158,41 @@ public class PlacesListFragment extends SherlockDialogFragment implements Places
 		dismiss();
 	}
 
-	public void onFacebookError(FacebookError e) {
-		// NO-OP
+	@Override
+	public void onPause() {
+		super.onPause();
+		stopLocationListeners();
 	}
 
-	public void onPlacesLoaded(List<Place> places) {
-		mProgressBar.setVisibility(View.GONE);
+	public void onPlacesLoaded(final int id, String queryString, List<Place> places) {
+		if (isResultValid(id, queryString)) {
+			mProgressBar.setVisibility(View.GONE);
+			mPlaces.clear();
+			mPlaces.addAll(places);
+			mAdapter.notifyDataSetChanged();
+		}
+	}
 
-		mPlaces.clear();
-		mPlaces.addAll(places);
-		mAdapter.notifyDataSetChanged();
+	@Override
+	public void onResume() {
+		super.onResume();
+
+		if (isCurrentLocationChecked()) {
+			refreshPlacesFromLastLocation();
+			startLocationListeners();
+		}
+	}
+
+	public void setOnPlacePickedListener(OnPlacePickedListener listener) {
+		mPickedPlaceListener = listener;
+	}
+
+	public void setPhotoTagLocation(Location location) {
+		mPhotoTagLocation = location;
+	}
+
+	private String getQueryString() {
+		return mFilterEditText.getText().toString();
 	}
 
 	private void hideIme() {
@@ -193,16 +203,60 @@ public class PlacesListFragment extends SherlockDialogFragment implements Places
 		}
 	}
 
-	private void refreshPlaces() {
-		refreshPlaces(mFilterEditText.getText().toString());
+	private boolean isCurrentLocationChecked() {
+		return mLocationSourceRg.getCheckedRadioButtonId() == R.id.rb_place_current;
 	}
 
-	private void refreshPlaces(String query) {
+	private boolean isPhotoTagLocationChecked() {
+		return mLocationSourceRg.getCheckedRadioButtonId() == R.id.rb_place_photo;
+	}
+
+	private boolean isResultValid(int id, String queryString) {
+		return getQueryString().equals(queryString)
+				&& ((id == QUERY_CURRENT_LOCATION && isCurrentLocationChecked()) || (id == QUERY_PHOTO_LOCATION && isPhotoTagLocationChecked()));
+	}
+
+	private void refreshPlaces() {
+		switch (mLocationSourceRg.getCheckedRadioButtonId()) {
+			case R.id.rb_place_current:
+				refreshPlaces(mLastLocation, QUERY_CURRENT_LOCATION);
+				break;
+
+			case R.id.rb_place_photo:
+				refreshPlaces(mPhotoTagLocation, QUERY_PHOTO_LOCATION);
+				break;
+		}
+	}
+
+	private void refreshPlaces(final Location location, int id) {
 		hideIme();
 		if (null != mProgressBar) {
 			mProgressBar.setVisibility(View.VISIBLE);
 		}
-		new PlacesAsyncTask(getActivity(), this, mLastLocation, query).execute();
+		new PlacesAsyncTask(getActivity(), this, location, getQueryString(), id).execute();
+	}
+
+	private void refreshPlacesFromLastLocation() {
+		if (null == mLastLocation) {
+			mLastLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			if (null == mLastLocation) {
+				mLastLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+			}
+		}
+		if (null != mLastLocation) {
+			refreshPlaces(mLastLocation, QUERY_CURRENT_LOCATION);
+		}
+	}
+
+	private void startLocationListeners() {
+		if (mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+			mNetworkListener = new LocationListenerImpl();
+			mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 5, mNetworkListener);
+		}
+		if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+			mGpsListener = new LocationListenerImpl();
+			mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 5, mGpsListener);
+		}
 	}
 
 	private void stopLocationListeners() {

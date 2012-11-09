@@ -76,5 +76,7 @@
 	<string name="stopped_uploads">Uploading is Disabled</string>
 	<string name="started_uploads">Uploading is Enabled</string>
 	<string name="empty_uploads">No uploads available</string>
+	<string name="location_current">Current Location</string>
+	<string name="location_photo">Photo Location</string>
 
 </resources>

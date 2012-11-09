@@ -405,6 +405,7 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnSin
 	private void startPlaceFragment() {
 		PlacesListFragment fragment = new PlacesListFragment();
 		fragment.setOnPlacePickedListener(this);
+		fragment.setPhotoTagLocation(getCurrentUpload().getExifLocation(this));
 		fragment.show(getSupportFragmentManager(), "places");
 	}
 

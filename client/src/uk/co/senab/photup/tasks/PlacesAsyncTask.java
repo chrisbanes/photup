@@ -19,7 +19,7 @@ import com.facebook.android.FacebookError;
 public class PlacesAsyncTask extends AsyncTask<Void, Void, List<Place>> {
 
 	public static interface PlacesResultListener extends FacebookErrorListener {
-		void onPlacesLoaded(List<Place> albums);
+		void onPlacesLoaded(int id, String query, List<Place> albums);
 	}
 
 	private final WeakReference<Context> mContext;
@@ -27,13 +27,15 @@ public class PlacesAsyncTask extends AsyncTask<Void, Void, List<Place>> {
 
 	private final Location mLocation;
 	private final String mSearchQuery;
+	private final int mId;
 
-	public PlacesAsyncTask(Context context, PlacesResultListener listener, Location location, String searchQuery) {
+	public PlacesAsyncTask(Context context, PlacesResultListener listener, Location location, String searchQuery, int id) {
 		mContext = new WeakReference<Context>(context);
 		mListener = new WeakReference<PlacesResultListener>(listener);
 
 		mLocation = location;
 		mSearchQuery = searchQuery;
+		mId = id;
 	}
 
 	@Override
@@ -76,7 +78,7 @@ public class PlacesAsyncTask extends AsyncTask<Void, Void, List<Place>> {
 
 		PlacesResultListener listener = mListener.get();
 		if (null != listener && null != result) {
-			listener.onPlacesLoaded(result);
+			listener.onPlacesLoaded(mId, mSearchQuery, result);
 		}
 	}
 

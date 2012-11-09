@@ -1,9 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:id="@+id/fl_root"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
 	android:orientation="vertical" >
+
+	<LinearLayout
+		style="@style/DialogActionBar"
+		android:layout_width="fill_parent"
+		android:layout_height="@dimen/form_item_height" >
+
+		<uk.co.senab.photup.views.RobotoLightTextView
+			android:layout_width="0px"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:padding="@dimen/spacing"
+			android:text="@string/place"
+			android:textSize="@dimen/dialog_title_text_size" />
+
+		<ProgressBar
+			android:id="@+id/pb_loading"
+			style="?android:attr/progressBarStyleSmall"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:visibility="visible"
+			android:layout_marginRight="@dimen/double_spacing" />
+	</LinearLayout>
+
+	<include
+		layout="@layout/layout_horizontal_line" />
+
+	<RadioGroup
+		android:id="@+id/rg_place_source"
+		style="@style/TabRadioGroup"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:checkedButton="@+id/rb_place_current"
+		android:visibility="gone" >
+
+		<RadioButton
+			android:id="@+id/rb_place_current"
+			style="@style/TabRadioButton"
+			android:text="@string/location_current" />
+
+		<RadioButton
+			android:id="@+id/rb_place_photo"
+			style="@style/TabRadioButton"
+			android:text="@string/location_photo"
+			android:visibility="gone" />
+	</RadioGroup>
 
 	<EditText
 		android:id="@+id/et_places_filter"
@@ -18,15 +63,6 @@
 		android:id="@+id/lv_places"
 		android:layout_width="fill_parent"
 		android:layout_height="0px"
-		android:layout_alignParentBottom="true"
-		android:layout_below="@+id/et_places_filter" />
+		android:layout_weight="1" />
 
-	<ProgressBar
-		android:id="@+id/pb_loading"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:indeterminate="true"
-		android:visibility="gone"
-		android:layout_centerInParent="true" />
-
-</RelativeLayout>
+</LinearLayout>
