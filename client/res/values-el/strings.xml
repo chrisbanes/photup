@@ -55,10 +55,6 @@
 	<string name="pref_instant_upload_filter_summary">Επιλέξτε το άλμπουμ που θα εφαρμόζεται αυτόματα στις φωτογραφίες σας</string>
 	<string name="pref_instant_upload_roaming_title">Περιαγωγή</string>
 	<string name="pref_instant_upload_roaming_summary">Άμεση μεταφόρτωση κατά την περιαγωγή;</string>
-	<string name="pref_decode">Decoding</string>
-	<string name="pref_decode_safe_title">Use safe decoder?</string>
-	<string name="pref_decode_safe_summary_on">Using Android\'s built-in decoder only. Only use if images are distorted.</string>
-	<string name="pref_decode_safe_summary_off">Using photup\'s standard decoder. Quicker and uses less memory.</string>
 	<string name="pref_more_options">Προχωρημένες ρυθμίσεις</string>
 	<string name="dialog_instant_upload">Το photup έχει τώρα Άμεση Μεταφόρτωση! Αυτό σημαίνει ότι όποτε παίρνετε μια φωοτγραφία, η εφαρμογή μπορεί να την ανεβάζει αυτόματα στο Facebook. Απλά ενεργοποιήστε το κι εμείς θα κάνουμε όλα τα υπόλοιπα!</string>
 	<string name="dialog_missing_pages_title">Χαμένοι λογαριασμοί;</string>
@@ -73,4 +69,12 @@
 	<string name="promo_text">Χρησιμοποιώ την εφαρμογή photup for Facebook για Android. Δοκιμάστε κι εσείς!</string>
 	<string name="album_all">Όλες</string>
 	<string name="action_bar_upload_progress">%1$d of %2$d</string>
+	<string name="opening_app">Opening&amp;#8230;</string>
+	<string name="stop_uploads">Stop Uploading</string>
+	<string name="start_uploads">Start Uploading</string>
+	<string name="stopped_uploads">Uploading is Disabled</string>
+	<string name="started_uploads">Uploading is Enabled</string>
+	<string name="empty_uploads">No uploads available</string>
+	<string name="location_current">Current Location</string>
+	<string name="location_photo">Photo Location</string>
 </resources>

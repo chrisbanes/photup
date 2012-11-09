@@ -55,10 +55,6 @@
 	<string name="pref_instant_upload_filter_summary">Selecione um efeito para ser aplicado automaticamente</string>
 	<string name="pref_instant_upload_roaming_title">Roaming</string>
 	<string name="pref_instant_upload_roaming_summary">Envio Instantâneo em roaming?</string>
-	<string name="pref_decode">Decodificando</string>
-	<string name="pref_decode_safe_title">Usar decodificador seguro?</string>
-	<string name="pref_decode_safe_summary_on">Usar somente o decodificador nativo do Android. Use apenas se as imagens estão sendo distorcidas.</string>
-	<string name="pref_decode_safe_summary_off">Usar o decodificador padrão do photup. Mais rápido e usa menos memória.</string>
 	<string name="pref_more_options">Configurações Avançadas</string>
 	<string name="dialog_instant_upload">O photup agora tem Envio Instantâneo! Isso quer dizer que onde quer que você tire uma foto, o photup poderá enviá-la automaticamente para o Facebook.\n\nBasta ativar a opção nas Configurações e nós faremos o resto!</string>
 	<string name="dialog_missing_pages_title">Contas Faltando?</string>
@@ -73,4 +69,12 @@
 	<string name="promo_text">Estou usando o photup para Facebook, um novo aplicativo de Android para compartilhar fotos no Facebook. Experimente também!</string>
 	<string name="album_all">Todas as Fotos</string>
 	<string name="action_bar_upload_progress">%1$d de %2$d</string>
+	<string name="opening_app">Opening&amp;#8230;</string>
+	<string name="stop_uploads">Stop Uploading</string>
+	<string name="start_uploads">Start Uploading</string>
+	<string name="stopped_uploads">Uploading is Disabled</string>
+	<string name="started_uploads">Uploading is Enabled</string>
+	<string name="empty_uploads">No uploads available</string>
+	<string name="location_current">Current Location</string>
+	<string name="location_photo">Photo Location</string>
 </resources>
