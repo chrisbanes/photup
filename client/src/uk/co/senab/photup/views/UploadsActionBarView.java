@@ -22,7 +22,13 @@ public class UploadsActionBarView extends LinearLayout {
 
 		TextView tv = (TextView) findViewById(R.id.tv_uploads_action);
 		if (null != tv) {
-			tv.setText(getResources().getString(R.string.action_bar_upload_progress, progress, total).toUpperCase());
+			String string;
+			if (total > 0) {
+				string = getResources().getString(R.string.action_bar_upload_progress, progress, total);
+			} else {
+				string = getResources().getString(R.string.tab_uploads);
+			}
+			tv.setText(string.toUpperCase());
 		}
 	}
 }
