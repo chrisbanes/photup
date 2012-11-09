@@ -17,7 +17,7 @@
 		android:layout_weight="1" >
 
 		<include
-			layout="@layout/layout_empty_user_photos" />
+			layout="@layout/layout_empty_selected" />
 
 		<GridView
 			android:id="@+id/gv_photos"

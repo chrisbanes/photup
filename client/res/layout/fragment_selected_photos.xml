@@ -5,7 +5,7 @@
 	android:layout_height="fill_parent" >
 
 	<include
-		layout="@layout/layout_empty_user_photos" />
+		layout="@layout/layout_empty_selected" />
 
 	<GridView
 		android:id="@+id/gv_photos"

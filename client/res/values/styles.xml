@@ -74,7 +74,6 @@
 
 	<style name="EmptyUploadStyle">
 		<item name="android:drawablePadding">@dimen/spacing</item>
-		<item name="android:drawableTop">@drawable/ic_empty_selected</item>
 		<item name="android:gravity">center</item>
 		<item name="android:padding">@dimen/double_spacing</item>
 		<item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
