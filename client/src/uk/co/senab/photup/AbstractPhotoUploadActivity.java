@@ -3,7 +3,6 @@ package uk.co.senab.photup;
 import uk.co.senab.photup.base.PhotupFragmentActivity;
 import uk.co.senab.photup.events.UploadingPausedStateChangedEvent;
 import uk.co.senab.photup.util.Utils;
-
 import android.os.Bundle;
 
 import com.actionbarsherlock.view.Menu;
@@ -15,10 +14,13 @@ import de.neofonie.mobile.app.android.widget.crouton.Style;
 
 public abstract class AbstractPhotoUploadActivity extends PhotupFragmentActivity {
 
+	protected PhotoUploadController mPhotoController;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		mPhotoController = PhotoUploadController.getFromContext(this);
 		EventBus.getDefault().register(this);
 
 		if (Utils.isUploadingPaused(this)) {
@@ -45,7 +47,7 @@ public abstract class AbstractPhotoUploadActivity extends PhotupFragmentActivity
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case R.id.menu_uploading_pause:
+			case R.id.menu_uploading_stop:
 				Utils.setUploadingPaused(this, true);
 				EventBus.getDefault().post(new UploadingPausedStateChangedEvent());
 				return true;
@@ -55,13 +57,17 @@ public abstract class AbstractPhotoUploadActivity extends PhotupFragmentActivity
 				EventBus.getDefault().post(new UploadingPausedStateChangedEvent());
 				startService(Utils.getUploadAllIntent(this));
 				return true;
+
+			case R.id.menu_retry_failed:
+				mPhotoController.moveFailedToSelected();
+				return true;
 		}
 
 		return super.onOptionsItemSelected(item);
 	}
 
 	private void setupPauseUploadingMenuItems(Menu menu) {
-		MenuItem pauseItem = menu.findItem(R.id.menu_uploading_pause);
+		MenuItem pauseItem = menu.findItem(R.id.menu_uploading_stop);
 		MenuItem startItem = menu.findItem(R.id.menu_uploading_start);
 		if (null != pauseItem && null != startItem) {
 			startItem.setVisible(Utils.isUploadingPaused(this));
@@ -83,7 +89,7 @@ public abstract class AbstractPhotoUploadActivity extends PhotupFragmentActivity
 
 	protected final void showUploadingDisabledCrouton() {
 		Crouton.cancelAllCroutons();
-		Crouton.showText(this, R.string.paused_uploads, Style.ALERT);
+		Crouton.showText(this, R.string.stopped_uploads, Style.ALERT);
 	}
 
 	protected final void showUploadingEnabledCrouton() {

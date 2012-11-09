@@ -38,7 +38,6 @@ public class PhotoSelectionActivity extends AbstractPhotoUploadActivity implemen
 	private UploadActionBarView mUploadActionView;
 	private UploadsActionBarView mUploadsActionView;
 
-	private PhotoUploadController mPhotoController;
 	private boolean mSinglePane;
 
 	private Tab mPreviouslySelectedTab;
@@ -67,7 +66,7 @@ public class PhotoSelectionActivity extends AbstractPhotoUploadActivity implemen
 		setContentView(R.layout.activity_choose_photos);
 		mSinglePane = null == findViewById(R.id.frag_secondary);
 
-		mPhotoController = PhotoUploadController.getFromContext(this);
+		
 
 		ActionBar ab = getSupportActionBar();
 		ab.setDisplayShowTitleEnabled(false);
@@ -167,12 +166,6 @@ public class PhotoSelectionActivity extends AbstractPhotoUploadActivity implemen
 				finish();
 				return true;
 
-			case R.id.menu_retry_failed:
-				if (mPhotoController.moveFailedToSelected()) {
-					getSupportActionBar().setSelectedNavigationItem(TAB_SELECTED);
-				}
-				return true;
-
 			case R.id.menu_clear_selection:
 				mPhotoController.clearSelected();
 				return true;
@@ -189,7 +182,8 @@ public class PhotoSelectionActivity extends AbstractPhotoUploadActivity implemen
 				startUploadsActivity();
 				return true;
 
-			case R.id.menu_uploading_pause:
+			case R.id.menu_retry_failed:
+			case R.id.menu_uploading_stop:
 			case R.id.menu_uploading_start:
 				// Handled in super
 				break;
