@@ -7,7 +7,6 @@ import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotupApplication;
 import uk.co.senab.photup.events.UploadsStartEvent;
-import uk.co.senab.photup.fragments.NewAlbumFragment.AccountProviderAccessor;
 import uk.co.senab.photup.fragments.NewAlbumFragment.OnAlbumCreatedListener;
 import uk.co.senab.photup.listeners.OnPlacePickedListener;
 import uk.co.senab.photup.model.AbstractFacebookObject;
@@ -55,7 +54,7 @@ import de.greenrobot.event.EventBus;
 
 public class UploadFragment extends PhotupDialogFragment implements AlbumsResultListener, AccountsResultListener,
 		GroupsResultListener, EventsResultListener, OnClickListener, OnAlbumCreatedListener, OnPlacePickedListener,
-		OnItemSelectedListener, OnCheckedChangeListener, AccountProviderAccessor {
+		OnItemSelectedListener, OnCheckedChangeListener {
 
 	static final int DEFAULT_UPLOAD_TARGET_ID = R.id.rb_target_album;
 	static final int REQUEST_FACEBOOK_LOGIN = 99;
@@ -339,6 +338,7 @@ public class UploadFragment extends PhotupDialogFragment implements AlbumsResult
 	private void startNewAlbumFragment() {
 		NewAlbumFragment fragment = new NewAlbumFragment();
 		fragment.setOnAlbumCreatedListener(this);
+		fragment.setAccount(getSelectedAccount());
 		fragment.show(getActivity().getSupportFragmentManager(), "new_album");
 	}
 
