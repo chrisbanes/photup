@@ -69,12 +69,12 @@
 	<string name="promo_text">Estou usando o photup para Facebook, um novo aplicativo de Android para compartilhar fotos no Facebook. Experimente também!</string>
 	<string name="album_all">Todas as Fotos</string>
 	<string name="action_bar_upload_progress">%1$d de %2$d</string>
-	<string name="opening_app">Opening&amp;#8230;</string>
-	<string name="stop_uploads">Stop Uploading</string>
-	<string name="start_uploads">Start Uploading</string>
-	<string name="stopped_uploads">Uploading is Disabled</string>
-	<string name="started_uploads">Uploading is Enabled</string>
-	<string name="empty_uploads">No uploads available</string>
-	<string name="location_current">Current Location</string>
-	<string name="location_photo">Photo Location</string>
+	<string name="opening_app">Abrindo&amp;#8230;</string>
+	<string name="stop_uploads">Parar Envio</string>
+	<string name="start_uploads">Iniciar Envio</string>
+	<string name="stopped_uploads">O Envio está Desabilitado</string>
+	<string name="started_uploads">O Envio está Ativado</string>
+	<string name="empty_uploads">Nenhum envio disponível</string>
+	<string name="location_current">Local Atual</string>
+	<string name="location_photo">Local da Foto</string>
 </resources>
