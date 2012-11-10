@@ -205,13 +205,15 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnSin
 		if (null != currentView) {
 			PhotoUpload upload = currentView.getPhotoSelection();
 
-			getSupportActionBar().setTitle(upload.toString());
+			if (null != upload) {
+				getSupportActionBar().setTitle(upload.toString());
 
-			// Request Face Detection
-			currentView.getImageView().postFaceDetection(upload);
+				// Request Face Detection
+				currentView.getImageView().postFaceDetection(upload);
 
-			if (null != mFilterGroup && mFilterGroup.getVisibility() == View.VISIBLE) {
-				updateFiltersView();
+				if (null != mFilterGroup && mFilterGroup.getVisibility() == View.VISIBLE) {
+					updateFiltersView();
+				}
 			}
 		}
 	}
@@ -290,7 +292,6 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnSin
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setTitle(" ");
-		
 
 		/**
 		 * Nasty hack, basically we need to know when the ViewPager is laid out,
