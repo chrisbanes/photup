@@ -12,6 +12,9 @@
 
 # Add any project specific keep options here:
 
+# Keep Line Numbers
+-keepattributes SourceFile,LineNumberTable
+
 # Actionbarsherlock
 -keepattributes *Annotation*
 -keep class com.actionbarsherlock.** { *; }
