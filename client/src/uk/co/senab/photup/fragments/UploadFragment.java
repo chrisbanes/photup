@@ -223,18 +223,25 @@ public class UploadFragment extends PhotupDialogFragment implements AlbumsResult
 	}
 
 	public void onItemSelected(AdapterView<?> spinner, View view, int position, long id) {
-		final Account account = (Account) mAccountsSpinner.getSelectedItem();
+		final View fragView = getView();
 
-		View eventRb = getView().findViewById(R.id.rb_target_event), groupRb = getView().findViewById(
-				R.id.rb_target_group);
-		final int visibility = account.isMainAccount() ? View.VISIBLE : View.GONE;
-		eventRb.setVisibility(visibility);
-		groupRb.setVisibility(visibility);
+		if (null != fragView) {
+			final Account account = (Account) mAccountsSpinner.getSelectedItem();
 
-		if (mTargetRadioGroup.getCheckedRadioButtonId() == DEFAULT_UPLOAD_TARGET_ID) {
-			onCheckedChanged(mTargetRadioGroup, DEFAULT_UPLOAD_TARGET_ID);
-		} else {
-			mTargetRadioGroup.check(DEFAULT_UPLOAD_TARGET_ID);
+			if (null != account) {
+				final int visibility = account.isMainAccount() ? View.VISIBLE : View.GONE;
+
+				View eventRb = fragView.findViewById(R.id.rb_target_event), groupRb = fragView
+						.findViewById(R.id.rb_target_group);
+				eventRb.setVisibility(visibility);
+				groupRb.setVisibility(visibility);
+
+				if (mTargetRadioGroup.getCheckedRadioButtonId() == DEFAULT_UPLOAD_TARGET_ID) {
+					onCheckedChanged(mTargetRadioGroup, DEFAULT_UPLOAD_TARGET_ID);
+				} else {
+					mTargetRadioGroup.check(DEFAULT_UPLOAD_TARGET_ID);
+				}
+			}
 		}
 	}
 
