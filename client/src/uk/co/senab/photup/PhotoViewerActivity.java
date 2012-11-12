@@ -355,43 +355,45 @@ public class PhotoViewerActivity extends PhotupFragmentActivity implements OnSin
 
 	private void showCaptionDialog() {
 		final PhotoUpload currentUpload = getCurrentUpload();
+		if (null != currentUpload) {
+			
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle(R.string.photo_caption);
+			builder.setIcon(R.drawable.ic_action_caption);
 
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(R.string.photo_caption);
-		builder.setIcon(R.drawable.ic_action_caption);
+			// Set an EditText view to get user input
+			final FrameLayout layout = new FrameLayout(this);
+			final int margin = getResources().getDimensionPixelSize(R.dimen.spacing);
+			layout.setPadding(margin, margin, margin, margin);
 
-		// Set an EditText view to get user input
-		final FrameLayout layout = new FrameLayout(this);
-		final int margin = getResources().getDimensionPixelSize(R.dimen.spacing);
-		layout.setPadding(margin, margin, margin, margin);
+			final EditText input = new EditText(this);
+			input.setMinLines(2);
+			input.setText(currentUpload.getCaption());
+			layout.addView(input);
 
-		final EditText input = new EditText(this);
-		input.setMinLines(2);
-		input.setText(currentUpload.getCaption());
-		layout.addView(input);
+			builder.setView(layout);
 
-		builder.setView(layout);
+			final DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {
 
-		final DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int whichButton) {
+					switch (whichButton) {
+						case AlertDialog.BUTTON_POSITIVE:
+							currentUpload.setCaption(input.getText().toString());
+							getSupportActionBar().setTitle(currentUpload.toString());
+							break;
 
-				switch (whichButton) {
-					case AlertDialog.BUTTON_POSITIVE:
-						currentUpload.setCaption(input.getText().toString());
-						getSupportActionBar().setTitle(currentUpload.toString());
-						break;
-
-					case AlertDialog.BUTTON_NEGATIVE:
-					default:
-						dialog.dismiss();
-						break;
+						case AlertDialog.BUTTON_NEGATIVE:
+						default:
+							dialog.dismiss();
+							break;
+					}
 				}
-			}
-		};
+			};
 
-		builder.setPositiveButton(android.R.string.ok, listener);
-		builder.setNegativeButton(android.R.string.cancel, listener);
-		builder.show();
+			builder.setPositiveButton(android.R.string.ok, listener);
+			builder.setNegativeButton(android.R.string.cancel, listener);
+			builder.show();
+		}
 	}
 
 	private boolean hideFiltersView() {
