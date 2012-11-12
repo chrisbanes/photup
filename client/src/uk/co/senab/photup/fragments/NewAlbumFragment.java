@@ -61,16 +61,18 @@ public class NewAlbumFragment extends SherlockDialogFragment implements View.OnC
 	}
 
 	public void onClick(View v) {
-		String albumName = mAlbumNameEditText.getText().toString();
-		// TODO Check for empty String
+		if (null != mAccount) {
+			String albumName = mAlbumNameEditText.getText().toString();
+			// TODO Check for empty String
 
-		String privacyValue = mPrivacyValues[mPrivacySpinner.getSelectedItemPosition()];
-		String description = mAlbumDescEditText.getText().toString();
+			String privacyValue = mPrivacyValues[mPrivacySpinner.getSelectedItemPosition()];
+			String description = mAlbumDescEditText.getText().toString();
 
-		v.setVisibility(View.GONE);
-		mLoadingProgressBar.setVisibility(View.VISIBLE);
+			v.setVisibility(View.GONE);
+			mLoadingProgressBar.setVisibility(View.VISIBLE);
 
-		new NewAlbumAsyncTask(mAccount, this).execute(albumName, description, privacyValue);
+			new NewAlbumAsyncTask(mAccount, this).execute(albumName, description, privacyValue);
+		}
 	}
 
 	public void onNewAlbumCreated(String albumId) {
@@ -84,11 +86,11 @@ public class NewAlbumFragment extends SherlockDialogFragment implements View.OnC
 			}
 		}
 	}
-	
+
 	public void setAccount(Account account) {
 		mAccount = account;
 	}
-	
+
 	public void setOnAlbumCreatedListener(OnAlbumCreatedListener listener) {
 		mAlbumCreated = listener;
 	}

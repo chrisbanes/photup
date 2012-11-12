@@ -336,10 +336,13 @@ public class UploadFragment extends PhotupDialogFragment implements AlbumsResult
 	}
 
 	private void startNewAlbumFragment() {
-		NewAlbumFragment fragment = new NewAlbumFragment();
-		fragment.setOnAlbumCreatedListener(this);
-		fragment.setAccount(getSelectedAccount());
-		fragment.show(getActivity().getSupportFragmentManager(), "new_album");
+		Account account = getSelectedAccount();
+		if (null != account) {
+			NewAlbumFragment fragment = new NewAlbumFragment();
+			fragment.setOnAlbumCreatedListener(this);
+			fragment.setAccount(account);
+			fragment.show(getActivity().getSupportFragmentManager(), "new_album");
+		}
 	}
 
 	private void startPlaceFragment() {
