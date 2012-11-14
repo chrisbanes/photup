@@ -22,6 +22,8 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.location.Location;
 import android.media.ExifInterface;
+import android.media.MediaScannerConnection;
+import android.media.MediaScannerConnection.OnScanCompletedListener;
 import android.net.Uri;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
@@ -252,6 +254,11 @@ public class Utils {
 		} else {
 			return String.format("%.2fkm", distance / 1000f);
 		}
+	}
+
+	public static void scanMediaJpegFile(final Context context, final File file, final OnScanCompletedListener listener) {
+		MediaScannerConnection.scanFile(context, new String[] { file.getAbsolutePath() }, new String[] { "image/jpg" },
+				listener);
 	}
 
 	public static int getSpinnerItemResId() {

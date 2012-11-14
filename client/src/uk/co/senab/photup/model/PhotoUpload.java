@@ -31,6 +31,7 @@ import android.graphics.RectF;
 import android.location.Location;
 import android.media.FaceDetector;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore.Images.Thumbnails;
 import android.text.TextUtils;
 import android.util.Log;
@@ -405,6 +406,15 @@ public class PhotoUpload {
 
 	public int getUploadProgress() {
 		return mProgress;
+	}
+
+	public File getUploadSaveFile() {
+		File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "photup");
+		if (!dir.exists()) {
+			dir.mkdirs();
+		}
+
+		return new File(dir, System.currentTimeMillis() + ".jpg");
 	}
 
 	public UploadQuality getUploadQuality() {

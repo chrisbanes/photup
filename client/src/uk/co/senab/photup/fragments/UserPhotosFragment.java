@@ -26,7 +26,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.media.MediaScannerConnection;
 import android.media.MediaScannerConnection.OnScanCompletedListener;
 import android.net.Uri;
 import android.os.Build.VERSION;
@@ -125,8 +124,7 @@ public class UserPhotosFragment extends AbstractPhotosFragment implements OnItem
 			case RESULT_CAMERA:
 				if (null != mPhotoFile) {
 					if (resultCode == Activity.RESULT_OK) {
-						MediaScannerConnection.scanFile(getActivity(), new String[] { mPhotoFile.getAbsolutePath() },
-								new String[] { "image/jpg" }, this);
+						Utils.scanMediaJpegFile(getActivity(), mPhotoFile, this);
 					} else {
 						if (Flags.DEBUG) {
 							Log.d("UserPhotosFragment", "Deleting Photo File");

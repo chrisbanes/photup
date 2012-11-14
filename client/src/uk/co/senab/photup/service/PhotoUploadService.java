@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ref.WeakReference;
-import java.net.MalformedURLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
@@ -125,7 +124,7 @@ public class PhotoUploadService extends Service {
 		}
 
 		public void runImpl() {
-			Context context = mContextRef.get();
+			final Context context = mContextRef.get();
 			if (null == context) {
 				return;
 			}
@@ -178,15 +177,15 @@ public class PhotoUploadService extends Service {
 			UploadQuality quality = mUpload.getUploadQuality();
 			Bitmap bitmap = mUpload.getUploadImage(context, quality);
 
-			final File temporaryFile = new File(context.getFilesDir(), TEMPORARY_FILE_NAME);
-			if (temporaryFile.exists()) {
-				temporaryFile.delete();
+			final File saveFile = mUpload.getUploadSaveFile();
+			if (saveFile.exists()) {
+				saveFile.delete();
 			}
 
 			OutputStream os = null;
 			try {
-				temporaryFile.createNewFile();
-				os = new BufferedOutputStream(new FileOutputStream(temporaryFile));
+				saveFile.createNewFile();
+				os = new BufferedOutputStream(new FileOutputStream(saveFile));
 				bitmap.compress(CompressFormat.JPEG, quality.getJpegQuality(), os);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -217,7 +216,7 @@ public class PhotoUploadService extends Service {
 				}
 
 				try {
-					InputStream is = new ProgressInputStream(new FileInputStream(temporaryFile), temporaryFile.length());
+					InputStream is = new ProgressInputStream(new FileInputStream(saveFile), saveFile.length());
 
 					String targetId = mUpload.getUploadTargetId();
 					String graphPath = null != targetId ? targetId : "me";
@@ -226,17 +225,12 @@ public class PhotoUploadService extends Service {
 					if (Flags.DEBUG) {
 						Log.d(LOG_TAG, response);
 					}
-				} catch (MalformedURLException e) {
-					e.printStackTrace();
 				} catch (IOException e) {
 					e.printStackTrace();
 				} finally {
 					retries++;
 				}
 			} while (response == null && retries < MAX_NUMBER_RETRIES);
-
-			// Delete Temporary File
-			temporaryFile.delete();
 
 			if (null != response) {
 				try {
@@ -257,6 +251,10 @@ public class PhotoUploadService extends Service {
 			} else {
 				mUpload.setUploadState(PhotoUpload.STATE_UPLOAD_WAITING);
 			}
+
+			if (saveFile.exists()) {
+				Utils.scanMediaJpegFile(context, saveFile, null);
+			}
 		}
 
 		protected boolean isInterrupted() {
@@ -270,10 +268,7 @@ public class PhotoUploadService extends Service {
 	}
 
 	static final int MAX_NUMBER_RETRIES = 3;
-
 	static final int NOTIFICATION_ID = 1000;
-
-	static final String TEMPORARY_FILE_NAME = "upload_temp.jpg";
 
 	private boolean mCurrentlyUploading;
 	private ExecutorService mExecutor;
