@@ -106,7 +106,7 @@ public class PhotupApplication extends Application implements FriendsResultListe
 		if (Flags.ENABLE_BUG_TRACKING) {
 			Crittercism.init(this, Constants.CRITTERCISM_API_KEY);
 		}
-		
+
 		checkInstantUploadReceiverState();
 
 		mPhotoController = new PhotoUploadController(this);
@@ -193,9 +193,7 @@ public class PhotupApplication extends Application implements FriendsResultListe
 				// PRELOAD Main Account's Data
 				for (Account account : mAccounts) {
 					if (account.isMainAccount()) {
-						account.getAlbums(null, false);
-						account.getGroups(null, false);
-						account.getEvents(null, false);
+						account.preloadAll(this);
 						break;
 					}
 				}

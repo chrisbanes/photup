@@ -22,7 +22,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements Albu
 
 		Account mainAccount = PhotupApplication.getApplication(this).getMainAccount();
 		if (null != mainAccount) {
-			mainAccount.getAlbums(this, false);
+			mainAccount.getAlbums(getApplicationContext(), this, false);
 		}
 
 		populateFiltersPref();

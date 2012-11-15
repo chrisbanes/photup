@@ -9,12 +9,12 @@ public class FbUser extends AbstractFacebookObject {
 
 	public static final String GRAPH_FIELDS = "id,name";
 
-	public FbUser(String id, String name) {
-		super(id, name);
+	public FbUser(String id, String name, Account account) {
+		super(id, name, account);	
 	}
 
-	public FbUser(JSONObject object) throws JSONException {
-		super(object);
+	public FbUser(JSONObject object, Account account) throws JSONException {
+		super(object, account);
 	}
 
 	public static Comparator<FbUser> getComparator() {
@@ -26,7 +26,7 @@ public class FbUser extends AbstractFacebookObject {
 	}
 
 	public static FbUser getMeFromAccount(Account account) {
-		return new FbUser(account.getId(), account.getName());
+		return new FbUser(account.getId(), account.getName(), account);
 	}
 
 }

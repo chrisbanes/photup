@@ -69,7 +69,7 @@ public class FacebookRequester {
 		for (int i = 0, z = data.length(); i < z; i++) {
 			try {
 				object = data.getJSONObject(i);
-				places.add(new Place(object));
+				places.add(new Place(object, mAccount));
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -104,7 +104,7 @@ public class FacebookRequester {
 		for (int i = 0, z = data.length(); i < z; i++) {
 			try {
 				object = data.getJSONObject(i);
-				friends.add(new FbUser(object));
+				friends.add(new FbUser(object, mAccount));
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -140,7 +140,7 @@ public class FacebookRequester {
 		for (int i = 0, z = data.length(); i < z; i++) {
 			try {
 				object = data.getJSONObject(i);
-				groups.add(new Group(object));
+				groups.add(new Group(object, mAccount));
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -174,7 +174,7 @@ public class FacebookRequester {
 		for (int i = 0, z = data.length(); i < z; i++) {
 			try {
 				object = data.getJSONObject(i);
-				events.add(new Event(object));
+				events.add(new Event(object, mAccount));
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -248,7 +248,7 @@ public class FacebookRequester {
 		for (int i = 0, z = data.length(); i < z; i++) {
 			try {
 				object = data.getJSONObject(i);
-				Album album = new Album(object);
+				Album album = new Album(object, mAccount);
 				if (album.canUpload()) {
 					albums.add(album);
 				}

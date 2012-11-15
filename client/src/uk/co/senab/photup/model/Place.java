@@ -16,8 +16,8 @@ public class Place extends AbstractFacebookObject {
 	
 	private int mDistanceFromLocation;
 
-	public Place(JSONObject object) throws JSONException {
-		super(object);
+	public Place(JSONObject object, Account account) throws JSONException {
+		super(object, account);
 		mCategory = object.getString("category");
 
 		JSONObject location = object.getJSONObject("location");

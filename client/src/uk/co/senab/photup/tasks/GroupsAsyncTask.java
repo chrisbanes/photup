@@ -9,6 +9,7 @@ import uk.co.senab.photup.facebook.FacebookRequester;
 import uk.co.senab.photup.listeners.FacebookErrorListener;
 import uk.co.senab.photup.model.Account;
 import uk.co.senab.photup.model.Group;
+import android.content.Context;
 import android.os.AsyncTask;
 
 import com.facebook.android.FacebookError;
@@ -20,9 +21,11 @@ public class GroupsAsyncTask extends AsyncTask<Void, Void, List<Group>> {
 	}
 
 	private final Account mAccount;
+	private final WeakReference<Context> mContext;
 	private final WeakReference<GroupsResultListener> mListener;
 
-	public GroupsAsyncTask(Account account, GroupsResultListener listener) {
+	public GroupsAsyncTask(Context context, Account account, GroupsResultListener listener) {
+		mContext = new WeakReference<Context>(context);
 		mAccount = account;
 		mListener = new WeakReference<GroupsResultListener>(listener);
 	}
@@ -50,6 +53,15 @@ public class GroupsAsyncTask extends AsyncTask<Void, Void, List<Group>> {
 	@Override
 	protected void onPostExecute(List<Group> result) {
 		super.onPostExecute(result);
+		
+		Context context = mContext.get();
+		if (null != context) {
+			if (null != result) {
+				Group.saveToDatabase(context, result, mAccount);
+			} else {
+				result = Group.getFromDatabase(context, mAccount);
+			}
+		}
 
 		GroupsResultListener listener = mListener.get();
 		if (null != listener && null != result) {

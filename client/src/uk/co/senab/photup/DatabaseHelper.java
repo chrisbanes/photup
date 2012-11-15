@@ -2,6 +2,9 @@ package uk.co.senab.photup;
 
 import java.sql.SQLException;
 
+import uk.co.senab.photup.model.Album;
+import uk.co.senab.photup.model.Event;
+import uk.co.senab.photup.model.Group;
 import uk.co.senab.photup.model.PhotoUpload;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -19,11 +22,16 @@ import com.j256.ormlite.table.TableUtils;
  */
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
+	private static final Class<?>[] DATA_CLASSES = { PhotoUpload.class, Album.class, Event.class, Group.class };
+
 	public static final String DATABASE_NAME = "photup.db";
-	private static final int DATABASE_VERSION = 4;
+	private static final int DATABASE_VERSION = 7;
 
 	// the DAO object we use to access the PhotoUpload table
 	private Dao<PhotoUpload, String> mPhotoUploadDao = null;
+	private Dao<Album, String> mAlbumDao = null;
+	private Dao<Event, String> mEventDao = null;
+	private Dao<Group, String> mGroupDao = null;
 
 	public DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -40,7 +48,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			if (Flags.DEBUG) {
 				Log.i(DatabaseHelper.class.getName(), "onCreate");
 			}
-			TableUtils.createTable(connectionSource, PhotoUpload.class);
+			for (Class<?> dataClass : DATA_CLASSES) {
+				TableUtils.createTable(connectionSource, dataClass);
+			}
 
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
@@ -59,7 +69,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			if (Flags.DEBUG) {
 				Log.i(DatabaseHelper.class.getName(), "onUpgrade");
 			}
-			TableUtils.dropTable(connectionSource, PhotoUpload.class, true);
+			for (Class<?> dataClass : DATA_CLASSES) {
+				TableUtils.dropTable(connectionSource, dataClass, true);
+			}
 
 			onCreate(db, connectionSource);
 		} catch (SQLException e) {
@@ -80,11 +92,47 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	}
 
 	/**
+	 * Returns the Database Access Object (DAO) for our SimpleData class. It
+	 * will create it or just give the cached value.
+	 */
+	public Dao<Album, String> getAlbumDao() throws SQLException {
+		if (mAlbumDao == null) {
+			mAlbumDao = getDao(Album.class);
+		}
+		return mAlbumDao;
+	}
+
+	/**
+	 * Returns the Database Access Object (DAO) for our SimpleData class. It
+	 * will create it or just give the cached value.
+	 */
+	public Dao<Event, String> getEventDao() throws SQLException {
+		if (mEventDao == null) {
+			mEventDao = getDao(Event.class);
+		}
+		return mEventDao;
+	}
+
+	/**
+	 * Returns the Database Access Object (DAO) for our SimpleData class. It
+	 * will create it or just give the cached value.
+	 */
+	public Dao<Group, String> getGroupDao() throws SQLException {
+		if (mGroupDao == null) {
+			mGroupDao = getDao(Group.class);
+		}
+		return mGroupDao;
+	}
+
+	/**
 	 * Close the database connections and clear any cached DAOs.
 	 */
 	@Override
 	public void close() {
 		mPhotoUploadDao = null;
+		mAlbumDao = null;
+		mGroupDao = null;
+		mEventDao = null;
 		super.close();
 	}
 }

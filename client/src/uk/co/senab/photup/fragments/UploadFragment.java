@@ -113,7 +113,7 @@ public class UploadFragment extends PhotupDialogFragment implements AlbumsResult
 
 	public void onAlbumCreated() {
 		Account account = (Account) mAccountsSpinner.getSelectedItem();
-		account.getAlbums(this, true);
+		account.getAlbums(PhotupApplication.getApplication(getActivity()), this, true);
 	}
 
 	public void onAlbumsLoaded(Account account, List<Album> albums) {
@@ -125,19 +125,21 @@ public class UploadFragment extends PhotupDialogFragment implements AlbumsResult
 		mTargetLayout.setVisibility(View.GONE);
 
 		if (null != account) {
+			final Context appContext = getActivity().getApplicationContext();
+
 			switch (checkedId) {
 				case R.id.rb_target_album:
-					account.getAlbums(this, false);
+					account.getAlbums(appContext, this, false);
 					mTargetHelpBtn.setVisibility(View.GONE);
 					mNewAlbumButton.setVisibility(View.VISIBLE);
 					break;
 				case R.id.rb_target_event:
-					account.getEvents(this, false);
+					account.getEvents(appContext, this, false);
 					mTargetHelpBtn.setVisibility(View.VISIBLE);
 					mNewAlbumButton.setVisibility(View.GONE);
 					break;
 				case R.id.rb_target_group:
-					account.getGroups(this, false);
+					account.getGroups(appContext, this, false);
 					mTargetHelpBtn.setVisibility(View.VISIBLE);
 					mNewAlbumButton.setVisibility(View.GONE);
 					break;

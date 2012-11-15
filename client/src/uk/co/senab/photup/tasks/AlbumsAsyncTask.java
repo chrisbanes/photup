@@ -9,6 +9,7 @@ import uk.co.senab.photup.facebook.FacebookRequester;
 import uk.co.senab.photup.listeners.FacebookErrorListener;
 import uk.co.senab.photup.model.Account;
 import uk.co.senab.photup.model.Album;
+import android.content.Context;
 import android.os.AsyncTask;
 
 import com.facebook.android.FacebookError;
@@ -20,16 +21,18 @@ public class AlbumsAsyncTask extends AsyncTask<Void, Void, List<Album>> {
 	}
 
 	private final Account mAccount;
+	private final WeakReference<Context> mContext;
 	private final WeakReference<AlbumsResultListener> mListener;
 
-	public AlbumsAsyncTask(Account account, AlbumsResultListener listener) {
+	public AlbumsAsyncTask(Context context, Account account, AlbumsResultListener listener) {
+		mContext = new WeakReference<Context>(context);
 		mAccount = account;
 		mListener = new WeakReference<AlbumsResultListener>(listener);
 	}
 
 	@Override
 	protected List<Album> doInBackground(Void... params) {
-
+		
 		FacebookRequester requester = new FacebookRequester(mAccount);
 		try {
 			return requester.getUploadableAlbums();
@@ -50,6 +53,15 @@ public class AlbumsAsyncTask extends AsyncTask<Void, Void, List<Album>> {
 	@Override
 	protected void onPostExecute(List<Album> result) {
 		super.onPostExecute(result);
+
+		Context context = mContext.get();
+		if (null != context) {
+			if (null != result) {
+				Album.saveToDatabase(context, result, mAccount);
+			} else {
+				result = Album.getFromDatabase(context, mAccount);
+			}
+		}
 
 		AlbumsResultListener listener = mListener.get();
 		if (null != listener && null != result) {

@@ -36,14 +36,14 @@ public class Account extends AbstractFacebookObject implements AlbumsResultListe
 	private ArrayList<Group> mGroups;
 
 	private Account(String id, String name, String accessToken, long accessExpires) {
-		super(id, name);
+		super(id, name, null);
 		mAccessToken = accessToken;
 		mAccessExpires = accessExpires;
 		mIsMainAccount = true;
 	}
 
 	public Account(JSONObject object) throws JSONException {
-		super(object);
+		super(object, null);
 		mAccessToken = object.optString("access_token", null);
 		mAccessExpires = 0;
 		mIsMainAccount = false;
@@ -57,40 +57,40 @@ public class Account extends AbstractFacebookObject implements AlbumsResultListe
 		return mIsMainAccount;
 	}
 
-	public void getAlbums(AlbumsResultListener listener, boolean forceRefresh) {
+	public void getAlbums(Context context, AlbumsResultListener listener, boolean forceRefresh) {
 		if (null == mAlbums) {
 			mAlbums = new ArrayList<Album>();
 		}
 
 		if (forceRefresh || mAlbums.isEmpty()) {
 			mAlbumsListener = listener;
-			new AlbumsAsyncTask(this, this).execute();
+			new AlbumsAsyncTask(context, this, this).execute();
 		} else {
 			listener.onAlbumsLoaded(this, mAlbums);
 		}
 	}
 
-	public void getGroups(GroupsResultListener listener, boolean forceRefresh) {
+	public void getGroups(Context context, GroupsResultListener listener, boolean forceRefresh) {
 		if (null == mGroups) {
 			mGroups = new ArrayList<Group>();
 		}
 
 		if (forceRefresh || mGroups.isEmpty()) {
 			mGroupsListener = listener;
-			new GroupsAsyncTask(this, this).execute();
+			new GroupsAsyncTask(context, this, this).execute();
 		} else {
 			listener.onGroupsLoaded(this, mGroups);
 		}
 	}
 
-	public void getEvents(EventsResultListener listener, boolean forceRefresh) {
+	public void getEvents(Context context, EventsResultListener listener, boolean forceRefresh) {
 		if (null == mEvents) {
 			mEvents = new ArrayList<Event>();
 		}
 
 		if (forceRefresh || mEvents.isEmpty()) {
 			mEventsListener = listener;
-			new EventsAsyncTask(this, this).execute();
+			new EventsAsyncTask(context, this, this).execute();
 		} else {
 			listener.onEventsLoaded(this, mEvents);
 		}
@@ -128,6 +128,7 @@ public class Account extends AbstractFacebookObject implements AlbumsResultListe
 
 		if (null != albums) {
 			mAlbums.addAll(albums);
+
 			if (null != mAlbumsListener && mAlbumsListener != this) {
 				mAlbumsListener.onAlbumsLoaded(account, mAlbums);
 				mAlbumsListener = null;
@@ -157,6 +158,12 @@ public class Account extends AbstractFacebookObject implements AlbumsResultListe
 				mEventsListener = null;
 			}
 		}
+	}
+
+	public void preloadAll(Context context) {
+		getAlbums(context, null, false);
+		getGroups(context, null, false);
+		getEvents(context, null, false);
 	}
 
 }
