@@ -2,6 +2,7 @@ package uk.co.senab.photup;
 
 import java.sql.SQLException;
 
+import uk.co.senab.photup.model.Account;
 import uk.co.senab.photup.model.Album;
 import uk.co.senab.photup.model.Event;
 import uk.co.senab.photup.model.Group;
@@ -22,16 +23,18 @@ import com.j256.ormlite.table.TableUtils;
  */
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
-	private static final Class<?>[] DATA_CLASSES = { PhotoUpload.class, Album.class, Event.class, Group.class };
+	private static final Class<?>[] DATA_CLASSES = { PhotoUpload.class, Album.class, Event.class, Group.class,
+			Account.class };
 
 	public static final String DATABASE_NAME = "photup.db";
-	private static final int DATABASE_VERSION = 7;
+	private static final int DATABASE_VERSION = 10;
 
 	// the DAO object we use to access the PhotoUpload table
 	private Dao<PhotoUpload, String> mPhotoUploadDao = null;
 	private Dao<Album, String> mAlbumDao = null;
 	private Dao<Event, String> mEventDao = null;
 	private Dao<Group, String> mGroupDao = null;
+	private Dao<Account, String> mAccountDao = null;
 
 	public DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -80,10 +83,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 	}
 
-	/**
-	 * Returns the Database Access Object (DAO) for our SimpleData class. It
-	 * will create it or just give the cached value.
-	 */
 	public Dao<PhotoUpload, String> getPhotoUploadDao() throws SQLException {
 		if (mPhotoUploadDao == null) {
 			mPhotoUploadDao = getDao(PhotoUpload.class);
@@ -91,10 +90,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return mPhotoUploadDao;
 	}
 
-	/**
-	 * Returns the Database Access Object (DAO) for our SimpleData class. It
-	 * will create it or just give the cached value.
-	 */
 	public Dao<Album, String> getAlbumDao() throws SQLException {
 		if (mAlbumDao == null) {
 			mAlbumDao = getDao(Album.class);
@@ -102,10 +97,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return mAlbumDao;
 	}
 
-	/**
-	 * Returns the Database Access Object (DAO) for our SimpleData class. It
-	 * will create it or just give the cached value.
-	 */
 	public Dao<Event, String> getEventDao() throws SQLException {
 		if (mEventDao == null) {
 			mEventDao = getDao(Event.class);
@@ -113,15 +104,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return mEventDao;
 	}
 
-	/**
-	 * Returns the Database Access Object (DAO) for our SimpleData class. It
-	 * will create it or just give the cached value.
-	 */
 	public Dao<Group, String> getGroupDao() throws SQLException {
 		if (mGroupDao == null) {
 			mGroupDao = getDao(Group.class);
 		}
 		return mGroupDao;
+	}
+
+	public Dao<Account, String> getAccountDao() throws SQLException {
+		if (mAccountDao == null) {
+			mAccountDao = getDao(Account.class);
+		}
+		return mAccountDao;
 	}
 
 	/**

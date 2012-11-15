@@ -55,6 +55,15 @@ public class AccountsAsyncTask extends AsyncTask<Void, Void, List<Account>> {
 	protected void onPostExecute(List<Account> result) {
 		super.onPostExecute(result);
 
+		Context context = mContext.get();
+		if (null != context) {
+			if (null != result) {
+				Account.saveToDatabase(context, result);
+			} else {
+				result = Account.getFromDatabase(context);
+			}
+		}
+
 		AccountsResultListener listener = mListener.get();
 		if (null != result && null != listener) {
 			listener.onAccountsLoaded(result);

@@ -1,12 +1,16 @@
 package uk.co.senab.photup.model;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.co.senab.photup.Constants;
+import uk.co.senab.photup.DatabaseHelper;
+import uk.co.senab.photup.Flags;
 import uk.co.senab.photup.facebook.Session;
 import uk.co.senab.photup.tasks.AlbumsAsyncTask;
 import uk.co.senab.photup.tasks.AlbumsAsyncTask.AlbumsResultListener;
@@ -16,16 +20,28 @@ import uk.co.senab.photup.tasks.GroupsAsyncTask;
 import uk.co.senab.photup.tasks.GroupsAsyncTask.GroupsResultListener;
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.facebook.android.Facebook;
 import com.facebook.android.FacebookError;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
+@DatabaseTable(tableName = "account")
 public class Account extends AbstractFacebookObject implements AlbumsResultListener, EventsResultListener,
 		GroupsResultListener {
 
-	private final String mAccessToken;
-	private final long mAccessExpires;
-	private final boolean mIsMainAccount;
+	static final String LOG_TAG = "Account";
+
+	public static final String FIELD_ACCESS_TOKEN = "access_token";
+	public static final String FIELD_ACCESS_EXPIRES = "access_expires";
+	public static final String FIELD_MAIN_ACCOUNT = "is_main_account";
+
+	@DatabaseField(columnName = FIELD_ACCESS_TOKEN) private String mAccessToken;
+	@DatabaseField(columnName = FIELD_ACCESS_EXPIRES) private long mAccessExpires;
+	@DatabaseField(columnName = FIELD_MAIN_ACCOUNT) private boolean mIsMainAccount;
 
 	private AlbumsResultListener mAlbumsListener;
 	private GroupsResultListener mGroupsListener;
@@ -34,6 +50,10 @@ public class Account extends AbstractFacebookObject implements AlbumsResultListe
 	private ArrayList<Album> mAlbums;
 	private ArrayList<Event> mEvents;
 	private ArrayList<Group> mGroups;
+	
+	Account() {
+		// No-ARG for Ormlite
+	}
 
 	private Account(String id, String name, String accessToken, long accessExpires) {
 		super(id, name, null);
@@ -160,10 +180,60 @@ public class Account extends AbstractFacebookObject implements AlbumsResultListe
 		}
 	}
 
-	public void preloadAll(Context context) {
+	public void preload(Context context) {
 		getAlbums(context, null, false);
 		getGroups(context, null, false);
 		getEvents(context, null, false);
+	}
+
+	public static List<Account> getFromDatabase(Context context) {
+		final DatabaseHelper helper = OpenHelperManager.getHelper(context, DatabaseHelper.class);
+		List<Account> items = null;
+
+		try {
+			final Dao<Account, String> dao = helper.getAccountDao();
+			items = dao.query(dao.queryBuilder().prepare());
+		} catch (SQLException e) {
+			if (Flags.DEBUG) {
+				e.printStackTrace();
+			}
+		} finally {
+			OpenHelperManager.releaseHelper();
+		}
+
+		return items;
+	}
+
+	public static void saveToDatabase(Context context, final List<Account> items) {
+		final DatabaseHelper helper = OpenHelperManager.getHelper(context, DatabaseHelper.class);
+
+		try {
+			final Dao<Account, String> dao = helper.getAccountDao();
+			dao.callBatchTasks(new Callable<Void>() {
+
+				public Void call() throws Exception {
+					// Delete all
+					int removed = dao.delete(dao.deleteBuilder().prepare());
+					if (Flags.DEBUG) {
+						Log.d(LOG_TAG, "Deleted " + removed + " from database");
+					}
+
+					for (Account item : items) {
+						dao.create(item);
+					}
+					if (Flags.DEBUG) {
+						Log.d(LOG_TAG, "Inserted " + items.size() + " into database");
+					}
+					return null;
+				}
+			});
+		} catch (Exception e) {
+			if (Flags.DEBUG) {
+				e.printStackTrace();
+			}
+		} finally {
+			OpenHelperManager.releaseHelper();
+		}
 	}
 
 }

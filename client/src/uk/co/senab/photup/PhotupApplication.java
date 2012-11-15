@@ -193,7 +193,7 @@ public class PhotupApplication extends Application implements FriendsResultListe
 				// PRELOAD Main Account's Data
 				for (Account account : mAccounts) {
 					if (account.isMainAccount()) {
-						account.preloadAll(this);
+						account.preload(this);
 						break;
 					}
 				}

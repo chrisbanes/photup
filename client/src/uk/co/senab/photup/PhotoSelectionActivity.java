@@ -10,7 +10,6 @@ import uk.co.senab.photup.fragments.SelectedPhotosFragment;
 import uk.co.senab.photup.fragments.UploadFragment;
 import uk.co.senab.photup.fragments.UploadsFragment;
 import uk.co.senab.photup.fragments.UserPhotosFragment;
-import uk.co.senab.photup.receivers.ConnectivityReceiver;
 import uk.co.senab.photup.views.UploadActionBarView;
 import uk.co.senab.photup.views.UploadsActionBarView;
 import android.content.Intent;
@@ -47,11 +46,7 @@ public class PhotoSelectionActivity extends AbstractPhotoUploadActivity implemen
 			if (!mPhotoController.hasSelections()) {
 				Toast.makeText(this, R.string.error_select_photos, Toast.LENGTH_SHORT).show();
 			} else {
-				if (ConnectivityReceiver.isConnected(this)) {
-					new UploadFragment().show(getSupportFragmentManager(), "upload");
-				} else {
-					Toast.makeText(this, R.string.error_not_connected, Toast.LENGTH_LONG).show();
-				}
+				new UploadFragment().show(getSupportFragmentManager(), "upload");
 			}
 		} else if (v == mUploadsActionView) {
 			startUploadsActivity();
@@ -65,8 +60,6 @@ public class PhotoSelectionActivity extends AbstractPhotoUploadActivity implemen
 
 		setContentView(R.layout.activity_choose_photos);
 		mSinglePane = null == findViewById(R.id.frag_secondary);
-
-		
 
 		ActionBar ab = getSupportActionBar();
 		ab.setDisplayShowTitleEnabled(false);
