@@ -1,6 +1,6 @@
 package uk.co.senab.photup.model;
 
-import com.lightbox.android.photoprocessing.R;
+import uk.co.senab.photup.R;
 
 public enum UploadQuality {
 

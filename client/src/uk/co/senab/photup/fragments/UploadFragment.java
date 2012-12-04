@@ -3,25 +3,6 @@ package uk.co.senab.photup.fragments;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.co.senab.photup.Constants;
-import uk.co.senab.photup.PhotoUploadController;
-import uk.co.senab.photup.PhotupApplication;
-import uk.co.senab.photup.events.UploadsStartEvent;
-import uk.co.senab.photup.fragments.NewAlbumFragment.OnAlbumCreatedListener;
-import uk.co.senab.photup.listeners.OnPlacePickedListener;
-import uk.co.senab.photup.model.AbstractFacebookObject;
-import uk.co.senab.photup.model.Account;
-import uk.co.senab.photup.model.Album;
-import uk.co.senab.photup.model.Event;
-import uk.co.senab.photup.model.Group;
-import uk.co.senab.photup.model.Place;
-import uk.co.senab.photup.model.UploadQuality;
-import uk.co.senab.photup.tasks.AccountsAsyncTask.AccountsResultListener;
-import uk.co.senab.photup.tasks.AlbumsAsyncTask.AlbumsResultListener;
-import uk.co.senab.photup.tasks.EventsAsyncTask.EventsResultListener;
-import uk.co.senab.photup.tasks.GroupsAsyncTask.GroupsResultListener;
-import uk.co.senab.photup.util.Utils;
-import uk.co.senab.photup.views.NetworkedCacheableImageView;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -48,9 +29,27 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.android.FacebookError;
-import com.lightbox.android.photoprocessing.R;
-
 import de.greenrobot.event.EventBus;
+import uk.co.senab.photup.Constants;
+import uk.co.senab.photup.PhotoUploadController;
+import uk.co.senab.photup.PhotupApplication;
+import uk.co.senab.photup.R;
+import uk.co.senab.photup.events.UploadsStartEvent;
+import uk.co.senab.photup.fragments.NewAlbumFragment.OnAlbumCreatedListener;
+import uk.co.senab.photup.listeners.OnPlacePickedListener;
+import uk.co.senab.photup.model.AbstractFacebookObject;
+import uk.co.senab.photup.model.Account;
+import uk.co.senab.photup.model.Album;
+import uk.co.senab.photup.model.Event;
+import uk.co.senab.photup.model.Group;
+import uk.co.senab.photup.model.Place;
+import uk.co.senab.photup.model.UploadQuality;
+import uk.co.senab.photup.tasks.AccountsAsyncTask.AccountsResultListener;
+import uk.co.senab.photup.tasks.AlbumsAsyncTask.AlbumsResultListener;
+import uk.co.senab.photup.tasks.EventsAsyncTask.EventsResultListener;
+import uk.co.senab.photup.tasks.GroupsAsyncTask.GroupsResultListener;
+import uk.co.senab.photup.util.Utils;
+import uk.co.senab.photup.views.NetworkedCacheableImageView;
 
 public class UploadFragment extends PhotupDialogFragment implements AlbumsResultListener, AccountsResultListener,
 		GroupsResultListener, EventsResultListener, OnClickListener, OnAlbumCreatedListener, OnPlacePickedListener,
