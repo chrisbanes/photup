@@ -3,6 +3,7 @@ package uk.co.senab.photup.views;
 import java.util.concurrent.ExecutorService;
 
 import uk.co.senab.photup.PhotupApplication;
+import uk.co.senab.photup.R;
 import uk.co.senab.photup.model.Filter;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.tasks.PhotupThreadRunnable;
@@ -25,7 +26,6 @@ import android.widget.HorizontalScrollView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-import com.lightbox.android.photoprocessing.R;
 
 public class FiltersRadioGroup extends RadioGroup implements AnimationListener {
 

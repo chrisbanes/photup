@@ -19,8 +19,7 @@ public class MultiTouchImageView extends PhotupImageView implements PhotoViewAtt
 	private OnPhotoTagTapListener mTagTapListener;
 
 	public MultiTouchImageView(Context context) {
-		super(context);
-		mAttacher = new PhotoViewAttacher(this);
+		this(context, null);
 	}
 
 	public MultiTouchImageView(Context context, AttributeSet attr) {
@@ -93,5 +92,11 @@ public class MultiTouchImageView extends PhotupImageView implements PhotoViewAtt
 	 */
 	public void setZoomable(boolean zoomable) {
 		mAttacher.setZoomable(zoomable);
+	}
+
+	@Override
+	protected void onDetachedFromWindow() {
+		mAttacher.cleanup();
+		super.onDetachedFromWindow();
 	}
 }
