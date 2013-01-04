@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="google_play_description">photupを使えば、これまでより迅速にあなたのFacebookのプロフィールに写真をアップロードできます。
+それはまるでiOSの\'Facebook Camera\'のように...
+
+- たくさんの写真を一括でアップロード
+- エフェクト(フィルター)を付加
+- トリミング
+- それぞれの写真にキャプションを設定
+- 友達の顔を検出して簡単にタグ付け
+- インスタント アップロード。 写真を撮影すると自動アップロード
+- 場所と位置を追加
+- グループまたはイベントにアップロード
+- アルバムとページにアップロード
+
+近日公開:
+- 更なるプライバシーオプション
+
+翻訳
+もしphotupの翻訳に協力していただけるなら:
+http://www.getlocalization.com/photup/</string>
+	<string name="google_play_promo_text">photup for Facebookであなたの写真を共有</string>
+</resources>

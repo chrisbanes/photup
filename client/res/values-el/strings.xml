@@ -55,6 +55,9 @@
 	<string name="pref_instant_upload_filter_summary">Επιλέξτε το άλμπουμ που θα εφαρμόζεται αυτόματα στις φωτογραφίες σας</string>
 	<string name="pref_instant_upload_roaming_title">Περιαγωγή</string>
 	<string name="pref_instant_upload_roaming_summary">Άμεση μεταφόρτωση κατά την περιαγωγή;</string>
+	<string name="pref_general_screen">General Settings</string>
+	<string name="pref_save_files_gallery_title">Save Images</string>
+	<string name="pref_save_files_gallery_summary">Save Images to Gallery?</string>
 	<string name="pref_more_options">Προχωρημένες ρυθμίσεις</string>
 	<string name="dialog_instant_upload">Το photup έχει τώρα Άμεση Μεταφόρτωση! Αυτό σημαίνει ότι όποτε παίρνετε μια φωοτγραφία, η εφαρμογή μπορεί να την ανεβάζει αυτόματα στο Facebook. Απλά ενεργοποιήστε το κι εμείς θα κάνουμε όλα τα υπόλοιπα!</string>
 	<string name="dialog_missing_pages_title">Χαμένοι λογαριασμοί;</string>

@@ -55,6 +55,9 @@
 	<string name="pref_instant_upload_filter_summary">Выберите эффект, который будет применяться автоматически</string>
 	<string name="pref_instant_upload_roaming_title">Roaming</string>
 	<string name="pref_instant_upload_roaming_summary">Instant Upload if roaming?</string>
+	<string name="pref_general_screen">General Settings</string>
+	<string name="pref_save_files_gallery_title">Save Images</string>
+	<string name="pref_save_files_gallery_summary">Save Images to Gallery?</string>
 	<string name="pref_more_options">Advanced Settings</string>
 	<string name="dialog_instant_upload">Сейчас photup имеет функцию быстрой загрузки!  Это означает, что всякий раз, когда вы делаете фото, photup может автоматически загружать его в Facebook.\n\nПросто включите её в настройках, остальное мы сделаем сами!</string>
 	<string name="dialog_missing_pages_title">Нет учетных записей?</string>
