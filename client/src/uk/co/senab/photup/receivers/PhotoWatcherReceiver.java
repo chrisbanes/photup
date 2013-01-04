@@ -56,7 +56,7 @@ public class PhotoWatcherReceiver extends BroadcastReceiver {
 
 			final PhotoUpload upload = PhotoUpload.getSelection(uri);
 			final String qualityId = prefs.getString(PreferenceConstants.PREF_INSTANT_UPLOAD_QUALITY, null);
-			final String filterId = prefs.getString(PreferenceConstants.PREF_INSTANT_UPLOAD_FILTER, "0");
+			final String filterId = prefs.getString(PreferenceConstants.PREF_INSTANT_UPLOAD_FILTER, "1");
 
 			upload.setUploadParams(account, albumId, UploadQuality.mapFromPreference(qualityId));
 			upload.setFilterUsed(Filter.mapFromPref(filterId));

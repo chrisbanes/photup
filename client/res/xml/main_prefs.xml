@@ -22,21 +22,30 @@
 			android:summary="@string/pref_instant_upload_album_summary"
 			android:title="@string/pref_instant_upload_album_title" />
 		<ListPreference
+			android:defaultValue="1"
 			android:dependency="pref_instant_upload_enabled"
 			android:entries="@array/quality_settings"
 			android:entryValues="@array/quality_settings_values"
 			android:key="pref_instant_upload_quality"
 			android:title="@string/pref_instant_upload_quality_title" />
-		<ListPreference
-			android:defaultValue="0"
+
+		<CheckBoxPreference
+			android:defaultValue="false"
 			android:dependency="pref_instant_upload_enabled"
-			android:key="pref_instant_upload_filter"
-			android:summary="@string/pref_instant_upload_filter_summary"
-			android:title="@string/pref_instant_upload_filter_title" />
+			android:key="pref_instant_upload_wifi_only"
+			android:summary="@string/pref_instant_upload_wifi_only_summary"
+			android:title="@string/pref_instant_upload_wifi_only_title" />
 
 		<PreferenceScreen
 			android:dependency="pref_instant_upload_enabled"
 			android:title="@string/pref_more_options" >
+			<ListPreference
+				android:defaultValue="0"
+				android:dependency="pref_instant_upload_enabled"
+				android:key="pref_instant_upload_filter"
+				android:summary="@string/pref_instant_upload_filter_summary"
+				android:title="@string/pref_instant_upload_filter_title" />
+
 			<CheckBoxPreference
 				android:defaultValue="false"
 				android:key="pref_instant_upload_roaming_enabled"
