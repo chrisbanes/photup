@@ -2,6 +2,14 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
 	<PreferenceCategory
+		android:title="@string/pref_general_screen" >
+		<CheckBoxPreference
+			android:defaultValue="true"
+			android:key="pref_save_files_gallery"
+			android:summary="@string/pref_save_files_gallery_summary"
+			android:title="@string/pref_save_files_gallery_title" />
+	</PreferenceCategory>
+	<PreferenceCategory
 		android:title="@string/pref_instant_upload_title" >
 		<CheckBoxPreference
 			android:key="pref_instant_upload_enabled"
@@ -36,5 +44,5 @@
 				android:title="@string/pref_instant_upload_roaming_title" />
 		</PreferenceScreen>
 	</PreferenceCategory>
-	
+
 </PreferenceScreen>

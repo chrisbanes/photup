@@ -21,6 +21,7 @@ import uk.co.senab.photup.Flags;
 import uk.co.senab.photup.PhotoSelectionActivity;
 import uk.co.senab.photup.PhotoUploadController;
 import uk.co.senab.photup.PhotupApplication;
+import uk.co.senab.photup.PreferenceConstants;
 import uk.co.senab.photup.R;
 import uk.co.senab.photup.events.UploadStateChangedEvent;
 import uk.co.senab.photup.events.UploadingPausedStateChangedEvent;
@@ -37,12 +38,14 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -128,6 +131,7 @@ public class PhotoUploadService extends Service {
 			if (null == context) {
 				return;
 			}
+			final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
 			mUpload.setUploadState(PhotoUpload.STATE_UPLOAD_IN_PROGRESS);
 
@@ -253,7 +257,13 @@ public class PhotoUploadService extends Service {
 			}
 
 			if (saveFile.exists()) {
-				Utils.scanMediaJpegFile(context, saveFile, null);
+				// If we're set to save to Gallery, save call Scanner, else just
+				// delete
+				if (prefs.getBoolean(PreferenceConstants.PREF_SAVE_PHOTOS_TO_GALLERY, true)) {
+					Utils.scanMediaJpegFile(context, saveFile, null);
+				} else {
+					saveFile.delete();
+				}
 			}
 		}
 
