@@ -6,9 +6,7 @@
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="lib" path="libs/CWAC-MergeAdapter.jar"/>
 	<classpathentry kind="lib" path="libs/CWAC-SackOfViewsAdapter.jar"/>
-	<classpathentry kind="lib" path="libs/ActivityCompat2-1.0.1.jar"/>
 	<classpathentry kind="lib" path="libs/Android-BitmapMemoryCache-v1.0.jar"/>
-	<classpathentry kind="lib" path="libs/NotificationCompat2-1.1.2.jar"/>
 	<classpathentry kind="lib" path="libs/ormlite-android-4.41.jar"/>
 	<classpathentry kind="lib" path="libs/ormlite-core-4.41.jar"/>
 	<classpathentry kind="lib" path="libs/EventBus-2.0.1.jar"/>
@@ -17,5 +15,6 @@
 	<classpathentry kind="lib" path="libs/PhotoView-1.2.jar"/>
 	<classpathentry kind="lib" path="libs/SwipeDismissNOA-chrisbanes.jar"/>
 	<classpathentry kind="lib" path="libs/FacebookSDK-chrisbanes.jar"/>
+	<classpathentry kind="lib" path="libs/ActivityCompat2-1.1.0.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

@@ -61,13 +61,13 @@ import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.facebook.android.Facebook;
 import com.facebook.android.FacebookError;
 import com.facebook.android.Util;
-import com.jakewharton.notificationcompat2.NotificationCompat2;
 
 import de.greenrobot.event.EventBus;
 
@@ -303,8 +303,8 @@ public class PhotoUploadService extends Service {
 	private int mNumberUploaded = 0;
 
 	private NotificationManager mNotificationMgr;
-	private NotificationCompat2.Builder mNotificationBuilder;
-	private NotificationCompat2.BigPictureStyle mBigPicStyle;
+	private NotificationCompat.Builder mNotificationBuilder;
+	private NotificationCompat.BigPictureStyle mBigPicStyle;
 
 	private Future<?> mCurrentUploadRunnable;
 
@@ -464,7 +464,7 @@ public class PhotoUploadService extends Service {
 
 	private void startForeground() {
 		if (null == mNotificationBuilder) {
-			mNotificationBuilder = new NotificationCompat2.Builder(this);
+			mNotificationBuilder = new NotificationCompat.Builder(this);
 			mNotificationBuilder.setSmallIcon(R.drawable.ic_stat_upload);
 			mNotificationBuilder.setContentTitle(getString(R.string.app_name));
 			mNotificationBuilder.setOngoing(true);
@@ -476,7 +476,7 @@ public class PhotoUploadService extends Service {
 		}
 
 		if (null == mBigPicStyle) {
-			mBigPicStyle = new NotificationCompat2.BigPictureStyle(mNotificationBuilder);
+			mBigPicStyle = new NotificationCompat.BigPictureStyle(mNotificationBuilder);
 		}
 
 		startForeground(NOTIFICATION_ID, mNotificationBuilder.build());
