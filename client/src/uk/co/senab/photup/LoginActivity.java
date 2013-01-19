@@ -4,7 +4,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
-import org.donations.DonationsActivity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -35,7 +34,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Dia
 	private Facebook mFacebook;
 
 	private View mAboutLogo;
-	private Button mLoginBtn, mLogoutBtn, mLibrariesBtn, mDonateBtn;
+	private Button mLoginBtn, mLogoutBtn, mLibrariesBtn;
 	private View mFacebookBtn, mTwitterBtn;
 	private TextView mMessageTv;
 	private CheckBox mLoginPromoCheckbox;
@@ -53,8 +52,6 @@ public class LoginActivity extends Activity implements View.OnClickListener, Dia
 			startActivity(new Intent(this, LicencesActivity.class));
 		} else if (v == mAboutLogo) {
 			onBackPressed();
-		} else if (v == mDonateBtn) {
-			startActivity(new Intent(this, DonationsActivity.class));
 		}
 	}
 
@@ -97,9 +94,6 @@ public class LoginActivity extends Activity implements View.OnClickListener, Dia
 		mLibrariesBtn.setOnClickListener(this);
 
 		mLoginPromoCheckbox = (CheckBox) findViewById(R.id.cbox_login_promo);
-
-		mDonateBtn = (Button) findViewById(R.id.btn_donate);
-		mDonateBtn.setOnClickListener(this);
 
 		mMessageTv = (TextView) findViewById(R.id.tv_login_message);
 

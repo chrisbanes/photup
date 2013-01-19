@@ -14,5 +14,8 @@
 	<classpathentry kind="lib" path="libs/EventBus-2.0.1.jar"/>
 	<classpathentry kind="lib" path="libs/crouton-1.5.jar"/>
 	<classpathentry kind="lib" path="libs/crittercism_v3_0_3_sdkonly.jar"/>
+	<classpathentry kind="lib" path="libs/PhotoView-1.2.jar"/>
+	<classpathentry kind="lib" path="libs/SwipeDismissNOA-chrisbanes.jar"/>
+	<classpathentry kind="lib" path="libs/FacebookSDK-chrisbanes.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

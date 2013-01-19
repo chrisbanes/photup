@@ -84,13 +84,6 @@
 				android:background="@drawable/btn_blue"
 				android:text="@string/libraries"
 				android:visibility="gone" />
-
-			<Button
-				android:id="@+id/btn_donate"
-				style="@style/StyledButton"
-				android:background="@drawable/btn_green"
-				android:text="@string/donate_title"
-				android:textStyle="bold" />
 		</LinearLayout>
 	</ScrollView>
 

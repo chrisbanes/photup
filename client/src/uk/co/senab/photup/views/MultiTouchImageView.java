@@ -93,10 +93,5 @@ public class MultiTouchImageView extends PhotupImageView implements PhotoViewAtt
 	public void setZoomable(boolean zoomable) {
 		mAttacher.setZoomable(zoomable);
 	}
-
-	@Override
-	protected void onDetachedFromWindow() {
-		mAttacher.cleanup();
-		super.onDetachedFromWindow();
-	}
+	
 }

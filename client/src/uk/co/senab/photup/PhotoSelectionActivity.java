@@ -1,7 +1,5 @@
 package uk.co.senab.photup;
 
-import org.donations.DonationsActivity;
-
 import uk.co.senab.photup.events.PhotoSelectionAddedEvent;
 import uk.co.senab.photup.events.PhotoSelectionRemovedEvent;
 import uk.co.senab.photup.events.UploadsModifiedEvent;
@@ -148,10 +146,6 @@ public class PhotoSelectionActivity extends AbstractPhotoUploadActivity implemen
 
 			case R.id.menu_settings:
 				startActivity(new Intent(this, SettingsActivity.class));
-				return true;
-
-			case R.id.menu_donate:
-				startActivity(new Intent(this, DonationsActivity.class));
 				return true;
 
 			case R.id.menu_logout:
