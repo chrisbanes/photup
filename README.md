@@ -10,6 +10,7 @@ photup is an application, currently available on Google Play with an average rat
 The following libraries need to cloned and manually added to photup as library projects.
 
  * [ActionBarSherlock](https://github.com/JakeWharton/ActionBarSherlock)
+ * [NineOldAndroids](https://github.com/JakeWharton/NineOldAndroids)
  * [PhotoProcessing](https://github.com/chrisbanes/PhotoProcessing)
  
  The following libraries are required, but have been bundled as JARs.
