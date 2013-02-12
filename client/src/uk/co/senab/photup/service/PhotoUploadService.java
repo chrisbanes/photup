@@ -471,7 +471,7 @@ public class PhotoUploadService extends Service {
 			mNotificationBuilder.setWhen(System.currentTimeMillis());
 
 			PendingIntent intent = PendingIntent
-					.getActivity(this, 0, new Intent(this, PhotoSelectionActivity.class), 0);
+					.getActivity(this, 0, new Intent(this, PhotoSelectionActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
 			mNotificationBuilder.setContentIntent(intent);
 		}
 
