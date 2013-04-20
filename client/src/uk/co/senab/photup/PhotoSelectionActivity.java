@@ -15,6 +15,7 @@
  *******************************************************************************/
 package uk.co.senab.photup;
 
+import uk.co.senab.photup.adapters.FragmentsViewPagerAdapter;
 import uk.co.senab.photup.events.PhotoSelectionAddedEvent;
 import uk.co.senab.photup.events.PhotoSelectionRemovedEvent;
 import uk.co.senab.photup.events.UploadsModifiedEvent;
@@ -29,6 +30,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
@@ -49,6 +51,8 @@ public class PhotoSelectionActivity extends AbstractPhotoUploadActivity implemen
 
 	private UploadActionBarView mUploadActionView;
 	private UploadsActionBarView mUploadsActionView;
+	
+	private ViewPager mViewPager;
 
 	private boolean mSinglePane;
 
@@ -79,6 +83,15 @@ public class PhotoSelectionActivity extends AbstractPhotoUploadActivity implemen
 		ab.addTab(ab.newTab().setText(R.string.tab_photos).setTag(TAB_PHOTOS).setTabListener(this));
 
 		if (mSinglePane) {
+			mViewPager = (ViewPager) findViewById(R.id.vp_fragments);
+			FragmentsViewPagerAdapter viewPagerAdapter = new FragmentsViewPagerAdapter(getSupportFragmentManager());
+			mViewPager.setAdapter(viewPagerAdapter);
+			mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+				@Override
+				public void onPageSelected(int position) {
+					getSupportActionBar().setSelectedNavigationItem(position);
+				}
+			});
 			ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 			ab.addTab(ab.newTab().setTag(TAB_SELECTED).setTabListener(this));
 			ab.addTab(ab.newTab().setText(R.string.tab_uploads).setTag(TAB_UPLOADS).setTabListener(this));
@@ -207,8 +220,11 @@ public class PhotoSelectionActivity extends AbstractPhotoUploadActivity implemen
 	}
 
 	public void onTabSelected(Tab tab, FragmentTransaction ft) {
-		final int id = (Integer) tab.getTag();
-		replacePrimaryFragment(id, ft);
+		if (mViewPager != null) {
+			// When the tab is selected, switch to the
+	        // corresponding page in the ViewPager.
+			mViewPager.setCurrentItem(tab.getPosition());
+		}
 
 		// Refresh Action Bar so correct Menu is displayed
 		supportInvalidateOptionsMenu();
