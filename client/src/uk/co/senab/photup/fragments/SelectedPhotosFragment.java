@@ -28,6 +28,8 @@ import android.content.Intent;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,8 +40,6 @@ import android.widget.GridView;
 
 import com.example.android.swipedismiss.SwipeDismissListViewTouchListener;
 import com.example.android.swipedismiss.SwipeDismissListViewTouchListener.OnDismissCallback;
-import com.jakewharton.activitycompat2.ActivityCompat2;
-import com.jakewharton.activitycompat2.ActivityOptionsCompat2;
 
 import de.greenrobot.event.EventBus;
 
@@ -110,7 +110,7 @@ public class SelectedPhotosFragment extends AbstractPhotosFragment implements On
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		Bundle b = null;
 		if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) {
-			ActivityOptionsCompat2 options = ActivityOptionsCompat2.makeThumbnailScaleUpAnimation(view,
+			ActivityOptionsCompat options = ActivityOptionsCompat.makeThumbnailScaleUpAnimation(view,
 					Utils.drawViewOntoBitmap(view), 0, 0);
 			b = options.toBundle();
 		}
@@ -119,7 +119,7 @@ public class SelectedPhotosFragment extends AbstractPhotosFragment implements On
 		intent.putExtra(PhotoViewerActivity.EXTRA_POSITION, position);
 		intent.putExtra(PhotoViewerActivity.EXTRA_MODE, PhotoViewerActivity.MODE_SELECTED_VALUE);
 
-		ActivityCompat2.startActivity(getActivity(), intent, b);
+		ActivityCompat.startActivity(getActivity(), intent, b);
 	}
 
 	public boolean canDismiss(AbsListView listView, int position) {

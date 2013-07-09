@@ -49,6 +49,8 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -66,8 +68,6 @@ import android.widget.GridView;
 import android.widget.Spinner;
 
 import com.commonsware.cwac.merge.MergeAdapter;
-import com.jakewharton.activitycompat2.ActivityCompat2;
-import com.jakewharton.activitycompat2.ActivityOptionsCompat2;
 
 import de.greenrobot.event.EventBus;
 
@@ -239,7 +239,7 @@ public class UserPhotosFragment extends AbstractPhotosFragment implements OnItem
 		} else {
 			Bundle b = null;
 			if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) {
-				ActivityOptionsCompat2 options = ActivityOptionsCompat2.makeThumbnailScaleUpAnimation(view,
+				ActivityOptionsCompat options = ActivityOptionsCompat.makeThumbnailScaleUpAnimation(view,
 						Utils.drawViewOntoBitmap(view), 0, 0);
 				b = options.toBundle();
 			}
@@ -253,7 +253,7 @@ public class UserPhotosFragment extends AbstractPhotosFragment implements OnItem
 			MediaStoreBucket bucket = (MediaStoreBucket) mBucketSpinner.getSelectedItem();
 			intent.putExtra(PhotoViewerActivity.EXTRA_BUCKET_ID, bucket.getId());
 
-			ActivityCompat2.startActivity(getActivity(), intent, b);
+			ActivityCompat.startActivity(getActivity(), intent, b);
 		}
 	}
 
