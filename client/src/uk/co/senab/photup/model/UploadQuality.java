@@ -19,7 +19,7 @@ import uk.co.senab.photup.R;
 
 public enum UploadQuality {
 
-    LOW(640, 75), MEDIUM(1024, 80), HIGH(2048, 85);
+    LOW(640, 75), MEDIUM(1024, 80), HIGH(2048, 85), ORIGINAL(Integer.MAX_VALUE, 90);
 
     private final int mMaxDimension, mJpegQuality;
 
@@ -36,6 +36,10 @@ public enum UploadQuality {
         return mJpegQuality;
     }
 
+    public boolean requiresResizing() {
+        return mMaxDimension < Integer.MAX_VALUE;
+    }
+
     public static UploadQuality mapFromButtonId(int buttonId) {
         switch (buttonId) {
             case R.id.rb_quality_low:
@@ -45,6 +49,8 @@ public enum UploadQuality {
             default:
             case R.id.rb_quality_high:
                 return UploadQuality.HIGH;
+            case R.id.rb_quality_max:
+                return UploadQuality.ORIGINAL;
         }
     }
 
@@ -57,6 +63,8 @@ public enum UploadQuality {
             returnValue = MEDIUM;
         } else if ("2".equals(value)) {
             returnValue = HIGH;
+        } else if ("3".equals(value)) {
+            returnValue = ORIGINAL;
         }
 
         return returnValue;

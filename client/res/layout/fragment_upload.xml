@@ -223,6 +223,12 @@
                     android:id="@+id/rb_quality_high"
                     style="@style/TabRadioButton"
                     android:text="@string/upload_quality_high" />
+
+                <RadioButton
+                    android:id="@+id/rb_quality_max"
+                    style="@style/TabRadioButton"
+                    android:text="@string/upload_quality_max" />
+
             </RadioGroup>
         </LinearLayout>
     </ScrollView>

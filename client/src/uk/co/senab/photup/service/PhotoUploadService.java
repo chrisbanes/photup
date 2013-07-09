@@ -197,30 +197,41 @@ public class PhotoUploadService extends Service {
                 Log.d(LOG_TAG, "About to get Upload bitmap");
             }
             UploadQuality quality = mUpload.getUploadQuality();
-            Bitmap bitmap = mUpload.getUploadImage(context, quality);
+            File uploadFile;
+            final boolean createdNewPhotoFile;
 
-            final File saveFile = mUpload.getUploadSaveFile();
-            if (saveFile.exists()) {
-                saveFile.delete();
-            }
+            if (UploadQuality.ORIGINAL == quality && !mUpload.requiresNativeEditing(context)) {
+                final String filePath = Utils
+                        .getPathFromContentUri(context.getContentResolver(),
+                                mUpload.getOriginalPhotoUri());
+                uploadFile = new File(filePath);
+                createdNewPhotoFile = false;
+            } else {
+                uploadFile = mUpload.getUploadSaveFile();
+                if (uploadFile.exists()) {
+                    uploadFile.delete();
+                }
+                createdNewPhotoFile = true;
 
-            OutputStream os = null;
-            try {
-                saveFile.createNewFile();
-                os = new BufferedOutputStream(new FileOutputStream(saveFile));
-                bitmap.compress(CompressFormat.JPEG, quality.getJpegQuality(), os);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (null != os) {
-                    try {
-                        os.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                Bitmap bitmap = mUpload.getUploadImage(context, quality);
+                OutputStream os = null;
+                try {
+                    uploadFile.createNewFile();
+                    os = new BufferedOutputStream(new FileOutputStream(uploadFile));
+                    bitmap.compress(CompressFormat.JPEG, quality.getJpegQuality(), os);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (null != os) {
+                        try {
+                            os.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
+                bitmap.recycle();
             }
-            bitmap.recycle();
 
             /**
              * Actual Request
@@ -238,8 +249,8 @@ public class PhotoUploadService extends Service {
                 }
 
                 try {
-                    InputStream is = new ProgressInputStream(new FileInputStream(saveFile),
-                            saveFile.length());
+                    InputStream is = new ProgressInputStream(new FileInputStream(uploadFile),
+                            uploadFile.length());
 
                     String targetId = mUpload.getUploadTargetId();
                     String graphPath = null != targetId ? targetId : "me";
@@ -276,13 +287,13 @@ public class PhotoUploadService extends Service {
                 mUpload.setUploadState(PhotoUpload.STATE_UPLOAD_WAITING);
             }
 
-            if (saveFile.exists()) {
+            if (createdNewPhotoFile && uploadFile.exists()) {
                 // If we're set to save to Gallery, save call Scanner, else just
                 // delete
                 if (prefs.getBoolean(PreferenceConstants.PREF_SAVE_PHOTOS_TO_GALLERY, true)) {
-                    Utils.scanMediaJpegFile(context, saveFile, null);
+                    Utils.scanMediaJpegFile(context, uploadFile, null);
                 } else {
-                    saveFile.delete();
+                    uploadFile.delete();
                 }
             }
         }

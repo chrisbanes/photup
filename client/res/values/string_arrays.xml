@@ -26,6 +26,7 @@
         <item>@string/upload_quality_low</item>
         <item>@string/upload_quality_medium</item>
         <item>@string/upload_quality_high</item>
+        <item>@string/upload_quality_max</item>
     </string-array>
 
 </resources>

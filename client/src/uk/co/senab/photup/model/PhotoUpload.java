@@ -220,6 +220,10 @@ public class PhotoUpload {
         return null != mFilter && mFilter != Filter.ORIGINAL;
     }
 
+    public boolean requiresNativeEditing(Context context) {
+        return beenCropped() || beenFiltered() || getTotalRotation(context) != 0;
+    }
+
     public void detectPhotoTags(final Bitmap originalBitmap) {
         // If we've already done Face detection, don't do it again...
         if (mCompletedDetection) {
@@ -787,10 +791,12 @@ public class PhotoUpload {
             if (null != path) {
                 BitmapSize size = BitmapUtils.getBitmapSize(path);
 
-                final float resizeRatio = Math.max(size.width, size.height) / (float) quality
-                        .getMaxDimension();
-                size = new BitmapSize(Math.round(size.width / resizeRatio),
-                        Math.round(size.height / resizeRatio));
+                if (quality.requiresResizing()) {
+                    final float resizeRatio = Math.max(size.width, size.height) / (float) quality
+                            .getMaxDimension();
+                    size = new BitmapSize(Math.round(size.width / resizeRatio),
+                            Math.round(size.height / resizeRatio));
+                }
 
                 boolean doAndroidDecode = true;
 

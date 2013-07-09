@@ -31,6 +31,7 @@
     <string name="upload_quality_low">Low (640px)</string>
     <string name="upload_quality_medium">Medium (1024px)</string>
     <string name="upload_quality_high">High (2048px)</string>
+    <string name="upload_quality_max">Max (original)</string>
     <string name="upload_target_title">Upload to</string>
     <string name="upload_target_album">ALBUM</string>
     <string name="upload_target_wall">WALL</string>
