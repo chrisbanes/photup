@@ -7,7 +7,7 @@
 
 	<uses-sdk
 		android:minSdkVersion="8"
-		android:targetSdkVersion="11" />
+		android:targetSdkVersion="17" />
 
 	<uses-permission
 		android:name="android.permission.INTERNET" />
@@ -125,33 +125,10 @@
 		<service
 			android:name=".service.PhotoUploadService" />
 
-		<!-- DONATION LIB -->
-		<activity
-			android:name="org.donations.DonationsActivity"
-			android:excludeFromRecents="true"
-			android:label="@string/donate_title"
-			android:launchMode="singleTask"
-			android:theme="@style/Theme.Sherlock.Dialog" />
-
 		<!-- Crittercism.com -->
 		<activity
 			android:name="com.crittercism.NotificationActivity" />
 
-		<!-- - Google Play Store donations -->
-		<service
-			android:name="org.donations.google.BillingService" />
-
-		<receiver
-			android:name="org.donations.google.BillingReceiver" >
-			<intent-filter>
-				<action
-					android:name="com.android.vending.billing.IN_APP_NOTIFY" />
-				<action
-					android:name="com.android.vending.billing.RESPONSE_CODE" />
-				<action
-					android:name="com.android.vending.billing.PURCHASE_STATE_CHANGED" />
-			</intent-filter>
-		</receiver>
 	</application>
 
 </manifest>
