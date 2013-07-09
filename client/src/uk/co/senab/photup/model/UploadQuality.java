@@ -19,46 +19,46 @@ import uk.co.senab.photup.R;
 
 public enum UploadQuality {
 
-	LOW(640, 75), MEDIUM(1024, 80), HIGH(2048, 85);
+    LOW(640, 75), MEDIUM(1024, 80), HIGH(2048, 85);
 
-	private final int mMaxDimension, mJpegQuality;
+    private final int mMaxDimension, mJpegQuality;
 
-	private UploadQuality(int maxDimension, int jpegQuality) {
-		mMaxDimension = maxDimension;
-		mJpegQuality = jpegQuality;
-	}
+    private UploadQuality(int maxDimension, int jpegQuality) {
+        mMaxDimension = maxDimension;
+        mJpegQuality = jpegQuality;
+    }
 
-	public int getMaxDimension() {
-		return mMaxDimension;
-	}
+    public int getMaxDimension() {
+        return mMaxDimension;
+    }
 
-	public int getJpegQuality() {
-		return mJpegQuality;
-	}
+    public int getJpegQuality() {
+        return mJpegQuality;
+    }
 
-	public static UploadQuality mapFromButtonId(int buttonId) {
-		switch (buttonId) {
-			case R.id.rb_quality_low:
-				return UploadQuality.LOW;
-			case R.id.rb_quality_medium:
-				return UploadQuality.MEDIUM;
-			default:
-			case R.id.rb_quality_high:
-				return UploadQuality.HIGH;
-		}
-	}
+    public static UploadQuality mapFromButtonId(int buttonId) {
+        switch (buttonId) {
+            case R.id.rb_quality_low:
+                return UploadQuality.LOW;
+            case R.id.rb_quality_medium:
+                return UploadQuality.MEDIUM;
+            default:
+            case R.id.rb_quality_high:
+                return UploadQuality.HIGH;
+        }
+    }
 
-	public static UploadQuality mapFromPreference(String value) {
-		UploadQuality returnValue = MEDIUM;
+    public static UploadQuality mapFromPreference(String value) {
+        UploadQuality returnValue = MEDIUM;
 
-		if ("0".equals(value)) {
-			returnValue = LOW;
-		} else if ("1".equals(value)) {
-			returnValue = MEDIUM;
-		} else if ("2".equals(value)) {
-			returnValue = HIGH;
-		}
+        if ("0".equals(value)) {
+            returnValue = LOW;
+        } else if ("1".equals(value)) {
+            returnValue = MEDIUM;
+        } else if ("2".equals(value)) {
+            returnValue = HIGH;
+        }
 
-		return returnValue;
-	}
+        return returnValue;
+    }
 }

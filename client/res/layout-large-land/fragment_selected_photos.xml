@@ -1,30 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	style="@style/SelectedFragmentStyle"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:orientation="vertical" >
+    style="@style/SelectedFragmentStyle"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
 
-	<uk.co.senab.photup.views.RobotoLightTextView
-		android:id="@+id/tv_fragment_title"
-		style="@style/FragmentTitle"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content" />
+    <uk.co.senab.photup.views.RobotoLightTextView
+        android:id="@+id/tv_fragment_title"
+        style="@style/FragmentTitle"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
 
-	<FrameLayout
-		android:layout_width="match_parent"
-		android:layout_height="0px"
-		android:layout_weight="1" >
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0px"
+        android:layout_weight="1">
 
-		<include
-			layout="@layout/layout_empty_selected" />
+        <include layout="@layout/layout_empty_selected" />
 
-		<GridView
-			android:id="@+id/gv_photos"
-			style="@style/PhotosGridView"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:columnWidth="@dimen/gridview_item_dimension_selected" />
-	</FrameLayout>
+        <GridView
+            android:id="@+id/gv_photos"
+            style="@style/PhotosGridView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:columnWidth="@dimen/gridview_item_dimension_selected" />
+    </FrameLayout>
 
 </LinearLayout>

@@ -15,16 +15,8 @@
  *******************************************************************************/
 package uk.co.senab.photup.fragments;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.facebook.android.FacebookError;
 
-import uk.co.senab.photup.R;
-import uk.co.senab.photup.adapters.PlacesAdapter;
-import uk.co.senab.photup.listeners.OnPlacePickedListener;
-import uk.co.senab.photup.model.Place;
-import uk.co.senab.photup.tasks.PlacesAsyncTask;
-import uk.co.senab.photup.tasks.PlacesAsyncTask.PlacesResultListener;
-import uk.co.senab.photup.util.Utils;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
@@ -46,243 +38,261 @@ import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
 
-import com.facebook.android.FacebookError;
+import java.util.ArrayList;
+import java.util.List;
 
-public class PlacesListFragment extends PhotupDialogFragment implements PlacesResultListener, OnItemClickListener,
-		OnCheckedChangeListener {
+import uk.co.senab.photup.R;
+import uk.co.senab.photup.adapters.PlacesAdapter;
+import uk.co.senab.photup.listeners.OnPlacePickedListener;
+import uk.co.senab.photup.model.Place;
+import uk.co.senab.photup.tasks.PlacesAsyncTask;
+import uk.co.senab.photup.tasks.PlacesAsyncTask.PlacesResultListener;
+import uk.co.senab.photup.util.Utils;
 
-	private class LocationListenerImpl implements LocationListener {
+public class PlacesListFragment extends PhotupDialogFragment
+        implements PlacesResultListener, OnItemClickListener,
+        OnCheckedChangeListener {
 
-		static final int TIME_THRESHOLD = 3 * 60 * 1000; // 3 minutes
-		static final int DISTANCE_THRESHOLD = 150; // 150m
+    private class LocationListenerImpl implements LocationListener {
 
-		public void onLocationChanged(Location location) {
-			mLastLocation = location;
-			refreshPlaces();
+        static final int TIME_THRESHOLD = 3 * 60 * 1000; // 3 minutes
+        static final int DISTANCE_THRESHOLD = 150; // 150m
 
-			if (Utils.newerThan(location.getTime(), TIME_THRESHOLD) && location.getAccuracy() <= DISTANCE_THRESHOLD) {
-				stopLocationListeners();
-			}
-		}
+        public void onLocationChanged(Location location) {
+            mLastLocation = location;
+            refreshPlaces();
 
-		public void onProviderDisabled(String provider) {
-			// NO-OP
-		}
+            if (Utils.newerThan(location.getTime(), TIME_THRESHOLD)
+                    && location.getAccuracy() <= DISTANCE_THRESHOLD) {
+                stopLocationListeners();
+            }
+        }
 
-		public void onProviderEnabled(String provider) {
-			// NO-OP
-		}
+        public void onProviderDisabled(String provider) {
+            // NO-OP
+        }
 
-		public void onStatusChanged(String provider, int status, Bundle extras) {
-			// NO-OP
-		}
+        public void onProviderEnabled(String provider) {
+            // NO-OP
+        }
 
-	}
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+            // NO-OP
+        }
 
-	static final int QUERY_CURRENT_LOCATION = 1;
+    }
 
-	static final int QUERY_PHOTO_LOCATION = 2;
+    static final int QUERY_CURRENT_LOCATION = 1;
 
-	private final ArrayList<Place> mPlaces = new ArrayList<Place>();
+    static final int QUERY_PHOTO_LOCATION = 2;
 
-	private ListView mListView;
-	private PlacesAdapter mAdapter;
+    private final ArrayList<Place> mPlaces = new ArrayList<Place>();
 
-	private EditText mFilterEditText;
-	private ProgressBar mProgressBar;
-	private RadioGroup mLocationSourceRg;
+    private ListView mListView;
+    private PlacesAdapter mAdapter;
 
-	private OnPlacePickedListener mPickedPlaceListener;
-	private LocationManager mLocationManager;
+    private EditText mFilterEditText;
+    private ProgressBar mProgressBar;
+    private RadioGroup mLocationSourceRg;
 
-	private LocationListener mGpsListener;
-	private LocationListener mNetworkListener;
+    private OnPlacePickedListener mPickedPlaceListener;
+    private LocationManager mLocationManager;
 
-	private Location mLastLocation;
-	private Location mPhotoTagLocation;
+    private LocationListener mGpsListener;
+    private LocationListener mNetworkListener;
 
-	public void onCheckedChanged(RadioGroup group, int checkedId) {
-		mPlaces.clear();
-		mAdapter.notifyDataSetChanged();
+    private Location mLastLocation;
+    private Location mPhotoTagLocation;
 
-		switch (checkedId) {
-			case R.id.rb_place_current:
-				refreshPlacesFromLastLocation();
-				startLocationListeners();
-				break;
+    public void onCheckedChanged(RadioGroup group, int checkedId) {
+        mPlaces.clear();
+        mAdapter.notifyDataSetChanged();
 
-			case R.id.rb_place_photo:
-				stopLocationListeners();
-				refreshPlaces();
-				break;
-		}
-	}
+        switch (checkedId) {
+            case R.id.rb_place_current:
+                refreshPlacesFromLastLocation();
+                startLocationListeners();
+                break;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+            case R.id.rb_place_photo:
+                stopLocationListeners();
+                refreshPlaces();
+                break;
+        }
+    }
 
-		mAdapter = new PlacesAdapter(getActivity(), mPlaces);
-		mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-	}
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_places, container, false);
+        mAdapter = new PlacesAdapter(getActivity(), mPlaces);
+        mLocationManager = (LocationManager) getActivity()
+                .getSystemService(Context.LOCATION_SERVICE);
+    }
 
-		mProgressBar = (ProgressBar) view.findViewById(R.id.pb_loading);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+            Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_places, container, false);
 
-		mListView = (ListView) view.findViewById(R.id.lv_places);
-		mListView.setOnItemClickListener(this);
-		mListView.setAdapter(mAdapter);
+        mProgressBar = (ProgressBar) view.findViewById(R.id.pb_loading);
 
-		mFilterEditText = (EditText) view.findViewById(R.id.et_places_filter);
-		mFilterEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-				if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-					refreshPlaces();
-					return true;
-				}
-				return false;
-			}
-		});
+        mListView = (ListView) view.findViewById(R.id.lv_places);
+        mListView.setOnItemClickListener(this);
+        mListView.setAdapter(mAdapter);
 
-		mLocationSourceRg = (RadioGroup) view.findViewById(R.id.rg_place_source);
-		mLocationSourceRg.setOnCheckedChangeListener(this);
+        mFilterEditText = (EditText) view.findViewById(R.id.et_places_filter);
+        mFilterEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    refreshPlaces();
+                    return true;
+                }
+                return false;
+            }
+        });
 
-		if (null != mPhotoTagLocation) {
-			RadioButton photoRb = (RadioButton) mLocationSourceRg.findViewById(R.id.rb_place_photo);
-			photoRb.setVisibility(View.VISIBLE);
-			mLocationSourceRg.setVisibility(View.VISIBLE);
-		}
+        mLocationSourceRg = (RadioGroup) view.findViewById(R.id.rg_place_source);
+        mLocationSourceRg.setOnCheckedChangeListener(this);
 
-		return view;
-	}
+        if (null != mPhotoTagLocation) {
+            RadioButton photoRb = (RadioButton) mLocationSourceRg.findViewById(R.id.rb_place_photo);
+            photoRb.setVisibility(View.VISIBLE);
+            mLocationSourceRg.setVisibility(View.VISIBLE);
+        }
 
-	public void onFacebookError(FacebookError e) {
-		// NO-OP
-	}
+        return view;
+    }
 
-	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		Place place = (Place) parent.getItemAtPosition(position);
+    public void onFacebookError(FacebookError e) {
+        // NO-OP
+    }
 
-		if (null != mPickedPlaceListener) {
-			mPickedPlaceListener.onPlacePicked(place);
-		}
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Place place = (Place) parent.getItemAtPosition(position);
 
-		dismiss();
-	}
+        if (null != mPickedPlaceListener) {
+            mPickedPlaceListener.onPlacePicked(place);
+        }
 
-	@Override
-	public void onPause() {
-		super.onPause();
-		stopLocationListeners();
-	}
+        dismiss();
+    }
 
-	public void onPlacesLoaded(final int id, String queryString, List<Place> places) {
-		if (isResultValid(id, queryString)) {
-			mProgressBar.setVisibility(View.GONE);
-			mPlaces.clear();
-			mPlaces.addAll(places);
-			mAdapter.notifyDataSetChanged();
-		}
-	}
+    @Override
+    public void onPause() {
+        super.onPause();
+        stopLocationListeners();
+    }
 
-	@Override
-	public void onResume() {
-		super.onResume();
+    public void onPlacesLoaded(final int id, String queryString, List<Place> places) {
+        if (isResultValid(id, queryString)) {
+            mProgressBar.setVisibility(View.GONE);
+            mPlaces.clear();
+            mPlaces.addAll(places);
+            mAdapter.notifyDataSetChanged();
+        }
+    }
 
-		if (isCurrentLocationChecked()) {
-			refreshPlacesFromLastLocation();
-			startLocationListeners();
-		}
-	}
+    @Override
+    public void onResume() {
+        super.onResume();
 
-	public void setOnPlacePickedListener(OnPlacePickedListener listener) {
-		mPickedPlaceListener = listener;
-	}
+        if (isCurrentLocationChecked()) {
+            refreshPlacesFromLastLocation();
+            startLocationListeners();
+        }
+    }
 
-	public void setPhotoTagLocation(Location location) {
-		mPhotoTagLocation = location;
-	}
+    public void setOnPlacePickedListener(OnPlacePickedListener listener) {
+        mPickedPlaceListener = listener;
+    }
 
-	private String getQueryString() {
-		return mFilterEditText.getText().toString();
-	}
+    public void setPhotoTagLocation(Location location) {
+        mPhotoTagLocation = location;
+    }
 
-	private void hideIme() {
-		Context activity = getActivity();
-		if (null != mFilterEditText && null != activity) {
-			InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-			imm.hideSoftInputFromWindow(mFilterEditText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-		}
-	}
+    private String getQueryString() {
+        return mFilterEditText.getText().toString();
+    }
 
-	private boolean isCurrentLocationChecked() {
-		return mLocationSourceRg.getCheckedRadioButtonId() == R.id.rb_place_current;
-	}
+    private void hideIme() {
+        Context activity = getActivity();
+        if (null != mFilterEditText && null != activity) {
+            InputMethodManager imm = (InputMethodManager) activity
+                    .getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(mFilterEditText.getWindowToken(),
+                    InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+    }
 
-	private boolean isPhotoTagLocationChecked() {
-		return mLocationSourceRg.getCheckedRadioButtonId() == R.id.rb_place_photo;
-	}
+    private boolean isCurrentLocationChecked() {
+        return mLocationSourceRg.getCheckedRadioButtonId() == R.id.rb_place_current;
+    }
 
-	private boolean isResultValid(int id, String queryString) {
-		return getQueryString().equals(queryString)
-				&& ((id == QUERY_CURRENT_LOCATION && isCurrentLocationChecked()) || (id == QUERY_PHOTO_LOCATION && isPhotoTagLocationChecked()));
-	}
+    private boolean isPhotoTagLocationChecked() {
+        return mLocationSourceRg.getCheckedRadioButtonId() == R.id.rb_place_photo;
+    }
 
-	private void refreshPlaces() {
-		switch (mLocationSourceRg.getCheckedRadioButtonId()) {
-			case R.id.rb_place_current:
-				refreshPlaces(mLastLocation, QUERY_CURRENT_LOCATION);
-				break;
+    private boolean isResultValid(int id, String queryString) {
+        return getQueryString().equals(queryString)
+                && ((id == QUERY_CURRENT_LOCATION && isCurrentLocationChecked()) || (
+                id == QUERY_PHOTO_LOCATION && isPhotoTagLocationChecked()));
+    }
 
-			case R.id.rb_place_photo:
-				refreshPlaces(mPhotoTagLocation, QUERY_PHOTO_LOCATION);
-				break;
-		}
-	}
+    private void refreshPlaces() {
+        switch (mLocationSourceRg.getCheckedRadioButtonId()) {
+            case R.id.rb_place_current:
+                refreshPlaces(mLastLocation, QUERY_CURRENT_LOCATION);
+                break;
 
-	private void refreshPlaces(final Location location, int id) {
-		hideIme();
-		if (null != mProgressBar) {
-			mProgressBar.setVisibility(View.VISIBLE);
-		}
-		new PlacesAsyncTask(getActivity(), this, location, getQueryString(), id).execute();
-	}
+            case R.id.rb_place_photo:
+                refreshPlaces(mPhotoTagLocation, QUERY_PHOTO_LOCATION);
+                break;
+        }
+    }
 
-	private void refreshPlacesFromLastLocation() {
-		if (null == mLastLocation) {
-			mLastLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-			if (null == mLastLocation) {
-				mLastLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-			}
-		}
-		if (null != mLastLocation) {
-			refreshPlaces(mLastLocation, QUERY_CURRENT_LOCATION);
-		}
-	}
+    private void refreshPlaces(final Location location, int id) {
+        hideIme();
+        if (null != mProgressBar) {
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
+        new PlacesAsyncTask(getActivity(), this, location, getQueryString(), id).execute();
+    }
 
-	private void startLocationListeners() {
-		if (mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-			mNetworkListener = new LocationListenerImpl();
-			mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 5, mNetworkListener);
-		}
-		if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-			mGpsListener = new LocationListenerImpl();
-			mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 5, mGpsListener);
-		}
-	}
+    private void refreshPlacesFromLastLocation() {
+        if (null == mLastLocation) {
+            mLastLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            if (null == mLastLocation) {
+                mLastLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            }
+        }
+        if (null != mLastLocation) {
+            refreshPlaces(mLastLocation, QUERY_CURRENT_LOCATION);
+        }
+    }
 
-	private void stopLocationListeners() {
-		if (null != mGpsListener) {
-			mLocationManager.removeUpdates(mGpsListener);
-			mGpsListener = null;
-		}
-		if (null != mNetworkListener) {
-			mLocationManager.removeUpdates(mNetworkListener);
-			mNetworkListener = null;
-		}
-	}
+    private void startLocationListeners() {
+        if (mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            mNetworkListener = new LocationListenerImpl();
+            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 5,
+                    mNetworkListener);
+        }
+        if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            mGpsListener = new LocationListenerImpl();
+            mLocationManager
+                    .requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 5, mGpsListener);
+        }
+    }
+
+    private void stopLocationListeners() {
+        if (null != mGpsListener) {
+            mLocationManager.removeUpdates(mGpsListener);
+            mGpsListener = null;
+        }
+        if (null != mNetworkListener) {
+            mLocationManager.removeUpdates(mNetworkListener);
+            mNetworkListener = null;
+        }
+    }
 
 }

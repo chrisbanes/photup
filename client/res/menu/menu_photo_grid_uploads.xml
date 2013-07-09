@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-	<item
-		android:id="@+id/menu_uploading_stop"
-		android:icon="@drawable/ic_action_pause"
-		android:showAsAction="ifRoom|withText"
-		android:title="@string/stop_uploads"
-		android:visible="false"/>
-	<item
-		android:id="@+id/menu_uploading_start"
-		android:icon="@drawable/ic_action_start"
-		android:showAsAction="ifRoom|withText"
-		android:title="@string/start_uploads"
-		android:visible="false"/>
-	<item
-		android:id="@+id/menu_retry_failed"
-		android:showAsAction="ifRoom"
-		android:title="@string/upload_retry"/>
+    <item
+        android:id="@+id/menu_uploading_stop"
+        android:icon="@drawable/ic_action_pause"
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/stop_uploads"
+        android:visible="false" />
+    <item
+        android:id="@+id/menu_uploading_start"
+        android:icon="@drawable/ic_action_start"
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/start_uploads"
+        android:visible="false" />
+    <item
+        android:id="@+id/menu_retry_failed"
+        android:showAsAction="ifRoom"
+        android:title="@string/upload_retry" />
 
 </menu>

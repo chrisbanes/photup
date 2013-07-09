@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
      File created by the Android Action Bar Style Generator
 
      Copyright (C) 2012 readyState Software Ltd
@@ -19,55 +18,55 @@
 
 <resources>
 
-	<style name="photup_solid_ActionBar" parent="@style/Widget.Sherlock.ActionBar.Solid">
-		<item name="background">@drawable/ab_solid_photup</item>
-		<item name="backgroundStacked">@drawable/ab_stacked_solid_photup</item>
-		<item name="backgroundSplit">@drawable/ab_bottom_solid_photup</item>
-		<item name="progressBarStyle">@style/photup_ProgressBar</item>
-		<item name="android:background">@drawable/ab_solid_photup</item>
-		<item name="android:backgroundStacked">@drawable/ab_stacked_solid_photup</item>
-		<item name="android:backgroundSplit">@drawable/ab_bottom_solid_photup</item>
-		<item name="android:progressBarStyle">@style/photup_ProgressBar</item>
-	</style>
+    <style name="photup_solid_ActionBar" parent="@style/Widget.Sherlock.ActionBar.Solid">
+        <item name="background">@drawable/ab_solid_photup</item>
+        <item name="backgroundStacked">@drawable/ab_stacked_solid_photup</item>
+        <item name="backgroundSplit">@drawable/ab_bottom_solid_photup</item>
+        <item name="progressBarStyle">@style/photup_ProgressBar</item>
+        <item name="android:background">@drawable/ab_solid_photup</item>
+        <item name="android:backgroundStacked">@drawable/ab_stacked_solid_photup</item>
+        <item name="android:backgroundSplit">@drawable/ab_bottom_solid_photup</item>
+        <item name="android:progressBarStyle">@style/photup_ProgressBar</item>
+    </style>
 
-	<style name="photup_transparent_ActionBar" parent="@style/Widget.Sherlock.ActionBar">
-		<item name="background">@drawable/ab_transparent_photup</item>
-		<item name="progressBarStyle">@style/photup_ProgressBar</item>
-		<item name="android:background">@drawable/ab_transparent_photup</item>
-		<item name="android:progressBarStyle">@style/photup_ProgressBar</item>
-	</style>
+    <style name="photup_transparent_ActionBar" parent="@style/Widget.Sherlock.ActionBar">
+        <item name="background">@drawable/ab_transparent_photup</item>
+        <item name="progressBarStyle">@style/photup_ProgressBar</item>
+        <item name="android:background">@drawable/ab_transparent_photup</item>
+        <item name="android:progressBarStyle">@style/photup_ProgressBar</item>
+    </style>
 
-	<style name="photup_translucent_ActionBar" parent="@style/photup_transparent_ActionBar">
-		<item name="background">@color/translucent_dk_grey</item>
-		<item name="backgroundStacked">@color/translucent_dk_grey</item>
-		<item name="backgroundSplit">@color/translucent_dk_grey</item>
-		<item name="android:background">@color/translucent_dk_grey</item>
-		<item name="android:backgroundStacked">@color/translucent_dk_grey</item>
-		<item name="android:backgroundSplit">@color/translucent_dk_grey</item>
-	</style>
+    <style name="photup_translucent_ActionBar" parent="@style/photup_transparent_ActionBar">
+        <item name="background">@color/translucent_dk_grey</item>
+        <item name="backgroundStacked">@color/translucent_dk_grey</item>
+        <item name="backgroundSplit">@color/translucent_dk_grey</item>
+        <item name="android:background">@color/translucent_dk_grey</item>
+        <item name="android:backgroundStacked">@color/translucent_dk_grey</item>
+        <item name="android:backgroundSplit">@color/translucent_dk_grey</item>
+    </style>
 
-	<style name="photup_PopupMenu" parent="@style/Widget.Sherlock.ListPopupWindow">
-		<item name="android:popupBackground">@drawable/menu_dropdown_panel_photup</item>
-	</style>
+    <style name="photup_PopupMenu" parent="@style/Widget.Sherlock.ListPopupWindow">
+        <item name="android:popupBackground">@drawable/menu_dropdown_panel_photup</item>
+    </style>
 
-	<style name="photup_DropDownListView" parent="@style/Widget.Sherlock.ListView.DropDown">
-		<item name="android:listSelector">@drawable/selectable_background_photup</item>
-	</style>
+    <style name="photup_DropDownListView" parent="@style/Widget.Sherlock.ListView.DropDown">
+        <item name="android:listSelector">@drawable/selectable_background_photup</item>
+    </style>
 
-	<style name="photup_ActionBarTabStyle" parent="@style/Widget.Sherlock.ActionBar.TabView">
-		<item name="background">@drawable/tab_indicator_ab_photup</item>
-		<item name="android:background">@drawable/tab_indicator_ab_photup</item>
-	</style>
+    <style name="photup_ActionBarTabStyle" parent="@style/Widget.Sherlock.ActionBar.TabView">
+        <item name="background">@drawable/tab_indicator_ab_photup</item>
+        <item name="android:background">@drawable/tab_indicator_ab_photup</item>
+    </style>
 
-	<style name="photup_DropDownNav" parent="@style/Widget.Sherlock.Spinner.DropDown.ActionBar">
-		<item name="background">@drawable/spinner_background_ab_photup</item>
-		<item name="android:background">@drawable/spinner_background_ab_photup</item>
-		<item name="android:popupBackground">@drawable/menu_dropdown_panel_photup</item>
-		<item name="android:dropDownSelector">@drawable/selectable_background_photup</item>
-	</style>
+    <style name="photup_DropDownNav" parent="@style/Widget.Sherlock.Spinner.DropDown.ActionBar">
+        <item name="background">@drawable/spinner_background_ab_photup</item>
+        <item name="android:background">@drawable/spinner_background_ab_photup</item>
+        <item name="android:popupBackground">@drawable/menu_dropdown_panel_photup</item>
+        <item name="android:dropDownSelector">@drawable/selectable_background_photup</item>
+    </style>
 
-	<style name="photup_ProgressBar" parent="@style/Widget.Sherlock.ProgressBar.Horizontal">
-		<item name="android:progressDrawable">@drawable/progress_horizontal_photup</item>
-	</style>
+    <style name="photup_ProgressBar" parent="@style/Widget.Sherlock.ProgressBar.Horizontal">
+        <item name="android:progressDrawable">@drawable/progress_horizontal_photup</item>
+    </style>
 
 </resources>

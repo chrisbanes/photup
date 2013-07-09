@@ -15,29 +15,29 @@
  *******************************************************************************/
 package uk.co.senab.photup;
 
-import android.os.Bundle;
-
 import com.actionbarsherlock.view.MenuItem;
+
+import android.os.Bundle;
 
 public class PhotoUploadsActivity extends AbstractPhotoUploadActivity {
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_uploads);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_uploads);
 
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-	}
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case android.R.id.home:
-				finish();
-				return true;
-		}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
 
-		return super.onOptionsItemSelected(item);
-	}
+        return super.onOptionsItemSelected(item);
+    }
 
 }

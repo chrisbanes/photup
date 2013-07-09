@@ -19,14 +19,14 @@ import uk.co.senab.photup.model.PhotoUpload;
 
 public class UploadStateChangedEvent {
 
-	private final PhotoUpload mUpload;
+    private final PhotoUpload mUpload;
 
-	public UploadStateChangedEvent(PhotoUpload upload) {
-		mUpload = upload;
-	}
+    public UploadStateChangedEvent(PhotoUpload upload) {
+        mUpload = upload;
+    }
 
-	public PhotoUpload getUpload() {
-		return mUpload;
-	}
+    public PhotoUpload getUpload() {
+        return mUpload;
+    }
 
 }

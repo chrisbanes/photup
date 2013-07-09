@@ -15,6 +15,12 @@
  *******************************************************************************/
 package uk.co.senab.photup.views;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
+import android.util.AttributeSet;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,92 +31,85 @@ import java.net.URL;
 import uk.co.senab.bitmapcache.BitmapLruCache;
 import uk.co.senab.bitmapcache.CacheableBitmapWrapper;
 import uk.co.senab.bitmapcache.CacheableImageView;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
-import android.util.AttributeSet;
 
 /**
- * Simple extension of CacheableImageView which allows downloading of Images of
- * the Internet.
- * 
+ * Simple extension of CacheableImageView which allows downloading of Images of the Internet.
+ *
  * This code isn't production quality, but works well enough for this sample.s
- * 
+ *
  * @author Chris Banes
- * 
  */
 public class NetworkedCacheableImageView extends CacheableImageView {
 
-	public NetworkedCacheableImageView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-	}
+    public NetworkedCacheableImageView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
 
-	/**
-	 * This task simply gets a list of URLs of Pug Photos
-	 */
-	private class ImageUrlAsyncTask extends AsyncTask<String, Void, CacheableBitmapWrapper> {
+    /**
+     * This task simply gets a list of URLs of Pug Photos
+     */
+    private class ImageUrlAsyncTask extends AsyncTask<String, Void, CacheableBitmapWrapper> {
 
-		@Override
-		protected CacheableBitmapWrapper doInBackground(String... params) {
-			try {
-				String url = params[0];
+        @Override
+        protected CacheableBitmapWrapper doInBackground(String... params) {
+            try {
+                String url = params[0];
 
-				HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-				InputStream is = new BufferedInputStream(conn.getInputStream());
-				Bitmap bitmap = BitmapFactory.decodeStream(is);
+                HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+                InputStream is = new BufferedInputStream(conn.getInputStream());
+                Bitmap bitmap = BitmapFactory.decodeStream(is);
 
-				if (null != bitmap) {
-					return new CacheableBitmapWrapper(url, bitmap);
-				}
+                if (null != bitmap) {
+                    return new CacheableBitmapWrapper(url, bitmap);
+                }
 
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
-			return null;
-		}
+            return null;
+        }
 
-		@Override
-		protected void onPostExecute(CacheableBitmapWrapper result) {
-			super.onPostExecute(result);
+        @Override
+        protected void onPostExecute(CacheableBitmapWrapper result) {
+            super.onPostExecute(result);
 
-			setScaleType(ScaleType.CENTER_CROP);
+            setScaleType(ScaleType.CENTER_CROP);
 
-			// Display the image
-			setImageCachedBitmap(result);
+            // Display the image
+            setImageCachedBitmap(result);
 
-			// Add to cache
-			if (null != result) {
-				mCache.put(result);
-			}
-		}
-	}
+            // Add to cache
+            if (null != result) {
+                mCache.put(result);
+            }
+        }
+    }
 
-	private BitmapLruCache mCache;
-	private ImageUrlAsyncTask mCurrentTask;
+    private BitmapLruCache mCache;
+    private ImageUrlAsyncTask mCurrentTask;
 
-	public void loadImage(BitmapLruCache cache, String url) {
-		// First check whether there's already a task running, if so cancel it
-		if (null != mCurrentTask) {
-			mCurrentTask.cancel(false);
-		}
+    public void loadImage(BitmapLruCache cache, String url) {
+        // First check whether there's already a task running, if so cancel it
+        if (null != mCurrentTask) {
+            mCurrentTask.cancel(false);
+        }
 
-		mCache = cache;
-		// Check to see if the cache already has the bitmap
-		CacheableBitmapWrapper wrapper = mCache.get(url);
+        mCache = cache;
+        // Check to see if the cache already has the bitmap
+        CacheableBitmapWrapper wrapper = mCache.get(url);
 
-		if (null != wrapper && wrapper.hasValidBitmap()) {
-			// The cache has it, so just display it
-			setImageCachedBitmap(wrapper);
-		} else {
-			setImageCachedBitmap(null);
-			// Cache doesn't have the URL, do network request...
-			mCurrentTask = new ImageUrlAsyncTask();
-			mCurrentTask.execute(url);
-		}
-	}
+        if (null != wrapper && wrapper.hasValidBitmap()) {
+            // The cache has it, so just display it
+            setImageCachedBitmap(wrapper);
+        } else {
+            setImageCachedBitmap(null);
+            // Cache doesn't have the URL, do network request...
+            mCurrentTask = new ImageUrlAsyncTask();
+            mCurrentTask.execute(url);
+        }
+    }
 
 }

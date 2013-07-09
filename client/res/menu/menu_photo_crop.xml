@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-	<item
-		android:id="@+id/menu_crop_cancel"
-		android:showAsAction="ifRoom"
-		android:title="@android:string/cancel"/>
-	<item
-		android:id="@+id/menu_crop_ok"
-		android:showAsAction="ifRoom"
-		android:title="@android:string/ok"/>
+    <item
+        android:id="@+id/menu_crop_cancel"
+        android:showAsAction="ifRoom"
+        android:title="@android:string/cancel" />
+    <item
+        android:id="@+id/menu_crop_ok"
+        android:showAsAction="ifRoom"
+        android:title="@android:string/ok" />
 
 </menu>

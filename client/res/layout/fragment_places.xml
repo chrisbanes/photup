@@ -1,68 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/fl_root"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:orientation="vertical" >
+    android:id="@+id/fl_root"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
 
-	<LinearLayout
-		style="@style/DialogActionBar"
-		android:layout_width="fill_parent"
-		android:layout_height="@dimen/form_item_height" >
+    <LinearLayout
+        style="@style/DialogActionBar"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/form_item_height">
 
-		<uk.co.senab.photup.views.RobotoLightTextView
-			android:layout_width="0px"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:padding="@dimen/spacing"
-			android:text="@string/place"
-			android:textSize="@dimen/dialog_title_text_size" />
+        <uk.co.senab.photup.views.RobotoLightTextView
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="@dimen/spacing"
+            android:text="@string/place"
+            android:textSize="@dimen/dialog_title_text_size" />
 
-		<ProgressBar
-			android:id="@+id/pb_loading"
-			style="?android:attr/progressBarStyleSmall"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:visibility="visible"
-			android:layout_marginRight="@dimen/double_spacing" />
-	</LinearLayout>
+        <ProgressBar
+            android:id="@+id/pb_loading"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            android:layout_marginRight="@dimen/double_spacing" />
+    </LinearLayout>
 
-	<include
-		layout="@layout/layout_horizontal_line" />
+    <include layout="@layout/layout_horizontal_line" />
 
-	<RadioGroup
-		android:id="@+id/rg_place_source"
-		style="@style/TabRadioGroup"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:checkedButton="@+id/rb_place_current"
-		android:visibility="gone" >
+    <RadioGroup
+        android:id="@+id/rg_place_source"
+        style="@style/TabRadioGroup"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:checkedButton="@+id/rb_place_current"
+        android:visibility="gone">
 
-		<RadioButton
-			android:id="@+id/rb_place_current"
-			style="@style/TabRadioButton"
-			android:text="@string/location_current" />
+        <RadioButton
+            android:id="@+id/rb_place_current"
+            style="@style/TabRadioButton"
+            android:text="@string/location_current" />
 
-		<RadioButton
-			android:id="@+id/rb_place_photo"
-			style="@style/TabRadioButton"
-			android:text="@string/location_photo"
-			android:visibility="gone" />
-	</RadioGroup>
+        <RadioButton
+            android:id="@+id/rb_place_photo"
+            style="@style/TabRadioButton"
+            android:text="@string/location_photo"
+            android:visibility="gone" />
+    </RadioGroup>
 
-	<EditText
-		android:id="@+id/et_places_filter"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_margin="@dimen/spacing"
-		android:hint="@string/places_search_hint"
-		android:imeOptions="actionSearch"
-		android:inputType="textNoSuggestions" />
+    <EditText
+        android:id="@+id/et_places_filter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/spacing"
+        android:hint="@string/places_search_hint"
+        android:imeOptions="actionSearch"
+        android:inputType="textNoSuggestions" />
 
-	<ListView
-		android:id="@+id/lv_places"
-		android:layout_width="fill_parent"
-		android:layout_height="0px"
-		android:layout_weight="1" />
+    <ListView
+        android:id="@+id/lv_places"
+        android:layout_width="fill_parent"
+        android:layout_height="0px"
+        android:layout_weight="1" />
 
 </LinearLayout>

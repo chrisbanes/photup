@@ -15,162 +15,173 @@
  *******************************************************************************/
 package uk.co.senab.photup.views;
 
-import uk.co.senab.photup.Flags;
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 
+import uk.co.senab.photup.Flags;
+
 public abstract class VersionedGestureDetector {
-	private static final String TAG = "VersionedGestureDetector";
 
-	OnGestureListener mListener;
+    private static final String TAG = "VersionedGestureDetector";
 
-	public static VersionedGestureDetector newInstance(Context context, OnGestureListener listener) {
-		final int sdkVersion = Build.VERSION.SDK_INT;
-		VersionedGestureDetector detector = null;
-		if (sdkVersion < Build.VERSION_CODES.ECLAIR) {
-			detector = new CupcakeDetector();
-		} else if (sdkVersion < Build.VERSION_CODES.FROYO) {
-			detector = new EclairDetector();
-		} else {
-			detector = new FroyoDetector(context);
-		}
+    OnGestureListener mListener;
 
-		if (Flags.DEBUG) {
-			Log.d(TAG, "Created new " + detector.getClass());
-		}
-		detector.mListener = listener;
+    public static VersionedGestureDetector newInstance(Context context,
+            OnGestureListener listener) {
+        final int sdkVersion = Build.VERSION.SDK_INT;
+        VersionedGestureDetector detector = null;
+        if (sdkVersion < Build.VERSION_CODES.ECLAIR) {
+            detector = new CupcakeDetector();
+        } else if (sdkVersion < Build.VERSION_CODES.FROYO) {
+            detector = new EclairDetector();
+        } else {
+            detector = new FroyoDetector(context);
+        }
 
-		return detector;
-	}
+        if (Flags.DEBUG) {
+            Log.d(TAG, "Created new " + detector.getClass());
+        }
+        detector.mListener = listener;
 
-	public abstract boolean onTouchEvent(MotionEvent ev);
+        return detector;
+    }
 
-	public interface OnGestureListener {
-		public void onDrag(float dx, float dy);
+    public abstract boolean onTouchEvent(MotionEvent ev);
 
-		public void onScale(float scaleFactor, float focusX, float focusY);
-	}
+    public interface OnGestureListener {
 
-	private static class CupcakeDetector extends VersionedGestureDetector {
+        public void onDrag(float dx, float dy);
 
-		float mLastTouchX;
-		float mLastTouchY;
+        public void onScale(float scaleFactor, float focusX, float focusY);
+    }
 
-		float getActiveX(MotionEvent ev) {
-			return ev.getX();
-		}
+    private static class CupcakeDetector extends VersionedGestureDetector {
 
-		float getActiveY(MotionEvent ev) {
-			return ev.getY();
-		}
+        float mLastTouchX;
+        float mLastTouchY;
 
-		boolean shouldDrag() {
-			return true;
-		}
+        float getActiveX(MotionEvent ev) {
+            return ev.getX();
+        }
 
-		@Override
-		public boolean onTouchEvent(MotionEvent ev) {
-			switch (ev.getAction()) {
-				case MotionEvent.ACTION_DOWN: {
-					mLastTouchX = getActiveX(ev);
-					mLastTouchY = getActiveY(ev);
-					break;
-				}
-				case MotionEvent.ACTION_MOVE: {
-					final float x = getActiveX(ev);
-					final float y = getActiveY(ev);
+        float getActiveY(MotionEvent ev) {
+            return ev.getY();
+        }
 
-					if (shouldDrag()) {
-						mListener.onDrag(x - mLastTouchX, y - mLastTouchY);
-					}
+        boolean shouldDrag() {
+            return true;
+        }
 
-					mLastTouchX = x;
-					mLastTouchY = y;
-					break;
-				}
-			}
-			return true;
-		}
-	}
+        @Override
+        public boolean onTouchEvent(MotionEvent ev) {
+            switch (ev.getAction()) {
+                case MotionEvent.ACTION_DOWN: {
+                    mLastTouchX = getActiveX(ev);
+                    mLastTouchY = getActiveY(ev);
+                    break;
+                }
+                case MotionEvent.ACTION_MOVE: {
+                    final float x = getActiveX(ev);
+                    final float y = getActiveY(ev);
 
-	private static class EclairDetector extends CupcakeDetector {
-		private static final int INVALID_POINTER_ID = -1;
-		private int mActivePointerId = INVALID_POINTER_ID;
-		private int mActivePointerIndex = 0;
+                    if (shouldDrag()) {
+                        mListener.onDrag(x - mLastTouchX, y - mLastTouchY);
+                    }
 
-		@Override
-		float getActiveX(MotionEvent ev) {
-			try {
-				return ev.getX(mActivePointerIndex);
-			} catch (Exception e) {
-				return ev.getX();
-			}
-		}
+                    mLastTouchX = x;
+                    mLastTouchY = y;
+                    break;
+                }
+            }
+            return true;
+        }
+    }
 
-		@Override
-		float getActiveY(MotionEvent ev) {
-			try {
-				return ev.getY(mActivePointerIndex);
-			} catch (Exception e) {
-				return ev.getY();
-			}
-		}
+    private static class EclairDetector extends CupcakeDetector {
 
-		@Override
-		public boolean onTouchEvent(MotionEvent ev) {
-			final int action = ev.getAction();
-			switch (action & MotionEvent.ACTION_MASK) {
-				case MotionEvent.ACTION_DOWN:
-					mActivePointerId = ev.getPointerId(0);
-					break;
-				case MotionEvent.ACTION_CANCEL:
-				case MotionEvent.ACTION_UP:
-					mActivePointerId = INVALID_POINTER_ID;
-					break;
-				case MotionEvent.ACTION_POINTER_UP:
-					final int pointerIndex = (ev.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
-					final int pointerId = ev.getPointerId(pointerIndex);
-					if (pointerId == mActivePointerId) {
-						// This was our active pointer going up. Choose a new
-						// active pointer and adjust accordingly.
-						final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
-						mActivePointerId = ev.getPointerId(newPointerIndex);
-						mLastTouchX = ev.getX(newPointerIndex);
-						mLastTouchY = ev.getY(newPointerIndex);
-					}
-					break;
-			}
+        private static final int INVALID_POINTER_ID = -1;
+        private int mActivePointerId = INVALID_POINTER_ID;
+        private int mActivePointerIndex = 0;
 
-			mActivePointerIndex = ev.findPointerIndex(mActivePointerId != INVALID_POINTER_ID ? mActivePointerId : 0);
-			return super.onTouchEvent(ev);
-		}
-	}
+        @Override
+        float getActiveX(MotionEvent ev) {
+            try {
+                return ev.getX(mActivePointerIndex);
+            } catch (Exception e) {
+                return ev.getX();
+            }
+        }
 
-	private static class FroyoDetector extends EclairDetector {
-		private ScaleGestureDetector mDetector;
+        @Override
+        float getActiveY(MotionEvent ev) {
+            try {
+                return ev.getY(mActivePointerIndex);
+            } catch (Exception e) {
+                return ev.getY();
+            }
+        }
 
-		public FroyoDetector(Context context) {
-			mDetector = new ScaleGestureDetector(context, new ScaleGestureDetector.SimpleOnScaleGestureListener() {
-				@Override
-				public boolean onScale(ScaleGestureDetector detector) {
-					mListener.onScale(detector.getScaleFactor(), detector.getFocusX(), detector.getFocusY());
-					return true;
-				}
-			});
-		}
+        @Override
+        public boolean onTouchEvent(MotionEvent ev) {
+            final int action = ev.getAction();
+            switch (action & MotionEvent.ACTION_MASK) {
+                case MotionEvent.ACTION_DOWN:
+                    mActivePointerId = ev.getPointerId(0);
+                    break;
+                case MotionEvent.ACTION_CANCEL:
+                case MotionEvent.ACTION_UP:
+                    mActivePointerId = INVALID_POINTER_ID;
+                    break;
+                case MotionEvent.ACTION_POINTER_UP:
+                    final int pointerIndex =
+                            (ev.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK)
+                                    >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+                    final int pointerId = ev.getPointerId(pointerIndex);
+                    if (pointerId == mActivePointerId) {
+                        // This was our active pointer going up. Choose a new
+                        // active pointer and adjust accordingly.
+                        final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
+                        mActivePointerId = ev.getPointerId(newPointerIndex);
+                        mLastTouchX = ev.getX(newPointerIndex);
+                        mLastTouchY = ev.getY(newPointerIndex);
+                    }
+                    break;
+            }
 
-		@Override
-		boolean shouldDrag() {
-			return !mDetector.isInProgress();
-		}
+            mActivePointerIndex = ev.findPointerIndex(
+                    mActivePointerId != INVALID_POINTER_ID ? mActivePointerId : 0);
+            return super.onTouchEvent(ev);
+        }
+    }
 
-		@Override
-		public boolean onTouchEvent(MotionEvent ev) {
-			mDetector.onTouchEvent(ev);
-			return super.onTouchEvent(ev);
-		}
-	}
+    private static class FroyoDetector extends EclairDetector {
+
+        private ScaleGestureDetector mDetector;
+
+        public FroyoDetector(Context context) {
+            mDetector = new ScaleGestureDetector(context,
+                    new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+                        @Override
+                        public boolean onScale(ScaleGestureDetector detector) {
+                            mListener.onScale(detector.getScaleFactor(), detector.getFocusX(),
+                                    detector.getFocusY());
+                            return true;
+                        }
+                    });
+        }
+
+        @Override
+        boolean shouldDrag() {
+            return !mDetector.isInProgress();
+        }
+
+        @Override
+        public boolean onTouchEvent(MotionEvent ev) {
+            mDetector.onTouchEvent(ev);
+            return super.onTouchEvent(ev);
+        }
+    }
 }

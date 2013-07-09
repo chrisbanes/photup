@@ -19,6 +19,6 @@ import com.facebook.android.FacebookError;
 
 public interface FacebookErrorListener {
 
-	void onFacebookError(FacebookError e);
+    void onFacebookError(FacebookError e);
 
 }

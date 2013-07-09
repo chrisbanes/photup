@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="google_play_description">Sa photoupom možete dijeliti fotografije na svom Facebook profilu, brže nego ikada prije. Zamislite kao \'Facebook kamera\' za iOS, ali na Androidu.
-- Uploadaj koliko god fotografija želiš, sve u jednom potezu
-- Dodaj filtere (efekte)
-- Rotiraj fotografije
-- Izreži fotografije
-- Dodaj naslov na svaku od fotografija
-- Jednostavno označi prijatelje zajedno sa raspoznavanjem lica
-- Trenutni Upload. Automatski upload čim uslikate fotografiju
-- Označi lokacije i mjesta
-- Uploadaj na grupe i događaje
-- Uploadaj na stranice i njezine albume
-Uskoro dolazi:
-- Više opcija privatnosti
-Prijevodi
-Ukoliko želite pomoći pri prijevodu photupa krenite na:
-http://www.getlocalization.com/photup/</string>
-	<string name="google_play_promo_text">Dijeli svoje fotografije sa photoupom za Facebook</string>
+    <string name="google_play_description">Sa photoupom možete dijeliti fotografije na svom Facebook
+        profilu, brže nego ikada prije. Zamislite kao \'Facebook kamera\' za iOS, ali na Androidu.
+        - Uploadaj koliko god fotografija želiš, sve u jednom potezu
+        - Dodaj filtere (efekte)
+        - Rotiraj fotografije
+        - Izreži fotografije
+        - Dodaj naslov na svaku od fotografija
+        - Jednostavno označi prijatelje zajedno sa raspoznavanjem lica
+        - Trenutni Upload. Automatski upload čim uslikate fotografiju
+        - Označi lokacije i mjesta
+        - Uploadaj na grupe i događaje
+        - Uploadaj na stranice i njezine albume
+        Uskoro dolazi:
+        - Više opcija privatnosti
+        Prijevodi
+        Ukoliko želite pomoći pri prijevodu photupa krenite na:
+        http://www.getlocalization.com/photup/
+    </string>
+    <string name="google_play_promo_text">Dijeli svoje fotografije sa photoupom za Facebook</string>
 </resources>

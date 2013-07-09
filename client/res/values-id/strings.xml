@@ -1,83 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="tab_photos">Foto</string>
-	<string name="tab_selected_photos">Terpilih(%1$d)</string>
-	<string name="photo_effects">Efek</string>
-	<string name="photo_caption">Caption</string>
-	<string name="photo_rotate">Putar</string>
-	<string name="photo_crop">Potong</string>
-	<string name="photo_reset">Reset</string>
-	<string name="tag_no_name">Ini siapa?</string>
-	<string name="tab_uploads">Unggah</string>
-	<string name="upload_title">Unggah</string>
-	<string name="upload_retry">Retry Failed</string>
-	<string name="upload_quality_title">Kualitas</string>
-	<string name="upload_quality_low">Rendah(640px)</string>
-	<string name="upload_quality_medium">Sedang(1024px)</string>
-	<string name="upload_quality_high">Tinggi(2048px)</string>
-	<string name="upload_target_title">Upload ke</string>
-	<string name="upload_target_album">ALBUM</string>
-	<string name="upload_target_wall">WALL</string>
-	<string name="upload_target_group">GROUP</string>
-	<string name="upload_target_event">EVENT</string>
-	<string name="upload_new_album_hint">Nama album baru</string>
-	<string name="upload_new_album_desc_hint">Deskripsi</string>
-	<string name="upload_new_album">Album baru</string>
-	<string name="upload_privacy_title">Privasi</string>
-	<string name="upload_account">Akun</string>
-	<string name="tag_friend_prompt">Tap to tag</string>
-	<string name="place">Lokasi</string>
-	<string name="error_select_photos">Silahkan pilih beberapa foto untuk diunggah</string>
-	<string name="error_select_album">Silahkan pilih album</string>
-	<string name="error_not_connected">You\'re not connected to the Internet, try again later.</string>
-	<string name="notification_uploading_photo">Mengunggah Foto %1$s</string>
-	<string name="notification_uploading_photo_progress">Mengunggah Foto %1$d %2$d%%</string>
-	<string name="crash_toast">photup crash :( Developer telah diberitahukan permasalahannya</string>
-	<string name="untitled_photo">Untitled Photo</string>
-	<string name="detecting_faces">Mendeteksi Wajah</string>
-	<string name="empty_selected_photos">Anda belum memilih foto apapun</string>
-	<string name="welcome_message">Selamat datang di photup. Untuk memulai silahkan tekan tombol berikut untuk login ke Facebook</string>
-	<string name="login">Masuk</string>
-	<string name="login_promo">Tell your friends about photup?</string>
-	<string name="logout_static">Keluar</string>
-	<string name="logout">Keluar %1$s</string>
-	<string name="logout_prompt_title">Anda yakin?</string>
-	<string name="libraries">Perpustakaan</string>
-	<string name="settings">Pengaturan</string>
-	<string name="select_all">Select All</string>
-	<string name="clear_selection">Clear Selection</string>
-	<string name="places_search_hint">Pencarian</string>
-	<string name="pref_instant_upload_title">Unggah Seketika</string>
-	<string name="pref_instant_upload_album_title">Album</string>
-	<string name="pref_instant_upload_album_summary">Pilih album untuk foto diupload otomatis</string>
-	<string name="pref_instant_upload_quality_title">Kualitas</string>
-	<string name="pref_instant_upload_filter_title">Efek</string>
-	<string name="pref_instant_upload_filter_summary">Pilih efek yang akan di gunakan otomatis</string>
-	<string name="pref_instant_upload_roaming_title">Roaming</string>
-	<string name="pref_instant_upload_roaming_summary">Instant Upload if roaming?</string>
-	<string name="pref_general_screen">General Settings</string>
-	<string name="pref_save_files_gallery_title">Save Images</string>
-	<string name="pref_save_files_gallery_summary">Save Images to Gallery?</string>
-	<string name="pref_more_options">Advanced Settings</string>
-	<string name="dialog_instant_upload">photup mendukung Instant Upload! Artinya kapanpun kamu ambil foto, photup akan otomatis unggah foto itu ke Facebook.\n\nCukup aktifkan di Pengaturan dan selesai!</string>
-	<string name="dialog_missing_pages_title">Kehilangan akun?</string>
-	<string name="dialog_missing_items_title">Missing items?</string>
-	<string name="dialog_missing_items_text">Adakah sesuatu yang hilang dari list? Jika iya maka kami butuh permintaan ekstra permission dari facebook. Klik tombol berikut untuk melanjutkkan</string>
-	<string name="privacy_public">Public</string>
-	<string name="privacy_friends">Teman</string>
-	<string name="privacy_me">Saya</string>
-	<string name="dialog_place_overwrite_title">Timpa Lokasi</string>
-	<string name="dialog_place_overwrite_text">Kamu telah memilih lokasi disini, tapi dapat juga hanya pada beberapa foto tersendiri. Kamu yakin akan menimpa semua lokasi pilihanmu?</string>
-	<string name="donate_title">Sumbangan</string>
-	<string name="promo_text">I\'m checking out photup for Facebook, a new Facebook photo sharer for Android. Give it a try!</string>
-	<string name="album_all">All Photos</string>
-	<string name="action_bar_upload_progress">%1$d of %2$d</string>
-	<string name="opening_app">Opening&amp;#8230;</string>
-	<string name="stop_uploads">Stop Uploading</string>
-	<string name="start_uploads">Start Uploading</string>
-	<string name="stopped_uploads">Uploading is Disabled</string>
-	<string name="started_uploads">Uploading is Enabled</string>
-	<string name="empty_uploads">No uploads available</string>
-	<string name="location_current">Current Location</string>
-	<string name="location_photo">Photo Location</string>
+    <string name="tab_photos">Foto</string>
+    <string name="tab_selected_photos">Terpilih(%1$d)</string>
+    <string name="photo_effects">Efek</string>
+    <string name="photo_caption">Caption</string>
+    <string name="photo_rotate">Putar</string>
+    <string name="photo_crop">Potong</string>
+    <string name="photo_reset">Reset</string>
+    <string name="tag_no_name">Ini siapa?</string>
+    <string name="tab_uploads">Unggah</string>
+    <string name="upload_title">Unggah</string>
+    <string name="upload_retry">Retry Failed</string>
+    <string name="upload_quality_title">Kualitas</string>
+    <string name="upload_quality_low">Rendah(640px)</string>
+    <string name="upload_quality_medium">Sedang(1024px)</string>
+    <string name="upload_quality_high">Tinggi(2048px)</string>
+    <string name="upload_target_title">Upload ke</string>
+    <string name="upload_target_album">ALBUM</string>
+    <string name="upload_target_wall">WALL</string>
+    <string name="upload_target_group">GROUP</string>
+    <string name="upload_target_event">EVENT</string>
+    <string name="upload_new_album_hint">Nama album baru</string>
+    <string name="upload_new_album_desc_hint">Deskripsi</string>
+    <string name="upload_new_album">Album baru</string>
+    <string name="upload_privacy_title">Privasi</string>
+    <string name="upload_account">Akun</string>
+    <string name="tag_friend_prompt">Tap to tag</string>
+    <string name="place">Lokasi</string>
+    <string name="error_select_photos">Silahkan pilih beberapa foto untuk diunggah</string>
+    <string name="error_select_album">Silahkan pilih album</string>
+    <string name="error_not_connected">You\'re not connected to the Internet, try again later.
+    </string>
+    <string name="notification_uploading_photo">Mengunggah Foto %1$s</string>
+    <string name="notification_uploading_photo_progress">Mengunggah Foto %1$d %2$d%%</string>
+    <string name="crash_toast">photup crash :( Developer telah diberitahukan permasalahannya
+    </string>
+    <string name="untitled_photo">Untitled Photo</string>
+    <string name="detecting_faces">Mendeteksi Wajah</string>
+    <string name="empty_selected_photos">Anda belum memilih foto apapun</string>
+    <string name="welcome_message">Selamat datang di photup. Untuk memulai silahkan tekan tombol
+        berikut untuk login ke Facebook
+    </string>
+    <string name="login">Masuk</string>
+    <string name="login_promo">Tell your friends about photup?</string>
+    <string name="logout_static">Keluar</string>
+    <string name="logout">Keluar %1$s</string>
+    <string name="logout_prompt_title">Anda yakin?</string>
+    <string name="libraries">Perpustakaan</string>
+    <string name="settings">Pengaturan</string>
+    <string name="select_all">Select All</string>
+    <string name="clear_selection">Clear Selection</string>
+    <string name="places_search_hint">Pencarian</string>
+    <string name="pref_instant_upload_title">Unggah Seketika</string>
+    <string name="pref_instant_upload_album_title">Album</string>
+    <string name="pref_instant_upload_album_summary">Pilih album untuk foto diupload otomatis
+    </string>
+    <string name="pref_instant_upload_quality_title">Kualitas</string>
+    <string name="pref_instant_upload_filter_title">Efek</string>
+    <string name="pref_instant_upload_filter_summary">Pilih efek yang akan di gunakan otomatis
+    </string>
+    <string name="pref_instant_upload_roaming_title">Roaming</string>
+    <string name="pref_instant_upload_roaming_summary">Instant Upload if roaming?</string>
+    <string name="pref_general_screen">General Settings</string>
+    <string name="pref_save_files_gallery_title">Save Images</string>
+    <string name="pref_save_files_gallery_summary">Save Images to Gallery?</string>
+    <string name="pref_more_options">Advanced Settings</string>
+    <string name="dialog_instant_upload">photup mendukung Instant Upload! Artinya kapanpun kamu
+        ambil foto, photup akan otomatis unggah foto itu ke Facebook.\n\nCukup aktifkan di
+        Pengaturan dan selesai!
+    </string>
+    <string name="dialog_missing_pages_title">Kehilangan akun?</string>
+    <string name="dialog_missing_items_title">Missing items?</string>
+    <string name="dialog_missing_items_text">Adakah sesuatu yang hilang dari list? Jika iya maka
+        kami butuh permintaan ekstra permission dari facebook. Klik tombol berikut untuk
+        melanjutkkan
+    </string>
+    <string name="privacy_public">Public</string>
+    <string name="privacy_friends">Teman</string>
+    <string name="privacy_me">Saya</string>
+    <string name="dialog_place_overwrite_title">Timpa Lokasi</string>
+    <string name="dialog_place_overwrite_text">Kamu telah memilih lokasi disini, tapi dapat juga
+        hanya pada beberapa foto tersendiri. Kamu yakin akan menimpa semua lokasi pilihanmu?
+    </string>
+
+    <string name="promo_text">I\'m checking out photup for Facebook, a new Facebook photo sharer for
+        Android. Give it a try!
+    </string>
+    <string name="album_all">All Photos</string>
+    <string name="action_bar_upload_progress">%1$d of %2$d</string>
+    <string name="opening_app">Opening&amp;#8230;</string>
+    <string name="stop_uploads">Stop Uploading</string>
+    <string name="start_uploads">Start Uploading</string>
+    <string name="stopped_uploads">Uploading is Disabled</string>
+    <string name="started_uploads">Uploading is Enabled</string>
+    <string name="empty_uploads">No uploads available</string>
+    <string name="location_current">Current Location</string>
+    <string name="location_photo">Photo Location</string>
 </resources>

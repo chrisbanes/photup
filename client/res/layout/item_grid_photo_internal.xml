@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android" >
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-	<uk.co.senab.photup.views.PhotupImageView
-		android:id="@+id/iv_photo"
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-		android:scaleType="centerCrop" />
+    <uk.co.senab.photup.views.PhotupImageView
+        android:id="@+id/iv_photo"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:scaleType="centerCrop" />
 
-	<uk.co.senab.photup.views.CheckableImageView
-		android:id="@+id/civ_button"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="top|right"
-		android:padding="@dimen/spacing"
-		android:scaleType="center"
-		android:src="@drawable/btn_selection" />
+    <uk.co.senab.photup.views.CheckableImageView
+        android:id="@+id/civ_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|right"
+        android:padding="@dimen/spacing"
+        android:scaleType="center"
+        android:src="@drawable/btn_selection" />
 
-	<TextView
-		android:id="@+id/tv_photo_caption"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:layout_gravity="bottom"
-		android:background="@color/translucent_dk_grey"
-		android:ellipsize="end"
-		android:fontFamily="sans-serif-light"
-		android:maxLines="2"
-		android:padding="@dimen/half_spacing"
-		android:textColor="@android:color/white"
-		android:textSize="@dimen/grid_item_caption_text_size"
-		android:visibility="gone" />
+    <TextView
+        android:id="@+id/tv_photo_caption"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/translucent_dk_grey"
+        android:ellipsize="end"
+        android:fontFamily="sans-serif-light"
+        android:maxLines="2"
+        android:padding="@dimen/half_spacing"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/grid_item_caption_text_size"
+        android:visibility="gone" />
 
 </merge>

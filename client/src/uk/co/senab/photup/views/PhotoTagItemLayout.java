@@ -15,18 +15,6 @@
  *******************************************************************************/
 package uk.co.senab.photup.views;
 
-import uk.co.senab.photoview.PhotoViewAttacher;
-import uk.co.senab.photup.Flags;
-import uk.co.senab.photup.PhotoUploadController;
-import uk.co.senab.photup.R;
-import uk.co.senab.photup.listeners.OnFaceDetectionListener;
-import uk.co.senab.photup.listeners.OnFriendPickedListener;
-import uk.co.senab.photup.listeners.OnPhotoTagTapListener;
-import uk.co.senab.photup.listeners.OnPhotoTagsChangedListener;
-import uk.co.senab.photup.listeners.OnPickFriendRequestListener;
-import uk.co.senab.photup.model.FbUser;
-import uk.co.senab.photup.model.PhotoTag;
-import uk.co.senab.photup.model.PhotoUpload;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Rect;
@@ -41,283 +29,304 @@ import android.widget.AbsoluteLayout;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import uk.co.senab.photoview.PhotoViewAttacher;
+import uk.co.senab.photup.Flags;
+import uk.co.senab.photup.PhotoUploadController;
+import uk.co.senab.photup.R;
+import uk.co.senab.photup.listeners.OnFaceDetectionListener;
+import uk.co.senab.photup.listeners.OnFriendPickedListener;
+import uk.co.senab.photup.listeners.OnPhotoTagTapListener;
+import uk.co.senab.photup.listeners.OnPhotoTagsChangedListener;
+import uk.co.senab.photup.listeners.OnPickFriendRequestListener;
+import uk.co.senab.photup.model.FbUser;
+import uk.co.senab.photup.model.PhotoTag;
+import uk.co.senab.photup.model.PhotoUpload;
+
 @SuppressLint("ViewConstructor")
 @SuppressWarnings("deprecation")
-public class PhotoTagItemLayout extends FrameLayout implements OnPhotoTagsChangedListener, View.OnClickListener,
-		OnPhotoTagTapListener, OnFriendPickedListener, OnFaceDetectionListener,
-		PhotoViewAttacher.OnMatrixChangedListener {
-	static final String LOG_TAG = "PhotoTagItemLayout";
+public class PhotoTagItemLayout extends FrameLayout
+        implements OnPhotoTagsChangedListener, View.OnClickListener,
+        OnPhotoTagTapListener, OnFriendPickedListener, OnFaceDetectionListener,
+        PhotoViewAttacher.OnMatrixChangedListener {
 
-	private PhotoTag mFriendRequestTag;
-	private final MultiTouchImageView mImageView;
-	private final CheckableImageView mButton;
+    static final String LOG_TAG = "PhotoTagItemLayout";
 
-	private final LayoutInflater mLayoutInflater;
+    private PhotoTag mFriendRequestTag;
+    private final MultiTouchImageView mImageView;
+    private final CheckableImageView mButton;
 
-	private final Animation mPhotoTagInAnimation, mPhotoTagOutAnimation;
+    private final LayoutInflater mLayoutInflater;
 
-	private final OnPickFriendRequestListener mPickFriendListener;
-	private final AbsoluteLayout mTagLayout;
+    private final Animation mPhotoTagInAnimation, mPhotoTagOutAnimation;
 
-	private int mPosition;
-	private final PhotoUpload mUpload;
-	private final PhotoUploadController mController;
-	private final View mFaceDetectIndicator;
+    private final OnPickFriendRequestListener mPickFriendListener;
+    private final AbsoluteLayout mTagLayout;
 
-	public PhotoTagItemLayout(Context context, PhotoUploadController controller, PhotoUpload upload,
-			OnPickFriendRequestListener friendRequestListener) {
-		super(context);
+    private int mPosition;
+    private final PhotoUpload mUpload;
+    private final PhotoUploadController mController;
+    private final View mFaceDetectIndicator;
 
-		mController = controller;
-		mPickFriendListener = friendRequestListener;
+    public PhotoTagItemLayout(Context context, PhotoUploadController controller, PhotoUpload upload,
+            OnPickFriendRequestListener friendRequestListener) {
+        super(context);
 
-		mLayoutInflater = LayoutInflater.from(context);
+        mController = controller;
+        mPickFriendListener = friendRequestListener;
 
-		mImageView = new MultiTouchImageView(context);
-		mImageView.setOnMatrixChangeListener(this);
-		mImageView.setPhotoTapListener(this);
-		addView(mImageView, FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+        mLayoutInflater = LayoutInflater.from(context);
 
-		mTagLayout = new AbsoluteLayout(context);
-		addView(mTagLayout, FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+        mImageView = new MultiTouchImageView(context);
+        mImageView.setOnMatrixChangeListener(this);
+        mImageView.setPhotoTapListener(this);
+        addView(mImageView, FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT);
 
-		mPhotoTagInAnimation = AnimationUtils.loadAnimation(context, R.anim.tag_fade_in);
-		mPhotoTagOutAnimation = AnimationUtils.loadAnimation(context, R.anim.tag_fade_out);
+        mTagLayout = new AbsoluteLayout(context);
+        addView(mTagLayout, FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT);
 
-		LayoutInflater inflater = LayoutInflater.from(context);
+        mPhotoTagInAnimation = AnimationUtils.loadAnimation(context, R.anim.tag_fade_in);
+        mPhotoTagOutAnimation = AnimationUtils.loadAnimation(context, R.anim.tag_fade_out);
 
-		mButton = (CheckableImageView) inflater.inflate(R.layout.layout_check_button_lrg, this, false);
-		mButton.setOnClickListener(this);
-		addView(mButton);
+        LayoutInflater inflater = LayoutInflater.from(context);
 
-		mFaceDetectIndicator = inflater.inflate(R.layout.layout_face_detect, this, false);
-		addView(mFaceDetectIndicator);
+        mButton = (CheckableImageView) inflater
+                .inflate(R.layout.layout_check_button_lrg, this, false);
+        mButton.setOnClickListener(this);
+        addView(mButton);
 
-		if (null != upload) {
-			upload.setTagChangedListener(this);
-			mButton.setChecked(mController.isSelected(upload));
-		}
-		mUpload = upload;
+        mFaceDetectIndicator = inflater.inflate(R.layout.layout_face_detect, this, false);
+        addView(mFaceDetectIndicator);
 
-		addPhotoTags();
-	}
+        if (null != upload) {
+            upload.setTagChangedListener(this);
+            mButton.setChecked(mController.isSelected(upload));
+        }
+        mUpload = upload;
 
-	public MultiTouchImageView getImageView() {
-		return mImageView;
-	}
+        addPhotoTags();
+    }
 
-	public PhotoUpload getPhotoSelection() {
-		return mUpload;
-	}
+    public MultiTouchImageView getImageView() {
+        return mImageView;
+    }
 
-	public int getPosition() {
-		return mPosition;
-	}
+    public PhotoUpload getPhotoSelection() {
+        return mUpload;
+    }
 
-	public void setPosition(int position) {
-		mPosition = position;
-	}
+    public int getPosition() {
+        return mPosition;
+    }
 
-	public void onClick(View v) {
-		final PhotoTag tag = (PhotoTag) v.getTag();
+    public void setPosition(int position) {
+        mPosition = position;
+    }
 
-		switch (v.getId()) {
-			case R.id.btn_remove_tag:
-				mUpload.removePhotoTag(tag);
-				break;
-			case R.id.tv_tag_label:
-				mFriendRequestTag = tag;
-				mPickFriendListener.onPickFriendRequested(this, mUpload.getTaggedFriends());
-				break;
-			case R.id.iv_large_selection_btn:
-				mButton.toggle();
+    public void onClick(View v) {
+        final PhotoTag tag = (PhotoTag) v.getTag();
 
-				// Update the controller
-				updateController();
+        switch (v.getId()) {
+            case R.id.btn_remove_tag:
+                mUpload.removePhotoTag(tag);
+                break;
+            case R.id.tv_tag_label:
+                mFriendRequestTag = tag;
+                mPickFriendListener.onPickFriendRequested(this, mUpload.getTaggedFriends());
+                break;
+            case R.id.iv_large_selection_btn:
+                mButton.toggle();
 
-				Animation anim = AnimationUtils.loadAnimation(getContext(),
-						mButton.isChecked() ? R.anim.photo_selection_added : R.anim.photo_selection_removed);
-				v.startAnimation(anim);
-				break;
-		}
-	}
+                // Update the controller
+                updateController();
 
-	public void onFriendPicked(FbUser friend) {
-		mFriendRequestTag.setFriend(friend);
+                Animation anim = AnimationUtils.loadAnimation(getContext(),
+                        mButton.isChecked() ? R.anim.photo_selection_added
+                                : R.anim.photo_selection_removed);
+                v.startAnimation(anim);
+                break;
+        }
+    }
 
-		View tagLayout = getTagLayout(mFriendRequestTag);
-		TextView labelTv = (TextView) tagLayout.findViewById(R.id.tv_tag_label);
-		labelTv.setText(friend.getName());
+    public void onFriendPicked(FbUser friend) {
+        mFriendRequestTag.setFriend(friend);
 
-		mFriendRequestTag = null;
+        View tagLayout = getTagLayout(mFriendRequestTag);
+        TextView labelTv = (TextView) tagLayout.findViewById(R.id.tv_tag_label);
+        labelTv.setText(friend.getName());
 
-		layoutTags(mImageView.getDisplayRect());
-	}
+        mFriendRequestTag = null;
 
-	public void onMatrixChanged(RectF rect) {
-		layoutTags(rect);
-	}
+        layoutTags(mImageView.getDisplayRect());
+    }
 
-	public void onNewPhotoTagTap(PhotoTag newTag) {
-		if (Flags.DEBUG) {
-			Log.d(LOG_TAG, "onPhotoTap");
-		}
-		mUpload.addPhotoTag(newTag);
-	}
+    public void onMatrixChanged(RectF rect) {
+        layoutTags(rect);
+    }
 
-	public void onPhotoTagsChanged(final PhotoTag tag, final boolean added) {
-		post(new Runnable() {
-			public void run() {
-				onPhotoTagsChangedImp(tag, added);
-			}
-		});
-	}
+    public void onNewPhotoTagTap(PhotoTag newTag) {
+        if (Flags.DEBUG) {
+            Log.d(LOG_TAG, "onPhotoTap");
+        }
+        mUpload.addPhotoTag(newTag);
+    }
 
-	void onPhotoTagsChangedImp(final PhotoTag tag, final boolean added) {
-		if (added) {
-			View tagLayout = createPhotoTagLayout(tag);
-			mTagLayout.addView(tagLayout);
+    public void onPhotoTagsChanged(final PhotoTag tag, final boolean added) {
+        post(new Runnable() {
+            public void run() {
+                onPhotoTagsChangedImp(tag, added);
+            }
+        });
+    }
 
-			final Rect viewRect = new Rect();
-			getDrawingRect(viewRect);
+    void onPhotoTagsChangedImp(final PhotoTag tag, final boolean added) {
+        if (added) {
+            View tagLayout = createPhotoTagLayout(tag);
+            mTagLayout.addView(tagLayout);
 
-			layoutTag(tagLayout, mImageView.getDisplayRect(), viewRect, true);
-		} else {
-			View view = getTagLayout(tag);
-			view.startAnimation(mPhotoTagOutAnimation);
-			mTagLayout.removeView(view);
-		}
-	}
+            final Rect viewRect = new Rect();
+            getDrawingRect(viewRect);
 
-	private void addPhotoTags() {
-		mTagLayout.removeAllViews();
+            layoutTag(tagLayout, mImageView.getDisplayRect(), viewRect, true);
+        } else {
+            View view = getTagLayout(tag);
+            view.startAnimation(mPhotoTagOutAnimation);
+            mTagLayout.removeView(view);
+        }
+    }
 
-		if (null != mUpload && mUpload.getPhotoTagsCount() > 0) {
-			for (PhotoTag tag : mUpload.getPhotoTags()) {
-				mTagLayout.addView(createPhotoTagLayout(tag));
-			}
-			layoutTags(mImageView.getDisplayRect());
-		}
-	}
+    private void addPhotoTags() {
+        mTagLayout.removeAllViews();
 
-	private View createPhotoTagLayout(PhotoTag tag) {
-		View tagLayout = mLayoutInflater.inflate(R.layout.layout_photo_tag, mTagLayout, false);
+        if (null != mUpload && mUpload.getPhotoTagsCount() > 0) {
+            for (PhotoTag tag : mUpload.getPhotoTags()) {
+                mTagLayout.addView(createPhotoTagLayout(tag));
+            }
+            layoutTags(mImageView.getDisplayRect());
+        }
+    }
 
-		View removeBtn = tagLayout.findViewById(R.id.btn_remove_tag);
-		removeBtn.setOnClickListener(this);
-		removeBtn.setTag(tag);
+    private View createPhotoTagLayout(PhotoTag tag) {
+        View tagLayout = mLayoutInflater.inflate(R.layout.layout_photo_tag, mTagLayout, false);
 
-		TextView labelTv = (TextView) tagLayout.findViewById(R.id.tv_tag_label);
-		FbUser friend = tag.getFriend();
-		if (null != friend) {
-			labelTv.setText(friend.getName());
-		}
-		labelTv.setOnClickListener(this);
-		labelTv.setTag(tag);
+        View removeBtn = tagLayout.findViewById(R.id.btn_remove_tag);
+        removeBtn.setOnClickListener(this);
+        removeBtn.setTag(tag);
 
-		tagLayout.setTag(tag);
-		tagLayout.setVisibility(View.GONE);
+        TextView labelTv = (TextView) tagLayout.findViewById(R.id.tv_tag_label);
+        FbUser friend = tag.getFriend();
+        if (null != friend) {
+            labelTv.setText(friend.getName());
+        }
+        labelTv.setOnClickListener(this);
+        labelTv.setTag(tag);
 
-		return tagLayout;
-	}
+        tagLayout.setTag(tag);
+        tagLayout.setVisibility(View.GONE);
 
-	private View getTagLayout(PhotoTag tag) {
-		for (int i = 0, z = mTagLayout.getChildCount(); i < z; i++) {
-			View tagLayout = mTagLayout.getChildAt(i);
-			if (tag == tagLayout.getTag()) {
-				return tagLayout;
-			}
-		}
-		return null;
-	}
+        return tagLayout;
+    }
 
-	private void layoutTags(final RectF rect) {
-		if (null == rect) {
-			return;
-		}
+    private View getTagLayout(PhotoTag tag) {
+        for (int i = 0, z = mTagLayout.getChildCount(); i < z; i++) {
+            View tagLayout = mTagLayout.getChildAt(i);
+            if (tag == tagLayout.getTag()) {
+                return tagLayout;
+            }
+        }
+        return null;
+    }
 
-		if (Flags.DEBUG) {
-			Log.d(LOG_TAG, "layoutTags. Rect: " + rect.toString());
-		}
+    private void layoutTags(final RectF rect) {
+        if (null == rect) {
+            return;
+        }
 
-		final Rect viewRect = new Rect();
-		getDrawingRect(viewRect);
+        if (Flags.DEBUG) {
+            Log.d(LOG_TAG, "layoutTags. Rect: " + rect.toString());
+        }
 
-		for (int i = 0, z = mTagLayout.getChildCount(); i < z; i++) {
-			layoutTag(mTagLayout.getChildAt(i), rect, viewRect, false);
-		}
-	}
+        final Rect viewRect = new Rect();
+        getDrawingRect(viewRect);
 
-	private void layoutTag(final View tagLayout, final RectF rect, final Rect parentRect, final boolean animate) {
-		PhotoTag tag = (PhotoTag) tagLayout.getTag();
+        for (int i = 0, z = mTagLayout.getChildCount(); i < z; i++) {
+            layoutTag(mTagLayout.getChildAt(i), rect, viewRect, false);
+        }
+    }
 
-		int tagWidth = tagLayout.getWidth();
-		// Measure View if we need to
-		if (tagWidth < 1) {
-			measureView(tagLayout);
-			tagWidth = tagLayout.getMeasuredWidth();
-		}
+    private void layoutTag(final View tagLayout, final RectF rect, final Rect parentRect,
+            final boolean animate) {
+        PhotoTag tag = (PhotoTag) tagLayout.getTag();
 
-		AbsoluteLayout.LayoutParams lp = (AbsoluteLayout.LayoutParams) tagLayout.getLayoutParams();
-		lp.x = Math.round((rect.width() * tag.getX() / 100f) + rect.left) - (tagWidth / 2);
-		lp.y = Math.round((rect.height() * tag.getY() / 100f) + rect.top);
-		tagLayout.setLayoutParams(lp);
+        int tagWidth = tagLayout.getWidth();
+        // Measure View if we need to
+        if (tagWidth < 1) {
+            measureView(tagLayout);
+            tagWidth = tagLayout.getMeasuredWidth();
+        }
 
-		if (parentRect.contains(lp.x, lp.y)) {
-			if (animate) {
-				tagLayout.startAnimation(mPhotoTagInAnimation);
-			}
-			tagLayout.setVisibility(View.VISIBLE);
-		} else {
-			tagLayout.setVisibility(View.GONE);
-		}
-	}
+        AbsoluteLayout.LayoutParams lp = (AbsoluteLayout.LayoutParams) tagLayout.getLayoutParams();
+        lp.x = Math.round((rect.width() * tag.getX() / 100f) + rect.left) - (tagWidth / 2);
+        lp.y = Math.round((rect.height() * tag.getY() / 100f) + rect.top);
+        tagLayout.setLayoutParams(lp);
 
-	private void measureView(View child) {
-		ViewGroup.LayoutParams p = child.getLayoutParams();
-		if (p == null) {
-			p = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-		}
+        if (parentRect.contains(lp.x, lp.y)) {
+            if (animate) {
+                tagLayout.startAnimation(mPhotoTagInAnimation);
+            }
+            tagLayout.setVisibility(View.VISIBLE);
+        } else {
+            tagLayout.setVisibility(View.GONE);
+        }
+    }
 
-		int childWidthSpec = ViewGroup.getChildMeasureSpec(0, 0, p.width);
-		int lpHeight = p.height;
-		int childHeightSpec;
-		if (lpHeight > 0) {
-			childHeightSpec = MeasureSpec.makeMeasureSpec(lpHeight, MeasureSpec.EXACTLY);
-		} else {
-			childHeightSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
-		}
-		child.measure(childWidthSpec, childHeightSpec);
-	}
+    private void measureView(View child) {
+        ViewGroup.LayoutParams p = child.getLayoutParams();
+        if (p == null) {
+            p = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
 
-	void updateController() {
-		if (mButton.isChecked()) {
-			mController.addSelection(mUpload);
-		} else {
-			mController.removeSelection(mUpload);
-		}
-	}
+        int childWidthSpec = ViewGroup.getChildMeasureSpec(0, 0, p.width);
+        int lpHeight = p.height;
+        int childHeightSpec;
+        if (lpHeight > 0) {
+            childHeightSpec = MeasureSpec.makeMeasureSpec(lpHeight, MeasureSpec.EXACTLY);
+        } else {
+            childHeightSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+        }
+        child.measure(childWidthSpec, childHeightSpec);
+    }
 
-	/**
-	 * More than likely on another thread
-	 */
-	public void onFaceDetectionStarted(PhotoUpload selection) {
-		mFaceDetectIndicator.post(new Runnable() {
-			public void run() {
-				Animation anim = AnimationUtils.loadAnimation(getContext(), R.anim.fade_in);
-				mFaceDetectIndicator.startAnimation(anim);
-				mFaceDetectIndicator.setVisibility(View.VISIBLE);
-			}
-		});
-	}
+    void updateController() {
+        if (mButton.isChecked()) {
+            mController.addSelection(mUpload);
+        } else {
+            mController.removeSelection(mUpload);
+        }
+    }
 
-	public void onFaceDetectionFinished(PhotoUpload selection) {
-		mFaceDetectIndicator.post(new Runnable() {
-			public void run() {
-				Animation anim = AnimationUtils.loadAnimation(getContext(), R.anim.fade_out);
-				mFaceDetectIndicator.startAnimation(anim);
-				mFaceDetectIndicator.setVisibility(View.GONE);
-			}
-		});
-	}
+    /**
+     * More than likely on another thread
+     */
+    public void onFaceDetectionStarted(PhotoUpload selection) {
+        mFaceDetectIndicator.post(new Runnable() {
+            public void run() {
+                Animation anim = AnimationUtils.loadAnimation(getContext(), R.anim.fade_in);
+                mFaceDetectIndicator.startAnimation(anim);
+                mFaceDetectIndicator.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    public void onFaceDetectionFinished(PhotoUpload selection) {
+        mFaceDetectIndicator.post(new Runnable() {
+            public void run() {
+                Animation anim = AnimationUtils.loadAnimation(getContext(), R.anim.fade_out);
+                mFaceDetectIndicator.startAnimation(anim);
+                mFaceDetectIndicator.setVisibility(View.GONE);
+            }
+        });
+    }
 }

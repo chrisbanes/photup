@@ -15,6 +15,20 @@
  *******************************************************************************/
 package uk.co.senab.photup;
 
+import com.crittercism.app.Crittercism;
+import com.facebook.android.FacebookError;
+
+import android.app.Application;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.preference.PreferenceManager;
+import android.util.Log;
+import android.view.Display;
+import android.view.WindowManager;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,265 +46,259 @@ import uk.co.senab.photup.tasks.FriendsAsyncTask;
 import uk.co.senab.photup.tasks.FriendsAsyncTask.FriendsResultListener;
 import uk.co.senab.photup.tasks.PhotupThreadFactory;
 import uk.co.senab.photup.util.Utils;
-import android.app.Application;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.preference.PreferenceManager;
-import android.util.Log;
-import android.view.Display;
-import android.view.WindowManager;
 
-import com.crittercism.app.Crittercism;
-import com.facebook.android.FacebookError;
+public class PhotupApplication extends Application
+        implements FriendsResultListener, AccountsResultListener {
 
-public class PhotupApplication extends Application implements FriendsResultListener, AccountsResultListener {
+    static final String LOG_TAG = "PhotupApplication";
+    public static final String THREAD_FILTERS = "filters_thread";
 
-	static final String LOG_TAG = "PhotupApplication";
-	public static final String THREAD_FILTERS = "filters_thread";
+    static final float EXECUTOR_POOL_SIZE_PER_CORE = 1.5f;
 
-	static final float EXECUTOR_POOL_SIZE_PER_CORE = 1.5f;
+    private ExecutorService mMultiThreadExecutor, mSingleThreadExecutor, mDatabaseThreadExecutor;
+    private BitmapLruCache mImageCache;
 
-	private ExecutorService mMultiThreadExecutor, mSingleThreadExecutor, mDatabaseThreadExecutor;
-	private BitmapLruCache mImageCache;
+    private FriendsResultListener mFriendsListener;
+    private ArrayList<FbUser> mFriends;
 
-	private FriendsResultListener mFriendsListener;
-	private ArrayList<FbUser> mFriends;
+    private AccountsResultListener mAccountsListener;
+    private ArrayList<Account> mAccounts;
 
-	private AccountsResultListener mAccountsListener;
-	private ArrayList<Account> mAccounts;
+    private boolean mIsFriendsLoaded, mIsAccountsLoaded;
 
-	private boolean mIsFriendsLoaded, mIsAccountsLoaded;
+    private PhotoUploadController mPhotoController;
 
-	private PhotoUploadController mPhotoController;
+    public static PhotupApplication getApplication(Context context) {
+        return (PhotupApplication) context.getApplicationContext();
+    }
 
-	public static PhotupApplication getApplication(Context context) {
-		return (PhotupApplication) context.getApplicationContext();
-	}
+    public ExecutorService getMultiThreadExecutorService() {
+        if (null == mMultiThreadExecutor || mMultiThreadExecutor.isShutdown()) {
+            final int numThreads = Math.round(Runtime.getRuntime().availableProcessors()
+                    * EXECUTOR_POOL_SIZE_PER_CORE);
+            mMultiThreadExecutor = Executors
+                    .newFixedThreadPool(numThreads, new PhotupThreadFactory());
 
-	public ExecutorService getMultiThreadExecutorService() {
-		if (null == mMultiThreadExecutor || mMultiThreadExecutor.isShutdown()) {
-			final int numThreads = Math.round(Runtime.getRuntime().availableProcessors() * EXECUTOR_POOL_SIZE_PER_CORE);
-			mMultiThreadExecutor = Executors.newFixedThreadPool(numThreads, new PhotupThreadFactory());
+            if (Flags.DEBUG) {
+                Log.d(LOG_TAG, "MultiThreadExecutor created with " + numThreads + " threads");
+            }
+        }
+        return mMultiThreadExecutor;
+    }
 
-			if (Flags.DEBUG) {
-				Log.d(LOG_TAG, "MultiThreadExecutor created with " + numThreads + " threads");
-			}
-		}
-		return mMultiThreadExecutor;
-	}
+    public ExecutorService getPhotoFilterThreadExecutorService() {
+        if (null == mSingleThreadExecutor || mSingleThreadExecutor.isShutdown()) {
+            mSingleThreadExecutor = Executors
+                    .newSingleThreadExecutor(new PhotupThreadFactory(THREAD_FILTERS));
+        }
+        return mSingleThreadExecutor;
+    }
 
-	public ExecutorService getPhotoFilterThreadExecutorService() {
-		if (null == mSingleThreadExecutor || mSingleThreadExecutor.isShutdown()) {
-			mSingleThreadExecutor = Executors.newSingleThreadExecutor(new PhotupThreadFactory(THREAD_FILTERS));
-		}
-		return mSingleThreadExecutor;
-	}
+    public ExecutorService getDatabaseThreadExecutorService() {
+        if (null == mDatabaseThreadExecutor || mDatabaseThreadExecutor.isShutdown()) {
+            mDatabaseThreadExecutor = Executors.newSingleThreadExecutor(new PhotupThreadFactory());
+        }
+        return mDatabaseThreadExecutor;
+    }
 
-	public ExecutorService getDatabaseThreadExecutorService() {
-		if (null == mDatabaseThreadExecutor || mDatabaseThreadExecutor.isShutdown()) {
-			mDatabaseThreadExecutor = Executors.newSingleThreadExecutor(new PhotupThreadFactory());
-		}
-		return mDatabaseThreadExecutor;
-	}
+    public BitmapLruCache getImageCache() {
+        if (null == mImageCache) {
+            mImageCache = new BitmapLruCache(this, Constants.IMAGE_CACHE_HEAP_PERCENTAGE);
+        }
+        return mImageCache;
+    }
 
-	public BitmapLruCache getImageCache() {
-		if (null == mImageCache) {
-			mImageCache = new BitmapLruCache(this, Constants.IMAGE_CACHE_HEAP_PERCENTAGE);
-		}
-		return mImageCache;
-	}
+    public PhotoUploadController getPhotoUploadController() {
+        return mPhotoController;
+    }
 
-	public PhotoUploadController getPhotoUploadController() {
-		return mPhotoController;
-	}
+    @SuppressWarnings("deprecation")
+    public int getSmallestScreenDimension() {
+        WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        return Math.min(display.getHeight(), display.getWidth());
+    }
 
-	@SuppressWarnings("deprecation")
-	public int getSmallestScreenDimension() {
-		WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-		Display display = wm.getDefaultDisplay();
-		return Math.min(display.getHeight(), display.getWidth());
-	}
+    @Override
+    public void onCreate() {
+        super.onCreate();
 
-	@Override
-	public void onCreate() {
-		super.onCreate();
+        if (Flags.ENABLE_BUG_TRACKING) {
+            Crittercism.init(this, Constants.CRITTERCISM_API_KEY);
+        }
 
-		if (Flags.ENABLE_BUG_TRACKING) {
-			Crittercism.init(this, Constants.CRITTERCISM_API_KEY);
-		}
+        checkInstantUploadReceiverState();
 
-		checkInstantUploadReceiverState();
+        mPhotoController = new PhotoUploadController(this);
+        mFriends = new ArrayList<FbUser>();
+        mAccounts = new ArrayList<Account>();
 
-		mPhotoController = new PhotoUploadController(this);
-		mFriends = new ArrayList<FbUser>();
-		mAccounts = new ArrayList<Account>();
+        // TODO Need to check for Facebook login
+        Session session = Session.restore(this);
+        if (null != session) {
+            getAccounts(null, false);
+            getFriends(null);
+        }
+    }
 
-		// TODO Need to check for Facebook login
-		Session session = Session.restore(this);
-		if (null != session) {
-			getAccounts(null, false);
-			getFriends(null);
-		}
-	}
+    public void getFriends(FriendsResultListener listener) {
+        if (mFriends.isEmpty()) {
+            mFriendsListener = listener;
+            new FriendsAsyncTask(this, this).execute();
+        } else {
+            listener.onFriendsLoaded(mFriends);
+        }
+    }
 
-	public void getFriends(FriendsResultListener listener) {
-		if (mFriends.isEmpty()) {
-			mFriendsListener = listener;
-			new FriendsAsyncTask(this, this).execute();
-		} else {
-			listener.onFriendsLoaded(mFriends);
-		}
-	}
+    public Account getMainAccount() {
+        for (Account account : mAccounts) {
+            if (account.isMainAccount()) {
+                return account;
+            }
+        }
+        return null;
+    }
 
-	public Account getMainAccount() {
-		for (Account account : mAccounts) {
-			if (account.isMainAccount()) {
-				return account;
-			}
-		}
-		return null;
-	}
+    public void getAccounts(AccountsResultListener listener, boolean forceRefresh) {
+        if (forceRefresh || mAccounts.isEmpty()) {
+            mAccountsListener = listener;
+            new AccountsAsyncTask(this, this).execute();
+        } else {
+            listener.onAccountsLoaded(mAccounts);
+        }
+    }
 
-	public void getAccounts(AccountsResultListener listener, boolean forceRefresh) {
-		if (forceRefresh || mAccounts.isEmpty()) {
-			mAccountsListener = listener;
-			new AccountsAsyncTask(this, this).execute();
-		} else {
-			listener.onAccountsLoaded(mAccounts);
-		}
-	}
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
 
-	@Override
-	public void onLowMemory() {
-		super.onLowMemory();
+        if (null != mImageCache) {
+            mImageCache.trimMemory();
+        }
+    }
 
-		if (null != mImageCache) {
-			mImageCache.trimMemory();
-		}
-	}
+    public void onFriendsLoaded(List<FbUser> friends) {
+        mFriends.clear();
 
-	public void onFriendsLoaded(List<FbUser> friends) {
-		mFriends.clear();
+        if (null != friends) {
+            mFriends.addAll(friends);
 
-		if (null != friends) {
-			mFriends.addAll(friends);
+            if (null != mFriendsListener && mFriendsListener != this) {
+                mFriendsListener.onFriendsLoaded(mFriends);
+                mFriendsListener = null;
+            }
 
-			if (null != mFriendsListener && mFriendsListener != this) {
-				mFriendsListener.onFriendsLoaded(mFriends);
-				mFriendsListener = null;
-			}
+            if (Flags.ENABLE_DB_PERSISTENCE) {
+                HashMap<String, FbUser> friendsMap = new HashMap<String, FbUser>();
+                for (FbUser friend : friends) {
+                    friendsMap.put(friend.getId(), friend);
+                }
+                mPhotoController.populateDatabaseItemsFromFriends(friendsMap);
+            }
+        }
 
-			if (Flags.ENABLE_DB_PERSISTENCE) {
-				HashMap<String, FbUser> friendsMap = new HashMap<String, FbUser>();
-				for (FbUser friend : friends) {
-					friendsMap.put(friend.getId(), friend);
-				}
-				mPhotoController.populateDatabaseItemsFromFriends(friendsMap);
-			}
-		}
+        setFriendsLoaded();
+    }
 
-		setFriendsLoaded();
-	}
+    public void onAccountsLoaded(List<Account> accounts) {
+        mAccounts.clear();
 
-	public void onAccountsLoaded(List<Account> accounts) {
-		mAccounts.clear();
+        if (null != accounts && !accounts.isEmpty()) {
+            mAccounts.addAll(accounts);
+            if (null != mAccountsListener && mAccountsListener != this) {
+                mAccountsListener.onAccountsLoaded(mAccounts);
+                mAccountsListener = null;
 
-		if (null != accounts && !accounts.isEmpty()) {
-			mAccounts.addAll(accounts);
-			if (null != mAccountsListener && mAccountsListener != this) {
-				mAccountsListener.onAccountsLoaded(mAccounts);
-				mAccountsListener = null;
+            } else if (!mAccounts.isEmpty()) {
+                // PRELOAD Main Account's Data
+                for (Account account : mAccounts) {
+                    if (account.isMainAccount()) {
+                        account.preload(this);
+                        break;
+                    }
+                }
+            }
 
-			} else if (!mAccounts.isEmpty()) {
-				// PRELOAD Main Account's Data
-				for (Account account : mAccounts) {
-					if (account.isMainAccount()) {
-						account.preload(this);
-						break;
-					}
-				}
-			}
+            if (Flags.ENABLE_DB_PERSISTENCE) {
+                HashMap<String, Account> accountsMap = new HashMap<String, Account>();
+                for (Account account : accounts) {
+                    accountsMap.put(account.getId(), account);
+                }
+                mPhotoController.populateDatabaseItemsFromAccounts(accountsMap);
+            }
+        }
 
-			if (Flags.ENABLE_DB_PERSISTENCE) {
-				HashMap<String, Account> accountsMap = new HashMap<String, Account>();
-				for (Account account : accounts) {
-					accountsMap.put(account.getId(), account);
-				}
-				mPhotoController.populateDatabaseItemsFromAccounts(accountsMap);
-			}
-		}
+        setAccountsLoaded();
+    }
 
-		setAccountsLoaded();
-	}
+    private void setFriendsLoaded() {
+        mIsFriendsLoaded = true;
 
-	private void setFriendsLoaded() {
-		mIsFriendsLoaded = true;
+        if (isDataLoaded()) {
+            onDataLoaded();
+        }
+    }
 
-		if (isDataLoaded()) {
-			onDataLoaded();
-		}
-	}
+    private void setAccountsLoaded() {
+        mIsAccountsLoaded = true;
 
-	private void setAccountsLoaded() {
-		mIsAccountsLoaded = true;
+        if (isDataLoaded()) {
+            onDataLoaded();
+        }
+    }
 
-		if (isDataLoaded()) {
-			onDataLoaded();
-		}
-	}
+    private boolean isDataLoaded() {
+        return mIsFriendsLoaded && mIsAccountsLoaded;
+    }
 
-	private boolean isDataLoaded() {
-		return mIsFriendsLoaded && mIsAccountsLoaded;
-	}
+    private void onDataLoaded() {
+        if (mPhotoController.hasWaitingUploads()) {
+            startService(Utils.getUploadAllIntent(this));
+        }
+    }
 
-	private void onDataLoaded() {
-		if (mPhotoController.hasWaitingUploads()) {
-			startService(Utils.getUploadAllIntent(this));
-		}
-	}
+    public void onFacebookError(FacebookError e) {
+        Log.e("PhotupApplication", "FacebookError");
+        e.printStackTrace();
 
-	public void onFacebookError(FacebookError e) {
-		Log.e("PhotupApplication", "FacebookError");
-		e.printStackTrace();
+        Session.clearSavedSession(this);
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
 
-		Session.clearSavedSession(this);
-		Intent intent = new Intent(this, MainActivity.class);
-		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-		startActivity(intent);
-	}
+    public void checkInstantUploadReceiverState() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        final boolean enabled = prefs
+                .getBoolean(PreferenceConstants.PREF_INSTANT_UPLOAD_ENABLED, false);
 
-	public void checkInstantUploadReceiverState() {
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		final boolean enabled = prefs.getBoolean(PreferenceConstants.PREF_INSTANT_UPLOAD_ENABLED, false);
+        final ComponentName component = new ComponentName(this, PhotoWatcherReceiver.class);
+        final PackageManager pkgMgr = getPackageManager();
 
-		final ComponentName component = new ComponentName(this, PhotoWatcherReceiver.class);
-		final PackageManager pkgMgr = getPackageManager();
+        switch (pkgMgr.getComponentEnabledSetting(component)) {
+            case PackageManager.COMPONENT_ENABLED_STATE_DISABLED:
+                if (enabled) {
+                    pkgMgr.setComponentEnabledSetting(component,
+                            PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                            PackageManager.DONT_KILL_APP);
+                    if (Flags.DEBUG) {
+                        Log.d(LOG_TAG, "Enabled Instant Upload Receiver");
+                    }
+                }
+                break;
 
-		switch (pkgMgr.getComponentEnabledSetting(component)) {
-			case PackageManager.COMPONENT_ENABLED_STATE_DISABLED:
-				if (enabled) {
-					pkgMgr.setComponentEnabledSetting(component, PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-							PackageManager.DONT_KILL_APP);
-					if (Flags.DEBUG) {
-						Log.d(LOG_TAG, "Enabled Instant Upload Receiver");
-					}
-				}
-				break;
-
-			case PackageManager.COMPONENT_ENABLED_STATE_DEFAULT:
-			case PackageManager.COMPONENT_ENABLED_STATE_ENABLED:
-				if (!enabled) {
-					pkgMgr.setComponentEnabledSetting(component, PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-							PackageManager.DONT_KILL_APP);
-					if (Flags.DEBUG) {
-						Log.d(LOG_TAG, "Disabled Instant Upload Receiver");
-					}
-				}
-				break;
-		}
-	}
+            case PackageManager.COMPONENT_ENABLED_STATE_DEFAULT:
+            case PackageManager.COMPONENT_ENABLED_STATE_ENABLED:
+                if (!enabled) {
+                    pkgMgr.setComponentEnabledSetting(component,
+                            PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                            PackageManager.DONT_KILL_APP);
+                    if (Flags.DEBUG) {
+                        Log.d(LOG_TAG, "Disabled Instant Upload Receiver");
+                    }
+                }
+                break;
+        }
+    }
 
 }

@@ -5,7 +5,7 @@
     android:layout_gravity="bottom"
     android:fillViewport="true"
     android:scrollbars="none"
-    android:visibility="gone" >
+    android:visibility="gone">
 
     <uk.co.senab.photup.views.FiltersRadioGroup
         android:id="@+id/rg_filters"

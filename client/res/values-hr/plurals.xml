@@ -10,5 +10,5 @@
         <item quantity="one">S jednom osobom</item>
         <item quantity="other">S %d osoba</item>
     </plurals>
-    
+
 </resources>

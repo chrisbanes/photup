@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <uk.co.senab.photup.views.PhotoItemLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent"
-	android:layout_height="@dimen/gridview_item_dimension_user"
-	android:background="@drawable/photo_gallery_background"
-	android:padding="@dimen/gridview_item_margin" />
+    android:layout_width="fill_parent"
+    android:layout_height="@dimen/gridview_item_dimension_user"
+    android:background="@drawable/photo_gallery_background"
+    android:padding="@dimen/gridview_item_margin" />

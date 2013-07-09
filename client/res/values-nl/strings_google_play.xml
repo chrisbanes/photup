@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="google_play_description">Met photup kunt u sneller dan ooit foto\'s uploaden naar uw Facebook profiel. Zie het als \'Facebook Camera\' voor iOS, maar nu op Android.
--Upload zo veel foto\'s als u zelf wilt, in één keer
--Voeg Effecten toe (Filters)
--Roteer Foto\'s handmatig
--Snijd foto\'s bij
--Voeg een bijschrijft bij iedere foto
--Tag uw Vrienden eenvoudig met Gezichtsdetectie
--Snelle upoload. Upload automatisch wanneer u een nieuwe foto neemt
--Tag de locatie en plaats
--Upload naar uw Groepen of Evenementen
--Upload naar uw Pagina en haar albums</string>
-	<string name="google_play_promo_text">Deel uw foto\'s met photup voor Facebook</string>
+    <string name="google_play_description">Met photup kunt u sneller dan ooit foto\'s uploaden naar
+        uw Facebook profiel. Zie het als \'Facebook Camera\' voor iOS, maar nu op Android.
+        -Upload zo veel foto\'s als u zelf wilt, in één keer
+        -Voeg Effecten toe (Filters)
+        -Roteer Foto\'s handmatig
+        -Snijd foto\'s bij
+        -Voeg een bijschrijft bij iedere foto
+        -Tag uw Vrienden eenvoudig met Gezichtsdetectie
+        -Snelle upoload. Upload automatisch wanneer u een nieuwe foto neemt
+        -Tag de locatie en plaats
+        -Upload naar uw Groepen of Evenementen
+        -Upload naar uw Pagina en haar albums
+    </string>
+    <string name="google_play_promo_text">Deel uw foto\'s met photup voor Facebook</string>
 </resources>

@@ -10,5 +10,5 @@
         <item quantity="one">Με ένα φίλο</item>
         <item quantity="other">Με %d φίλους</item>
     </plurals>
-    
+
 </resources>

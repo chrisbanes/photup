@@ -15,10 +15,8 @@
  *******************************************************************************/
 package uk.co.senab.photup.fragments;
 
-import uk.co.senab.photup.R;
-import uk.co.senab.photup.model.Account;
-import uk.co.senab.photup.tasks.NewAlbumAsyncTask;
-import uk.co.senab.photup.tasks.NewAlbumAsyncTask.NewAlbumResultListener;
+import com.actionbarsherlock.app.SherlockDialogFragment;
+
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -29,85 +27,91 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 
-import com.actionbarsherlock.app.SherlockDialogFragment;
+import uk.co.senab.photup.R;
+import uk.co.senab.photup.model.Account;
+import uk.co.senab.photup.tasks.NewAlbumAsyncTask;
+import uk.co.senab.photup.tasks.NewAlbumAsyncTask.NewAlbumResultListener;
 
 @SuppressLint("ValidFragment")
-public class NewAlbumFragment extends SherlockDialogFragment implements View.OnClickListener, NewAlbumResultListener {
+public class NewAlbumFragment extends SherlockDialogFragment
+        implements View.OnClickListener, NewAlbumResultListener {
 
-	public static interface OnAlbumCreatedListener {
-		void onAlbumCreated();
-	}
+    public static interface OnAlbumCreatedListener {
 
-	private EditText mAlbumNameEditText, mAlbumDescEditText;
-	private Spinner mPrivacySpinner;
-	private ImageButton mSendButton;
-	private ProgressBar mLoadingProgressBar;
+        void onAlbumCreated();
+    }
 
-	private OnAlbumCreatedListener mAlbumCreated;
-	private Account mAccount;
+    private EditText mAlbumNameEditText, mAlbumDescEditText;
+    private Spinner mPrivacySpinner;
+    private ImageButton mSendButton;
+    private ProgressBar mLoadingProgressBar;
 
-	private String[] mPrivacyValues;
+    private OnAlbumCreatedListener mAlbumCreated;
+    private Account mAccount;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		mPrivacyValues = getResources().getStringArray(R.array.privacy_settings_values);
-	}
+    private String[] mPrivacyValues;
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_new_album, container, false);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mPrivacyValues = getResources().getStringArray(R.array.privacy_settings_values);
+    }
 
-		mAlbumNameEditText = (EditText) view.findViewById(R.id.et_album_name);
-		mAlbumDescEditText = (EditText) view.findViewById(R.id.et_album_description);
-		mPrivacySpinner = (Spinner) view.findViewById(R.id.sp_privacy);
-		mLoadingProgressBar = (ProgressBar) view.findViewById(R.id.pb_loading);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+            Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_new_album, container, false);
 
-		mSendButton = (ImageButton) view.findViewById(R.id.ib_create_album);
-		mSendButton.setOnClickListener(this);
+        mAlbumNameEditText = (EditText) view.findViewById(R.id.et_album_name);
+        mAlbumDescEditText = (EditText) view.findViewById(R.id.et_album_description);
+        mPrivacySpinner = (Spinner) view.findViewById(R.id.sp_privacy);
+        mLoadingProgressBar = (ProgressBar) view.findViewById(R.id.pb_loading);
 
-		return view;
-	}
+        mSendButton = (ImageButton) view.findViewById(R.id.ib_create_album);
+        mSendButton.setOnClickListener(this);
 
-	@Override
-	public void onActivityCreated(Bundle b) {
-		super.onActivityCreated(b);
-		getDialog().setTitle(R.string.upload_new_album);
-	}
+        return view;
+    }
 
-	public void onClick(View v) {
-		if (null != mAccount) {
-			String albumName = mAlbumNameEditText.getText().toString();
-			// TODO Check for empty String
+    @Override
+    public void onActivityCreated(Bundle b) {
+        super.onActivityCreated(b);
+        getDialog().setTitle(R.string.upload_new_album);
+    }
 
-			String privacyValue = mPrivacyValues[mPrivacySpinner.getSelectedItemPosition()];
-			String description = mAlbumDescEditText.getText().toString();
+    public void onClick(View v) {
+        if (null != mAccount) {
+            String albumName = mAlbumNameEditText.getText().toString();
+            // TODO Check for empty String
 
-			v.setVisibility(View.GONE);
-			mLoadingProgressBar.setVisibility(View.VISIBLE);
+            String privacyValue = mPrivacyValues[mPrivacySpinner.getSelectedItemPosition()];
+            String description = mAlbumDescEditText.getText().toString();
 
-			new NewAlbumAsyncTask(mAccount, this).execute(albumName, description, privacyValue);
-		}
-	}
+            v.setVisibility(View.GONE);
+            mLoadingProgressBar.setVisibility(View.VISIBLE);
 
-	public void onNewAlbumCreated(String albumId) {
-		if (null != mAlbumCreated) {
-			mAlbumCreated.onAlbumCreated();
+            new NewAlbumAsyncTask(mAccount, this).execute(albumName, description, privacyValue);
+        }
+    }
 
-			try {
-				dismiss();
-			} catch (Exception e) {
-				// WTF moment. Shown up in logs.
-			}
-		}
-	}
+    public void onNewAlbumCreated(String albumId) {
+        if (null != mAlbumCreated) {
+            mAlbumCreated.onAlbumCreated();
 
-	public void setAccount(Account account) {
-		mAccount = account;
-	}
+            try {
+                dismiss();
+            } catch (Exception e) {
+                // WTF moment. Shown up in logs.
+            }
+        }
+    }
 
-	public void setOnAlbumCreatedListener(OnAlbumCreatedListener listener) {
-		mAlbumCreated = listener;
-	}
+    public void setAccount(Account account) {
+        mAccount = account;
+    }
+
+    public void setOnAlbumCreatedListener(OnAlbumCreatedListener listener) {
+        mAlbumCreated = listener;
+    }
 
 }

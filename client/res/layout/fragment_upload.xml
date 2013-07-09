@@ -1,215 +1,214 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:orientation="vertical" >
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-	<LinearLayout
-		style="@style/DialogActionBar"
-		android:layout_width="fill_parent"
-		android:layout_height="@dimen/form_item_height" >
+    <LinearLayout
+        style="@style/DialogActionBar"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/form_item_height">
 
-		<uk.co.senab.photup.views.RobotoLightTextView
-			android:layout_width="0px"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:padding="@dimen/spacing"
-			android:text="@string/upload_title"
-			android:textSize="@dimen/dialog_title_text_size" />
+        <uk.co.senab.photup.views.RobotoLightTextView
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="@dimen/spacing"
+            android:text="@string/upload_title"
+            android:textSize="@dimen/dialog_title_text_size" />
 
-		<ImageButton
-			android:id="@+id/btn_upload"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:background="?attr/actionBarItemBackground"
-			android:contentDescription="@string/upload_title"
-			android:padding="@dimen/spacing"
-			android:src="@drawable/ic_action_upload" />
-	</LinearLayout>
+        <ImageButton
+            android:id="@+id/btn_upload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/actionBarItemBackground"
+            android:contentDescription="@string/upload_title"
+            android:padding="@dimen/spacing"
+            android:src="@drawable/ic_action_upload" />
+    </LinearLayout>
 
-	<include
-		layout="@layout/layout_horizontal_line" />
+    <include layout="@layout/layout_horizontal_line" />
 
-	<ScrollView
-		android:layout_width="match_parent"
-		android:layout_height="0px"
-		android:layout_weight="1" >
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0px"
+        android:layout_weight="1">
 
-		<LinearLayout
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:animateLayoutChanges="true"
-			android:minWidth="290dp"
-			android:orientation="vertical"
-			android:padding="@dimen/double_spacing" >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:minWidth="290dp"
+            android:orientation="vertical"
+            android:padding="@dimen/double_spacing">
 
-			<TextView
-				style="?android:attr/listSeparatorTextViewStyle"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/upload_account" />
+            <TextView
+                style="?android:attr/listSeparatorTextViewStyle"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/upload_account" />
 
-			<LinearLayout
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content" >
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
 
-				<Spinner
-					android:id="@+id/sp_upload_account"
-					style="@style/PhotupSpinner"
-					android:layout_width="0px"
-					android:layout_height="@dimen/form_item_height"
-					android:layout_weight="1" />
+                <Spinner
+                    android:id="@+id/sp_upload_account"
+                    style="@style/PhotupSpinner"
+                    android:layout_width="0px"
+                    android:layout_height="@dimen/form_item_height"
+                    android:layout_weight="1" />
 
-				<ImageButton
-					android:id="@+id/btn_account_help"
-					android:layout_width="@dimen/form_item_height"
-					android:layout_height="@dimen/form_item_height"
-					android:background="?attr/actionBarItemBackground"
-					android:padding="@dimen/spacing"
-					android:src="@drawable/ic_menu_help" />
-			</LinearLayout>
+                <ImageButton
+                    android:id="@+id/btn_account_help"
+                    android:layout_width="@dimen/form_item_height"
+                    android:layout_height="@dimen/form_item_height"
+                    android:background="?attr/actionBarItemBackground"
+                    android:padding="@dimen/spacing"
+                    android:src="@drawable/ic_menu_help" />
+            </LinearLayout>
 
-			<TextView
-				android:id="@+id/tv_album_title"
-				style="?android:attr/listSeparatorTextViewStyle"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="@dimen/double_spacing"
-				android:text="@string/upload_target_title" />
+            <TextView
+                android:id="@+id/tv_album_title"
+                style="?android:attr/listSeparatorTextViewStyle"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/double_spacing"
+                android:text="@string/upload_target_title" />
 
-			<RadioGroup
-				android:id="@+id/rg_upload_target"
-				style="@style/TabRadioGroup"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:animateLayoutChanges="true" >
+            <RadioGroup
+                android:id="@+id/rg_upload_target"
+                style="@style/TabRadioGroup"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true">
 
-				<RadioButton
-					android:id="@+id/rb_target_album"
-					style="@style/TabRadioButton"
-					android:text="@string/upload_target_album" />
+                <RadioButton
+                    android:id="@+id/rb_target_album"
+                    style="@style/TabRadioButton"
+                    android:text="@string/upload_target_album" />
 
-				<RadioButton
-					android:id="@+id/rb_target_wall"
-					style="@style/TabRadioButton"
-					android:text="@string/upload_target_wall" />
+                <RadioButton
+                    android:id="@+id/rb_target_wall"
+                    style="@style/TabRadioButton"
+                    android:text="@string/upload_target_wall" />
 
-				<RadioButton
-					android:id="@+id/rb_target_group"
-					style="@style/TabRadioButton"
-					android:text="@string/upload_target_group" />
+                <RadioButton
+                    android:id="@+id/rb_target_group"
+                    style="@style/TabRadioButton"
+                    android:text="@string/upload_target_group" />
 
-				<RadioButton
-					android:id="@+id/rb_target_event"
-					style="@style/TabRadioButton"
-					android:text="@string/upload_target_event" />
-			</RadioGroup>
+                <RadioButton
+                    android:id="@+id/rb_target_event"
+                    style="@style/TabRadioButton"
+                    android:text="@string/upload_target_event" />
+            </RadioGroup>
 
-			<LinearLayout
-				android:id="@+id/ll_upload_target"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:animateLayoutChanges="true"
-				android:visibility="gone" >
+            <LinearLayout
+                android:id="@+id/ll_upload_target"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
+                android:visibility="gone">
 
-				<Spinner
-					android:id="@+id/sp_upload_target"
-					style="@style/PhotupSpinner"
-					android:layout_width="0px"
-					android:layout_height="@dimen/form_item_height"
-					android:layout_weight="1" />
+                <Spinner
+                    android:id="@+id/sp_upload_target"
+                    style="@style/PhotupSpinner"
+                    android:layout_width="0px"
+                    android:layout_height="@dimen/form_item_height"
+                    android:layout_weight="1" />
 
-				<ImageButton
-					android:id="@+id/btn_new_album"
-					android:layout_width="@dimen/form_item_height"
-					android:layout_height="@dimen/form_item_height"
-					android:background="?attr/actionBarItemBackground"
-					android:padding="@dimen/spacing"
-					android:src="@drawable/ic_menu_add" />
+                <ImageButton
+                    android:id="@+id/btn_new_album"
+                    android:layout_width="@dimen/form_item_height"
+                    android:layout_height="@dimen/form_item_height"
+                    android:background="?attr/actionBarItemBackground"
+                    android:padding="@dimen/spacing"
+                    android:src="@drawable/ic_menu_add" />
 
-				<ImageButton
-					android:id="@+id/btn_target_help"
-					android:layout_width="@dimen/form_item_height"
-					android:layout_height="@dimen/form_item_height"
-					android:background="?attr/actionBarItemBackground"
-					android:padding="@dimen/spacing"
-					android:src="@drawable/ic_menu_help" />
-			</LinearLayout>
+                <ImageButton
+                    android:id="@+id/btn_target_help"
+                    android:layout_width="@dimen/form_item_height"
+                    android:layout_height="@dimen/form_item_height"
+                    android:background="?attr/actionBarItemBackground"
+                    android:padding="@dimen/spacing"
+                    android:src="@drawable/ic_menu_help" />
+            </LinearLayout>
 
-			<TextView
-				style="?android:attr/listSeparatorTextViewStyle"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="@dimen/double_spacing"
-				android:text="@string/place" />
+            <TextView
+                style="?android:attr/listSeparatorTextViewStyle"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/double_spacing"
+                android:text="@string/place" />
 
-			<LinearLayout
-				android:id="@+id/ll_place"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:animateLayoutChanges="true"
-				android:background="?attr/actionBarItemBackground"
-				android:gravity="center_vertical" >
+            <LinearLayout
+                android:id="@+id/ll_place"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
+                android:background="?attr/actionBarItemBackground"
+                android:gravity="center_vertical">
 
-				<uk.co.senab.photup.views.NetworkedCacheableImageView
-					android:id="@+id/iv_place_photo"
-					android:layout_width="@dimen/listview_sml_item_dimension"
-					android:layout_height="@dimen/listview_sml_item_dimension"
-					android:layout_gravity="top"
-					android:padding="@dimen/spacing"
-					android:scaleType="fitCenter"
-					android:src="@drawable/ic_action_place" />
+                <uk.co.senab.photup.views.NetworkedCacheableImageView
+                    android:id="@+id/iv_place_photo"
+                    android:layout_width="@dimen/listview_sml_item_dimension"
+                    android:layout_height="@dimen/listview_sml_item_dimension"
+                    android:layout_gravity="top"
+                    android:padding="@dimen/spacing"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_action_place" />
 
-				<TextView
-					android:id="@+id/btn_place"
-					style="?android:attr/textAppearanceMedium"
-					android:layout_width="0px"
-					android:layout_height="wrap_content"
-					android:layout_weight="1"
-					android:gravity="center_vertical"
-					android:minHeight="@dimen/listview_sml_item_dimension"
-					android:padding="@dimen/spacing"
-					android:text="@string/place" />
+                <TextView
+                    android:id="@+id/btn_place"
+                    style="?android:attr/textAppearanceMedium"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:minHeight="@dimen/listview_sml_item_dimension"
+                    android:padding="@dimen/spacing"
+                    android:text="@string/place" />
 
-				<ImageButton
-					android:id="@+id/btn_place_remove"
-					android:layout_width="@dimen/form_item_height"
-					android:layout_height="@dimen/form_item_height"
-					android:background="?attr/actionBarItemBackground"
-					android:padding="@dimen/spacing"
-					android:src="@drawable/ic_menu_delete"
-					android:visibility="gone" />
-			</LinearLayout>
+                <ImageButton
+                    android:id="@+id/btn_place_remove"
+                    android:layout_width="@dimen/form_item_height"
+                    android:layout_height="@dimen/form_item_height"
+                    android:background="?attr/actionBarItemBackground"
+                    android:padding="@dimen/spacing"
+                    android:src="@drawable/ic_menu_delete"
+                    android:visibility="gone" />
+            </LinearLayout>
 
-			<TextView
-				style="?android:attr/listSeparatorTextViewStyle"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="@dimen/double_spacing"
-				android:text="@string/upload_quality_title" />
+            <TextView
+                style="?android:attr/listSeparatorTextViewStyle"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/double_spacing"
+                android:text="@string/upload_quality_title" />
 
-			<RadioGroup
-				android:id="@+id/rg_upload_quality"
-				style="@style/TabRadioGroup"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content" >
+            <RadioGroup
+                android:id="@+id/rg_upload_quality"
+                style="@style/TabRadioGroup"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
 
-				<RadioButton
-					android:id="@+id/rb_quality_low"
-					style="@style/TabRadioButton"
-					android:text="@string/upload_quality_low" />
+                <RadioButton
+                    android:id="@+id/rb_quality_low"
+                    style="@style/TabRadioButton"
+                    android:text="@string/upload_quality_low" />
 
-				<RadioButton
-					android:id="@+id/rb_quality_medium"
-					style="@style/TabRadioButton"
-					android:text="@string/upload_quality_medium" />
+                <RadioButton
+                    android:id="@+id/rb_quality_medium"
+                    style="@style/TabRadioButton"
+                    android:text="@string/upload_quality_medium" />
 
-				<RadioButton
-					android:id="@+id/rb_quality_high"
-					style="@style/TabRadioButton"
-					android:text="@string/upload_quality_high" />
-			</RadioGroup>
-		</LinearLayout>
-	</ScrollView>
+                <RadioButton
+                    android:id="@+id/rb_quality_high"
+                    style="@style/TabRadioButton"
+                    android:text="@string/upload_quality_high" />
+            </RadioGroup>
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

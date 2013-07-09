@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <uk.co.senab.photup.views.UploadActionBarView xmlns:android="http://schemas.android.com/apk/res/android"
-	style="?attr/actionButtonStyle"
-	android:layout_width="wrap_content"
-	android:layout_height="match_parent">
+    style="?attr/actionButtonStyle"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent">
 
-	<View
-		android:id="@+id/v_action_upload_bg"
-		android:layout_width="0px"
-		android:layout_height="0px"
-		android:layout_alignBottom="@+id/iv_action_upload"
-		android:layout_alignLeft="@+id/iv_action_upload"
-		android:layout_alignRight="@+id/iv_action_upload"
-		android:layout_alignTop="@+id/iv_action_upload"
-		android:background="@color/pressed_photup"
-		android:visibility="gone" />
+    <View
+        android:id="@+id/v_action_upload_bg"
+        android:layout_width="0px"
+        android:layout_height="0px"
+        android:layout_alignBottom="@+id/iv_action_upload"
+        android:layout_alignLeft="@+id/iv_action_upload"
+        android:layout_alignRight="@+id/iv_action_upload"
+        android:layout_alignTop="@+id/iv_action_upload"
+        android:background="@color/pressed_photup"
+        android:visibility="gone" />
 
-	<ImageView
-		android:id="@+id/iv_action_upload"
-		android:layout_width="wrap_content"
-		android:layout_height="match_parent"
-		android:src="@drawable/ic_action_upload"
-		android:paddingLeft="12dp"
-		android:paddingRight="12dp" />
+    <ImageView
+        android:id="@+id/iv_action_upload"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_action_upload"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp" />
 
 </uk.co.senab.photup.views.UploadActionBarView>

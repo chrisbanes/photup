@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-	<string name="app_name">photup</string>
+    <string name="app_name">photup</string>
 
-	<string-array name="privacy_settings_values">
-		<item>EVERYONE</item>
-		<item>ALL_FRIENDS</item>
-		<item>SELF</item>
-	</string-array>
-	<string-array name="quality_settings_values">
-		<item>0</item>
-		<item>1</item>
-		<item>2</item>
-	</string-array>
+    <string-array name="privacy_settings_values">
+        <item>EVERYONE</item>
+        <item>ALL_FRIENDS</item>
+        <item>SELF</item>
+    </string-array>
+    <string-array name="quality_settings_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
 
-	<string name="twitter_handle">\@photup</string>
-	<string name="twitter_address">http://twitter.com/photup</string>
-	<string name="facebook_handle">photup</string>
-	<string name="facebook_address">http://www.facebook.com/PhotupUsers</string>
+    <string name="twitter_handle">\@photup</string>
+    <string name="twitter_address">http://twitter.com/photup</string>
+    <string name="facebook_handle">photup</string>
+    <string name="facebook_address">http://www.facebook.com/PhotupUsers</string>
 
 </resources>

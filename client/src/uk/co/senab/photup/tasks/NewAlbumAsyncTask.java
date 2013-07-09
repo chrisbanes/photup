@@ -15,40 +15,42 @@
  *******************************************************************************/
 package uk.co.senab.photup.tasks;
 
+import android.os.AsyncTask;
+
 import java.lang.ref.WeakReference;
 
 import uk.co.senab.photup.facebook.FacebookRequester;
 import uk.co.senab.photup.model.Account;
-import android.os.AsyncTask;
 
 public class NewAlbumAsyncTask extends AsyncTask<String, Void, String> {
 
-	public static interface NewAlbumResultListener {
-		public void onNewAlbumCreated(String albumId);
-	}
+    public static interface NewAlbumResultListener {
 
-	private final Account mAccount;
-	private final WeakReference<NewAlbumResultListener> mListener;
+        public void onNewAlbumCreated(String albumId);
+    }
 
-	public NewAlbumAsyncTask(Account account, NewAlbumResultListener listener) {
-		mAccount = account;
-		mListener = new WeakReference<NewAlbumResultListener>(listener);
-	}
+    private final Account mAccount;
+    private final WeakReference<NewAlbumResultListener> mListener;
 
-	@Override
-	protected String doInBackground(String... params) {
-		FacebookRequester requester = new FacebookRequester(mAccount);
-		return requester.createNewAlbum(params[0], params[1], params[2]);
-	}
+    public NewAlbumAsyncTask(Account account, NewAlbumResultListener listener) {
+        mAccount = account;
+        mListener = new WeakReference<NewAlbumResultListener>(listener);
+    }
 
-	@Override
-	protected void onPostExecute(String result) {
-		super.onPostExecute(result);
+    @Override
+    protected String doInBackground(String... params) {
+        FacebookRequester requester = new FacebookRequester(mAccount);
+        return requester.createNewAlbum(params[0], params[1], params[2]);
+    }
 
-		NewAlbumResultListener listener = mListener.get();
-		if (null != listener) {
-			listener.onNewAlbumCreated(result);
-		}
-	}
+    @Override
+    protected void onPostExecute(String result) {
+        super.onPostExecute(result);
+
+        NewAlbumResultListener listener = mListener.get();
+        if (null != listener) {
+            listener.onNewAlbumCreated(result);
+        }
+    }
 
 }

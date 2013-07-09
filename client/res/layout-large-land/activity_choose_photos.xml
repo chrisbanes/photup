@@ -1,22 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/ll_photo_fragments"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:orientation="horizontal" >
+    android:id="@+id/ll_photo_fragments"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal">
 
-	<FrameLayout
-		xmlns:android="http://schemas.android.com/apk/res/android"
-		android:id="@+id/frag_primary"
-		android:layout_width="0px"
-		android:layout_height="fill_parent"
-		android:layout_weight="1" >
-	</FrameLayout>
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/frag_primary"
+        android:layout_width="0px"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"></FrameLayout>
 
-	<fragment
-		android:id="@+id/frag_secondary"
-		android:name="uk.co.senab.photup.fragments.SelectedPhotosFragment"
-		android:layout_width="@dimen/selected_fragment_width"
-		android:layout_height="fill_parent" />
+    <fragment
+        android:id="@+id/frag_secondary"
+        android:name="uk.co.senab.photup.fragments.SelectedPhotosFragment"
+        android:layout_width="@dimen/selected_fragment_width"
+        android:layout_height="fill_parent" />
 
 </LinearLayout>

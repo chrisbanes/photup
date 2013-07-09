@@ -10,5 +10,5 @@
         <item quantity="one">With one person</item>
         <item quantity="other">With %d people</item>
     </plurals>
-    
+
 </resources>

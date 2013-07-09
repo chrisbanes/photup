@@ -15,13 +15,24 @@
  *******************************************************************************/
 package uk.co.senab.photup.model;
 
+import com.facebook.android.Facebook;
+import com.facebook.android.FacebookError;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.content.Context;
+import android.text.TextUtils;
+import android.util.Log;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import uk.co.senab.photup.Constants;
 import uk.co.senab.photup.DatabaseHelper;
@@ -33,222 +44,217 @@ import uk.co.senab.photup.tasks.EventsAsyncTask;
 import uk.co.senab.photup.tasks.EventsAsyncTask.EventsResultListener;
 import uk.co.senab.photup.tasks.GroupsAsyncTask;
 import uk.co.senab.photup.tasks.GroupsAsyncTask.GroupsResultListener;
-import android.content.Context;
-import android.text.TextUtils;
-import android.util.Log;
-
-import com.facebook.android.Facebook;
-import com.facebook.android.FacebookError;
-import com.j256.ormlite.android.apptools.OpenHelperManager;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "account")
-public class Account extends AbstractFacebookObject implements AlbumsResultListener, EventsResultListener,
-		GroupsResultListener {
+public class Account extends AbstractFacebookObject
+        implements AlbumsResultListener, EventsResultListener,
+        GroupsResultListener {
 
-	static final String LOG_TAG = "Account";
+    static final String LOG_TAG = "Account";
 
-	public static final String FIELD_ACCESS_TOKEN = "access_token";
-	public static final String FIELD_ACCESS_EXPIRES = "access_expires";
-	public static final String FIELD_MAIN_ACCOUNT = "is_main_account";
+    public static final String FIELD_ACCESS_TOKEN = "access_token";
+    public static final String FIELD_ACCESS_EXPIRES = "access_expires";
+    public static final String FIELD_MAIN_ACCOUNT = "is_main_account";
 
-	@DatabaseField(columnName = FIELD_ACCESS_TOKEN) private String mAccessToken;
-	@DatabaseField(columnName = FIELD_ACCESS_EXPIRES) private long mAccessExpires;
-	@DatabaseField(columnName = FIELD_MAIN_ACCOUNT) private boolean mIsMainAccount;
+    @DatabaseField(columnName = FIELD_ACCESS_TOKEN)
+    private String mAccessToken;
+    @DatabaseField(columnName = FIELD_ACCESS_EXPIRES)
+    private long mAccessExpires;
+    @DatabaseField(columnName = FIELD_MAIN_ACCOUNT)
+    private boolean mIsMainAccount;
 
-	private AlbumsResultListener mAlbumsListener;
-	private GroupsResultListener mGroupsListener;
-	private EventsResultListener mEventsListener;
+    private AlbumsResultListener mAlbumsListener;
+    private GroupsResultListener mGroupsListener;
+    private EventsResultListener mEventsListener;
 
-	private ArrayList<Album> mAlbums;
-	private ArrayList<Event> mEvents;
-	private ArrayList<Group> mGroups;
-	
-	Account() {
-		// No-ARG for Ormlite
-	}
+    private ArrayList<Album> mAlbums;
+    private ArrayList<Event> mEvents;
+    private ArrayList<Group> mGroups;
 
-	private Account(String id, String name, String accessToken, long accessExpires) {
-		super(id, name, null);
-		mAccessToken = accessToken;
-		mAccessExpires = accessExpires;
-		mIsMainAccount = true;
-	}
+    Account() {
+        // No-ARG for Ormlite
+    }
 
-	public Account(JSONObject object) throws JSONException {
-		super(object, null);
-		mAccessToken = object.optString("access_token", null);
-		mAccessExpires = 0;
-		mIsMainAccount = false;
-	}
+    private Account(String id, String name, String accessToken, long accessExpires) {
+        super(id, name, null);
+        mAccessToken = accessToken;
+        mAccessExpires = accessExpires;
+        mIsMainAccount = true;
+    }
 
-	public String getAccessToken() {
-		return mAccessToken;
-	}
+    public Account(JSONObject object) throws JSONException {
+        super(object, null);
+        mAccessToken = object.optString("access_token", null);
+        mAccessExpires = 0;
+        mIsMainAccount = false;
+    }
 
-	public boolean isMainAccount() {
-		return mIsMainAccount;
-	}
+    public String getAccessToken() {
+        return mAccessToken;
+    }
 
-	public void getAlbums(Context context, AlbumsResultListener listener, boolean forceRefresh) {
-		if (null == mAlbums) {
-			mAlbums = new ArrayList<Album>();
-		}
+    public boolean isMainAccount() {
+        return mIsMainAccount;
+    }
 
-		if (forceRefresh || mAlbums.isEmpty()) {
-			mAlbumsListener = listener;
-			new AlbumsAsyncTask(context, this, this).execute();
-		} else {
-			listener.onAlbumsLoaded(this, mAlbums);
-		}
-	}
+    public void getAlbums(Context context, AlbumsResultListener listener, boolean forceRefresh) {
+        if (null == mAlbums) {
+            mAlbums = new ArrayList<Album>();
+        }
 
-	public void getGroups(Context context, GroupsResultListener listener, boolean forceRefresh) {
-		if (null == mGroups) {
-			mGroups = new ArrayList<Group>();
-		}
+        if (forceRefresh || mAlbums.isEmpty()) {
+            mAlbumsListener = listener;
+            new AlbumsAsyncTask(context, this, this).execute();
+        } else {
+            listener.onAlbumsLoaded(this, mAlbums);
+        }
+    }
 
-		if (forceRefresh || mGroups.isEmpty()) {
-			mGroupsListener = listener;
-			new GroupsAsyncTask(context, this, this).execute();
-		} else {
-			listener.onGroupsLoaded(this, mGroups);
-		}
-	}
+    public void getGroups(Context context, GroupsResultListener listener, boolean forceRefresh) {
+        if (null == mGroups) {
+            mGroups = new ArrayList<Group>();
+        }
 
-	public void getEvents(Context context, EventsResultListener listener, boolean forceRefresh) {
-		if (null == mEvents) {
-			mEvents = new ArrayList<Event>();
-		}
+        if (forceRefresh || mGroups.isEmpty()) {
+            mGroupsListener = listener;
+            new GroupsAsyncTask(context, this, this).execute();
+        } else {
+            listener.onGroupsLoaded(this, mGroups);
+        }
+    }
 
-		if (forceRefresh || mEvents.isEmpty()) {
-			mEventsListener = listener;
-			new EventsAsyncTask(context, this, this).execute();
-		} else {
-			listener.onEventsLoaded(this, mEvents);
-		}
-	}
+    public void getEvents(Context context, EventsResultListener listener, boolean forceRefresh) {
+        if (null == mEvents) {
+            mEvents = new ArrayList<Event>();
+        }
 
-	public boolean hasAccessToken() {
-		return !TextUtils.isEmpty(mAccessToken);
-	}
+        if (forceRefresh || mEvents.isEmpty()) {
+            mEventsListener = listener;
+            new EventsAsyncTask(context, this, this).execute();
+        } else {
+            listener.onEventsLoaded(this, mEvents);
+        }
+    }
 
-	public static Account getMeFromSession(Session session) {
-		if (null != session) {
-			final Facebook fb = session.getFb();
-			return new Account(session.getUid(), session.getName(), fb.getAccessToken(), fb.getAccessExpires());
-		}
-		return null;
-	}
+    public boolean hasAccessToken() {
+        return !TextUtils.isEmpty(mAccessToken);
+    }
 
-	public static Account getAccountFromSession(Context context) {
-		return getMeFromSession(Session.restore(context));
-	}
+    public static Account getMeFromSession(Session session) {
+        if (null != session) {
+            final Facebook fb = session.getFb();
+            return new Account(session.getUid(), session.getName(), fb.getAccessToken(),
+                    fb.getAccessExpires());
+        }
+        return null;
+    }
 
-	public Facebook getFacebook() {
-		Facebook facebook = new Facebook(Constants.FACEBOOK_APP_ID);
-		facebook.setAccessToken(mAccessToken);
-		facebook.setAccessExpires(mAccessExpires);
-		return facebook;
-	}
+    public static Account getAccountFromSession(Context context) {
+        return getMeFromSession(Session.restore(context));
+    }
 
-	public void onFacebookError(FacebookError e) {
-		// NO-OP
-	}
+    public Facebook getFacebook() {
+        Facebook facebook = new Facebook(Constants.FACEBOOK_APP_ID);
+        facebook.setAccessToken(mAccessToken);
+        facebook.setAccessExpires(mAccessExpires);
+        return facebook;
+    }
 
-	public void onAlbumsLoaded(Account account, List<Album> albums) {
-		mAlbums.clear();
+    public void onFacebookError(FacebookError e) {
+        // NO-OP
+    }
 
-		if (null != albums) {
-			mAlbums.addAll(albums);
+    public void onAlbumsLoaded(Account account, List<Album> albums) {
+        mAlbums.clear();
 
-			if (null != mAlbumsListener && mAlbumsListener != this) {
-				mAlbumsListener.onAlbumsLoaded(account, mAlbums);
-				mAlbumsListener = null;
-			}
-		}
-	}
+        if (null != albums) {
+            mAlbums.addAll(albums);
 
-	public void onGroupsLoaded(Account account, List<Group> groups) {
-		mGroups.clear();
+            if (null != mAlbumsListener && mAlbumsListener != this) {
+                mAlbumsListener.onAlbumsLoaded(account, mAlbums);
+                mAlbumsListener = null;
+            }
+        }
+    }
 
-		if (null != groups) {
-			mGroups.addAll(groups);
-			if (null != mGroupsListener && mGroupsListener != this) {
-				mGroupsListener.onGroupsLoaded(account, mGroups);
-				mGroupsListener = null;
-			}
-		}
-	}
+    public void onGroupsLoaded(Account account, List<Group> groups) {
+        mGroups.clear();
 
-	public void onEventsLoaded(Account account, List<Event> events) {
-		mEvents.clear();
+        if (null != groups) {
+            mGroups.addAll(groups);
+            if (null != mGroupsListener && mGroupsListener != this) {
+                mGroupsListener.onGroupsLoaded(account, mGroups);
+                mGroupsListener = null;
+            }
+        }
+    }
 
-		if (null != events) {
-			mEvents.addAll(events);
-			if (null != mEventsListener && mEventsListener != this) {
-				mEventsListener.onEventsLoaded(account, mEvents);
-				mEventsListener = null;
-			}
-		}
-	}
+    public void onEventsLoaded(Account account, List<Event> events) {
+        mEvents.clear();
 
-	public void preload(Context context) {
-		getAlbums(context, null, false);
-		getGroups(context, null, false);
-		getEvents(context, null, false);
-	}
+        if (null != events) {
+            mEvents.addAll(events);
+            if (null != mEventsListener && mEventsListener != this) {
+                mEventsListener.onEventsLoaded(account, mEvents);
+                mEventsListener = null;
+            }
+        }
+    }
 
-	public static List<Account> getFromDatabase(Context context) {
-		final DatabaseHelper helper = OpenHelperManager.getHelper(context, DatabaseHelper.class);
-		List<Account> items = null;
+    public void preload(Context context) {
+        getAlbums(context, null, false);
+        getGroups(context, null, false);
+        getEvents(context, null, false);
+    }
 
-		try {
-			final Dao<Account, String> dao = helper.getAccountDao();
-			items = dao.query(dao.queryBuilder().prepare());
-		} catch (SQLException e) {
-			if (Flags.DEBUG) {
-				e.printStackTrace();
-			}
-		} finally {
-			OpenHelperManager.releaseHelper();
-		}
+    public static List<Account> getFromDatabase(Context context) {
+        final DatabaseHelper helper = OpenHelperManager.getHelper(context, DatabaseHelper.class);
+        List<Account> items = null;
 
-		return items;
-	}
+        try {
+            final Dao<Account, String> dao = helper.getAccountDao();
+            items = dao.query(dao.queryBuilder().prepare());
+        } catch (SQLException e) {
+            if (Flags.DEBUG) {
+                e.printStackTrace();
+            }
+        } finally {
+            OpenHelperManager.releaseHelper();
+        }
 
-	public static void saveToDatabase(Context context, final List<Account> items) {
-		final DatabaseHelper helper = OpenHelperManager.getHelper(context, DatabaseHelper.class);
+        return items;
+    }
 
-		try {
-			final Dao<Account, String> dao = helper.getAccountDao();
-			dao.callBatchTasks(new Callable<Void>() {
+    public static void saveToDatabase(Context context, final List<Account> items) {
+        final DatabaseHelper helper = OpenHelperManager.getHelper(context, DatabaseHelper.class);
 
-				public Void call() throws Exception {
-					// Delete all
-					int removed = dao.delete(dao.deleteBuilder().prepare());
-					if (Flags.DEBUG) {
-						Log.d(LOG_TAG, "Deleted " + removed + " from database");
-					}
+        try {
+            final Dao<Account, String> dao = helper.getAccountDao();
+            dao.callBatchTasks(new Callable<Void>() {
 
-					for (Account item : items) {
-						dao.create(item);
-					}
-					if (Flags.DEBUG) {
-						Log.d(LOG_TAG, "Inserted " + items.size() + " into database");
-					}
-					return null;
-				}
-			});
-		} catch (Exception e) {
-			if (Flags.DEBUG) {
-				e.printStackTrace();
-			}
-		} finally {
-			OpenHelperManager.releaseHelper();
-		}
-	}
+                public Void call() throws Exception {
+                    // Delete all
+                    int removed = dao.delete(dao.deleteBuilder().prepare());
+                    if (Flags.DEBUG) {
+                        Log.d(LOG_TAG, "Deleted " + removed + " from database");
+                    }
+
+                    for (Account item : items) {
+                        dao.create(item);
+                    }
+                    if (Flags.DEBUG) {
+                        Log.d(LOG_TAG, "Inserted " + items.size() + " into database");
+                    }
+                    return null;
+                }
+            });
+        } catch (Exception e) {
+            if (Flags.DEBUG) {
+                e.printStackTrace();
+            }
+        } finally {
+            OpenHelperManager.releaseHelper();
+        }
+    }
 
 }

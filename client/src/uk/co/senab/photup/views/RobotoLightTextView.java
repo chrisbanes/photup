@@ -22,15 +22,16 @@ import android.widget.TextView;
 
 public class RobotoLightTextView extends TextView {
 
-	private Typeface mRobotoLightTypeface;
+    private Typeface mRobotoLightTypeface;
 
-	public RobotoLightTextView(Context context, AttributeSet attrs) {
-		super(context, attrs);
+    public RobotoLightTextView(Context context, AttributeSet attrs) {
+        super(context, attrs);
 
-		if (!isInEditMode()) {
-			mRobotoLightTypeface = Typeface.createFromAsset(context.getAssets(), "Roboto-Light.ttf");
-			setTypeface(mRobotoLightTypeface);
-		}
-	}
+        if (!isInEditMode()) {
+            mRobotoLightTypeface = Typeface
+                    .createFromAsset(context.getAssets(), "Roboto-Light.ttf");
+            setTypeface(mRobotoLightTypeface);
+        }
+    }
 
 }

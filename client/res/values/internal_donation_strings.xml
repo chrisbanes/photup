@@ -1,24 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-	<string name="paypal_user_email">chris@senab.co.uk</string>
-	<string name="paypal_item_name">photup Donation</string>
-	<string name="paypal_currency_code">GBP</string>
-	<string name="google_play_dev_public_key">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjvKTS4cvWomWPyUU8SHCG58w3YsYbi5LkJyt92UrwxArABGNw1VKPoxDd4usDipExdrwmtiLcslqacc/OAqyuna/ug7Jikk+pL+DJBw3D1kctMjeZmuETUWA32ak3k0Kc5RIFjcKQ6Moi05texXbVgey3rv7NjZIwqAsHnTQDBRPd7XefqrTuKW7mZ6LQmz7BZhsjxR2TltFa7/xNVLlDtEz+DF3BtLCnA/Dl6J4PKCkNA3AufZ39rOJZ9hR6HNx+p+1g2b/QSrev0aXwey9x7WW/amXrXxc/ZsQtC03Ca/OjmfjNLZiGnHRY1UTdpqY+WXAh2lmVZM06mcTMVErZwIDAQAB</string>
+    <string name="paypal_user_email">chris@senab.co.uk</string>
+    <string name="paypal_item_name">photup Donation</string>
+    <string name="paypal_currency_code">GBP</string>
+    <string name="google_play_dev_public_key">
+        MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjvKTS4cvWomWPyUU8SHCG58w3YsYbi5LkJyt92UrwxArABGNw1VKPoxDd4usDipExdrwmtiLcslqacc/OAqyuna/ug7Jikk+pL+DJBw3D1kctMjeZmuETUWA32ak3k0Kc5RIFjcKQ6Moi05texXbVgey3rv7NjZIwqAsHnTQDBRPd7XefqrTuKW7mZ6LQmz7BZhsjxR2TltFa7/xNVLlDtEz+DF3BtLCnA/Dl6J4PKCkNA3AufZ39rOJZ9hR6HNx+p+1g2b/QSrev0aXwey9x7WW/amXrXxc/ZsQtC03Ca/OjmfjNLZiGnHRY1UTdpqY+WXAh2lmVZM06mcTMVErZwIDAQAB
+    </string>
 
-	<string-array name="google_play_catalog">
-		<item>photup.app.donation.1</item>
-		<item>photup.app.donation.2</item>
-		<item>photup.app.donation.3</item>
-		<item>photup.app.donation.5</item>
-		<item>photup.app.donation.10</item>
-	</string-array>
-	<string-array name="donations__google_android_market_promt_array">
-		<item>£1</item>
-		<item>£2</item>
-		<item>£3</item>
-		<item>£5</item>
-		<item>£10</item>
-	</string-array>
+    <string-array name="google_play_catalog">
+        <item>photup.app.donation.1</item>
+        <item>photup.app.donation.2</item>
+        <item>photup.app.donation.3</item>
+        <item>photup.app.donation.5</item>
+        <item>photup.app.donation.10</item>
+    </string-array>
+    <string-array name="donations__google_android_market_promt_array">
+        <item>£1</item>
+        <item>£2</item>
+        <item>£3</item>
+        <item>£5</item>
+        <item>£10</item>
+    </string-array>
 
 </resources>

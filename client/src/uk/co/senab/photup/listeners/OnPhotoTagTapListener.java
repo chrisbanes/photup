@@ -19,6 +19,6 @@ import uk.co.senab.photup.model.PhotoTag;
 
 public interface OnPhotoTagTapListener {
 
-	void onNewPhotoTagTap(PhotoTag newTag);
+    void onNewPhotoTagTap(PhotoTag newTag);
 
 }

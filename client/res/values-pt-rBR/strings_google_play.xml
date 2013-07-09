@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="google_play_description">Com o photup você pode compartilhar suas fotos no seu perfil do Facebook, mais rápido do que nunca. Pense nisso como um \'Facebook Camera\' para iOS, mas no Android.
--Envie quantas fotos quiser, todas de uma vez em lote
--Adicione efeitos (filtros)
--Manualmente gire as fotos
--Cortar fotos
--Definir a legenda de cada foto
--Facilmente marcar os seus amigos com detecção de rosto
--Instant Upload. Carregar automaticamente logo que você tirar uma foto
--Marcar o local
--Enviar para seus grupos ou eventos
--Enviar para sua página e seu álbuns
-Em breve:
--Mais opções de privacidade
-Traduções
-Se você deseja ajudar a traduzir o photup. Vá para:
-http://www.getlocalization.com/photup/</string>
-	<string name="google_play_promo_text">Compartilhar suas fotos com o photup para Facebook</string>
+    <string name="google_play_description">Com o photup você pode compartilhar suas fotos no seu
+        perfil do Facebook, mais rápido do que nunca. Pense nisso como um \'Facebook Camera\' para
+        iOS, mas no Android.
+        -Envie quantas fotos quiser, todas de uma vez em lote
+        -Adicione efeitos (filtros)
+        -Manualmente gire as fotos
+        -Cortar fotos
+        -Definir a legenda de cada foto
+        -Facilmente marcar os seus amigos com detecção de rosto
+        -Instant Upload. Carregar automaticamente logo que você tirar uma foto
+        -Marcar o local
+        -Enviar para seus grupos ou eventos
+        -Enviar para sua página e seu álbuns
+        Em breve:
+        -Mais opções de privacidade
+        Traduções
+        Se você deseja ajudar a traduzir o photup. Vá para:
+        http://www.getlocalization.com/photup/
+    </string>
+    <string name="google_play_promo_text">Compartilhar suas fotos com o photup para Facebook
+    </string>
 </resources>

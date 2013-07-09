@@ -1,36 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:orientation="vertical" >
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
 
-	<LinearLayout
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:gravity="bottom" >
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom">
 
-		<uk.co.senab.photup.views.RobotoLightTextView
-			android:id="@+id/tv_fragment_title"
-			style="@style/FragmentTitle"
-			android:layout_width="0px"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:text="@string/tab_photos" />
+        <uk.co.senab.photup.views.RobotoLightTextView
+            android:id="@+id/tv_fragment_title"
+            style="@style/FragmentTitle"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/tab_photos" />
 
-		<Spinner
-			android:id="@+id/sp_buckets"
-			style="@style/PhotupSpinner"
-			android:layout_width="0px"
-			android:layout_height="wrap_content"
-			android:layout_weight="1" />
-	</LinearLayout>
+        <Spinner
+            android:id="@+id/sp_buckets"
+            style="@style/PhotupSpinner"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+    </LinearLayout>
 
-	<GridView
-		android:id="@+id/gv_photos"
-		style="@style/PhotosGridView"
-		android:layout_width="match_parent"
-		android:layout_height="0px"
-		android:layout_weight="1"
-		android:columnWidth="@dimen/gridview_item_dimension_user" />
+    <GridView
+        android:id="@+id/gv_photos"
+        style="@style/PhotosGridView"
+        android:layout_width="match_parent"
+        android:layout_height="0px"
+        android:layout_weight="1"
+        android:columnWidth="@dimen/gridview_item_dimension_user" />
 
 </LinearLayout>

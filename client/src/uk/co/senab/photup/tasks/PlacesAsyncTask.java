@@ -15,86 +15,89 @@
  *******************************************************************************/
 package uk.co.senab.photup.tasks;
 
+import com.facebook.android.FacebookError;
+
+import org.json.JSONException;
+
+import android.content.Context;
+import android.location.Location;
+import android.os.AsyncTask;
+
 import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.List;
-
-import org.json.JSONException;
 
 import uk.co.senab.photup.facebook.FacebookRequester;
 import uk.co.senab.photup.listeners.FacebookErrorListener;
 import uk.co.senab.photup.model.Account;
 import uk.co.senab.photup.model.Place;
-import android.content.Context;
-import android.location.Location;
-import android.os.AsyncTask;
-
-import com.facebook.android.FacebookError;
 
 public class PlacesAsyncTask extends AsyncTask<Void, Void, List<Place>> {
 
-	public static interface PlacesResultListener extends FacebookErrorListener {
-		void onPlacesLoaded(int id, String query, List<Place> albums);
-	}
+    public static interface PlacesResultListener extends FacebookErrorListener {
 
-	private final WeakReference<Context> mContext;
-	private final WeakReference<PlacesResultListener> mListener;
+        void onPlacesLoaded(int id, String query, List<Place> albums);
+    }
 
-	private final Location mLocation;
-	private final String mSearchQuery;
-	private final int mId;
+    private final WeakReference<Context> mContext;
+    private final WeakReference<PlacesResultListener> mListener;
 
-	public PlacesAsyncTask(Context context, PlacesResultListener listener, Location location, String searchQuery, int id) {
-		mContext = new WeakReference<Context>(context);
-		mListener = new WeakReference<PlacesResultListener>(listener);
+    private final Location mLocation;
+    private final String mSearchQuery;
+    private final int mId;
 
-		mLocation = location;
-		mSearchQuery = searchQuery;
-		mId = id;
-	}
+    public PlacesAsyncTask(Context context, PlacesResultListener listener, Location location,
+            String searchQuery, int id) {
+        mContext = new WeakReference<Context>(context);
+        mListener = new WeakReference<PlacesResultListener>(listener);
 
-	@Override
-	protected List<Place> doInBackground(Void... params) {
-		Context context = mContext.get();
-		if (null != context) {
-			Account account = Account.getAccountFromSession(context);
-			if (null != account) {
-				try {
-					FacebookRequester requester = new FacebookRequester(account);
-					List<Place> places = requester.getPlaces(mLocation, mSearchQuery);
+        mLocation = location;
+        mSearchQuery = searchQuery;
+        mId = id;
+    }
 
-					// If we have places and a location, sort using it
-					if (null != places && !places.isEmpty() && null != mLocation) {
-						for (Place place : places) {
-							place.calculateDistanceFrom(mLocation);
-						}
-						Collections.sort(places, Place.getComparator());
-					}
+    @Override
+    protected List<Place> doInBackground(Void... params) {
+        Context context = mContext.get();
+        if (null != context) {
+            Account account = Account.getAccountFromSession(context);
+            if (null != account) {
+                try {
+                    FacebookRequester requester = new FacebookRequester(account);
+                    List<Place> places = requester.getPlaces(mLocation, mSearchQuery);
 
-					return places;
-				} catch (FacebookError e) {
-					PlacesResultListener listener = mListener.get();
-					if (null != listener) {
-						listener.onFacebookError(e);
-					} else {
-						e.printStackTrace();
-					}
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return null;
-	}
+                    // If we have places and a location, sort using it
+                    if (null != places && !places.isEmpty() && null != mLocation) {
+                        for (Place place : places) {
+                            place.calculateDistanceFrom(mLocation);
+                        }
+                        Collections.sort(places, Place.getComparator());
+                    }
 
-	@Override
-	protected void onPostExecute(List<Place> result) {
-		super.onPostExecute(result);
+                    return places;
+                } catch (FacebookError e) {
+                    PlacesResultListener listener = mListener.get();
+                    if (null != listener) {
+                        listener.onFacebookError(e);
+                    } else {
+                        e.printStackTrace();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
+    }
 
-		PlacesResultListener listener = mListener.get();
-		if (null != listener && null != result) {
-			listener.onPlacesLoaded(mId, mSearchQuery, result);
-		}
-	}
+    @Override
+    protected void onPostExecute(List<Place> result) {
+        super.onPostExecute(result);
+
+        PlacesResultListener listener = mListener.get();
+        if (null != listener && null != result) {
+            listener.onPlacesLoaded(mId, mSearchQuery, result);
+        }
+    }
 
 }

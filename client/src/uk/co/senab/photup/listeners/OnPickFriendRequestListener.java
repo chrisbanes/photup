@@ -21,6 +21,6 @@ import uk.co.senab.photup.model.FbUser;
 
 public interface OnPickFriendRequestListener {
 
-	void onPickFriendRequested(OnFriendPickedListener listener, Set<FbUser> excludeSet);
+    void onPickFriendRequested(OnFriendPickedListener listener, Set<FbUser> excludeSet);
 
 }

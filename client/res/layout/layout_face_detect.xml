@@ -9,7 +9,7 @@
     android:gravity="center"
     android:orientation="horizontal"
     android:padding="@dimen/spacing"
-    android:visibility="gone" >
+    android:visibility="gone">
 
     <ProgressBar
         style="?android:attr/progressBarStyleSmall"

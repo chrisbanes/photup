@@ -1,82 +1,82 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-	<style name="SocialHandleTextView">
-		<item name="android:layout_width">wrap_content</item>
-		<item name="android:layout_height">wrap_content</item>
-		<item name="android:drawablePadding">@dimen/spacing</item>
-		<item name="android:gravity">center_vertical</item>
-		<item name="android:textColor">@android:color/white</item>
-		<item name="android:textSize">18dp</item>
-		<item name="android:layout_margin">@dimen/double_spacing</item>
-	</style>
+    <style name="SocialHandleTextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:drawablePadding">@dimen/spacing</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">18dp</item>
+        <item name="android:layout_margin">@dimen/double_spacing</item>
+    </style>
 
-	<style name="StyledButton">
-		<item name="android:layout_width">fill_parent</item>
-		<item name="android:layout_height">wrap_content</item>
-		<item name="android:layout_margin">@dimen/spacing</item>
-		<item name="android:textColor">@android:color/white</item>
-		<item name="android:shadowColor">@android:color/black</item>
-		<item name="android:shadowDx">1</item>
-		<item name="android:shadowDy">1</item>
-		<item name="android:shadowRadius">2</item>
-	</style>
+    <style name="StyledButton">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/spacing</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:shadowColor">@android:color/black</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">2</item>
+    </style>
 
-	<style name="TabRadioButton" parent="Widget.Sherlock.ActionBar.TabView">
-		<item name="android:background">@drawable/radiobutton_tab_background</item>
-		<item name="android:paddingLeft">4dp</item>
-		<item name="android:paddingTop">12dp</item>
-		<item name="android:paddingBottom">12dp</item>
-		<item name="android:paddingRight">4dp</item>
-		<item name="android:button">@null</item>
-		<item name="android:layout_width">0px</item>
-		<item name="android:layout_weight">1</item>
-		<item name="android:layout_height">fill_parent</item>
-		<item name="android:textColor">?attr/textColorPrimary</item>
-		<item name="android:textSize">11sp</item>
-		<item name="android:textStyle">bold</item>
-		<item name="android:textAllCaps">true</item>
-		<item name="android:ellipsize">marquee</item>
-		<item name="android:gravity">center</item>
-	</style>
+    <style name="TabRadioButton" parent="Widget.Sherlock.ActionBar.TabView">
+        <item name="android:background">@drawable/radiobutton_tab_background</item>
+        <item name="android:paddingLeft">4dp</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:paddingRight">4dp</item>
+        <item name="android:button">@null</item>
+        <item name="android:layout_width">0px</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:textColor">?attr/textColorPrimary</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:ellipsize">marquee</item>
+        <item name="android:gravity">center</item>
+    </style>
 
-	<style name="TabRadioGroup">
-		<item name="android:divider">?attr/actionBarDivider</item>
-		<item name="android:dividerPadding">12dp</item>
-		<item name="android:orientation">horizontal</item>
-		<item name="android:showDividers">middle</item>
-	</style>
+    <style name="TabRadioGroup">
+        <item name="android:divider">?attr/actionBarDivider</item>
+        <item name="android:dividerPadding">12dp</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:showDividers">middle</item>
+    </style>
 
-	<style name="PhotupSpinner">
-		<item name="android:background">@drawable/abs__spinner_ab_holo_dark</item>
-	</style>
+    <style name="PhotupSpinner">
+        <item name="android:background">@drawable/abs__spinner_ab_holo_dark</item>
+    </style>
 
-	<style name="PhotosGridView">
-		<item name="android:horizontalSpacing">@dimen/gridview_spacing</item>
-		<item name="android:listSelector">@drawable/selectable_background_photup</item>
-		<item name="android:numColumns">auto_fit</item>
-		<item name="android:stretchMode">columnWidth</item>
-		<item name="android:verticalSpacing">@dimen/gridview_spacing</item>
-	</style>
+    <style name="PhotosGridView">
+        <item name="android:horizontalSpacing">@dimen/gridview_spacing</item>
+        <item name="android:listSelector">@drawable/selectable_background_photup</item>
+        <item name="android:numColumns">auto_fit</item>
+        <item name="android:stretchMode">columnWidth</item>
+        <item name="android:verticalSpacing">@dimen/gridview_spacing</item>
+    </style>
 
-	<style name="FragmentTitle">
-		<item name="android:fontFamily">sans-serif-light</item>
-		<item name="android:padding">@dimen/spacing</item>
-		<item name="android:textSize">@dimen/fragment_title_text_size</item>
-	</style>
+    <style name="FragmentTitle">
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:padding">@dimen/spacing</item>
+        <item name="android:textSize">@dimen/fragment_title_text_size</item>
+    </style>
 
-	<style name="SelectedFragmentStyle"></style>
+    <style name="SelectedFragmentStyle"></style>
 
-	<style name="DialogActionBar">
-		<item name="android:background">@color/blue_v_dark</item>
-		<item name="android:gravity">center_vertical</item>
-		<item name="android:orientation">horizontal</item>
-	</style>
+    <style name="DialogActionBar">
+        <item name="android:background">@color/blue_v_dark</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
 
-	<style name="EmptyUploadStyle">
-		<item name="android:drawablePadding">@dimen/spacing</item>
-		<item name="android:gravity">center</item>
-		<item name="android:padding">@dimen/double_spacing</item>
-		<item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-	</style>
+    <style name="EmptyUploadStyle">
+        <item name="android:drawablePadding">@dimen/spacing</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">@dimen/double_spacing</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
 
 </resources>

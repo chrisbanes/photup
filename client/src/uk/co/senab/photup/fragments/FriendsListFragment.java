@@ -15,15 +15,9 @@
  *******************************************************************************/
 package uk.co.senab.photup.fragments;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import com.actionbarsherlock.app.SherlockDialogFragment;
+import com.facebook.android.FacebookError;
 
-import uk.co.senab.photup.PhotupApplication;
-import uk.co.senab.photup.R;
-import uk.co.senab.photup.listeners.OnFriendPickedListener;
-import uk.co.senab.photup.model.FbUser;
-import uk.co.senab.photup.tasks.FriendsAsyncTask.FriendsResultListener;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.text.Editable;
@@ -39,126 +33,137 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import com.actionbarsherlock.app.SherlockDialogFragment;
-import com.facebook.android.FacebookError;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
-public class FriendsListFragment extends SherlockDialogFragment implements FriendsResultListener, OnItemClickListener,
-		TextWatcher {
+import uk.co.senab.photup.PhotupApplication;
+import uk.co.senab.photup.R;
+import uk.co.senab.photup.listeners.OnFriendPickedListener;
+import uk.co.senab.photup.model.FbUser;
+import uk.co.senab.photup.tasks.FriendsAsyncTask.FriendsResultListener;
 
-	private final ArrayList<FbUser> mFriends = new ArrayList<FbUser>();
-	private final ArrayList<FbUser> mDisplayedFriends = new ArrayList<FbUser>();
+public class FriendsListFragment extends SherlockDialogFragment
+        implements FriendsResultListener, OnItemClickListener,
+        TextWatcher {
 
-	private Set<FbUser> mExcludedFriends;
+    private final ArrayList<FbUser> mFriends = new ArrayList<FbUser>();
+    private final ArrayList<FbUser> mDisplayedFriends = new ArrayList<FbUser>();
 
-	private ListView mListView;
-	private EditText mFilterEditText;
+    private Set<FbUser> mExcludedFriends;
 
-	private ArrayAdapter<FbUser> mAdapter;
+    private ListView mListView;
+    private EditText mFilterEditText;
 
-	private OnFriendPickedListener mPickedFriendListener;
+    private ArrayAdapter<FbUser> mAdapter;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    private OnFriendPickedListener mPickedFriendListener;
 
-		setStyle(STYLE_NO_TITLE, 0);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		mAdapter = new ArrayAdapter<FbUser>(getActivity(), android.R.layout.simple_list_item_1, mDisplayedFriends);
+        setStyle(STYLE_NO_TITLE, 0);
 
-		PhotupApplication.getApplication(getActivity()).getFriends(this);
-	}
+        mAdapter = new ArrayAdapter<FbUser>(getActivity(), android.R.layout.simple_list_item_1,
+                mDisplayedFriends);
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_friends, container, false);
+        PhotupApplication.getApplication(getActivity()).getFriends(this);
+    }
 
-		mListView = (ListView) view.findViewById(R.id.lv_friends);
-		mListView.setOnItemClickListener(this);
-		mListView.setAdapter(mAdapter);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+            Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_friends, container, false);
 
-		mFilterEditText = (EditText) view.findViewById(R.id.et_friends_filter);
-		mFilterEditText.addTextChangedListener(this);
+        mListView = (ListView) view.findViewById(R.id.lv_friends);
+        mListView.setOnItemClickListener(this);
+        mListView.setAdapter(mAdapter);
 
-		return view;
-	}
+        mFilterEditText = (EditText) view.findViewById(R.id.et_friends_filter);
+        mFilterEditText.addTextChangedListener(this);
 
-	@Override
-	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		Dialog dialog = super.onCreateDialog(savedInstanceState);
+        return view;
+    }
 
-		// Set Soft Input mode so it's always visible
-		dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
 
-		return dialog;
-	}
+        // Set Soft Input mode so it's always visible
+        dialog.getWindow()
+                .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 
-	@Override
-	public void onResume() {
-		super.onResume();
+        return dialog;
+    }
 
-		// Clear filter text if needed
-		if (!TextUtils.isEmpty(mFilterEditText.getText())) {
-			mFilterEditText.setText("");
-		}
-	}
+    @Override
+    public void onResume() {
+        super.onResume();
 
-	public void onFriendsLoaded(List<FbUser> friends) {
-		mFriends.clear();
-		mFriends.addAll(friends);
-		updateFriends();
-	}
+        // Clear filter text if needed
+        if (!TextUtils.isEmpty(mFilterEditText.getText())) {
+            mFilterEditText.setText("");
+        }
+    }
 
-	public void setOnFriendPickedListener(OnFriendPickedListener listener) {
-		mPickedFriendListener = listener;
-	}
+    public void onFriendsLoaded(List<FbUser> friends) {
+        mFriends.clear();
+        mFriends.addAll(friends);
+        updateFriends();
+    }
 
-	public void setExcludedFriends(Set<FbUser> excludeSet) {
-		mExcludedFriends = excludeSet;
-		updateFriends();
-	}
+    public void setOnFriendPickedListener(OnFriendPickedListener listener) {
+        mPickedFriendListener = listener;
+    }
 
-	private void updateFriends() {
-		mDisplayedFriends.clear();
+    public void setExcludedFriends(Set<FbUser> excludeSet) {
+        mExcludedFriends = excludeSet;
+        updateFriends();
+    }
 
-		if (null != mExcludedFriends && !mExcludedFriends.isEmpty()) {
-			for (FbUser friend : mFriends) {
-				if (!mExcludedFriends.contains(friend)) {
-					mDisplayedFriends.add(friend);
-				}
-			}
-		} else {
-			mDisplayedFriends.addAll(mFriends);
-		}
+    private void updateFriends() {
+        mDisplayedFriends.clear();
 
-		if (null != mAdapter) {
-			mAdapter.notifyDataSetChanged();
-		}
-	}
+        if (null != mExcludedFriends && !mExcludedFriends.isEmpty()) {
+            for (FbUser friend : mFriends) {
+                if (!mExcludedFriends.contains(friend)) {
+                    mDisplayedFriends.add(friend);
+                }
+            }
+        } else {
+            mDisplayedFriends.addAll(mFriends);
+        }
 
-	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		FbUser friend = (FbUser) parent.getItemAtPosition(position);
+        if (null != mAdapter) {
+            mAdapter.notifyDataSetChanged();
+        }
+    }
 
-		if (null != mPickedFriendListener) {
-			mPickedFriendListener.onFriendPicked(friend);
-		}
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        FbUser friend = (FbUser) parent.getItemAtPosition(position);
 
-		dismiss();
-	}
+        if (null != mPickedFriendListener) {
+            mPickedFriendListener.onFriendPicked(friend);
+        }
 
-	public void afterTextChanged(Editable s) {
-		// NO-OP
-	}
+        dismiss();
+    }
 
-	public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-		// NO-OP
-	}
+    public void afterTextChanged(Editable s) {
+        // NO-OP
+    }
 
-	public void onTextChanged(CharSequence s, int start, int before, int count) {
-		mAdapter.getFilter().filter(s);
-	}
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        // NO-OP
+    }
 
-	public void onFacebookError(FacebookError e) {
-		// NO-OP
-	}
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        mAdapter.getFilter().filter(s);
+    }
+
+    public void onFacebookError(FacebookError e) {
+        // NO-OP
+    }
 
 }
