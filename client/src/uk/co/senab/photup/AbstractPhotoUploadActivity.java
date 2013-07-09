@@ -15,6 +15,8 @@
  *******************************************************************************/
 package uk.co.senab.photup;
 
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 import uk.co.senab.photup.base.PhotupFragmentActivity;
 import uk.co.senab.photup.events.UploadingPausedStateChangedEvent;
 import uk.co.senab.photup.util.Utils;
@@ -24,8 +26,6 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
 import de.greenrobot.event.EventBus;
-import de.neofonie.mobile.app.android.widget.crouton.Crouton;
-import de.neofonie.mobile.app.android.widget.crouton.Style;
 
 public abstract class AbstractPhotoUploadActivity extends PhotupFragmentActivity {
 
