@@ -18,6 +18,7 @@ out
 target
 release.properties
 pom.xml.*
+project.properties
 
 #Ant
 build.xml
