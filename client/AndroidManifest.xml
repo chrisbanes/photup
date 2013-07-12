@@ -99,7 +99,7 @@
 		</activity>
 
 		<receiver
-			android:name=".receivers.PhotoWatcherReceiver" >
+			android:name=".receivers.InstantUploadReceiver" >
 			<intent-filter>
 				<action
 					android:name="com.android.camera.NEW_PICTURE" />
@@ -113,16 +113,13 @@
 				<action
 					android:name="photup.intent.action.PHOTO_TAKEN" />
 			</intent-filter>
-		</receiver>
-		<receiver
-			android:name=".receivers.ConnectivityReceiver" >
-			<intent-filter>
-				<action
-					android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-			</intent-filter>
+            <intent-filter>
+                <action
+                    android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
 		</receiver>
 
-		<service
+        <service
 			android:name=".service.PhotoUploadService" />
 
 		<!-- Crittercism.com -->

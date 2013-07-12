@@ -39,7 +39,7 @@ import uk.co.senab.bitmapcache.BitmapLruCache;
 import uk.co.senab.photup.facebook.Session;
 import uk.co.senab.photup.model.Account;
 import uk.co.senab.photup.model.FbUser;
-import uk.co.senab.photup.receivers.PhotoWatcherReceiver;
+import uk.co.senab.photup.receivers.InstantUploadReceiver;
 import uk.co.senab.photup.tasks.AccountsAsyncTask;
 import uk.co.senab.photup.tasks.AccountsAsyncTask.AccountsResultListener;
 import uk.co.senab.photup.tasks.FriendsAsyncTask;
@@ -272,7 +272,7 @@ public class PhotupApplication extends Application
         final boolean enabled = prefs
                 .getBoolean(PreferenceConstants.PREF_INSTANT_UPLOAD_ENABLED, false);
 
-        final ComponentName component = new ComponentName(this, PhotoWatcherReceiver.class);
+        final ComponentName component = new ComponentName(this, InstantUploadReceiver.class);
         final PackageManager pkgMgr = getPackageManager();
 
         switch (pkgMgr.getComponentEnabledSetting(component)) {

@@ -66,8 +66,8 @@ import uk.co.senab.photup.facebook.Session;
 import uk.co.senab.photup.model.PhotoTag;
 import uk.co.senab.photup.model.PhotoUpload;
 import uk.co.senab.photup.model.UploadQuality;
-import uk.co.senab.photup.receivers.ConnectivityReceiver;
 import uk.co.senab.photup.tasks.PhotupThreadRunnable;
+import uk.co.senab.photup.util.ConnectionUtils;
 import uk.co.senab.photup.util.PhotoUploadDatabaseHelper;
 import uk.co.senab.photup.util.Utils;
 
@@ -281,7 +281,7 @@ public class PhotoUploadService extends Service {
             }
 
             // If we get here, we've errored somewhere
-            if (ConnectivityReceiver.isConnected(context)) {
+            if (ConnectionUtils.isConnected(context)) {
                 mUpload.setUploadState(PhotoUpload.STATE_UPLOAD_ERROR);
             } else {
                 mUpload.setUploadState(PhotoUpload.STATE_UPLOAD_WAITING);
@@ -477,7 +477,7 @@ public class PhotoUploadService extends Service {
     }
 
     private boolean canUpload() {
-        return !Utils.isUploadingPaused(this) && ConnectivityReceiver.isConnected(this);
+        return !Utils.isUploadingPaused(this) && ConnectionUtils.isConnected(this);
     }
 
     private void startForeground() {
